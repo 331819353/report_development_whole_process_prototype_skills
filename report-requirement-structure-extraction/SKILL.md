@@ -1,0 +1,107 @@
+---
+name: report-requirement-structure-extraction
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于把模糊想法、业务口述、截图、会议纪要、指标清单或零散资料转成可开发需求包。用户提到需求分析、需求梳理、需求拆解、需求澄清、PRD整理、业务问题转开发需求、范围/对象/指标/数据源/权限/验收标准不清、下一步该进哪个流程时触发；不直接产出API文档、代码或测试结果。"
+---
+
+# Requirement Transformation Analysis
+
+## Stage Scope
+
+Classification: 原型阶段.
+
+Use this copy only inside the prototype skill bundle. Treat technical solution, backend, frontend delivery, and testing work as downstream handoff artifacts or blockers, not as implementation steps to execute from this skill.
+
+## Core Positioning
+
+Use this as the front-door skill for turning unclear or partial requirements into concrete development inputs. The output is not only a summary; it must become an actionable requirement package that downstream prototype, technical-solution, backend, frontend, data-service, visualization, testing, and integration workflows can use.
+
+This skill answers:
+
+- What real business, service, technical, data, permission, integration, or delivery problem the user needs solved.
+- Which delivery scenario the request belongs to, and whether it should be split into phases.
+- What each theme, business problem, feature, API, data object, page, flow, or test point requires.
+- Which facts are confirmed, which items are inferred, and which gaps block reliable design or development.
+- Which downstream skill/workflow should be used next and what handoff artifacts it needs.
+
+Do not jump directly to implementation. First convert the request into a stable, traceable, scenario-specific development brief.
+
+## Reference Loading Guide
+
+Load references only when their scenario is relevant. Do not bulk-load every reference by default.
+
+- Read `references/scenario-routing.md` when scenario judgment, phase split, or downstream skill routing is needed.
+- Read `references/prototype-design-playbook.md` for prototypes, report/dashboard/page design, data screens, screenshot restoration, or implementation-ready UI specs.
+- Read `references/technical-solution-playbook.md` for technical solutions, API inventory, data models, table relationships, data sources, transformations, and permission strategy.
+- Read `references/data-model-requirement-playbook.md` for data model requirement transformation, including business objects, source fields, conceptual/logical/physical models, metric grain, table relationships, response/view models, and model gaps.
+- Read `references/data-service-backend-playbook.md` for backend/data-service/API implementation requirements.
+- Read `references/data-visualization-frontend-playbook.md` for frontend visualization, mock-to-API replacement, response adapters, filters, component binding, and runtime UI validation.
+- Read `references/testing-integration-playbook.md` for test design, frontend-backend integration, smoke tests, SSO tests, data consistency, and defect evidence.
+- Read `references/data-governance-permission-playbook.md` whenever data source credibility,口径, lineage, reconciliation, masking, audit, or permission design matters.
+- Read `references/object-model-and-acceptance.md` when object fields, acceptance criteria, or implementation task lists need more detail than the core output skeleton.
+- Read `references/output-skeleton-and-gates.md` before finalizing the requirement package, output structure, quality checklist, or avoid-list.
+- Use `$artifact-readability-standard` when the requirement package must be reviewed by humans and consumed by downstream AI/workflows.
+- Use `$report-delivery-pipeline-governance` when routing the requirement package into prototype, technical solution, backend, frontend, testing, release, or retest stages.
+- Use `$metric-number-display-contract` when requirements include units, percentages, rates, precision, rounding, tooltip/export values, or numeric consistency expectations.
+- Route to `change-impact-analysis` immediately when the input is a change to an existing metric,口径, filter, permission, API, page, field, model, test case, or delivery document.
+- Route to `metric-governance-lineage`, `permission-matrix-validation`, `data-quality-validation`, `$delivery-version-management`, or `production-observability-feedback` when those concerns are the primary deliverable rather than just supporting context.
+- Use `$haier-enterprise-app-ui-design-spec` as the Haier/enterprise application UI baseline when the requirement includes forms, lists, detail pages, tables, navigation, dialogs, empty/error/feedback states, workbench pages, cross-platform app adaptation, or Haier/enterprise report applications.
+- Use `$report-design-system-governance` as the report development/design baseline when the requirement includes reports, dashboards, cockpits, BI, data screens, business analysis, detail queries, topic analysis, KPI, charts, tables, filters, metric口径, export, performance, or acceptance.
+
+## Input Adaptation
+
+Accept incomplete inputs and infer cautiously.
+
+Supported input forms include one-sentence ideas, PRDs, meeting notes, screenshots, prototypes, metric lists, data dictionaries, database fields, source-system metadata, API documents, mock data, frontend/backend code, logs, deployment notes, SSO/security notes, and mixed Chinese/English terminology.
+
+When information is missing:
+
+- Produce a best-effort structure instead of blocking.
+- Separate confirmed facts, inferred assumptions, and missing questions.
+- Ask follow-up questions only when a missing answer changes the main scenario, user, data source, permission model, or delivery boundary.
+- Prefer explicit uncertainty over silent invention.
+
+## Anti-Laziness Gate
+
+For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness-execution-gate.md` before final output, handoff, or readiness. Do not mark the result ready while `LAZY-*` findings remain open, when available local evidence was not inspected, when owning skills were skipped, or when proof is limited to generic statements such as "checked", "optimized", "looks good", or "implemented".
+
+## Universal Workflow
+
+Use this sequence for every requirement transformation:
+
+1. Identify the primary deliverable.
+   State whether the user likely expects a requirement brief, prototype spec, technical solution, API list, data model, backend plan, frontend integration plan, test plan, or executable implementation.
+
+   If the request modifies existing delivered or in-progress artifacts, classify it as change management first and use `change-impact-analysis` before redesigning or implementing the affected scope.
+
+2. Judge the scenario.
+   Pick one primary scenario and optional secondary scenarios. If scenario choice is not obvious, read `references/scenario-routing.md`.
+
+3. Classify UI/design baseline when the deliverable contains pages.
+   Mark the requirement as Haier/enterprise app, report/dashboard, or mixed. For Haier/enterprise report pages, route both the inherited Haier application baseline and report-specific baseline into downstream prototype, technical solution, frontend, testing, and acceptance work even when the user did not say "规范".
+
+4. Extract facts, assumptions, and missing inputs.
+   Facts come from the user or provided files. Assumptions are safe inferences. Missing inputs are items that may affect scope, data, permission, acceptance, or delivery.
+
+5. Identify users, stakeholders, and usage moments.
+   Capture target users, maintainers, data owners, reviewers, approvers, external systems, and when/why they use the delivered result.
+
+6. Convert goals into problem statements.
+   Split vague goals into `theme -> business/technical problem -> expected decision/action/result`.
+
+7. Define scope and boundaries.
+   List in-scope capabilities, out-of-scope items, phase boundaries, dependencies, and delivery order.
+
+8. Build the object model.
+   Identify business objects, data objects, system objects, UI objects, process objects, and test objects. Capture grain, owner, source, status, relationship, lifecycle, permission, and acceptance when relevant.
+
+9. Load the relevant scenario playbook.
+   Use only the reference files that match the selected scenario and requested deliverable.
+
+10. Convert to tasks and acceptance criteria.
+   Write requirements as capability statements with measurable acceptance criteria, data/API dependencies, permission behavior, error/empty states, and test evidence.
+
+11. Route to downstream skills.
+    Recommend the next skill/workflow only after the requirement package is clear enough for that skill to act.
+
+    Include governance routes when relevant: `metric-governance-lineage` for指标口径, `permission-matrix-validation` for multi-role/data-scope rules, `data-quality-validation` for real data trust, `$delivery-version-management` for artifact versions, and `production-observability-feedback` for上线后闭环.
+    Use `$report-delivery-pipeline-governance` to state next-stage entry conditions and handoff blockers.

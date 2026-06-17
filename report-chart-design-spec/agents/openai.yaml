@@ -1,0 +1,4 @@
+interface:
+  display_name: "报表图表设计规范"
+  short_description: "为 ECharts、报表图表和空间地图卡片提供图表选择、现代BI轻量图表、HTML/SVG来源转换、可读性、布局和验收规范入口。"
+  default_prompt: "Use $report-chart-design-spec when designing, reviewing, or fixing report/dashboard charts, spatial analysis map cards, modern BI chart-lightness, ECharts options, legends, labels, tooltips, dense data, chart placement, or HTML/SVG/canvas chart-source conversion. Standard report charts must be rebuilt as ECharts data-driven components unless an explicit custom-diagram exception exists."

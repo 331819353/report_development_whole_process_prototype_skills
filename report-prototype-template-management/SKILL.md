@@ -1,0 +1,96 @@
+---
+name: report-prototype-template-management
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于管理可运行报表原型模板资产，选择、复制、二开和校验 Vue/Vite 报表模板。报表原型默认走内置模板，只有用户明确自定义/精确复刻/保留现有壳或模板无法满足时才走 custom。用户提到报表模板、页面模板、模板布局token、模板筛选、选择模板、复制模板、模板二开、topbar、left nav、亮色模板、固定1920大屏、Haier logo、dashboard.config.ts、dashboard.dataset.json、validate-dashboard-contract、启动预览URL时触发。"
+---
+
+# Report Prototype Template Management
+
+## Stage Scope
+
+Classification: 原型阶段.
+
+Use this copy only inside the prototype skill bundle. Treat technical solution, backend, frontend delivery, and testing work as downstream handoff artifacts or blockers, not as implementation steps to execute from this skill.
+
+## Positioning
+
+Use this skill when the task needs a runnable report prototype template or must modify a bundled template. It owns template asset selection, copy strategy, extension points, validation scripts, local startup helpers, and template-specific implementation boundaries.
+
+It does not own report-type business logic, component visual rules, API documentation, or production frontend integration. Those route to `$report-type-design`, `$report-info-component-mapping`, `$report-component-style-design`, and `frontend-development-workflow`.
+
+Default routing: choose `pageShellPath: template` for runnable report prototypes unless the user explicitly asks for custom/free design, exact screenshot/HTML/source restoration, existing shell preservation, or a documented bundled-template limitation.
+
+## Bundled Assets
+
+Template assets live under `assets/templates/<template-id>/`:
+
+- `topbar-light-scroll-dashboard-template`
+- `left-nav-analytics-workbench-template`
+- `frozen-title-sci-fi-cockpit-template`
+
+Brand assets live under `assets/brand/`:
+
+- `haier-logo.svg`
+- `haier-logo-white.svg`
+- `haier-logo-original.svg`
+
+Copy templates with their full project structure, including package/config files, `.vscode`, `demo`, `scripts`, `public`, and `src`.
+
+## Reference Loading
+
+| Need | Read |
+| --- | --- |
+| Template choice | `references/template-routing.md` |
+| Template routing and implementation gates | `references/template-routing-and-implementation-gates.md` |
+| Shared extension points | `references/template-shared-contract.md` |
+| Layout tokens and template design system | `references/template-layout-design-system.md` |
+| Topbar template details | `references/template-single-page.md` |
+| Left-nav template details | `references/template-left-nav.md` |
+| Fixed cockpit template details | `references/template-sci-fi.md` |
+| Template use modes | `references/template-usage-modes.md` |
+| Template redevelopment | `references/template-redevelopment-playbook.md` |
+| Recipe and verification checklist | `references/template-recipes-checklist.md` |
+| Report decision compatibility | `$report-design-system-governance` `references/09-report-decision-anti-ai-gate.md` |
+| Code-file ledger | `$code-change-ledger-management` |
+
+## Anti-Laziness Gate
+
+For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness-execution-gate.md` before final output, handoff, or readiness. Do not mark the result ready while `LAZY-*` findings remain open, when available local evidence was not inspected, when owning skills were skipped, or when proof is limited to generic statements such as "checked", "optimized", "looks good", or "implemented".
+
+## Workflow
+
+1. Decide bundled template, existing project shell, or custom development; default to bundled template unless a hard exception exists.
+2. Select exactly one template using display theme, selected pattern cards, content volume, navigation depth, interaction density, and display environment.
+3. Verify report-decision compatibility: metric tree/data story, detail/action/trust capacity, realistic data states, and report-designer needs when applicable.
+4. For templates with `nav[]`, define substantial nav-page content before copying or editing.
+5. Copy or merge the full template into the target.
+6. Keep shell-owned behavior in template config/data/action registries and widget registries.
+7. Preserve native template filter surfaces; configure `filters[]`, data sources, empty-filter values, resolvers, and widget bindings instead of adding a duplicate filter bar.
+8. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar; widgets own only current-component local filters, drill/detail links, and component-scoped micro actions. If a business component must own a normally shell-owned control, set `controlOwnership: "component"` or an equivalent explicit decision and disable/hide the matching template control.
+9. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
+10. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
+11. Run template validation, build, and dev/preview startup when a local URL is required.
+
+## Required Output
+
+- Selected template ID and reason.
+- Compatibility notes for display theme, pattern cards, report decision path, and navigation depth.
+- Shell decisions: title, logo, navigation, native filters, toolbar, controls.
+- Control ownership matrix: refresh, download/export, copy/share, global filters, local filters, period/date controls, toolbar actions, and any disabled template controls.
+- Asset copy/merge path and files/extension points changed.
+- Data binding mode and filter-to-widget binding proof.
+- Empty-filter configuration and aggregate-row key policy when filters or data contain all/total/synthetic options.
+- Code-ledger proof for changed template source files.
+- Validation/startup commands, URL, blockers, and template limitations.
+
+## Quality Gate
+
+- Do not choose custom development when a bundled template can satisfy the requirement.
+- Do not choose a nav template unless multiple substantial nav pages are implemented.
+- Do not add duplicate shell, filter bar, toolbar, or navigation layers over existing template slots without an explicit redesign decision.
+- Do not render duplicate refresh, download/export, copy/share, period/date, global-filter, or toolbar controls in business widgets when the selected template already owns those controls. Duplicate visible controls are `VIS-DUPLICATE-CONTROL` or `RPT-SHELL-DUPLICATE` unless component ownership is explicitly declared and the corresponding template control is disabled/hidden.
+- Template `filters[]` is for horizontal constraints; schema-changing perspectives belong in nav/page/route/tab/segment/perspective state.
+- Template data sources must declare or inherit configurable `emptyFilterValues`; aggregate/subtotal rows must use a distinct `aggregateValue`, `rowRole`, or typed key and must not use `all` as a business primary key unless an upstream legacy contract is isolated, adapted, and downgraded from ready.
+- Standard chart/table widgets must use their declared renderer and data contract.
+- Template validation scripts or config contracts do not replace runtime proof. Widget contracts such as `compositePanelContract`, `analysisInsightContract`, chart/table option contracts, and control ownership must map to DOM/CSS/renderer/browser evidence before readiness.
+- Changed copied-template source files require code-ledger read/create evidence and post-change version entries.
+- Load `template-routing-and-implementation-gates.md` before selecting, copying, editing, or accepting bundled report templates.
