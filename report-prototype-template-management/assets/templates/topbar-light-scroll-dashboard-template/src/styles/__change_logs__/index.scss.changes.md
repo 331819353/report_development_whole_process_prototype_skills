@@ -384,3 +384,48 @@
  .placeholder-grid {
 ```
 - Follow-up: none
+
+### v20260618012958 - 2026-06-18T01:29:58.144Z
+
+- Change ID: ad-hoc
+- Actor: codex
+- Change type: update
+- Summary: Fix topbar actions placement when center navigation is absent.
+- Modified functionality: topbar grid column anchoring, no-navigation fallback, right toolbar alignment
+- Code ranges: L154-L162, L199-L207
+- Modified content: Added explicit grid-column anchors for topbar brand, center nav, and right actions so CSS Grid does not auto-place the actions into the former nav column when topbarNav is empty.
+- Affected contracts: none
+- Verification: npm run build:preview passed; node CSS assertion confirmed brand/nav/actions grid-column anchors and right actions justify-self. Playwright runtime geometry check not run because local Playwright browsers are not installed.
+- Rollback note: revert this file and listed related files together if needed
+- Related files: none
+- Before snapshot: 1113 lines, sha256 `52042c3effdcb8e8b0413fd164a5570d5ccd969e0c7acab9e8f6718134f21795`, captured `2026-06-18T01:28:11.430Z`
+- After snapshot: 1116 lines, sha256 `5b5a2d075ede0c0ec491086ec6846505fa934c99bf6ede1f36d2a57e3ddb2947`
+- Change evidence: inline unified diff:
+
+```diff
+--- a/src/styles/index.scss
++++ b/src/styles/index.scss
+@@ -152,11 +152,13 @@
+ }
+
+ .topbar-brand {
++  grid-column: 1;
+   gap: 14px;
+   justify-self: start;
+ }
+
+ .topbar-actions-right {
++  grid-column: -2 / -1;
+   gap: 8px;
+   justify-self: end;
+ }
+@@ -197,6 +199,7 @@
+ }
+
+ .topbar-nav {
++  grid-column: 2;
+   display: flex;
+   align-items: center;
+   justify-self: center;
+```
+- Follow-up: none

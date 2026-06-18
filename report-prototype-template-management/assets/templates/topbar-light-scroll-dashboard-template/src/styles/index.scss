@@ -152,11 +152,13 @@ button {
 }
 
 .topbar-brand {
+  grid-column: 1;
   gap: 14px;
   justify-self: start;
 }
 
 .topbar-actions-right {
+  grid-column: -2 / -1;
   gap: 8px;
   justify-self: end;
 }
@@ -197,6 +199,7 @@ button {
 }
 
 .topbar-nav {
+  grid-column: 2;
   display: flex;
   align-items: center;
   justify-self: center;
