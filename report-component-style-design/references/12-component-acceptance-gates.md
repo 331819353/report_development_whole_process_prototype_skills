@@ -55,7 +55,7 @@ Detailed gates moved out of `SKILL.md` to keep the component skill lightweight. 
 - Paired comparison diagnostic KPI cards are a KPI-card subtype, not two unrelated metric tiles. A valid card declares `kpiCardPattern: paired-comparison-diagnostic`, `kpiComparisonEvidenceMode`, left/right pane fields, shared metric definition/unit/grain/filter scope, baseline labels, delta/gap/conclusion field, tooltip payload, and optional mini evidence fields. It fails when the two panes are not comparable, the central `VS` rail is decorative, or the bottom conclusion cannot be computed from declared fields.
 - Do not add chart variety for decoration. A chart/table choice must serve a specific task such as target gap, trend, ranking, composition, distribution, relationship, driver diagnosis, abnormality, detail, or action. Otherwise record `RPT-DECORATIVE-CHART`.
 - Visual treatment must not compete with data reading. Gradients, glass, glow, illustration, large shadows, and high-saturation decorative colors fail when they reduce numeric hierarchy, axis/legend readability, anomaly visibility, table scanning, or exact-value access.
-- A white-card UI Kit component can still fail when hierarchy is flat, all cards have equal emphasis, or chart/list/table variants are added for polish instead of decision roles. Use `VIS-HIERARCHY-FLAT` and `VIS-GENERIC-SAAS-SHELL` when this happens.
+- A light-surface UI Kit component can still fail when hierarchy is flat, all cards have equal emphasis, or chart/list/table variants are added for polish instead of decision roles. Use `VIS-HIERARCHY-FLAT` and `VIS-GENERIC-SAAS-SHELL` when this happens.
 - Report components that show a result must expose the next step or evidence path: tooltip, detail table, drawer, drilldown, export, owner/action, annotation, or runbook. A polished result card with no action path is `RPT-NO-ACTION`.
 - Prototype or mock component states must not imply unrealistically clean performance. All-green/all-up KPIs, perfectly smooth trends, balanced shares, and no missing/zero/extreme states should be marked `RPT-TOO-CLEAN-DATA` unless the source evidence proves that reality.
 - Icon-only and decorative components are not accepted when they carry decision-critical meaning without labels, tooltips, data, or accessible names.
@@ -125,7 +125,7 @@ Detailed gates moved out of `SKILL.md` to keep the component skill lightweight. 
 - In fixed-grid report cards, KPI cards, chart/table containers, and compact controls, hover/focus feedback should use border color, outline, inset glow, or stable box-shadow. Do not use hover `translate`, `scale`, or outer-shadow effects when the parent container may clip borders/shadows or when the effect changes perceived block alignment.
 - Hover/focus glow must not require extra layout space. Prefer `box-shadow: inset 0 0 0 1px ...`, subtle inner glow, or an absolutely positioned pseudo-element inside the component bounds. `focus-visible` should share the same non-shifting feedback as hover.
 - Rate/change indicators in Chinese report UI display `%`, not `pt`, `p.p.`, or `percentage point`, unless the user explicitly requests that term.
-- Change-rate and variance-rate indicators use positive-red-up / negative-green-down semantics with icon+text pairing: positive value = red text plus upward SVG/icon; negative value = green text plus downward SVG/icon; zero = neutral.
+- Change-rate and variance-rate indicators use positive-red-up / negative-green-down semantics with icon+text pairing only when inherited company, finance, market, or explicit business convention requires it; otherwise brand/neutral emphasis plus sign/icon/label is acceptable, and red/green must be reserved for documented status or direction semantics.
 - Do not use naked native `<select>` controls as the final visual surface for primary filters.
 - Do not hand-roll Vue controls that Element Plus already provides unless the existing project design system explicitly supersedes Element Plus or the interaction is unsupported.
 - Do not accept funnel, flow, Sankey, graph, tree, decomposition, lineage, DuPont, or process-chain diagrams until stage/rail/node, label, gutter, and edge-bend spacing has been calculated.
@@ -248,7 +248,7 @@ When using this skill, provide:
 - Controls inside components have clear selected/hover/disabled/loading states and do not resize the block.
 - Hover/focus states for cards, KPI tiles, chart/table containers, and compact controls do not move, scale, or visually escape the assigned viewport; border glow or inset glow is preferred over offset animation.
 - Text summaries and conclusions inherit the surrounding layout tokens and do not look like unrelated inserted bands.
-- Change-rate indicators pass positive-red-up / negative-green-down semantics and use `%` in Chinese UI.
+- Change-rate indicators use `%` in Chinese UI and pass the inherited or explicitly documented color/icon convention; positive-red-up / negative-green-down is required only when that convention applies.
 - Loading, empty, error, no-permission, and stale states preserve geometry.
 - Runtime resize or visual verification is performed when the component is implemented, including at least one viewport/container size different from the design baseline for graphics that use SVG, canvas, ECharts custom paths, maps, gauges, or complex diagrams.
 

@@ -77,7 +77,7 @@ Use this contract as the default for any generated frontend component unless an 
 - The red/green business semantics must be globally unique on the page. If the company uses red for growth, apply that consistently and document it in the style output.
 - Color is never the only signal: pair semantic color with text, icon, sign, badge, or shape.
 - In Chinese report UI, rate/completion/change labels use `%` rather than `pt`, `p.p.`, or `percentage point` unless explicitly requested.
-- Change-rate and variance-rate indicators follow positive-red-up / negative-green-down semantics: positive value uses red text plus upward SVG/icon, negative value uses green text plus downward SVG/icon, and zero uses neutral styling.
+- Change-rate and variance-rate indicators follow positive-red-up / negative-green-down semantics only when inherited company, finance, market, or explicit business convention requires it; otherwise use brand/neutral emphasis with sign/icon/label and reserve red/green for documented status or direction semantics.
 
 ### Visualization Clarity
 

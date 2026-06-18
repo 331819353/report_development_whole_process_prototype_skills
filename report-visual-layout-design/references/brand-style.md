@@ -100,7 +100,7 @@ Semantic colors should be restrained and consistent:
 Chinese trend indicators:
 
 - Rate, completion, variance-rate, YoY, MoM, and change labels use `%` in visible Chinese UI; avoid `pt`, `p.p.`, and `percentage point` labels unless explicitly requested.
-- For change-rate and variance-rate indicators, positive values use red text plus an upward SVG/icon, negative values use green text plus a downward SVG/icon, and zero values use neutral treatment.
+- For change-rate and variance-rate indicators, positive-red-up / negative-green-down is used only when inherited company, finance, market, or explicit business convention requires it; otherwise use brand/neutral emphasis with sign/icon/label and reserve red/green for documented status or direction semantics.
 
 ## 5. Density
 

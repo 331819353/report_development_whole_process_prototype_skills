@@ -92,7 +92,7 @@ Warning colors communicate business state. Always judge metric direction and bus
 | Info/normal highlight | `state.info` / Haier fallback `#0073E5` | Selected item, normal progress, small difference, neutral highlight |
 | Warning/attention | `state.warning` / Haier fallback `#FAAD14` | Approaching threshold, incomplete target, needs attention |
 
-For Chinese report rate/change/YoY/MoM/variance indicators, use positive-red-up and negative-green-down by default unless the metric dictionary explicitly defines a different direction. For negative indicators such as complaint volume, overdue rate, and cost rate, decreasing values may be good. Reverse color semantics by business meaning, not by raw sign. High-risk warnings should use color plus text/icon/tag.
+For Chinese report rate/change/YoY/MoM/variance indicators, use positive-red-up and negative-green-down only when inherited company, finance, market, or explicit business convention requires it. For ordinary business dashboards, use brand/neutral emphasis plus sign/icon/label unless the metric dictionary defines red/green direction. For negative indicators such as complaint volume, overdue rate, and cost rate, decreasing values may be good. Color semantics follow business meaning, not raw sign. High-risk warnings should use color plus text/icon/tag.
 
 
 ## Chart Selection

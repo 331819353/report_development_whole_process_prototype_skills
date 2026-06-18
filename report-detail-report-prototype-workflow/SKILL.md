@@ -21,6 +21,8 @@ Core intent:
 明细报表用于核对“具体是哪一条”。
 ```
 
+Prototype story gate: this workflow does not call `$report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds how the user finds the exact record, verifies it, traces its source, exports it, or takes the required row-level action.
+
 ## Child Skills
 
 | Stage | Skill |
@@ -42,21 +44,24 @@ Core intent:
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-3. Define row grain, primary key, business record identity, source system, freshness, and trace target.
-4. Design filters: high-frequency filters outside, low-frequency filters under "more filters"; declare default values, reset behavior, query limits, and saved filter needs.
-5. Design table fields by order: identity -> time -> subject -> amount/quantity -> status -> owner -> operation.
-6. Define table behavior: default sort, optional sort fields, pagination, page size, fixed header, frozen key columns, column resize, column configuration, return-state preservation.
-7. Define export: current page/current filter/all matched, current columns/full fields, row limits, async export, watermark, audit log, approval, masking, and export failure state.
-8. Define traceability: detail drawer, source-document jump, operation log, customer/order/product/invoice/payment links.
-9. Use `$report-type-design` with `detail-query` as primary; add `reconciliation-traceability` only when matching differences or audit evidence is central.
-10. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, export, detail drawer, source links, permissions, and states.
-11. Route table, filter, and component-internal placement surfaces to `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
-12. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-13. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
+3. Define the typed prototype story: target user, one-sentence lookup/verification value, protagonist record type, primary trace/export/action outcome, and required trust signal.
+4. Define the detail-report user path: enter with task/context -> narrow with filters/search -> identify row -> inspect details/source -> export or act -> return with filter/page state preserved.
+5. Define row grain, primary key, business record identity, source system, freshness, and trace target.
+6. Design filters: high-frequency filters outside, low-frequency filters under "more filters"; declare default values, reset behavior, query limits, and saved filter needs.
+7. Design table fields by order: identity -> time -> subject -> amount/quantity -> status -> owner -> operation.
+8. Define table behavior: default sort, optional sort fields, pagination, page size, fixed header, frozen key columns, column resize, column configuration, return-state preservation.
+9. Define export: current page/current filter/all matched, current columns/full fields, row limits, async export, watermark, audit log, approval, masking, and export failure state.
+10. Define traceability: detail drawer, source-document jump, operation log, customer/order/product/invoice/payment links.
+11. Use `$report-type-design` with `detail-query` as primary; add `reconciliation-traceability` only when matching differences or audit evidence is central.
+12. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, export, detail drawer, source links, permissions, and states.
+13. Route table, filter, and component-internal placement surfaces to `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
+14. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
+15. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
 
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, users, query scenario, row grain, primary key, source system, freshness, and trace target.
+- Typed prototype story: one-sentence lookup/verification value, user path, protagonist record type, trace/export/action outcome, trust signal, and 30-second review path.
 - Affected-surface to owning-skill routing, especially table, filter, component placement, layout, design-system, template, and runtime QA.
 - Filter plan: high-frequency filters, more filters, defaults, reset, saved schemes, query constraints.
 - Table field plan: visible columns, hidden/optional columns, field source, format, width/alignment, status tags, sensitive handling.
@@ -69,6 +74,7 @@ Core intent:
 ## Quality Gate
 
 - Do not design only a field list; query efficiency and traceability are part of the prototype.
+- Do not start layout or table design until the lookup/verification story, user path, row identity, trace/export/action outcome, and trust signal are explicit or safely inferred.
 - Do not start implementation or repair from this workflow alone when table/filter/placement surfaces require their specific front-door skills.
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
 - Do not put every available field into the first visible table.

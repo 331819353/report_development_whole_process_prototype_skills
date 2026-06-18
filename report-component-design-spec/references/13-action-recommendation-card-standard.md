@@ -30,7 +30,7 @@ The provided samples feel designed because they use a product decision chain rat
 - The cards expose business tradeoffs such as expected lift, revenue, acquisition cost, implementation period, deadline, or priority.
 - Accent colors are semantic and sparse: priority, impact, or domain category. They do not turn the whole interface into a gradient theme.
 - Controls look like enterprise UI Kit controls: segmented perspective switch, date range selector, restrained tags, checkboxes, and action buttons.
-- The surface stays quiet: white card, thin border, small radius, subtle shadow, soft internal fills, no glass, neon, floating ornaments, or large illustrations.
+- The surface stays quiet: optional white/light analytical surface, reduced border, small radius, subtle shadow only when useful, soft internal fills, no glass, neon, floating ornaments, or large illustrations.
 - Copy names actual metrics, objects, baselines, and actions. It does not say only "智能分析", "提升效率", or "持续优化".
 
 This is why the samples do not have an "AI smell": the polish is a side effect of business specificity, density control, and stateful interaction, not a generic SaaS skin.

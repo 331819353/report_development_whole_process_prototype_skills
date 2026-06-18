@@ -211,7 +211,7 @@ For custom Vue or non-template pages:
 - Keep chart/table widgets typed, data-driven, and isolated from shell actions.
 - Keep mock/static data in JSON data files or data-source resolvers, not embedded in ECharts/S2 setup code or generated TS fixture modules. In bundled templates, use `src/data/dashboard.dataset.json`.
 - Visible Chinese UI uses `%` for rate, completion, variance-rate, YoY, MoM, and change labels. Avoid `pt`, `p.p.`, and `percentage point` labels unless explicitly requested.
-- Change-rate and variance-rate indicators use positive-red-up and negative-green-down semantics: positive value = red text plus upward SVG/icon; negative value = green text plus downward SVG/icon; zero = neutral.
+- Change-rate and variance-rate indicators use positive-red-up and negative-green-down only when inherited company, finance, market, metric dictionary, or explicit business convention defines that convention. Otherwise use brand/neutral emphasis with sign/icon/label, and reserve red/green for documented status or direction semantics.
 
 ## Validation Requirements
 

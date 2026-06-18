@@ -55,7 +55,7 @@ Primary shared gates:
 | Numeric precision/display | Metric-bearing artifacts need consistent value type, units, scale, precision, rounding, null/zero behavior, and formatter ownership. |
 | Haier/app UI baseline | Haier/enterprise Web pages, including report/dashboard pages, need company UI baseline checks for tokens, base controls, states, brand/logo, and responsive behavior. |
 | Report UI baseline | Report/dashboard/analysis pages need report guideline checks. |
-| Modern BI style baseline | Requested modern SaaS / BI Dashboard / UI Kit pages need tokenized light surfaces, white-card UI Kit language, hierarchy, no component pileup, and lightweight chart proof. |
+| Modern BI style baseline | Requested modern SaaS / BI Dashboard / UI Kit pages need tokenized light surfaces, reduced uniform card borders, brand/product color hierarchy, information flow, no component pileup/KPI-everywhere, and lightweight chart proof. |
 
 ## Workflow
 

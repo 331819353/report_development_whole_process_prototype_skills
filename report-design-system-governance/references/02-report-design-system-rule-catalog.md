@@ -42,9 +42,9 @@ Use these rules only when the user explicitly asks for modern SaaS Dashboard, BI
 
 - Source hierarchy is mandatory: company/template tokens first, then the modern BI contract, then project exceptions.
 - Required token roles include `surface.page`, `surface.card`, `surface.card.muted`, `border.subtle`, `radius.card`, `shadow.card`, `text.primary`, `text.secondary`, `chart.series.*`, `chart.grid`, and `focus.*`.
-- Page canvas is light gray-white and cards are white or near-white with thin borders, small radii, and light shadows. If the page uses heavy gradient, glass, glow, or large illustration as the main atmosphere, record `VIS-GENERIC-SAAS-SHELL` or `AI-TEMPLATE-AESTHETIC`.
+- Page canvas is light gray-white and analytical surfaces are white or near-white when needed, with reduced uniform card borders, small radii, and restrained shadows. If the page uses heavy gradient, glass, glow, large illustration as the main atmosphere, or the same bordered card frame for every module, record `VIS-GENERIC-SAAS-SHELL`, `VIS-CARD-BORDER-OVERUSE`, or `AI-TEMPLATE-AESTHETIC`.
 - Component density is bounded. Do not create a modern look by adding more cards, badges, mini charts, or local controls. Unrelated widget piles, card-in-card surfaces, and equal-weight collages are `VIS-COMPONENT-PILEUP`.
-- Information hierarchy is visible. First viewport needs a primary answer/action, supporting evidence, and a clear downstream path. Equal white-card grids with no reading order are `VIS-HIERARCHY-FLAT`.
+- Information hierarchy is visible. First viewport needs a primary answer/action, supporting evidence, and a clear downstream path. Equal card grids with no reading order are `VIS-HIERARCHY-FLAT` or `VIS-NO-INFORMATION-FLOW`.
 - Chart lightness is part of the style. Chart count, chart family, labels, legend, grid, palette, and exact-value paths must be justified by task; chart variety for polish is `VIS-CHART-OVERWEIGHT` or `RPT-DECORATIVE-CHART`.
 - This style does not weaken report trust requirements: metric口径, source/freshness, permission scope, drilldown/detail/export, edge states, accessibility, and runtime proof still apply.
 
@@ -221,7 +221,7 @@ Use these rules only when the user explicitly asks for modern SaaS Dashboard, BI
 
 - Every metric must define raw scale, display scale, unit, precision, null/zero rule, period, comparison baseline, and owner.
 - Chinese report UI should display rate, completion, change-rate, variance-rate, YoY, and MoM with `%` by default.
-- Use positive-red-up and negative-green-down for change-rate indicators unless a named domain rule overrides it.
+- Use positive-red-up and negative-green-down for change-rate indicators only when inherited company, finance, market, or explicit business convention requires it; otherwise use brand/neutral emphasis with sign/icon/label and reserve red/green for documented status or direction semantics.
 - A displayed percentage must distinguish ratio value `0.42`, percent value `42`, and formatted value `42%`.
 - Avoid terms such as `pt`, `p.p.`, and `percentage point` in Chinese UI unless the product explicitly requires them.
 

@@ -26,11 +26,11 @@ These card sets feel designed because their polish follows the decision job, not
 - The visual form matches the conversion data shape. Funnel means ordered cohort shrinkage, horizontal bars mean stage comparison, line/area means time movement, heatmap means cohort retention, donut means reason/share, Sankey/path means branch transition, and table means exact audit.
 - The card anatomy is stable across different forms. The viewer learns where title, local period, body, support facts, and exact-value route live, so variety feels intentional instead of random.
 - Density is budgeted before styling. Labels are key-only, Top N and `其他` are explicit, long stages collapse, exact values move to tooltip/drawer/table, and dense cohorts move to heatmap or fullscreen.
-- Color is semantic. Conversion/primary progress uses the primary hue; retention/success uses restrained green/teal; loss/risk uses restrained red/pink; baseline/comparison uses muted blue/gray; unknown/other/stale stays neutral.
-- The product rhythm is believable. Small numbered badges, compact period selectors, segmented switches, muted captions, subtle dividers, and bottom KPI strips look like real operating UI rather than poster art.
+- Brand/product color and neutral hierarchy set the base. Conversion/primary progress may use the primary hue; retention/success, loss/risk, baseline/comparison, and unknown/other/stale use status or comparison colors only when the metric/status rule is declared and labeled.
+- The product rhythm is believable. Small numbered badges, compact period selectors, segmented switches, muted captions, subtle dividers, and bounded metric/fact strips look like real operating UI rather than poster art.
 - Exact values remain inspectable. Rates show denominators, stage values, drop values, comparison baselines, source/freshness, and tooltip/detail/export payloads.
 - Messy business states are planned. Zero denominator, missing stage, stale period, unknown loss reason, cohort too small, unbalanced path, no-permission, filtered-empty, and dense data are visible states.
-- The style is restrained. White cards, thin borders, small radius, light shadow, light chart grids, sparse labels, and no glow/glass/orb/3D icon treatment keep data above surface polish.
+- The style is restrained. Optional light analytical surfaces, reduced uniform borders, small radius, optional light shadow, light chart grids, sparse labels, and no glow/glass/orb/3D icon treatment keep data above surface polish.
 
 ## 3. Style Generalization Coverage
 
@@ -244,7 +244,7 @@ Responsive fallback order:
 
 ## 11. Visual And Interaction Rules
 
-- Inherit white or near-white card surfaces, thin border, `6-8px` radius unless template differs, light shadow, compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
+- Inherit light or near-white analytical surfaces only when the component needs a bounded object, reduce uniform borders, keep `6-8px` radius unless template differs, make shadow optional, use compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
 - Use semantic conversion colors: conversion/current = primary/brand, retention/success = restrained green/teal, loss/risk = restrained red/pink, warning = restrained amber, comparison/baseline = muted blue/gray, unknown/other/stale = neutral gray.
 - Highlight one key point by default: total conversion, worst loss stage, top channel, target gap, or selected cohort. Do not make every stage equally strong.
 - Funnel widths, bar lengths, line values, heatmap colors, path widths, and donut angles must bind to named numeric fields.

@@ -19,6 +19,8 @@ It does not own report-type business logic, component visual rules, API document
 
 Default routing: choose `pageShellPath: template` for runnable report prototypes unless the user explicitly asks for custom/free design, exact screenshot/HTML/source restoration, existing shell preservation, or a documented bundled-template limitation.
 
+Default development stack contract: bundled report prototype projects use `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` as one integrated stack. Do not downgrade this to "Vue 3 only", "Vue 3 + ECharts only", or a hand-built UI shell. Element Plus owns base controls, messages, tables/forms/dialog-ready styling, locale, and CSS variables; ECharts owns standard chart rendering through actual option/series/runtime instances. Add AntV S2 only for pivot/cross/wide analytical table needs.
+
 ## Bundled Assets
 
 Template assets live under `assets/templates/<template-id>/`:
@@ -66,9 +68,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 6. Keep shell-owned behavior in template config/data/action registries and widget registries.
 7. Preserve native template filter surfaces; configure `filters[]`, data sources, empty-filter values, resolvers, and widget bindings instead of adding a duplicate filter bar.
 8. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar; widgets own only current-component local filters, drill/detail links, and component-scoped micro actions. If a business component must own a normally shell-owned control, set `controlOwnership: "component"` or an equivalent explicit decision and disable/hide the matching template control.
-9. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
-10. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
-11. Run template validation, build, and dev/preview startup when a local URL is required.
+9. Preserve the stack contract before source edits: keep `vue`, `@vitejs/plugin-vue`, `vite`, `typescript`, `vue-tsc`, `element-plus`, `echarts`, and `axios` in package dependencies; keep `src/main.ts` bootstrapping Vue 3 and registering Element Plus; use ECharts for standard chart widgets instead of manual SVG/HTML/CSS/canvas marks.
+10. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
+11. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
+12. Run template validation, build, and dev/preview startup when a local URL is required.
 
 ## Required Output
 
@@ -77,6 +80,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Shell decisions: title, logo, navigation, native filters, toolbar, controls.
 - Control ownership matrix: refresh, download/export, copy/share, global filters, local filters, period/date controls, toolbar actions, and any disabled template controls.
 - Asset copy/merge path and files/extension points changed.
+- Stack contract proof: package dependencies, `src/main.ts` Vue 3 bootstrap, Element Plus registration/style imports, ECharts runtime ownership for standard chart widgets, and S2 exception only when used.
 - Data binding mode and filter-to-widget binding proof.
 - Empty-filter configuration and aggregate-row key policy when filters or data contain all/total/synthetic options.
 - Code-ledger proof for changed template source files.
@@ -86,11 +90,14 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Do not choose custom development when a bundled template can satisfy the requirement.
 - Do not choose a nav template unless multiple substantial nav pages are implemented.
+- Do not accept a generated/copied project that keeps Vue 3 but drops ECharts or Element Plus. Missing `echarts`, `element-plus`, Vue 3 bootstrap, Element Plus global registration/style import, or actual ECharts runtime ownership for chart widgets is a template readiness failure.
+- Do not replace Element Plus controls with ad hoc HTML controls for ordinary buttons, selects, popovers, drawers, dialogs, tables, messages, or form-like controls unless the user names an existing project design system or an explicit custom-shell exception.
 - Do not add duplicate shell, filter bar, toolbar, or navigation layers over existing template slots without an explicit redesign decision.
 - Do not render duplicate refresh, download/export, copy/share, period/date, global-filter, or toolbar controls in business widgets when the selected template already owns those controls. Duplicate visible controls are `VIS-DUPLICATE-CONTROL` or `RPT-SHELL-DUPLICATE` unless component ownership is explicitly declared and the corresponding template control is disabled/hidden.
 - Template `filters[]` is for horizontal constraints; schema-changing perspectives belong in nav/page/route/tab/segment/perspective state.
 - Template data sources must declare or inherit configurable `emptyFilterValues`; aggregate/subtotal rows must use a distinct `aggregateValue`, `rowRole`, or typed key and must not use `all` as a business primary key unless an upstream legacy contract is isolated, adapted, and downgraded from ready.
 - Standard chart/table widgets must use their declared renderer and data contract.
+- `npm run validate:dashboard` must pass the stack contract before readiness: package dependencies, Vue 3 `createApp`, Element Plus `app.use(ElementPlus, ...)`, Element Plus CSS, and ECharts runtime proof when chart visualTypes are present.
 - Template validation scripts or config contracts do not replace runtime proof. Widget contracts such as `compositePanelContract`, `analysisInsightContract`, chart/table option contracts, and control ownership must map to DOM/CSS/renderer/browser evidence before readiness.
 - Changed copied-template source files require code-ledger read/create evidence and post-change version entries.
 - Load `template-routing-and-implementation-gates.md` before selecting, copying, editing, or accepting bundled report templates.

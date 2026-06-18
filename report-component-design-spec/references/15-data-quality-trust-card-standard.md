@@ -26,7 +26,7 @@ The sample family feels designed because the visual style is tied to a trust wor
 4. Visual hierarchy follows diagnosis. Score/ring first, then trend or structure, then sample/detail/action. The user can judge status, locate the weak dimension, and inspect exact records.
 5. Visual variety is controlled by data shape. Ring means trust score, line means quality movement, radar means dimensions on a shared scale, donut means issue composition, table means exact row/rule evidence, and field tiles mean key-field coverage.
 6. Local controls are small and scoped. Switches such as 按表/按字段, 按规则/按时间, or 近7天 affect only the current card or local group. They do not silently change page-global scope.
-7. White-card UI language is restrained. Thin borders, small radius, subtle shadow, compact controls, muted metadata, and sparse charts keep attention on quality evidence.
+7. Light-surface UI language is restrained. Optional analytical surfaces, reduced uniform borders, small radius, subtle shadow only when useful, compact controls, muted metadata, and sparse charts keep attention on quality evidence.
 8. Semantic color is not decorative. Green means pass/trusted, red means invalid/error/high severity, orange means warning/needs review, blue means current selection/info, gray means unknown/unchecked.
 9. The design tolerates dirty reality. Missing values, zero denominators, stale sources, partial batches, permission-limited rows, long field names, and repeated issue types have display rules.
 10. The "no AI smell" comes from domain vocabulary, denominator proof, freshness/source details, and drilldown paths. It does not come from gradients, glass, oversized icons, perfect smooth lines, or generic "智能质量分析" copy.
@@ -340,7 +340,7 @@ Fallback order:
 Visual rules:
 
 - Inherit report/enterprise tokens. Component-specific styling states only semantic extensions.
-- Default surface is white or weak neutral, thin border, small radius, and restrained shadow.
+- Default bounded surface is white or weak neutral only when needed, with reduced border, small radius, and restrained shadow only when useful.
 - Use dividers, soft fills, and spacing for internal groups; do not create card-in-card stacks.
 - Green indicates passed/trusted or positive quality; red indicates error/invalid/high severity; orange indicates warning/needs review; blue indicates current selection/info; gray indicates unknown, skipped, or unchecked.
 - Do not use color alone for quality status. Add status text, icon, rule label, tooltip, or row detail.

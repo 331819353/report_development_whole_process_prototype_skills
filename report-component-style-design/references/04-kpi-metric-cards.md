@@ -2,7 +2,16 @@
 
 Use for KPI cards, pyramid KPI cards, metric groups, comparison tiles, submetric tiles, and mini trends.
 
+KPI cards are a decision-metric expression, not the default container for every module. Before using this reference, confirm that the content is a primary or supporting metric with formula, grain, baseline/target or comparison, status/direction semantics, source/freshness, and detail/action path. Explanations, rankings, detail evidence, anomaly lists, action recommendations, trust notes, and process steps should route to their own component patterns unless a metric card is truly the reader-facing answer.
+
 Use `04a-kpi-card-patterns.md` after this file when the task needs reusable KPI card expressions such as target completion wave cards, mini bar trend cards, lead line trend cards, KPI overview cards, single-indicator KPI grid cards, KPI judgment cards for status/health/rating/gauge decisions, KPI goal execution cards for target attainment/gap/progress/milestones, KPI time-series analysis cards for trend/change/YoY-MoM/cycle/volatility/forecast decisions, KPI comparison analysis cards for direct/group/competitor/benchmark/variance decisions, landscape/horizontal KPI cards, horizontal axis-line diagnostic KPI cards, horizontal axis-bar diagnostic KPI cards, horizontal axis-scatter diagnostic KPI cards, horizontal spatial-map diagnostic KPI cards, paired comparison diagnostic KPI cards, or anti-AI KPI card generation. Use `04b-target-actual-comparison-cards.md`, `04c-target-actual-trend-cards.md`, `04d-target-actual-radar-cards.md`, `04e-target-actual-donut-cards.md`, or `04f-target-actual-scatter-cards.md` when the KPI headline becomes a complete target/actual chart card with axes, radar geometry, donut composition, scatter relationship, legend, target evidence, and bottom summary. This file owns the base KPI contract, fit, typography, and alignment; `04a` owns KPI-card expression selection, while `04b`, `04c`, `04d`, `04e`, and `04f` own full target/actual chart-card patterns.
+
+## KPI Eligibility Gate
+
+- Use KPI cards only for metrics that the reader must judge quickly. If the content is mainly narrative, evidence, drilldown, process, or action, choose the matching component family instead of KPI styling.
+- Do not create a page where most modules share KPI anatomy. KPI overview areas should be bounded, usually one summary strip/card group plus downstream diagnostic evidence.
+- A metric shown inside a table row, chart label, narrative sentence, or status list is not automatically a KPI card.
+- If a card lacks formula, unit, baseline/target/comparison, status/direction rule, source/freshness, or detail/action route, keep it out of KPI-card readiness and record `RPT-KPI-EVERYWHERE` or `VIS-KPI-EVERYWHERE` when the layout relies on such cards.
 
 ## Structure
 
@@ -223,9 +232,9 @@ Semantic rules:
 
 - `同比` and `环比` describe movement. Use up/down icon plus signed value.
 - In Chinese report UI, rate/change/completion labels use `%`; do not render `pt`, `p.p.`, or `percentage point` labels unless explicitly requested.
-- For change-rate and variance-rate indicators, positive values use red text plus an upward SVG/icon, negative values use green text plus a downward SVG/icon, and zero values use neutral styling.
+- For change-rate and variance-rate indicators, do not infer red/green semantics by default. If an inherited company, finance, market, or business convention declares positive-red-up / negative-green-down, use that convention consistently. Otherwise use brand/neutral text plus sign/icon/label, and reserve red/green for documented good/bad, risk/healthy, success/error, or threshold states.
 - `目标` describes attainment. Use progress wording, target gap, or attainment rate; do not force it into up/down semantics unless the business defines it that way.
-- Up is not always good. For non-change status such as health, risk, completion, and target attainment, color follows business meaning. For change-rate and variance-rate values, use the required positive-red-up / negative-green-down convention unless the user explicitly supplies another company standard.
+- Up is not always good. For non-change status such as health, risk, completion, and target attainment, color follows business meaning. For change-rate and variance-rate values, use positive-red-up / negative-green-down only when that convention is inherited or explicitly supplied; otherwise pair signed values with neutral/brand emphasis and reserve status color for documented meaning.
 
 ## Trend Icon SVG Assets
 
@@ -304,7 +313,7 @@ Suggested CSS tokens:
 ## Comparison And Status
 
 - Use consistent positive/negative semantics across all KPI cards.
-- For change-rate and variance-rate values, consistency means positive-red-up and negative-green-down, with `%` display in Chinese UI.
+- For change-rate and variance-rate values, consistency means following the inherited business convention. Chinese finance/market pages may use positive-red-up and negative-green-down with `%` display, but ordinary business dashboards should not default to red/green unless the metric dictionary defines that direction.
 - Do not use color alone. Pair color with sign, icon, label, or badge.
 - Baseline and target text move below the value or into tooltip when the card is narrow.
 - For pyramid KPI cards, comparison cells must use one consistent order across the page, normally `同比`, `环比`, `目标`.

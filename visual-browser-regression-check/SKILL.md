@@ -33,7 +33,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 4. Capture focused component crops for dense report/chart/table/KPI/diagram components when present.
 5. When ECharts/SVG/canvas components are present, run at least one geometry probe at a second viewport or container size: measure chart body, generated SVG/canvas, legend/axis/plot bounds, plot-height floor, axis-label overlap, nonblank pixels/marks, and resize result before accepting visual readiness.
 6. Run multimodal explanatory review when available and in scope.
-7. When modern SaaS / BI Dashboard / UI Kit style is requested or claimed, inspect screenshot/crop evidence against the positive style contract: light page canvas, white cards, thin borders, small radius, restrained shadows, clear hierarchy, no component pileup, and lightweight charts.
+7. When modern SaaS / BI Dashboard / UI Kit style is requested or claimed, inspect screenshot/crop evidence against the positive style contract: light page canvas, optional analytical surfaces, reduced uniform card borders, small radius, restrained shadows, clear hierarchy, no component pileup, and lightweight charts.
 8. Convert image-diff failures and visual anomalies into structured `VIS-*` findings with severity, evidence, owner, fix direction, and retest criteria.
 
 ## Required Output

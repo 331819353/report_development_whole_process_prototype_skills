@@ -1,6 +1,6 @@
 ---
 name: report-prototype-design-thinking
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于报表、仪表盘、数据大屏、BI 页面原型在画表格、画图表或写代码前建立通用设计思路。用户提到报表原型通用设计思路、产品经理接到报表需求、谁在什么场景下做什么决策、先想清楚业务目标/角色/指标/分析路径时触发；不负责四类专项原型 workflow、页面模板工程、API 文档、后端实现或运行测试。"
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于报表、仪表盘、数据大屏、BI 页面原型在画表格、画图表或写代码前建立通用设计思路。用户提到原型核心叙事、用户路径、产品价值、半文档半产品、报表原型通用设计思路、产品经理接到报表需求、谁在什么场景下做什么决策、先想清楚业务目标/角色/指标/分析路径时触发；不负责四类专项原型 workflow、页面模板工程、API 文档、后端实现或运行测试。"
 ---
 
 # Report Prototype Design Thinking
@@ -13,13 +13,14 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 ## Positioning
 
-Use this skill before report prototype layout, chart selection, component mapping, template selection, or implementation. It owns the product-manager thinking layer: who uses the report, in what scenario, to make what decision or action.
+Use this skill before report prototype layout, chart selection, component mapping, template selection, or implementation. It owns the product-manager thinking layer: what story the prototype must make clear, who uses the report, in what scenario, and what decision or action the user should take.
 
 Default policy: this is the generic thinking layer used by the original `$report-design-workflow`. Four specialized prototype workflows exist separately and should be triggered directly when the user asks for 自助分析、指标看板、分析报告、或明细报表.
 
 ## Reference Loading
 
-- General method: `references/01-general-prototype-design-thinking.md`
+- Prototype story method: `references/00-prototype-story-design-thinking.md`
+- Report decision method: `references/01-general-prototype-design-thinking.md`
 
 ## Anti-Laziness Gate
 
@@ -27,19 +28,29 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 ## Workflow
 
-1. Load `references/01-general-prototype-design-thinking.md` for ordinary prototype work.
-2. Identify target user, decision scenario, managed object, business question, time scope, expected action, and output form.
-3. Separate content into `coreMetrics`, `analysisMetrics`, and `detailFields`; do not turn a raw field list directly into page blocks.
-4. Define the analysis path before layout. A common path is: overall state -> trend -> dimension/driver split -> ranking/anomaly -> detail/action.
-5. Choose components and charts by analysis purpose, not visual variety.
-6. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, and unresolved gaps.
-7. Hand off the design-thinking output to `$report-type-design`, `$report-info-component-mapping`, `$report-visual-layout-design`, and `$report-prototype-template-management`.
+1. Load `references/00-prototype-story-design-thinking.md` before ordinary prototype work.
+2. Load `references/01-general-prototype-design-thinking.md` when the prototype is a report, dashboard, BI page, data screen, or business-analysis page.
+3. Define the core narrative: user, problem, usage scenario, and the one-sentence value reviewers should remember.
+4. Define the user path before page structure: entry -> first action -> core flow -> result feedback.
+5. Split content into main functions, supporting functions, and information display; do not average-weight every module.
+6. Identify two or three key decision points and their default, guidance, error, success, empty, partial, and no-permission states.
+7. Identify target user, decision scenario, managed object, business question, time scope, expected action, and output form.
+8. Separate report content into `coreMetrics`, `analysisMetrics`, and `detailFields`; do not turn a raw field list directly into page blocks.
+9. Define the analysis path before layout. A common report path is: overall state -> trend -> dimension/driver split -> ranking/anomaly -> detail/action.
+10. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
+11. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
+12. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, and unresolved gaps.
+13. Hand off the design-thinking output to `$report-type-design`, `$report-info-component-mapping`, `$report-visual-layout-design`, and `$report-prototype-template-management`.
 
 ## Required Output
 
+- Core narrative: target user, problem solved, usage scenario, and one-sentence value.
+- User path: entry, first action, core flow, result feedback, and walkthrough risks.
+- Functional architecture: main functions, supporting functions, information display, and key decision points.
 - Target users, usage scenario, business question, decision/action, managed object, time scope, and output mode.
 - Metric/field layering: core metrics, analysis metrics, detail fields, dimensions, baselines, thresholds, and known口径 gaps.
 - Analysis path and first-viewport answer.
+- Page rhythm decision: information-flow report vs KPI/dashboard grid, KPI scope boundary, and card-border reduction direction.
 - Page block proposal with each block's business purpose.
 - Component/chart choice rationale tied to the question it answers.
 - Filter, drilldown, export, save/share, permission, refresh, and state requirements.
@@ -47,9 +58,15 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 ## Quality Gate
 
-- Do not start by drawing tables or charts before the user/scenario/decision/action is explicit or safely inferred.
+- Do not start by drawing pages, tables, or charts before the prototype story, user path, user/scenario/decision/action, and first value sentence are explicit or safely inferred.
+- Do not treat the prototype as only a UI drawing. It must help reviewers understand product value without the designer standing beside it.
+- Do not average-weight every feature. Separate protagonist functions, supporting functions, and information display.
+- Do not skip entry path, first action, result feedback, or key states when they affect whether the story can be understood.
 - Do not treat "报表" as one fixed page shape. When the user explicitly needs monitoring, explanation, exploration, or exact record verification, use the corresponding specialized prototype workflow instead of branching inside this skill.
 - Do not place all requested fields on the main canvas. Detail fields belong in detail tables, drawers, exports, or appendix unless they are needed for the first decision.
+- Do not default to a dashboard/card-grid shape. Use an information-flow structure for analysis, review, detail, and decision-support pages.
+- Do not KPI-ize every module. KPI cards are reserved for primary decision metrics with formula, baseline/target or comparison, status rule, source/freshness, and detail/action route.
+- Do not use red/green as the default visual answer. Brand/product colors and neutral hierarchy should carry identity and reading order; semantic colors need explicit business meaning.
 - Every proposed component must answer a named question, provide evidence, or support a required action.
 - A type-specific entry must not bypass metric口径, data source, permissions, export scope, and abnormal/empty/error state notes.
 - If the result feeds a runnable prototype, pass this output into the binding matrix and layout/template workflow before implementation.

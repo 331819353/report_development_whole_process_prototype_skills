@@ -73,6 +73,8 @@ Use this file for common adjustments and final verification after changing a tem
 ## Verification Checklist
 
 - Template choice matches report scope and usage scenario.
+- Stack contract is intact: `package.json` keeps Vue 3, TypeScript, Vite, Element Plus, ECharts, axios, and build/typecheck scripts; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus with locale, imports Element Plus base and dark CSS variables, and preserves project Element token styles.
+- Standard chart widgets use real ECharts runtime/options/series; ordinary controls and row tables use Element Plus/project control patterns; S2 is added only when pivot/cross/wide analytical table behavior is implemented.
 - Logo variant matches background.
 - `dashboard.config.ts` owns layout, filters, widgets, actions, and assets.
 - Each component-owned title/control area follows a stable structure chosen by the component: title remains readable; component-local filters use capsule/dropdown/panel rules by option count and fit; lightweight links cover detail actions.
@@ -95,6 +97,7 @@ Use this file for common adjustments and final verification after changing a tem
 - `1920 * 1080` and `1280 * 768` are used as viewport checks, not total report height caps.
 - Layout blocks do not clip titles, legends, charts, tables, empty states, or controls.
 - `npm run validate:dashboard` runs after the minimal required dependencies are installed.
+- Stack-contract failures from `npm run validate:dashboard` block handoff even if Vite build or screenshots appear fine.
 - Every changed source file has a sidecar code ledger under `__change_logs__`, the ledger was read before editing, and a post-change version entry records feature/function list, changed code ranges, affected widget/data/filter/API contracts, verification, and rollback notes.
 - If npm dependency installation is blocked by domestic network access, retry with a temporary command-level mirror such as `npm install --registry=https://registry.npmmirror.com` or `npm install <package-name> --registry=https://registry.npmmirror.com`; if unavailable, replace the registry URL with `https://npm.aliyun.com/`, `https://mirrors.cloud.tencent.com/npm/`, `https://mirrors.ustc.edu.cn/npm/`, or `https://mirrors.tuna.tsinghua.edu.cn/npm/`. Do not persist registry changes unless explicitly requested.
 - `npm run build` runs before handoff when implementation code changed.

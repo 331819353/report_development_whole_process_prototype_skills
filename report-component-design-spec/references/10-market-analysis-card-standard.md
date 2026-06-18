@@ -7,7 +7,7 @@ The source screenshots are temporary visual evidence. The durable knowledge is t
 ## Why These Designs Feel Strong
 
 - They use a real financial reading order: instrument identity -> current quote -> change state -> evidence chart -> supporting facts -> freshness/status. Users can scan the card like a product surface, not a poster.
-- The card grid is visually quiet while the data is dense. White card surfaces, small radius, thin borders, restrained shadows, and muted metadata let numbers and charts carry the design.
+- The component grid is visually quiet while the data is dense. Optional white/light analytical surfaces, small radius, reduced uniform borders, restrained shadows only when needed, and muted metadata let numbers and charts carry the design.
 - Every visual has a job. Sparkline means quick price movement, K-line means OHLC volatility, volume means participation, MA/MACD/RSI mean technical context, breadth bars/donuts mean market structure, heatmap means sector/category intensity, gauge means bounded risk or sentiment.
 - Local controls are credible and compact. `1D / 1W / 1M / 1Y`, `7D / 30D / 90D`, or `涨幅榜 / 跌幅榜` sit in the header and affect only the current card or declared local group.
 - The cards preserve exact-value trust. Tooltip/detail must expose price, OHLC, volume, period, unit/currency, source, delay, and color convention instead of leaving the reader to estimate from decoration.
@@ -305,7 +305,7 @@ Use capsule/segmented controls for `2-4` short options. Collapse to compact drop
 
 ## Visual Rules
 
-- Inherit the modern SaaS/BI white-card baseline when present: light gray page, white cards, `6-8px` radius, thin border, subtle shadow, compact UI Kit controls, restrained chart styling.
+- Inherit the modern SaaS/BI light-surface baseline when present: light gray page, optional white analytical surfaces, `6-8px` radius, reduced uniform borders, subtle shadow only when needed, compact UI Kit controls, restrained chart styling.
 - Use tabular numerals for prices, rates, ranks, volatility, and volume.
 - Primary price/index values default to `24-36px` depending on card size. Do not shrink the price below support facts or chart decoration.
 - Units and currencies stay attached to values. Long currency/volume values use display scale such as K/M/B, 万/亿, or project-approved units with tooltip exact raw values.

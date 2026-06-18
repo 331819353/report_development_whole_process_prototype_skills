@@ -21,7 +21,7 @@ The sample family feels strong because the visual language is tied to decision s
 1. Clear decision grammar: every card answers one action-oriented question, such as "which quadrant", "which priority", "which layer", or "which cell is high". The user can infer what to do after reading it.
 2. Stable axes and thresholds: quadrant and matrix cards expose x/y axes, row/column dimensions, level boundaries, or priority bands. The design has a visible reasoning scaffold instead of floating metrics.
 3. Bounded density: each card has a small, intentional amount of content: 4 quadrants, 4-6 matrix rows/columns, 3-4 priority levels, or 3 strategy layers. It reads as curated, not generated filler.
-4. Semantic color, restrained surface: color marks categories, priorities, or levels. White cards, thin borders, light gridlines, and soft fills leave the data in charge.
+4. Brand-first color, restrained surface: brand/product color and neutral hierarchy set identity; documented category, priority, or level colors stay labeled. Optional light analytical surfaces, reduced borders, light gridlines, and soft fills leave the data in charge.
 5. Micro-evidence inside a card: values, deltas, rings, mini trends, badges, or row snippets show why the classification is true. The card is not just a label.
 6. Exact-value path: visually compressed data still has tooltip, table, drawer, or detail fallback. The design is allowed to be elegant because auditability is not lost.
 7. Repeated rhythm with real variation: the samples share header/filter/white-card rules, but the body changes according to data shape. This avoids the common AI-flavored pattern of repeating identical cards with different icons.
@@ -201,7 +201,7 @@ Priority and strategy geometry:
 
 Visual rules:
 
-- Use light analytical surfaces, thin borders, 6-8px card radius unless the project token says otherwise, restrained shadow, and muted gridlines.
+- Use light analytical surfaces only when the matrix needs bounded objects, reduced borders, 6-8px radius unless the project token says otherwise, optional restrained shadow, and muted gridlines.
 - Use semantic palettes: priority/severity may use red/orange/blue/green; strategy layers may use blue/green/orange; matrix intensity uses sequential or diverging scales.
 - Do not encode semantic meaning only through hue. Add text, icon, shape, label, or tooltip.
 - Avoid large gradients, glass blur, glow, abstract AI icons, heavy background decoration, and identical decorative card piles.

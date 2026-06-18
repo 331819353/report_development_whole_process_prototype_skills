@@ -47,10 +47,11 @@ When `displayTheme: business-dashboard`, `summary-stat`, or `exploratory-analysi
 
 Required effects:
 
-- The visual language is light page canvas, white analytical cards, thin borders, restrained shadows, compact UI Kit controls, and semantic chart colors.
+- The visual language is light page canvas, optional white analytical surfaces, reduced uniform card borders, restrained shadows, compact UI Kit controls, inherited brand/product color hierarchy, and documented status/chart colors.
 - The first viewport is not a card collection. It has one primary decision answer/action and bounded supporting evidence.
+- KPI cards are bounded to primary decision metrics; non-KPI evidence, explanation, detail, action, and trust content keeps task-matched component forms.
 - Pattern cards such as `少而精的图表数量`, `卡片层级与留白`, `指标口径说明`, and `下钻到分析/明细` are acceptance constraints, not optional decoration.
-- `VIS-GENERIC-SAAS-SHELL`, `VIS-COMPONENT-PILEUP`, `VIS-CHART-OVERWEIGHT`, and `VIS-HIERARCHY-FLAT` block prototype readiness when unresolved.
+- `VIS-GENERIC-SAAS-SHELL`, `VIS-COMPONENT-PILEUP`, `VIS-CHART-OVERWEIGHT`, `VIS-HIERARCHY-FLAT`, `VIS-CARD-BORDER-OVERUSE`, `VIS-KPI-EVERYWHERE`, `VIS-SEMANTIC-COLOR-OVERRELIANCE`, and `VIS-NO-INFORMATION-FLOW` block prototype readiness when unresolved.
 
 The 120-card pattern library is not a visual decoration list. Each selected card must become a traceable design input.
 

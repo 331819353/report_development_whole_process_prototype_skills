@@ -21,6 +21,8 @@ Core intent:
 分析报告讲“为什么这样”。
 ```
 
+Prototype story gate: this workflow does not call `$report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds what happened, why it likely happened, how large the impact is, and what action or follow-up decision is expected.
+
 ## Child Skills
 
 | Stage | Skill |
@@ -43,21 +45,24 @@ Core intent:
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-3. Define the report question: what happened, why, impact, and next action.
-4. Write the conclusion-first answer before choosing charts. The conclusion must include fact, magnitude, likely reason, and suggested action when evidence allows.
-5. Build the narrative path: conclusion -> overview -> problem analysis -> attribution -> impact -> action -> appendix.
-6. Define evidence: metric formulas, comparisons, baselines, time/region/channel/product/customer/person/process splits, contribution, and detail evidence.
-7. Define interaction: period switch, dimension switch, chart-to-detail, conclusion-to-chart anchor, expand/collapse, PDF/PPT export, share, comment, historical report.
-8. Use `$report-type-design`: default primary type is `analysis-diagnostic`; use `review-recap` when meeting/report circulation is the main scenario.
-9. Use `$report-info-component-mapping` to bind conclusions, evidence components, attribution blocks, action items, appendix details, and states.
-10. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
-11. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-12. Use layout/template/component skills to make the report read as a coherent story, not a chart gallery.
-13. Verify conclusion-evidence links, action follow-up, export/share/comment needs, and runnable URL when requested.
+3. Define the typed prototype story: target audience, one-sentence conclusion/value, protagonist problem or variance, key evidence, and action or follow-up decision.
+4. Define the report reader path: enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source.
+5. Define the report question: what happened, why, impact, and next action.
+6. Write the conclusion-first answer before choosing charts. The conclusion must include fact, magnitude, likely reason, and suggested action when evidence allows.
+7. Build the narrative path: conclusion -> overview -> problem analysis -> attribution -> impact -> action -> appendix.
+8. Define evidence: metric formulas, comparisons, baselines, time/region/channel/product/customer/person/process splits, contribution, and detail evidence.
+9. Define interaction: period switch, dimension switch, chart-to-detail, conclusion-to-chart anchor, expand/collapse, PDF/PPT export, share, comment, historical report.
+10. Use `$report-type-design`: default primary type is `analysis-diagnostic`; use `review-recap` when meeting/report circulation is the main scenario.
+11. Use `$report-info-component-mapping` to bind conclusions, evidence components, attribution blocks, action items, appendix details, and states.
+12. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
+13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
+14. Use layout/template/component skills to make the report read as a coherent story, not a chart gallery.
+15. Verify conclusion-evidence links, action follow-up, export/share/comment needs, and runnable URL when requested.
 
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, report audience, report period, data scope, business question, and meeting/circulation scenario.
+- Typed prototype story: one-sentence conclusion/value, reader path, protagonist problem or variance, key evidence, action/follow-up decision, and 30-second review path.
 - Affected-surface to owning-skill routing, especially narrative layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - Core conclusion, supporting evidence, cause breakdown, impact assessment, and action recommendation.
 - Narrative block plan: title/meta, conclusion, overview, problem analysis, attribution, action, appendix.
@@ -71,6 +76,7 @@ Core intent:
 ## Quality Gate
 
 - Do not build a chart collection with no conclusion.
+- Do not start layout or component selection until the report story, reader path, protagonist problem/variance, evidence chain, and action/follow-up decision are explicit or safely inferred.
 - Do not start implementation or repair from this workflow alone when affected chart/table/filter/placement surfaces require their specific front-door skills.
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
 - Do not explain changes without a baseline, comparison, or evidence link.

@@ -65,6 +65,7 @@ Default policy: load `$report-prototype-design-thinking` for the generic design-
 6. Normalize rough requirements when needed.
 7. Choose one `displayTheme`, one primary report type, one style baseline when requested, and a small reusable pattern-card set. Record rejected competing themes and rejected generic style directions.
 8. Run anti-AI and report-decision gates before layout, styling, or code.
+   Carry the visual constraints from the design-system gates: reduce uniform card borders, do not KPI-ize every module, inherit brand/product color before status colors, lower default green/red dependence, and choose information flow instead of generic dashboard collage unless current-state monitoring justifies it.
 9. Use `$report-info-component-mapping` to produce analysis perspectives, answer atoms, component bundles, datasets, filters, interactions, binding matrix, and a filter/value semantics table.
 10. Decide `pageShellPath`: default `template`; use `custom` only for explicit custom/free design, exact restoration, existing shell preservation, or documented template limitation.
 11. If HTML/source is provided, classify any SVG/canvas/DOM chart marks as sample evidence, not standard-chart implementation. Standard charts must be rebuilt with ECharts/data-driven options unless an explicit custom-diagram exception is documented.
@@ -79,8 +80,9 @@ Default policy: load `$report-prototype-design-thinking` for the generic design-
 
 ## Required Output
 
-- Workflow mode, Preflight understanding matrix, input inventory, prototype design-thinking output, target user/scenario/decision/action, `displayTheme`, pattern cards, report type, and core question.
+- Workflow mode, Preflight understanding matrix, input inventory, prototype design-thinking output, core narrative, user path, key decision points, target user/scenario/decision/action, `displayTheme`, pattern cards, report type, and core question.
 - Style baseline decision when applicable: inherited source hierarchy, modern SaaS / BI Dashboard / UI Kit contract mapping, and unresolved `VIS-*` design-language findings.
+- Visual constraint decision: information-flow vs dashboard rhythm, KPI scope boundary, card-border reduction strategy, and brand-vs-status color rule.
 - Action reflection checkpoints for non-trivial mode/template/component/renderer/source-code decisions, especially when HTML/source samples are used.
 - Anti-laziness execution result: local/source evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
 - Affected-surface to owning-skill routing, including chart/table/filter/component-placement/design-system skills when applicable.
@@ -94,16 +96,18 @@ Default policy: load `$report-prototype-design-thinking` for the generic design-
 ## Quality Gate
 
 - Do not use this workflow without prototype/demo/page-output intent.
-- Do not skip `$report-prototype-design-thinking` for new prototype work unless the user provides an already structured prototype design brief.
+- Do not skip `$report-prototype-design-thinking` for new prototype work unless the user provides an already structured prototype design brief with core narrative, user path, key decision points, user/scenario/decision/action, metric layers, analysis path, and block intent.
 - Do not start implementation, repair, layout, or template copying before the Preflight understanding gate has a `ready-to-start` or bounded `partial-start` decision.
 - Do not continue from the initial preflight into implementation on autopilot. Non-trivial template, component, renderer, data, layout, HTML conversion, and readiness actions require action reflection; revise or stop when the action conflicts with constraints or design reasonableness.
 - Do not treat Haier UI and report design-system baselines as alternatives for Haier/enterprise report pages; inherit Haier application tokens/base controls and then apply report-specific rules.
 - Do not rely only on this top-level workflow when a chart, table, filter, component-placement, or reusable component standard is affected; route to the specific front-door skill before implementation or acceptance.
 - Do not implement before display theme, report type, binding matrix, layout, and template/custom shell decision exist.
 - Do not implement a requested modern SaaS / BI Dashboard / UI Kit page before the positive style contract is mapped to tokens, hierarchy, component count, and chart-lightness proof obligations.
+- Do not implement a prototype as a same-weight bordered-card grid, KPI wall, or red/green semantic-color page unless the report-decision gate records an explicit business reason and proof obligations.
 - Do not reuse one sentinel value such as `all` for detail rows, aggregate rows, and empty/no-filter state. "All detail rows", "aggregate row", and "empty filter value" must be declared as separate semantics before implementation.
 - Do not choose custom development when a bundled template can satisfy the request.
 - Template-native filters and shell slots must be reused unless template-level redesign is explicitly requested.
+- Do not silently degrade the default runnable stack to Vue 3 only, Vue 3 + ECharts without Element Plus, or Vue 3 + Element Plus with hand-drawn charts. Stack exceptions require a named source authority and readiness impact.
 - Standard charts must be real ECharts option/series/runtime components; S2-class analytical tables must use S2/project-equivalent behavior.
 - HTML-provided SVG/canvas/DOM chart marks are visual/source evidence only. Do not copy or keep them as standard chart implementation; rebuild standard charts as ECharts data-driven components unless a named custom-diagram exception is approved.
 - Changed prototype source files require code-ledger read/create evidence and post-change version entries.

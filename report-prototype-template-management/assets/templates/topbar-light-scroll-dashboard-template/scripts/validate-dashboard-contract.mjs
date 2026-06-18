@@ -3,7 +3,10 @@ import path from 'node:path';
 import ts from 'typescript';
 
 const projectRoot = process.cwd();
+const packagePath = path.join(projectRoot, 'package.json');
 const configPath = path.join(projectRoot, 'src/config/dashboard.config.ts');
+const mainEntryPath = path.join(projectRoot, 'src/main.ts');
+const srcPath = path.join(projectRoot, 'src');
 const widgetComponentsPath = path.join(projectRoot, 'src/widgets/components');
 const errors = [];
 const warnings = [];
@@ -113,6 +116,29 @@ const filterIds = collectFilterIds();
 const gridRowHeights = collectGridRowHeights();
 const minimumBlockHeight = 220;
 const reservedActionHooks = new Set(['dashboardAction']);
+const requiredStackDependencies = ['vue', '@vitejs/plugin-vue', 'vite', 'typescript', 'vue-tsc', 'element-plus', 'echarts', 'axios'];
+const chartVisualTypes = new Set([
+  'line',
+  'bar',
+  'combo',
+  'candlestick',
+  'heatmap',
+  'pie',
+  'radar',
+  'path',
+  'sunburst',
+  'gauge',
+  'scatter',
+  'boxplot',
+  'parallel',
+  'map',
+  'graph',
+  'tree',
+  'treemap',
+  'sankey',
+  'funnel',
+]);
+const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
 
 const allowedSpansByVisualType = {
   line: ['2x1', '2x2', '3x2', '3x3', '4x4', '4x2', '4x3'],
@@ -442,6 +468,103 @@ const walkVueFiles = (dirPath) => {
 
     return entryPath.endsWith('.vue') ? [entryPath] : [];
   });
+};
+
+const walkSourceFiles = (dirPath) => {
+  if (!existsSync(dirPath)) {
+    return [];
+  }
+
+  return readdirSync(dirPath).flatMap((entry) => {
+    if (entry === '__change_logs__') {
+      return [];
+    }
+
+    const entryPath = path.join(dirPath, entry);
+    const stat = statSync(entryPath);
+
+    if (stat.isDirectory()) {
+      return walkSourceFiles(entryPath);
+    }
+
+    return sourceFileExtensions.has(path.extname(entryPath)) ? [entryPath] : [];
+  });
+};
+
+const readJsonFile = (filePath, label) => {
+  if (!existsSync(filePath)) {
+    errors.push(`${label} is missing.`);
+    return {};
+  }
+
+  try {
+    return JSON.parse(readText(filePath));
+  } catch (error) {
+    errors.push(`${label} must be valid JSON: ${error.message}`);
+    return {};
+  }
+};
+
+const validateStackContract = () => {
+  const packageJson = readJsonFile(packagePath, 'package.json');
+  const dependencyMap = {
+    ...(packageJson.dependencies || {}),
+    ...(packageJson.devDependencies || {}),
+  };
+
+  requiredStackDependencies.forEach((dependencyName) => {
+    if (!dependencyMap[dependencyName]) {
+      errors.push(
+        `stack contract: package.json must keep ${dependencyName}; report template projects use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios as one stack.`,
+      );
+    }
+  });
+
+  if (dependencyMap.vue && !/^\D*3\./.test(String(dependencyMap.vue).replace(/^[~^]/, ''))) {
+    errors.push(`stack contract: vue dependency must stay on Vue 3; received "${dependencyMap.vue}".`);
+  }
+
+  if (!existsSync(mainEntryPath)) {
+    errors.push('stack contract: src/main.ts is missing; Vue 3 app bootstrap must stay explicit.');
+    return;
+  }
+
+  const mainText = readText(mainEntryPath);
+  const sourceTextBundle = walkSourceFiles(srcPath)
+    .map((filePath) => readText(filePath))
+    .join('\n');
+  const widgetVisualTypes = collectWidgets()
+    .map(({ node }) => getStringValue(getProperty(node, 'visualType')))
+    .filter(Boolean);
+  const hasChartWidget = widgetVisualTypes.some((visualType) => chartVisualTypes.has(visualType));
+  const hasElementPlusRuntime =
+    /from\s+['"]element-plus(?:\/|['"])|app\.use\s*\(\s*ElementPlus\b|<el-[a-z]|<El[A-Z]/.test(sourceTextBundle);
+  const hasEchartsRuntime =
+    /from\s+['"]echarts(?:\/|['"])|import\s+\*\s+as\s+echarts\b|echarts\.init\s*\(|useECharts\b|vue-echarts|<v-chart\b|<VChart\b/.test(
+      sourceTextBundle,
+    );
+
+  if (!/from\s+['"]vue['"]/.test(mainText) || !/createApp\s*\(/.test(mainText)) {
+    errors.push('stack contract: src/main.ts must bootstrap with Vue 3 createApp.');
+  }
+
+  if (!/from\s+['"]element-plus['"]/.test(mainText) || !/app\.use\s*\(\s*ElementPlus\b/.test(mainText)) {
+    errors.push('stack contract: src/main.ts must register Element Plus globally with app.use(ElementPlus, ...).');
+  }
+
+  if (!/element-plus\/dist\/index\.css/.test(mainText)) {
+    errors.push('stack contract: src/main.ts must import element-plus/dist/index.css.');
+  }
+
+  if (!hasElementPlusRuntime) {
+    errors.push('stack contract: project source must use Element Plus runtime, not only Vue 3 shell code.');
+  }
+
+  if (hasChartWidget && !hasEchartsRuntime) {
+    errors.push(
+      'stack contract: chart visualTypes require an actual ECharts runtime import/wrapper such as echarts.init, useECharts, vue-echarts, or VChart.',
+    );
+  }
 };
 
 const validateWidgetSource = (filePath) => {
@@ -1135,6 +1258,7 @@ gridRowHeights.forEach((rowHeight) => {
   }
 });
 
+validateStackContract();
 collectWidgets().forEach(({ node, location, span }) => validateWidget(node, location, span));
 walkVueFiles(widgetComponentsPath).forEach(validateWidgetSource);
 

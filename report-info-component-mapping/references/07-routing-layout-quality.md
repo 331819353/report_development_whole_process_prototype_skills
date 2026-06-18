@@ -63,10 +63,10 @@ Apply `report-component-style-design`:
 - Values should scale within sensible bounds, not with viewport width alone.
 - Long labels need wrapping, abbreviation plus tooltip, or a larger block.
 - Complex diagrams should use zoom and drag instead of overflowing the page.
-- Components on the same page should share card base, radius, shadow, typography, status colors, and interaction states.
-- Light enterprise components default to white cards with 8px radius, 24px padding, `0 2px 10px rgba(0, 0, 0, 0.05)` shadow, and no hard default border.
+- Components on the same page should share typography, spacing, surface, radius, shadow/elevation, brand/product color, documented status colors, and interaction states.
+- Light enterprise components use white or near-white analytical surfaces when a component is an independent object or interaction surface. Do not force every module into the same card frame; prefer typography, spacing, subtle dividers, and grouping before borders/shadows.
 - Status fields, risk labels, SLA states, and trend judgments should map to badge/pill or icon+text components rather than plain text.
-- Rate/change indicators in Chinese UI use `%`, and change-rate semantics are positive-red-up and negative-green-down with icon+text rather than color alone.
+- Rate/change indicators in Chinese UI use `%`, and color/icon semantics follow the inherited or explicitly documented convention. Positive-red-up / negative-green-down is required only when that convention applies; never rely on color alone.
 - Multi-series chart mappings must include a visible legend zone.
 
 ## Output Format

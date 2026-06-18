@@ -32,8 +32,8 @@ The screenshots feel designed, and not AI-like, because the visible polish is ac
 - The hierarchy is calm and editorial. Header, identity/scope block, one dominant evidence body, support facts, and detail/freshness route appear in predictable places.
 - Density is bounded. Visible metrics, tags, rows, bars, categories, stages, nodes, labels, and footer facts have limits before styling happens.
 - Exact values are never sacrificed for prettiness. A clean chart still has a tooltip, side list, detail drawer, audit table, export, source, update time, denominator, or formula path.
-- Color is semantic and repeatable. Blue can mean selected/current/info, green active/normal, orange warning/stage, red risk, gray inactive/unknown; colors are not randomized per card.
-- The white-card UI Kit language is restrained: light gray page, white cards, thin borders, small radius, soft shadow, muted metadata, compact controls, and lightweight charts.
+- Brand/product color and neutral hierarchy set the base language. Status colors are repeatable only when the field binding or status rule is declared and labeled; colors are not randomized per card.
+- The light-surface UI Kit language is restrained: light gray page, optional white analytical surfaces, reduced uniform borders, small radius, soft shadow only when needed, muted metadata, compact controls, and lightweight charts.
 - The copy is domain-specific. Labels like 活跃天数, RFM, 生命周期, 客户总数, 覆盖区域, 行为轨迹, 风险等级, 客单价, and 更新日期 make the surface feel operational.
 - Imperfect states are planned. Missing object data, stale tags, no permission, low sample size, too many tags, dense relationships, no geo match, denominator zero, and risk in handling are visible states rather than polished away.
 
@@ -325,7 +325,7 @@ Responsive fallback order:
 
 ## 10. Visual And Interaction Rules
 
-- Inherit modern white-card UI Kit styling: near-white card, thin border, `6-8px` radius, light shadow, compact typography, muted metadata, and stable icon/menu controls.
+- Inherit modern light-surface UI Kit styling: near-white analytical surface only when needed, reduced uniform border, `6-8px` radius, optional light shadow, compact typography, muted metadata, and stable icon/menu controls.
 - Use a numbered badge for scan order only. It is not a rank unless the data says so.
 - Avatar/icon sits in an identity slot and must not dominate the card. Use domain icons for object type; use real avatar only when available and permitted.
 - Segment, lifecycle, risk, status, and channel colors must be stable across card, legend, list, tooltip, and detail route.
@@ -388,7 +388,7 @@ Use failure IDs:
 | Display budgets are declared for facts, tags, rows, categories, stages, nodes, labels, and controls. | MUST/fail | Source/config plus QA crop/DOM or chart option proof | `VIS-POPOBJ-DENSITY-UNBOUNDED` |
 | Evidence body meets the selected chart/list/table/map/relation fit floor. | MUST/fail | Slot budget, DOM geometry, screenshot/crop, renderer option proof | `VIS-POPOBJ-SQUEEZED` |
 | Exact-value route exists for hidden/abbreviated values, formulas, object records, risk details, and raw rows. | MUST/fail | Tooltip/drawer/table/export/action config review | `RPT-POPOBJ-NO-EXACT-PATH` |
-| White-card UI Kit styling remains data-first and avoids generic AI polish. | MUST/fail | Token/style review plus visual QA | `VIS-POPOBJ-AI-POLISH` |
+| Light-surface UI Kit styling remains data-first, reduces uniform card borders, and avoids generic AI polish. | MUST/fail | Token/style review plus visual QA | `VIS-POPOBJ-AI-POLISH` |
 | Local controls are current-card scoped or explicitly reclassified as perspective switches. | MUST/fail | Control semantics contract | `VIS-DUPLICATE-CONTROL` |
 | Loading, empty, no-permission, stale, low-sample, missing denominator, dense data, and long-label states preserve geometry. | MUST/fail | State matrix, screenshots/crops, DOM overflow checks | `LAZY-DEFAULT-STATE-ONLY` |
 

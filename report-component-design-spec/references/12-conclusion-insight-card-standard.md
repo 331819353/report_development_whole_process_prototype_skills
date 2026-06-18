@@ -227,8 +227,8 @@ Fallback order:
 Visual rules:
 
 - Inherit enterprise/report tokens. State only component-specific semantic extensions.
-- Page and cards use a quiet light neutral background, white card surfaces, thin borders, `6-8px` radius unless inherited tokens differ, and restrained shadows.
-- Color is semantic: blue for overall/key metric, green for growth/structure, violet for formula/conversion, amber for action/opportunity/warning. Do not use color as the only meaning.
+- Page and components use a quiet light neutral background, optional white analytical surfaces, reduced uniform borders, `6-8px` radius unless inherited tokens differ, and restrained shadows only when useful.
+- Color is brand-first: brand/product color and neutral hierarchy carry identity and reading order; documented status, structure, formula/conversion, action/opportunity/warning colors must be labeled and never carry meaning alone.
 - Icon circles use weak tints. Icons are `24-40px` inside `56-80px` circles in row cards; smaller in compact cards.
 - Values use tabular numerals. Units and comparison labels are visually weaker than primary values.
 - Charts are light: muted axes/gridlines, key-only labels, exact values in tooltip, no decorative plot backgrounds.

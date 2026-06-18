@@ -185,7 +185,7 @@ Place it top-right only when the title and conclusion still fit. If it fails wid
 | Action | `12px` | `400-500` | `16px` |
 | Tooltip | `12px` | `400` | `18px` |
 
-Numbers inside summaries should use the same precision and semantic colors as related KPI/chart components. Rate/change numbers inside summaries use `%` for Chinese UI labels. Positive change rates use red text with an upward SVG/icon, negative change rates use green text with a downward SVG/icon, and zero values use neutral styling.
+Numbers inside summaries should use the same precision and documented color semantics as related KPI/chart components. Rate/change numbers inside summaries use `%` for Chinese UI labels. Positive-red-up / negative-green-down is used only when inherited company, finance, market, or explicit business convention requires it; otherwise use brand/neutral emphasis with sign/icon/label and reserve red/green for documented status or direction semantics.
 
 ## Visual Treatment
 

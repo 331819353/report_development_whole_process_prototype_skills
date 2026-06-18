@@ -22,12 +22,12 @@ These cards feel designed, not AI-like, because their polish is produced by cons
 - One card answers one process question: what stage is current, which step is stuck, which node is abnormal, or which bottleneck should be optimized first.
 - The visual metaphor matches the evidence: stepper means ordered stage state, timeline means time/order, path means directed movement, funnel means shared-cohort conversion/loss, tree means parent-child process structure, graph means node relations, gauge means bounded severity, heatmap/table means stage-by-metric diagnosis, and waterfall means accumulated loss.
 - The anatomy is stable across variants: header and local scope, one dominant process body, bounded support facts, exact-value route, and state/fallback behavior.
-- White-card UI Kit treatment is restrained: thin border, small radius, light shadow, compact controls, sparse labels, muted lines, and no nested-card piles.
-- Color is semantic rather than decorative: current/selected step, completed, in-progress, pending, abnormal, bottleneck, success, loss, and unknown each own a stable color role.
+- Light-surface UI Kit treatment is restrained: optional analytical surfaces, reduced uniform borders, small radius, optional light shadow, compact controls, sparse labels, muted lines, and no nested-card piles.
+- Brand/product color and neutral hierarchy define the base; current/selected step, completed, in-progress, pending, abnormal, bottleneck, success, loss, and unknown use stable color roles only when the process/status rule is declared.
 - The cards preserve messy business reality: waiting, rework, delayed, skipped, unknown owner, missing timestamp, zero denominator, non-monotonic stages, long-tail nodes, and permission-limited steps are visible states.
 - Key numbers are never merely decorative. Duration, pass rate, waiting count, WIP, SLA breach, queue length, conversion, loss, and rework are bound to named fields and remain inspectable through tooltip/detail/table/export.
 - Density is budgeted before styling: step count, visible labels, node count, edge count, metric columns, long-tail aggregation, drawer/fullscreen, and table fallback are declared.
-- The design has a real product rhythm: title badges, period dropdowns, segmented switches, bottom KPI strips, hover/focus states, and status chips follow the same UI Kit language across all variants.
+- The design has a real product rhythm: title badges, period dropdowns, segmented switches, bounded metric/fact strips, hover/focus states, and status chips follow the same UI Kit language across all variants.
 - It avoids common AI polish: no generic blue-purple glass, oversized glow, fake 3D icons, ornamental arcs, random rainbow nodes, all-green sample data, or chart variety added only to look rich.
 
 ## 3. Style Generalization Coverage
@@ -239,7 +239,7 @@ Responsive fallback order:
 
 ## 11. Visual And Interaction Rules
 
-- Inherit white or near-white card surfaces, thin border, `6-8px` radius unless template differs, light shadow, compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
+- Inherit light or near-white analytical surfaces only when the process body needs a bounded object, reduce uniform borders, keep `6-8px` radius unless template differs, make shadow optional, use compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
 - Use semantic process colors: completed = restrained green/teal, current/in-progress = primary/brand, pending = neutral gray, warning/bottleneck = restrained amber/red, skipped/unknown/stale = neutral gray, success/loss terminal states = semantic success/risk.
 - Step/node icon containers are status carriers, not decoration. Icons must have labels or accessible names and cannot be the only decision evidence.
 - Connectors stay weaker than nodes; arrows stop at node edges; dotted/weak lines indicate pending, optional, or historical path only when declared.

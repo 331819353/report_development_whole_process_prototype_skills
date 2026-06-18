@@ -11,13 +11,13 @@ The sample set feels stronger than generic AI dashboard output because the cards
 - Geography is the decision layer. The map explains where the value happens, not just that a value exists.
 - The basemap is deliberately weak. Administrative boundaries, coastlines, and route backgrounds stay pale, while the real data layer owns the visual emphasis.
 - Each card has one primary spatial question: distribution, heat, contrast, point density, trend, ranking, coverage, structure, or migration. The design variety comes from the question, not from decorative chart swapping.
-- Exact evidence sits next to the map. KPI strips, Top lists, legends, scale bars, mini trends, or side summaries prevent the map from becoming an illustration.
+- Exact evidence sits next to the map. Bounded metric/fact strips, Top lists, legends, scale bars, mini trends, or side summaries prevent the map from becoming an illustration.
 - The hierarchy is asymmetric but disciplined. Many cards use a left evidence rail + right map, or map + bottom metric strip, so the eye has a clear scan path instead of a centered generic tile.
 - Controls are quiet and local. A small segmented switch or dropdown changes only the current card's metric/view/range. It does not become a page-level filter pretending to be a component control.
 - The color system is semantic. Sequential scales show intensity, divergent scales show increase/decrease, category colors show point status, and radius/line width show magnitude.
 - Dense data is bounded. Only Top, selected, abnormal, or hovered labels stay permanent; everything else moves to tooltip, drilldown, clustering, heatmap, Top N, or detail table.
 - The cards reserve real geometry for maps. Projection, aspect ratio, visualMap, legend, zoom controls, labels, and side evidence each have a budget.
-- The surface language is restrained: white/light card, thin border, small radius, soft shadow, tabular numbers, muted helper text, and no glass, neon, orb, decorative gradient, or oversized glow.
+- The surface language is restrained: optional light analytical surface, reduced uniform border, small radius, optional soft shadow, tabular numbers, muted helper text, and no glass, neon, orb, decorative gradient, or oversized glow.
 
 This is why the result has design intent but low "AI smell": every visual flourish is accountable to data, hierarchy, or interaction.
 
@@ -81,7 +81,7 @@ Use `specializedChartCardPattern: 'choropleth-ranking-map-card'` only for a stan
 
 Required slots:
 
-- Card surface: white or near-white analytical surface, thin border, subtle shadow, inherited report radius.
+- Card surface: white or near-white analytical surface only when the map needs a bounded object, reduced border, optional subtle shadow, inherited report radius.
 - Header: title left; optional help icon; one local control group on the right.
 - Spatial evidence body: one map/geo viewport with preserved projection and aspect ratio.
 - Data layer: choropleth, point, bubble, heat, column symbol, coverage radius, or flow layer.

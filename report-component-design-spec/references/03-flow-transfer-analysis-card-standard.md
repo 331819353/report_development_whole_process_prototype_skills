@@ -25,10 +25,10 @@ These card sets feel designed, and not AI-like, because the polish follows the a
 - One card answers one flow question. A card says where value came from, where it went, which path converted, which migration failed, or which channel/device/region contributed. It is not a collage of unrelated chart variety.
 - The visual grammar matches the data shape. Sankey means `source-target-value`, path means ordered movement, funnel means shared-cohort stage conversion, map means geography, donut/percent bars mean composition, line/area means time movement, and table/list means exact audit.
 - The card anatomy is stable. Title and local scope sit in the header, one primary evidence body owns the middle, support facts stay bounded, and the bottom carries detail/action/source rather than decoration.
-- The surface language is restrained. White cards, thin borders, small radius, light shadow, muted canvas, compact UI Kit controls, and sparse labels let the data read first.
+- The surface language is restrained. Use light analytical surfaces only when the flow needs a bounded object, reduce uniform borders, keep radius small, make shadow optional, and let muted canvas, compact UI Kit controls, and sparse labels carry the data first.
 - Exact values remain inspectable. Permanent labels are key-only, while tooltip, drawer, fullscreen, table fallback, export, or detail link exposes source, target, path, value, share, rate, period, source, and aggregation rules.
 - Density is budgeted before styling. Top N + `其他`, aggregation, collapse, label sampling, zoom/pan, detail drawer, table fallback, and fullscreen are part of the component contract.
-- Color is semantic. Source group, target state, channel, path status, success/loss, positive/negative change, or geography bucket owns color. Random rainbow ribbons, glass gradients, and decorative glow are rejected.
+- Brand/product color and neutral hierarchy set the base language. Source group, target state, channel, path status, success/loss, geography bucket, or positive/negative change may use color only when the binding or metric/status rule is declared. Random rainbow ribbons, glass gradients, and decorative glow are rejected.
 - Controls look like real product controls. Perspective switches, period switches, metric selectors, and Top N/depth selectors use segmented controls or compact dropdowns with declared local scope.
 - Imperfect data states are planned. Missing source, unknown target, unbalanced flow, no path, zero conversion, dense links, all-zero distribution, no-permission, stale data, and partial migration are visible states, not hidden cleanup.
 
@@ -182,7 +182,7 @@ Responsive fallback order:
 
 ## 9. Visual And Interaction Rules
 
-- Inherit white or near-white card surfaces, thin border, `6-8px` radius unless template differs, light shadow, compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
+- Inherit light or near-white analytical surfaces only when the component needs a bounded object, reduce uniform borders, keep `6-8px` radius unless template differs, make shadow optional, use compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
 - Use semantic color: primary flow = brand/primary hue; retention/success = restrained green/teal; loss/failure/risk = restrained red or warning; unknown/other/stale = neutral gray; comparison baseline = muted blue/gray.
 - Flow width, path width, bar width, ring angle, area, and map color must bind to named numeric fields.
 - Ribbons stay translucent and readable; avoid high-saturation full-opacity ribbons that overpower labels.

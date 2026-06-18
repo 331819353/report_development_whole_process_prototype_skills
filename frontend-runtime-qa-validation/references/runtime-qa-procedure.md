@@ -6,6 +6,7 @@ Detailed runtime QA procedure moved out of `SKILL.md`. Load this before executin
 
 1. Start from build/runtime basics.
    Run available typecheck, lint, tests, build, and dev/preview startup commands. Record skipped commands only when they are not defined or blocked by an external dependency.
+   For bundled report-template projects, run `npm run validate:dashboard` before visual readiness and inspect stack-contract output. The default stack is Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios. Missing package dependencies, missing Element Plus registration/style imports, or chart visualTypes without ECharts runtime ownership block `ready`.
 
 2. Classify the runtime UI baseline.
    Determine whether the page is Haier/enterprise Web app, report/dashboard, or mixed. For Haier/enterprise report pages, load and apply both `$haier-enterprise-app-ui-design-spec` as the inherited company application baseline and report-specific baselines before judging visual/runtime defects, even when the user only asked for QA or URL验收.
@@ -65,6 +66,7 @@ Produce a compact QA note using `references/qa-note-template.md`.
 ## Verification Checklist
 
 - Build/startup succeeds or a concrete external blocker is documented.
+- Bundled report-template stack contract passes: dependencies include Vue 3, Vite, TypeScript, Element Plus, ECharts, and axios; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus, imports Element Plus CSS; chart visualTypes use ECharts runtime/options/series; S2 is present only when pivot/cross/wide analytical tables need it.
 - Browser reaches the target page without blocking console/runtime failures.
 - Headless browser screenshots were captured before visual pass/fail judgment, or an explicit blocker explains why screenshots could not be captured.
 - Report/dashboard QA includes component-level cropped screenshots for donut/pie charts, Gauge charts, funnel charts, radar charts, scatter/bubble charts, parallel-coordinate charts, map/geographic charts, candlestick/K-line charts, boxplot charts, heatmap charts, sunburst charts, treemap/rectangular tree maps, path/user/process path charts, Sankey diagrams, tree/hierarchical tree charts, relation/network graph charts, Combo chart, trend charts, KPI cards/groups, Detail Tables, Pivot Tables, tables with complex/grouped headers, and tables/analytical grids when present; full-page screenshots alone are insufficient. Donut/pie, Gauge, funnel, radar, scatter/bubble, parallel-coordinate, map/geographic, candlestick/K-line, boxplot, heatmap, sunburst, treemap/rectangular tree map, path/user/process path, Sankey, tree/hierarchical tree, relation/network graph, Combo chart, Detail Table, Pivot Table, and complex/grouped-header table crops are required whenever those components exist.
@@ -93,6 +95,7 @@ Produce a compact QA note using `references/qa-note-template.md`.
 - Empty/error/loading/auth states are visible and stable.
 - Hover/focus states preserve geometry and use in-bounds border/outline/glow; no border, shadow, or focus ring is clipped by parent overflow.
 - Standard ECharts charts are rendered through ECharts instance/wrapper and data-driven `option`/`series`; no import-only ECharts chart is hand-drawn with SVG/HTML/CSS/canvas marks.
+- Element Plus is not optional for default template projects: ordinary controls, messages, dialogs/drawers/popovers, form-like controls, and ordinary row tables must use Element Plus/project control patterns unless an explicit existing-project design-system exception is recorded.
 - Trend/cartesian ECharts charts with visible x-axis labels and bottom legends pass the cropped screenshot and option check: `grid.containLabel = true`, `grid.bottom >= 56px`, and legend-to-axis-label distance is clear.
 - Full line/bar/combo ECharts charts pass the anti-squeeze check: standard chart body `>=180px`, dense combo/dual-axis/target/reference/chart + table/list body `>=220px`, plot height meets the owning floor, y-axis/x-axis labels do not overlap, gridlines do not merge into a stripe, and chart + table/list cards preserve at least `3` visible preview rows without compressing the plot. Failures use `VIS-CHART-SQUEEZED`, `VIS-AXIS-LABEL-STACKED`, or `VIS-CHART-TABLE-CROWDING`.
 - Dual-axis Combo charts with a top legend pass the option and DOM/SVG collision check: `legend.top/left/right`, `grid.top`, y-axis `name`, `nameLocation`, `nameGap`, `nameRotate`, `nameTextStyle`, and axis-label unit strategy are declared; legend item text/markers and left/right y-axis name text keep at least `8px` visual gap and have no overlap greater than `4px²` at target viewports. If the spec requires a top-centered legend, `legend.left: 'center'` or equivalent measured centering is required; `legend.right: 0` is not a pass. `grid.containLabel` alone is not sufficient evidence.
@@ -121,7 +124,7 @@ Produce a compact QA note using `references/qa-note-template.md`.
 - No primary headings, CTAs, empty/error states, or key summaries use generic AI/SaaS copy without concrete user action, data object, system behavior, condition, or evidence.
 - Generic gradients, glass/neon/glow decoration, oversized radius, abstract AI/tech imagery, and ornamental animation are absent unless an approved brand/template/sample exception is documented.
 - Keyboard focus, accessible names for icon-only controls, contrast, and non-color-only error/status cues pass the active baseline.
-- Chinese report rate/change labels use `%`, and change-rate indicators follow positive-red-up / negative-green-down icon semantics when present.
+- Chinese report rate/change labels use `%`, and change-rate indicators follow the inherited or explicitly documented color/icon convention when present. Positive-red-up / negative-green-down is required only when that convention applies.
 - HTML-replica or custom layouts preserve global UI token consistency instead of copied one-off colors or surfaces.
 - Final answer includes the verified URL when startup succeeds.
 - QA findings use verifiable criteria and evidence paths. Avoid pass/fail language based only on "视觉舒适", "看起来还行", or other subjective wording without measurable or inspectable checks.

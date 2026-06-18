@@ -10,7 +10,7 @@ This distilled standard covers:
 - Requirement breakdown and business-question framing.
 - Metric dictionary, calculation口径, unit, precision, numeric display contract, and data-source explanation.
 - Page hierarchy, module priority, layout spacing, and card structure.
-- Modern SaaS / BI Dashboard / UI Kit positive style contract when explicitly requested: light page canvas, white analytical cards, thin borders, clear hierarchy, no component pileup, and lightweight charts.
+- Modern SaaS / BI Dashboard / UI Kit positive style contract when explicitly requested: light page canvas, optional analytical surfaces, reduced uniform card borders, brand/product color hierarchy, clear information flow, no component pileup, and lightweight charts.
 - Chart anatomy, chart selection, chart color, warning color, tooltip, labels, and drilldown/link rules.
 - Table alignment, column contract, pagination, export, and operation rules.
 - Text, number, date, percentage, empty value, warning display formats, and numeric rounding/export consistency.

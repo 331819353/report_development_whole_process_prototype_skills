@@ -237,8 +237,8 @@ Compact cards below these floors may show only state, value, one comparison, and
 
 ## Visual Rules
 
-- Inherit the modern SaaS/BI white-card contract when in scope: light gray-white page, white cards, thin borders, `6-8px` radius, restrained shadows, UI Kit controls, and lightweight charts.
-- Use semantic colors consistently: red for high/critical abnormality, orange for medium/warning, blue for information/baseline/current selection, green for recovered/resolved/normal-positive, gray for normal/unknown.
+- Inherit the modern SaaS/BI light-surface contract when in scope: light gray-white page, optional analytical surfaces, reduced uniform borders, `6-8px` radius, restrained shadows, UI Kit controls, and lightweight charts.
+- Use brand/product color and neutral hierarchy as the base. Status colors are consistent only when the abnormality/recovery rule is documented and labeled; do not flood hierarchy with red/green.
 - Use soft tint blocks for icons and status. Do not flood the whole card with danger color.
 - Keep chart marks stronger than gridlines and borders. Axes, legends, and labels stay sparse; exact values go to tooltip/detail.
 - Use one dominant accent per card plus neutral text. Avoid rainbow category colors unless categories have stable business meaning.

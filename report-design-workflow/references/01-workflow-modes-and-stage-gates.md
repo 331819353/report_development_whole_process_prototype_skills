@@ -105,12 +105,13 @@ This stage is only the generic/default thinking layer for the original workflow.
 Output must include:
 
 - Target user, usage scenario, business question, managed object, time scope, decision/action, and output mode.
+- Core narrative, user path, functional architecture, and key decision points from the prototype story layer.
 - Core metrics, analysis metrics, detail fields, dimensions, baselines, thresholds, and口径 gaps.
 - Analysis path and first-viewport answer.
 - Page block proposal and component/chart rationale by question.
 - Filter, drilldown, export, save/share, permission, refresh, and state requirements.
 
-Skip this stage only when the user already provides a structured prototype design brief that covers user, scenario, decision/action, metric layers, analysis path, and block-level intent.
+Skip this stage only when the user already provides a structured prototype design brief that covers core narrative, user path, key decision points, user, scenario, decision/action, metric layers, analysis path, and block-level intent.
 
 ### Hard Gate: Shell Path, Style Source, Brand Mode, Visual Mode, Brand Assets, And Sample Fidelity
 
@@ -171,7 +172,7 @@ Global UI and Chinese metric display:
 
 - When layout/style follows HTML, screenshot, or custom design, palette, typography, spacing, radius, shadows, semantic states, and Element Plus/control styling must still come from global UI tokens unless exact visual restoration is explicitly requested.
 - For rate/change/completion fields, display values with `%` in Chinese UI. Do not show `pt`, `p.p.`, or `percentage point` labels on the visible page unless the user explicitly requires that term.
-- For change-rate and variance-rate indicators, positive values use red text plus an upward SVG/icon; negative values use green text plus a downward SVG/icon; zero values use neutral text/icon treatment.
+- For change-rate and variance-rate indicators, use positive-red-up / negative-green-down only when inherited company, finance, market, or explicit business convention requires it. Otherwise use brand/neutral emphasis with sign/icon/label and reserve red/green/orange for documented status, risk, warning, success, error, or metric-direction semantics.
 
 Blocking behavior:
 

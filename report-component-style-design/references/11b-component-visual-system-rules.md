@@ -71,15 +71,15 @@ Keep all report components visually related.
 
 Use shared rules:
 
-- Card base: white background, 8px radius, 24px padding, and `0 2px 10px rgba(0, 0, 0, 0.05)` shadow in light enterprise pages.
+- Card/base surface: white or near-white background, 6-8px radius, and safe padding in light enterprise pages when the component is an independent analytical object or interaction surface. Do not wrap every module in the same bordered card. For tightly related information, prefer typography, spacing, subtle dividers, soft fills, or local grouping before adding another card frame.
 - Border radius: 8px by default, 12px only when the page style intentionally uses softer cards.
 - Border: no hard default border on cards. Use subtle dividers inside dense tables/lists only when needed.
-- Shadow: light and consistent; do not mix heavy shadows, glows, and borders across components.
+- Shadow: optional and light; do not require every component to carry a shadow. Do not mix heavy shadows, glows, and borders across components.
 - Background: white card surfaces for light theme; controlled dark blue/black panels only for explicitly dark monitoring or cockpit cases.
 - Spacing: 8px rhythm, with 24px card padding as the default component safe area.
 - Typography: consistent label, value, title, helper, and metadata sizes.
 - Icon style: consistent stroke width and size.
-- Status labels: same color semantics across all components.
+- Status labels: same color semantics across all components when the status dictionary is explicit; do not use green/red as a generic hierarchy or category palette.
 - Hover/focus/selected/disabled states: visible and consistent.
 
 Use component variants intentionally:
@@ -190,7 +190,7 @@ Define colors by role, not by decoration.
 
 Recommended semantic roles:
 
-- Primary action/selection: Haier blue or product primary blue.
+- Brand/product primary: Haier blue or product primary blue for identity, navigation, selection, primary action, focus, and primary data emphasis.
 - Text primary: near-black neutral.
 - Text secondary: medium neutral.
 - Text muted: muted neutral with readable contrast.
@@ -203,8 +203,10 @@ Recommended semantic roles:
 
 Rules:
 
-- Use Haier blue as the brand/primary accent, not as the only chart color.
-- Use status colors consistently across every component.
+- Use Haier blue or the inherited product palette as the brand/primary accent, not as the only chart color.
+- Use status colors consistently across every component only for documented status/risk/success/warning/error/business-direction meanings.
+- Do not let red/green carry the default component hierarchy. For non-status comparisons, categories, and ordinary emphasis, use brand palette steps, neutral contrast, labels, line weight, order, and position before red/green.
+- Do not rely on color alone. Pair red/green/orange status color with sign, icon, label, threshold, tooltip, or detail evidence.
 - Use chart palettes with enough distinction and sufficient contrast.
 - Do not make labels, axis text, legend text, or helper text too pale.
 - Keep gridlines subtle but visible.
@@ -248,4 +250,5 @@ Avoid:
 - Heavy dark shadows.
 - Multiple shadow layers on dense dashboards.
 - Thick borders on every component.
+- Uniform borders around every module when typography, spacing, or a divider would express the relationship more clearly.
 - Excessively rounded cards that feel playful instead of enterprise-grade.

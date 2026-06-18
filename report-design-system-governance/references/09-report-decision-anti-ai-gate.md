@@ -20,6 +20,10 @@ Classify findings with these IDs.
 | `RPT-TOO-CLEAN-DATA` | Fake data is too perfect. | Smooth lines, all metrics rising, balanced shares, no missing rows, no dirty values, no latency, no conflicts. | Mock/provider data must include realistic variance, missing/zero/extreme values, delays, anomalies, long labels, and permission-limited cases. |
 | `RPT-STATIC-FILTERS` | Filters are drawn but not real. | Date Range/Region/Category/Status controls change selected UI only or lack drilldown/export context. | Filters must map to data fields/API params, affect components, show active context, and carry into drilldown/export/share. |
 | `RPT-VISUAL-OVER-DATA` | Visual polish harms data reading. | Gradient/glass/glow/card decoration competes with numbers, axes, labels, tables, and anomalies. | Prioritize numeric hierarchy, units, precision, axes, comparison, table readability, and anomaly/status color semantics. |
+| `RPT-CARD-GRID-SHELL` | Uniform card grid replaces information structure. | Every section is boxed with the same border/radius/shadow, so typography, section rhythm, and reading sequence disappear. | Separate information first with title hierarchy, spacing, dividers, grouping, and flow; use card frames only for independent objects, repeated items, or interaction surfaces. |
+| `RPT-KPI-EVERYWHERE` | Every module is turned into a KPI/metric tile. | Explanations, rankings, detail tables, anomaly lists, trust notes, and actions are forced into metric cards. | Reserve KPI cards for primary decision metrics; keep evidence, detail, insight, action, and workflow content in task-matched component forms. |
+| `RPT-SEMANTIC-COLOR-OVERRELIANCE` | Red/green status colors become the default visual language. | Most changes, categories, and priorities are encoded as red/green without a metric dictionary or status rule. | Use inherited brand/product palette and neutral hierarchy for identity and emphasis; reserve red/green/orange for documented status, risk, success, warning, error, or business-direction semantics. |
+| `RPT-NO-INFORMATION-FLOW` | Dashboard collage replaces a report reading flow. | Blocks are arranged as equal-weight tiles without conclusion -> evidence -> driver -> detail -> action/trust sequence. | Redesign as an information flow with named block roles and a visible reading path; dashboard grids are allowed only when the decision path justifies them. |
 | `RPT-NO-INDUSTRY-SENSE` | All industries look like the same generic dashboard. | E-commerce, SaaS, finance, service, and supply-chain pages use the same metrics and terminology. | Use domain metric families, vocabulary, dimensions, constraints, and known business objects. |
 | `RPT-NO-ACTION` | The user has no next move. | There is no owner, responsible role, drill path, operation entry, export, assignment, runbook, or decision prompt. | Every primary concern needs a next action: drilldown, detail table, owner contact, task, export, approve, assign, or runbook. |
 | `RPT-DESIGNER-SHELL` | Report designer is only a three-panel shell. | Left component library, center canvas, right props, Preview/Save/Publish, but no data binding or validation behavior. | Report designer must cover data source, field binding, aggregation, filters, calculated fields, permissions, linkage, validation, versioning, preview, and publish flow. |
@@ -75,6 +79,17 @@ The page should follow a diagnostic path:
 7. Owner/action.
 
 Overview-only pages must still expose the path to diagnosis or detail.
+
+## Information Flow And Visual Semantics Gate
+
+Before accepting a report layout or visual standard, classify whether the page should be an `information-flow report`, a `KPI dashboard`, a `detail/query report`, an `analysis narrative`, or a `cockpit/status monitor`.
+
+- Default to information flow for operating analysis, topic analysis, review, detail/evidence, and decision-support pages. The visible sequence should move from conclusion/status to evidence, driver, detail/action, and trust/source.
+- KPI dashboards are allowed when the central question is "现在怎么样", but even then not every module becomes a KPI card. KPI cards must be limited to primary decision metrics with formula, baseline/target, status dictionary, and action/detail path.
+- Use typography, whitespace, chapter rhythm, subtle dividers, and local grouping before adding more card borders. Uniform card frames are a fallback for independent repeated objects, not the default separator for every idea.
+- Build the color language from inherited brand/product colors and neutral hierarchy first. Use green/red/orange only for explicit status, risk, success, warning, error, finance/market convention, or business-direction semantics recorded in the metric dictionary.
+- Do not use red/green color alone to explain meaning. Pair it with sign, icon, label, threshold wording, tooltip, or detail route.
+- If the page cannot explain its information flow, KPI scope, and brand-vs-status color rules, record `RPT-NO-INFORMATION-FLOW`, `RPT-KPI-EVERYWHERE`, `RPT-CARD-GRID-SHELL`, or `RPT-SEMANTIC-COLOR-OVERRELIANCE` as applicable.
 
 ## Realistic Data Gate
 
@@ -206,10 +221,11 @@ Any workflow applying this gate should output:
 - Trust/action details included or scoped out.
 - Industry vocabulary/domain metric check.
 - Report designer capability check when applicable.
+- Information-flow classification, KPI scope boundary, card-border reduction decision, and brand-vs-status color rule result.
 
 ## Quality Gate
 
-- `RPT-METRIC-SHELL`, `RPT-NO-DATA-STORY`, `RPT-GENERIC-INSIGHT`, `RPT-STATIC-FILTERS`, or `RPT-NO-ACTION` is at least `major` for report implementation work.
+- `RPT-METRIC-SHELL`, `RPT-NO-DATA-STORY`, `RPT-GENERIC-INSIGHT`, `RPT-STATIC-FILTERS`, `RPT-CARD-GRID-SHELL`, `RPT-KPI-EVERYWHERE`, `RPT-SEMANTIC-COLOR-OVERRELIANCE`, `RPT-NO-INFORMATION-FLOW`, or `RPT-NO-ACTION` is at least `major` for report implementation work.
 - `RPT-TOO-CLEAN-DATA` is at least `major` when mock/offline data is used as prototype evidence.
 - `RPT-DECORATIVE-CHART` is at least `major` when charts replace required exact-value tables, drilldown, or diagnostic evidence.
 - `RPT-DESIGNER-SHELL` is at least `major` for report-designer/editor pages.

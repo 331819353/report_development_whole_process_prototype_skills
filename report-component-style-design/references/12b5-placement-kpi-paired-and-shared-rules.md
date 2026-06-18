@@ -282,7 +282,7 @@ Long value fallback:
 
 - Show at least one of YoY or MoM when comparison data exists. If space is tight, keep the comparison most relevant to the business cadence, often MoM for short-term monitoring.
 - Chinese report change-rate and variance-rate indicators use `%`.
-- For Chinese report change-rate indicators, default to positive-red-up and negative-green-down unless the metric dictionary or company standard defines another convention.
+- For Chinese report change-rate indicators, use positive-red-up and negative-green-down only when inherited company, finance, market, metric dictionary, or explicit company standard defines that convention.
 - For cost, complaint, failure, return, overdue, risk, and other business-negative metrics, the value direction must follow the metric dictionary. Do not color by raw sign alone.
 - Target describes attainment, target gap, or progress. Do not force it into up/down semantics unless the business defines target movement that way.
 

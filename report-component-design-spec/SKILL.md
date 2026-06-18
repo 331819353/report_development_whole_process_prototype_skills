@@ -82,7 +82,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not write a component spec that only lists colors, font sizes, radius, and shadows.
-- Do not accept a modern SaaS / BI Dashboard / UI Kit component standard that lacks semantic white-card/UI Kit token mapping, display-budget limits, and component-pileup/chart-overweight failure handling.
+- Do not accept a modern SaaS / BI Dashboard / UI Kit component standard that lacks semantic light-surface/UI Kit token mapping, reduced uniform card-frame rules, brand/product color hierarchy, display-budget limits, bounded KPI scope, and component-pileup/chart-overweight failure handling.
 - Do not create or accept a reusable component standard before component-family scope, source-of-truth hierarchy, inherited baseline, and implementation surface are clear.
 - Do not accept a component family without business purpose, data grain, exact-value path, states, and placement rules.
 - Do not accept KPI overview / multi-metric overview standards without `kpiOverviewCardPattern`, one shared `overviewTopic`, `2-5` metric cells, lead-metric ownership when present, local-control scope, exact-value/detail path, `kpi_overview_card` minimum size, and fallback before metric cells or evidence visuals are squeezed.

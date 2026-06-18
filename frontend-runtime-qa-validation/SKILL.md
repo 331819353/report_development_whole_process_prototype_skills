@@ -40,7 +40,7 @@ It is not a test-case design skill. For test matrices use `integration-test-case
 4. Open the target URL and confirm the page loads without blocking runtime errors.
 5. Capture screenshots before visual judgment: full page, responsive states, interactions, and component crops when report/chart/table components exist.
 6. Run DOM structural checks: expected card/component counts, fixed-height overflow, bounding-box overlap, and chart/table category uniqueness where inspectable.
-7. Run owning-skill proof obligations for implemented report components: KPI X/Y value alignment and CSS cascade, template/component control ownership, fixed-height overflow/clipping, ECharts/S2 option details such as legend/grid/axis budgets, ECharts axis-chart plot-height/anti-squeeze checks, modern BI page/card token checks, component-pileup and hierarchy checks, chart-lightness checks, contract-to-DOM/CSS/option mapping, and at least one non-default state when relevant.
+7. Run stack-contract and owning-skill proof obligations for implemented report components: Vue 3 bootstrap, Element Plus registration/style import/runtime controls, ECharts runtime ownership for chart visualTypes, KPI X/Y value alignment and CSS cascade, template/component control ownership, fixed-height overflow/clipping, ECharts/S2 option details such as legend/grid/axis budgets, ECharts axis-chart plot-height/anti-squeeze checks, modern BI page/card token checks, component-pileup and hierarchy checks, chart-lightness checks, contract-to-DOM/CSS/option mapping, and at least one non-default state when relevant.
 8. Inspect console, network, assets, routes, auth, and provider calls.
 9. Exercise filters, tabs, drawers, modals, chart clicks, table actions, pagination, sorting, export, refresh, fullscreen, hover, and focus states in scope.
 10. Apply anti-AI, report-decision, and multimodal/visual checks when relevant. Use `$visual-browser-regression-check` when the scope requires deterministic baseline diff, screenshot coverage, component crops, or structured `VIS-*` findings.
@@ -60,6 +60,7 @@ Use `references/qa-note-template.md` and include:
 - Visual/DOM structural findings: overflow, card/component counts, bounding-box overlap, and category uniqueness.
 - Modern BI runtime proof when requested or claimed: page/card token evidence, first-viewport hierarchy, component-count/pileup scan, and chart-lightness evidence.
 - Proof obligation results: KPI alignment and CSS cascade, no duplicate template/component controls, fixed-height overflow/clipping, chart option/legend/grid checks, chart body/plot-height anti-squeeze checks, contract-to-DOM/CSS/option mapping, and non-default state coverage.
+- Stack-contract result for runnable templates: package dependency proof, Vue 3 `createApp`, Element Plus registration/style imports and control usage, ECharts runtime proof for chart visualTypes, and S2-only-when-needed status.
 - Action reflection result before readiness, including renderer/source authority concerns.
 - Anti-laziness execution result: coverage actually executed, `LAZY-*` findings or explicit no-finding result, source/DOM evidence inspected, retest proof, and readiness impact.
 - Baseline references applied.
@@ -78,6 +79,7 @@ Use `references/qa-note-template.md` and include:
 - DOM QA must include control ownership checks when a template shell exists: refresh, export/download, copy/share, global filters, period/date controls, topbar actions, and component local controls cannot be duplicated without an explicit ownership decision and disabled counterpart.
 - Data completeness must be checked before filter-linkage pass/fail.
 - Standard ECharts charts must show ECharts-owned rendering and interaction when that renderer is claimed.
+- Do not mark runtime QA ready when a default report-template project uses Vue 3 but omits Element Plus or ECharts from dependencies/bootstrap/runtime proof. Vue 3 + ECharts without Element Plus, or Vue 3 + Element Plus with hand-drawn standard charts, remains `partial` or `blocked`.
 - When the implementation was derived from HTML/source, inspect chart components for copied hand-authored SVG/canvas/DOM chart marks. Standard chart readiness fails if source marks were ported instead of rebuilt through ECharts/data-driven options.
 - Do not mark runtime QA ready when full line/bar/combo axis charts are compressed into thin bands. Runtime QA must measure chart body height, plot-height floor, axis-label overlap/gridline readability, and chart + table/list allocation when both share one card; use `VIS-CHART-SQUEEZED`, `VIS-AXIS-LABEL-STACKED`, or `VIS-CHART-TABLE-CROWDING` for failures.
 - Do not mark runtime QA ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, only full-page screenshots/default states were checked, or source/DOM proof is absent for renderer and layout claims.

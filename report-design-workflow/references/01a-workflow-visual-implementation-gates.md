@@ -10,6 +10,7 @@ Output must include:
 
 - `visualMode` and conflict resolution.
 - `displayTheme`, selected pattern set impact, and first-screen theme structure.
+- Page rhythm: information-flow report vs KPI dashboard/cockpit, KPI-card scope boundary, card-border reduction strategy, and brand-vs-status color rule.
 - `pageShellPath`, `pageStyleSource`; if custom, `customDesignPath` and `customLayoutPattern`.
 - Brand asset discovery result, configured logo path, logo variant, or placeholder gap.
 - Page shell choice.
@@ -35,6 +36,7 @@ Output must include:
 
 - Component title style.
 - Background, typography, color, border, shadow.
+- Card-frame reduction, KPI eligibility, brand/product color hierarchy, and red/green status-color exception rules.
 - Alignment and centering.
 - Label and legend rules.
 - Header/body fit rules for every component viewport.
@@ -111,7 +113,7 @@ Implementation must:
 - Classify sample/source modules as `businessRequired`, `sampleStructure`, or `optionalEnhancement`; do not make a component `must-have` only because it appears visually.
 - Embed added conclusions into existing sample-equivalent regions; do not add standalone horizontal bands unless the source has an equivalent band.
 - Keep HTML-replica and custom layouts on global UI tokens for palette, typography, spacing, radius, shadows, semantic colors, and controls unless exact restoration is explicitly requested.
-- Render rate/change/completion labels with `%` in Chinese UI, and use positive-red-up / negative-green-down SVG/icon semantics for change-rate indicators.
+- Render rate/change/completion labels with `%` in Chinese UI. Use positive-red-up / negative-green-down SVG/icon semantics for change-rate indicators only when inherited company, finance, market, or explicit business convention requires it; otherwise pair signed values with brand/neutral emphasis and reserve red/green/orange for documented status or direction semantics.
 - Use stable IDs for filters, interactions, and mock records.
 - Implement the data/filter/component linkage contract in the template config or custom runtime before visual polish.
 - Run the template `validate:dashboard` script or equivalent custom checks to block unbound widgets, missing filter contracts, invalid action configs, and unsafe radar chart options.

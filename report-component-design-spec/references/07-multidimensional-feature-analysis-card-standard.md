@@ -26,8 +26,8 @@ These cards feel designed, and not AI-like, because the polish follows the readi
 - The visual grammar matches the data shape. Radar reads balance and strengths/weaknesses, tag groups read categorical identity, comparison cards read deltas, scatter/bubble reads two numeric dimensions, tables read exact audit.
 - The hierarchy is editorial but restrained: object identity or title at top, one primary evidence body in the middle, bounded support facts at the bottom or side, and detail/source/trust paths nearby.
 - Density is bounded before styling. Radar dimensions, tag count, comparison subjects, table columns, and footer metrics all have visible budgets and deterministic fallback.
-- Color carries meaning. Status, gender/category, tag state, risk, activity, lifecycle, or positive/negative change owns color. Random gradients and decorative rainbow tags are rejected.
-- The white-card UI Kit language is quiet: thin borders, small radius, light shadows, muted canvas, compact controls, sparse grid lines, and enough whitespace around the primary evidence.
+- Brand/product color and neutral hierarchy set the base language. Status, category, tag state, risk, activity, lifecycle, or positive/negative change may use color only when the field binding or metric/status rule is declared. Random gradients and decorative rainbow tags are rejected.
+- The light-surface UI Kit language is quiet: reduced uniform borders, small radius, optional light shadows, muted canvas, compact controls, sparse grid lines, and enough whitespace around the primary evidence.
 - Exact values remain inspectable. Tags, radar points, profile facts, score dimensions, and comparison marks expose raw value, formula, period, source, update time, and detail route through tooltip, drawer, fullscreen, table, or export.
 - Imperfect data states are designed: missing feature values, unknown tag source, stale tags, no permission, too many dimensions, conflicting scales, long labels, and low sample size are visible states rather than hidden cleanup.
 
@@ -224,8 +224,8 @@ Responsive fallback order:
 
 ## 9. Visual And Interaction Rules
 
-- Inherit white or near-white analytical surfaces, thin border, `6-8px` radius unless template differs, light shadow, compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
-- Use one primary accent plus semantic status colors. Keep fills weak for radar, trend, and comparison evidence so labels and exact-value paths remain readable.
+- Inherit light or near-white analytical surfaces only when the component needs a bounded object, reduce uniform borders, keep `6-8px` radius unless template differs, make shadow optional, use compact typography, muted metadata, stable UI Kit controls, and no nested-card look.
+- Use one brand/product primary accent plus documented status colors only when needed. Keep fills weak for radar, trend, and comparison evidence so labels and exact-value paths remain readable.
 - Object identity uses real object fields. Avatars/icons are supporting recognition, not the main data carrier.
 - Tags use stable semantic colors by tag group/status. Do not randomize tag colors per render.
 - Radar polygons, bar lengths, tag weights, bubble sizes, and heatmap colors must bind to named numeric fields.
@@ -283,7 +283,7 @@ Use failure IDs:
 | Dimension, tag, subject, label, and support-fact budgets are declared before styling. | MUST/fail | Source/config plus QA crop/DOM or chart option proof | `VIS-MULTIDIM-DENSITY-UNBOUNDED` |
 | Evidence body meets the selected chart/table/list/tag fit floor. | MUST/fail | Slot budget, DOM geometry, screenshot/crop, ECharts/table/tag option proof | `VIS-MULTIDIM-SQUEEZED` |
 | Exact-value route exists for hidden/abbreviated feature values, tag rules, and raw standardized values. | MUST/fail | Tooltip/drawer/table/export/action config review | `RPT-NO-ACTION` |
-| White-card UI Kit styling remains data-first and avoids generic AI polish. | MUST/fail | Token/style review plus visual QA | `VIS-MULTIDIM-AI-POLISH` |
+| Light-surface UI Kit styling remains data-first, reduces uniform card borders, and avoids generic AI polish. | MUST/fail | Token/style review plus visual QA | `VIS-MULTIDIM-AI-POLISH` |
 | Loading, empty, no-permission, stale, missing-dimension, scale-conflict, too-dense, and long-label states preserve geometry. | MUST/fail | State matrix, screenshots/crops, DOM overflow checks | `LAZY-DEFAULT-STATE-ONLY` |
 | Local controls are current-card scoped or explicitly reclassified. | MUST/fail | Control semantics contract | `VIS-DUPLICATE-CONTROL` |
 

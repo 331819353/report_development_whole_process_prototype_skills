@@ -21,7 +21,7 @@ Use this template to produce a complete, non-empty report design system specific
 | Enterprise density | Prioritize scanning, comparison, and repeated work over marketing-style decoration | First viewport answers a business question without decorative-only blocks |
 | Anti-AI realism | Product context, real content, states, accessibility, and engineering constraints outrank generic polish | `AI-*` findings are absent, remediated, or documented as scoped exceptions |
 | Report decision usefulness | Report pages must support judgment, diagnosis, trust, and action instead of only looking like dashboards | `RPT-*` findings are absent, remediated, or documented as scoped exceptions |
-| Modern BI clarity | When requested, modern SaaS / BI Dashboard / UI Kit style means light analytical surfaces, white-card hierarchy, restrained UI Kit controls, no component pileup, and lightweight charts | `VIS-MODERN-BI-BASELINE-MISSING`, `VIS-GENERIC-SAAS-SHELL`, `VIS-COMPONENT-PILEUP`, `VIS-CHART-OVERWEIGHT`, and `VIS-HIERARCHY-FLAT` are absent or scoped |
+| Modern BI clarity | When requested, modern SaaS / BI Dashboard / UI Kit style means light analytical surfaces, reduced uniform card borders, brand/product color hierarchy, information flow, restrained UI Kit controls, no component pileup/KPI-everywhere, and lightweight charts | `VIS-MODERN-BI-BASELINE-MISSING`, `VIS-GENERIC-SAAS-SHELL`, `VIS-COMPONENT-PILEUP`, `VIS-CHART-OVERWEIGHT`, `VIS-HIERARCHY-FLAT`, `VIS-CARD-BORDER-OVERUSE`, `VIS-KPI-EVERYWHERE`, `VIS-SEMANTIC-COLOR-OVERRELIANCE`, and `VIS-NO-INFORMATION-FLOW` are absent or scoped |
 | Semantic tokens | Use role-based tokens instead of one-off raw styles | Every raw color/spacing/shadow maps to a token or exception |
 | Stable geometry | Hover/focus/loading/error states preserve layout size | No cards, buttons, charts, or tables shift on interaction |
 | Measurable component placement | Implementation-ready components define internal coordinates and alignment before visual polish | Each component family has slot x/y rules, main visual center, size tiers, and state geometry |
@@ -38,9 +38,9 @@ Minimum rows: color, typography, spacing, grid, radius, border, shadow, state, d
 | Color | `surface.page` | Inherited or value | Page background | Contrast against body text | stable/variant/gap |
 | Color | `surface.card` | Inherited or value | KPI/chart/table containers | Contrast against borders/text | stable/variant/gap |
 | Color | `surface.card.muted` | Inherited or value | Internal sub-blocks, table header fills, quiet supporting panels | Must not look like nested cards | stable/variant/gap |
-| Border | `border.subtle/card/focus` | Inherited or value | White-card outlines, dividers, focus rings | Thin but visible on light page canvas | stable/variant/gap |
+| Border | `border.subtle/card/focus` | Inherited or value | Bounded surface outlines, dividers, focus rings | Thin but visible on light page canvas | stable/variant/gap |
 | Radius | `radius.card` | `6-8px` default or inherited value | Analytical cards and report blocks | No oversized SaaS cards unless source requires | stable/variant/gap |
-| Shadow | `shadow.card` | Inherited or subtle value | White-card depth on light page canvas | Must not dominate data reading | stable/variant/gap |
+| Shadow | `shadow.card` | Inherited or subtle value | Optional surface depth on light page canvas | Must not dominate data reading | stable/variant/gap |
 | Color | `text.primary` | Inherited or value | Page/block titles and primary values | Must pass text contrast | stable/variant/gap |
 | Color | `text.secondary` | Inherited or value | Descriptions, helper text, secondary labels | Must remain readable in dense cards | stable/variant/gap |
 | Color | `state.success/warning/error/info` | Inherited or value | Status tags, alerts, trend indicators | Semantic color cannot be decorative | stable/variant/gap |
@@ -113,7 +113,7 @@ Minimum rows: amount/count, percentage/rate, change/variance, rank/score, time/d
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Amount/count | Source unit | Unit suffix or thousands separator | Business-approved decimals | Keep unit visible near value | Trend optional | Hidden unit | Owner |
 | Percentage/rate | Ratio or percent source declared | `%` in Chinese report UI by default | Declared rounding | Use rate/completion/change wording consistently | Direction must match business semantics | `pt`, `p.p.`, `percentage point` unless approved | Owner |
-| Change/variance | Difference or ratio source declared | `%` for rate change, source unit for absolute diff | Declared rounding | Explain baseline | Positive-red-up and negative-green-down unless domain says otherwise | Ambiguous "increase" without baseline | Owner |
+| Change/variance | Difference or ratio source declared | `%` for rate change, source unit for absolute diff | Declared rounding | Explain baseline | Inherited/documented color-icon convention; positive-red-up/negative-green-down only when applicable | Ambiguous "increase" without baseline | Owner |
 | Rank/score | Score model declared | Score/rank label | Declared decimals | Show ranking scope | Up/down only if comparable | Rank without population | Owner |
 | Time/duration | Timestamp or duration source | Date/time/days/hours | Declared granularity | Show timezone/period if relevant | SLA status optional | Time without period | Owner |
 

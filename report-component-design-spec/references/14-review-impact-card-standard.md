@@ -23,7 +23,7 @@ These samples feel designed because the visual style comes from a strict review 
 1. One business question anchors every card: "这个动作/活动带来了什么变化?" The card does not drift into generic insight, ranking, or dashboard decoration.
 2. Event identity is separated from evidence. The left rail gives event name, type, period, audience, and icon; the right side proves impact with metrics, trend, funnel steps, or segments.
 3. The comparison method is visible. Before/after, trend, funnel, segment, or control-group comparison is shown as a controlled mode rather than an arbitrary chart choice.
-4. Visual variety follows data shape. KPI strips, annotated lines, funnel bars, and segment bars appear only because the evidence task differs.
+4. Visual variety follows data shape. Bounded metric/fact strips, annotated lines, funnel bars, and segment bars appear only because the evidence task differs.
 5. Whitespace is editorial and functional. A vertical divider, generous gutters, and fixed evidence slots create a reading path: event -> method -> evidence -> conclusion.
 6. UI controls look product-native. Segmented controls and compact dropdowns are small, aligned, and data-scoped; they do not become floating decorative chips.
 7. Colors are semantic accents. Blue, green, violet, and amber identify event types or evidence families, while the card surface stays white and restrained.
@@ -271,7 +271,7 @@ Responsive fallback order:
 
 ## 9. Visual And Interaction Rules
 
-- Surface: white or near-white card with thin border, small radius `6-8px`, subtle shadow, and no nested card styling.
+- Surface: white or near-white analytical surface only when the impact body needs a bounded object, reduced border, small radius `6-8px`, subtle shadow only when useful, and no nested card styling.
 - Event badge: `40-48px` icon circle or rounded square; accent color maps to event type or status and must be sparse.
 - Typography: title strong, event name medium, metadata muted, numeric values tabular, units close to values.
 - Divider and gutters create hierarchy. Do not add extra cards inside the body.

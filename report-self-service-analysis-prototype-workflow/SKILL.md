@@ -21,6 +21,8 @@ Core intent:
 自助分析让用户自己探索“还有什么问题”。
 ```
 
+Prototype story gate: this workflow does not call `$report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds how the analyst starts from a question, chooses dimensions/metrics, gets a result, verifies it, and saves or shares the reusable analysis.
+
 ## Child Skills
 
 | Stage | Skill |
@@ -43,21 +45,24 @@ Core intent:
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-3. Define `dataScope -> analysisModel -> operationModel -> outputResult`.
-4. List available datasets, dimensions, metrics, time fields, filter fields, and custom fields.
-5. Define field metadata: field type, groupability, filterability, calculability, permissions, masking, allowed combinations, and performance limits.
-6. Design the workbench structure: dataset/report title/save/share/export, field panel, row/column/metric/filter configuration, chart/style configuration, result area, drilldown/detail drawer.
-7. Define user operations: drag/drop or equivalent selection, filter, sort, Top N, null handling, chart switching, pivot/table view, drilldown, save, duplicate, share, scheduled delivery, export, add-to-dashboard.
-8. Use `$report-type-design` with exploratory-analysis intent; keep detail-query only as a drilldown or output block.
-9. Use `$report-info-component-mapping` for field panel, config zones, result widgets, dataset contracts, invalid-combination states, and binding matrix.
-10. Route chart, table/pivot, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
-11. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-12. Use layout/template/component skills to implement the workbench without hiding the analysis model behind decorative charts.
-13. Verify data completeness, permission states, empty/error/timeout/invalid-combination states, and runnable URL when requested.
+3. Define the typed prototype story: target analyst, one-sentence exploration value, starting question, analysis result, reuse outcome, and trust/permission boundary.
+4. Define the self-service user path: choose dataset/template -> select dimensions/metrics -> configure filters/view -> inspect chart/table result -> drill/verify detail -> save/share/export/reuse.
+5. Define `dataScope -> analysisModel -> operationModel -> outputResult`.
+6. List available datasets, dimensions, metrics, time fields, filter fields, and custom fields.
+7. Define field metadata: field type, groupability, filterability, calculability, permissions, masking, allowed combinations, and performance limits.
+8. Design the workbench structure: dataset/report title/save/share/export, field panel, row/column/metric/filter configuration, chart/style configuration, result area, drilldown/detail drawer.
+9. Define user operations: drag/drop or equivalent selection, filter, sort, Top N, null handling, chart switching, pivot/table view, drilldown, save, duplicate, share, scheduled delivery, export, add-to-dashboard.
+10. Use `$report-type-design` with exploratory-analysis intent; keep detail-query only as a drilldown or output block.
+11. Use `$report-info-component-mapping` for field panel, config zones, result widgets, dataset contracts, invalid-combination states, and binding matrix.
+12. Route chart, table/pivot, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
+13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
+14. Use layout/template/component skills to implement the workbench without hiding the analysis model behind decorative charts.
+15. Verify data completeness, permission states, empty/error/timeout/invalid-combination states, and runnable URL when requested.
 
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, target analysts, business scenarios, datasets, and exploration questions.
+- Typed prototype story: one-sentence exploration value, user path, starting question, result/reuse outcome, trust/permission boundary, and 30-second review path.
 - Affected-surface to owning-skill routing, especially field-panel layout, chart, table/pivot, filter, component placement, design-system, template, and runtime QA.
 - Data scope, analysis model, operation model, and output/result reuse model.
 - Field catalog: dimensions, metrics, time fields, statuses, custom fields, and each field's allowed operations.
@@ -70,6 +75,7 @@ Core intent:
 ## Quality Gate
 
 - Do not design a BI-looking page unless the data model can support the promised field combinations.
+- Do not start layout or workbench controls until the exploration story, user path, starting question, result/reuse outcome, and trust/permission boundary are explicit or safely inferred.
 - Do not start implementation or repair from this workflow alone when chart/table/filter/placement surfaces require their specific front-door skills.
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
 - Do not hide field metadata, invalid combinations, permissions, or performance limits.

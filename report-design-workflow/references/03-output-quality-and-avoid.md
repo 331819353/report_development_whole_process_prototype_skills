@@ -105,7 +105,7 @@ Before final delivery, verify:
 - Analysis & Insight components in runnable prototypes declare `analysisInsightContract`, show conclusion before evidence, expose evidence/action/trust/source/freshness or an explicit insufficient-data state, and have dedicated crop/source checks when present.
 - HTML-replica and custom layouts use global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and controls unless exact restoration is explicitly requested.
 - Metrics include baselines, direction, unit, and formulas where needed.
-- Rate/change/completion fields use `%` in visible Chinese UI; change-rate and variance-rate indicators use positive-red-up / negative-green-down SVG/icon semantics.
+- Rate/change/completion fields use `%` in visible Chinese UI; change-rate and variance-rate indicators use positive-red-up / negative-green-down SVG/icon semantics only when inherited company, finance, market, or explicit business convention requires it.
 - Mock data, if used, reconciles with KPI cards, charts, tables, and filters.
 - A self-check report has been produced for the latest implementation cycle.
 - The self-check report covers Z-shaped component audit, data completeness, filter configuration, interaction usability, configuration completeness, and visual/runtime state.

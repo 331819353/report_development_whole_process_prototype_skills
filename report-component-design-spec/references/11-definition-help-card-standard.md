@@ -25,7 +25,7 @@ The sample family feels strong because the visual design is tied to product trus
 3. Shared grammar with real variation: index/title/tag/help, one main evidence body, and bottom trust strip repeat; body layout changes only when the data shape requires it.
 4. Data-backed visuals: line, donut, formula equation, `VS`, condition chips, and example operands are not decoration. They are tied to fields, formula, denominator, or selected conditions.
 5. Visible口径 boundaries: period, range, include/exclude, paid/completed status, refund treatment, channel, source, and freshness stay visible or discoverable.
-6. Quiet UI language: white cards, thin borders, restrained shadows, compact controls, muted metadata, and small semantic icons keep attention on metric comprehension.
+6. Quiet UI language: optional white/light analytical surfaces, reduced uniform borders, restrained shadows only when needed, compact controls, muted metadata, and small labeled icons keep attention on metric comprehension.
 7. Exact-value path: compressed explanations can stay elegant because tooltip, popover, drawer, dictionary link, or detail table preserves auditability.
 8. Anti-AI discipline: no generic "智能说明", no smooth fake trend for every card, no decorative glass/gradient/glow, and no identical card shell pasted across different explanation tasks.
 
@@ -215,7 +215,7 @@ Fallback order:
 Visual rules:
 
 - Inherit enterprise/report tokens. Component-specific styling should state semantic extensions only.
-- Default card surface is white or weak neutral, with thin border, `6-8px` radius unless the project token differs, and restrained shadow.
+- Default bounded surface is white or weak neutral only when needed, with reduced border, `6-8px` radius unless the project token differs, and restrained shadow only when useful.
 - Formula bands and trust strips use weak neutral backgrounds. They are structured content, not nested cards.
 - Accent color is reserved for selected controls, result values, formula output, or semantic state.
 - Icons are line icons or approved project icons; icon circles remain low-contrast and secondary.

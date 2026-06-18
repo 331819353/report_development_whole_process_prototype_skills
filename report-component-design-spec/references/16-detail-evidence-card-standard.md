@@ -25,7 +25,7 @@ The samples feel strong because they turn "show me details" into trustworthy pro
 3. Exact values remain first-class. IDs, times, amounts, statuses, counts, IPs, sample numbers, and action links are visible or reachable through tooltip, row detail, export, drawer, or fullscreen.
 4. UI controls are local and modest. Date, status, sample type, "下钻查看", "查看详情", and refresh/export controls sit in the card header and do not impersonate page-global filters.
 5. Density is engineered. Header, metric strip, table body, list rows, pagination, and footers have visible budgets; the body never becomes a decorative two-row table.
-6. The visual rhythm is enterprise-realistic: white cards, thin borders, small radius, light shadows, calm dividers, compact tags, muted metadata, and tabular numerals.
+6. The visual rhythm is enterprise-realistic: optional light analytical surfaces, reduced uniform borders, small radius, light shadows only when useful, calm dividers, compact tags, muted metadata, and tabular numerals.
 7. Visual variety follows data shape. Donut means structure, line/area means trend, table means exact audit, tree row means hierarchy, timeline/stepper means ordered process, and metric strip means summary context.
 8. Status is semantic, not ornamental. Success, failure, warning, pending, processing, abnormal, high-risk, and completed states map to dictionaries and allowed actions.
 9. The designs tolerate operational reality. They show negative states, failures, long names, pagination, partial rows, hidden detail, and permission-sensitive actions.
@@ -294,7 +294,7 @@ Responsive fallback order:
 Visual rules:
 
 - Inherit enterprise/report tokens. State component-specific extensions only when needed.
-- Use quiet light page surfaces, white cards, thin borders, `6-8px` radius unless inherited tokens differ, and restrained shadows.
+- Use quiet light page surfaces, optional white analytical surfaces, reduced uniform borders, `6-8px` radius unless inherited tokens differ, and restrained shadows only when useful.
 - Header hierarchy stays compact: title `14-16px`, helper/source text `12px`, controls `28-32px`, body text `12-14px`.
 - Numeric cells use tabular numerals and right alignment. Ordinary values remain neutral; reserve color for change, risk, status, severity, selection, or action.
 - Tags use weak semantic fills. Do not turn every field into a badge.
@@ -352,7 +352,7 @@ one detail task -> row grain + primary key -> bounded evidence body -> exact rou
 | Tables/lists/timelines declare visible row/column/step budgets and overflow strategy. | MUST/fail | Slot budget and config review | `VIS-DETAIL-DENSITY-UNBOUNDED` |
 | Local controls affect only the current card or declared local group and preserve export/detail context. | MUST/fail | Control semantics review | `VIS-DETAIL-DUPLICATE-CONTROL` |
 | Status/severity/result values map to dictionaries with semantic color, icon/text, meaning, terminal flag, and allowed actions. | MUST/fail | Status dictionary review | `RPT-DETAIL-STATUS-DICT-MISSING` |
-| White-card SaaS/UI Kit style uses inherited tokens, thin borders, small radius, restrained shadows, muted tables, and semantic accents. | SHOULD/exception-required | Style token review | `VIS-DETAIL-AI-POLISH` |
+| Light-surface SaaS/UI Kit style uses inherited tokens, reduced uniform borders, small radius, restrained shadows, muted tables, and documented brand/status accents. | SHOULD/exception-required | Style token review | `VIS-DETAIL-AI-POLISH` |
 | Optional metric strips stay `<=3` values and do not squeeze the detail body below useful row count. | SHOULD/exception-required | Geometry budget review | `VIS-DETAIL-TABLE-SQUEEZED` |
 
 ## 13. Acceptance Checklist

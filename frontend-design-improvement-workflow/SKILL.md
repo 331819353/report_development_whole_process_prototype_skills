@@ -43,6 +43,7 @@ This skill does not replace implementation skills. It creates the improvement ro
 3. Split the request into page-level, component-level, data/decision-readability, interaction/state, responsive, and runtime-QA work.
 4. Load the correct baseline: Haier enterprise UI as the company-level application baseline for Haier/enterprise Web surfaces, including reports; report design system as the additional report-specific baseline for report/dashboard/BI/data-screen surfaces. Load both for Haier/enterprise report surfaces unless an explicit non-Haier/native/neutral exception exists.
 5. If the requested language is modern SaaS Dashboard / BI Dashboard / UI Kit, load the positive style contract and route its page/card tokens, hierarchy, component-pileup, and chart-lightness checks to the owning skills.
+   Regardless of the requested style language, carry the report visual constraints forward: reduce uniform card borders, do not KPI-ize every module, inherit brand/product color before status colors, lower default green/red dependence, use typography/spacing/dividers for separation, and design information flow rather than a generic dashboard collage.
 6. Route page shell, navigation, grid, header/filter area, responsive, and overlap work to `$report-visual-layout-design`; route block size, height budget, fixed-card clipping, and viewport fit to `$report-layout-size-constraint-spec`.
 7. Route reusable component standards to `$report-component-design-spec`; route chart, table, and filter-specific standards to `$report-chart-design-spec`, `$report-table-design-spec`, and `$report-filter-control-design-spec`.
 8. Route implementation-ready x/y/slot/alignment work to `$report-component-placement-spec`; route mixed single-component review/repair to `$report-component-style-design`.
@@ -56,6 +57,7 @@ This skill does not replace implementation skills. It creates the improvement ro
 - Preflight understanding matrix, surface classification, and selected baseline.
 - Baseline inheritance: Haier company UI baseline plus report-specific baseline when the surface is a Haier/enterprise report/dashboard.
 - Requested design-language contract: modern SaaS / BI Dashboard / UI Kit source hierarchy, page/card tokens, hierarchy rules, chart-lightness rules, and related `VIS-*` findings when applicable.
+- Report visual constraints: card-border reduction, KPI scope boundary, brand-vs-status color rule, red/green exception condition, and information-flow reading path.
 - Page-level and component-level scope.
 - Skills/references to load next, with why each is needed.
 - Acceptance checklist: layout, component fit, data readability, states, responsive behavior, runtime evidence, proof obligations, and remaining gaps.
@@ -64,7 +66,11 @@ This skill does not replace implementation skills. It creates the improvement ro
 ## Quality Gate
 
 - Do not treat "提高前端设计" as only color/radius/shadow polish.
-- Do not treat "现代 SaaS / BI Dashboard / UI Kit" as a free-form mood. If requested, it must become a measurable style contract with light page surface, white-card UI Kit tokens, clear hierarchy, no component pileup, and lightweight charts.
+- Do not treat "现代 SaaS / BI Dashboard / UI Kit" as a free-form mood. If requested, it must become a measurable style contract with light page surface, optional analytical surfaces, reduced card-border use, clear hierarchy, no component pileup, and lightweight charts.
+- Do not improve a report/dashboard by adding the same card border/radius/shadow to every module. Use typography, spacing, dividers, and information flow first.
+- Do not make every module a KPI card or metric tile. KPI scope must be bounded to primary decision metrics.
+- Do not use red/green as the default "professional" palette. Brand/product color and neutral hierarchy must carry identity and emphasis; semantic colors require explicit status/business meaning.
+- Do not call a page improved when it is still a dashboard collage without conclusion -> evidence -> driver -> detail/action -> trust/source flow.
 - Do not begin visual repair or implementation before the affected surfaces and owning skills are classified.
 - Do not route report/dashboard design only to report-design skills when the page is a Haier/enterprise Web application; inherit Haier color, typography, spacing, base controls, states, and brand rules as well.
 - Do not skip page规范 when the issue includes shell, navigation, grid, section order, filters, spacing, overlap, or responsive behavior.

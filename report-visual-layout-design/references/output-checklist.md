@@ -46,7 +46,7 @@ Before finalizing, verify:
 - The page uses Haier blue and white as the main palette.
 - Red/orange/yellow/green colors are used only for semantic status and are not overused.
 - Rate/change fields use `%` in visible Chinese UI, not `pt`, `p.p.`, or `percentage point` labels unless explicitly requested.
-- Change-rate and variance-rate indicators use positive-red-up / negative-green-down icon semantics.
+- Change-rate and variance-rate indicators use the inherited or explicitly documented color/icon convention; positive-red-up / negative-green-down is required only when that convention applies.
 - Redundant information, decorative elements, and visual noise are removed.
 - The content area uses an `8 * N` rectangular grid.
 - Every top-level parent block occupies complete rectangular page-grid cells.
