@@ -189,7 +189,7 @@ Custom layout pattern:
 
 - If a custom shell is used, declare exactly one `customLayoutPattern`.
 - Allowed values: `symmetricBalance` 对称式, `threePart` 三部式, `masterDetail` 主从式, and `narrativeStack` 分层叙事式.
-- Record why the selected pattern fits the report and how it preserves the `8 * N` grid.
+- Record why the selected pattern fits the report and how it preserves the `12 * N` grid.
 
 ### Screenshot Or Image Source Handling
 
@@ -447,8 +447,9 @@ Template and custom implementations must both pass the same audit:
 - Component audit: every component declares affected filters, ignored filters, required fields, formulas, and stale-state behavior.
 - Layout-body audit: every visual block separates title/header from component body; charts, tables, icons, empty states, and custom canvases render only inside the body viewport.
 - Component viewport audit: every rendered widget has a full-size viewport layer between block body and business component; the viewport owns background, clipping, scroll, and resize bounds.
+- Design-idea audit: existing design ideas from a requirement document have been accepted, repaired, or rejected before implementation; conflicts with story, user path, `1920x1080`, `12 * N`, chart `4*3` max, or metric-display boundaries remain visible as findings.
 - Span audit: every component declares `visualType` and uses one of the legal `columns * rows` spans from `report-visual-layout-design`.
-- Block-height audit: for scrollable page templates, every resolved content block is at least 220px tall; when the total grid height exceeds 1080px, the page or content region scrolls vertically instead of shrinking blocks. Fixed sci-fi/big-screen templates are exempt.
+- Block-height audit: for prototype templates, column width is derived after menu/sidebar width is deducted and rowHeight is derived from the first 8 visible content rows after menu/header height is deducted; when the total grid height exceeds the first viewport, the page or content region scrolls vertically instead of shrinking or recomputing rows.
 - Table viewport audit: every native table, Detail Table, Pivot Table, AntV S2 table, wide matrix, and comparison grid declares `visualType: 'table'` or `visualType: 'pivot'` as appropriate, mounts inside the block body, and scrolls internally instead of expanding or clipping the block; Detail Tables preserve row grain, primary key, default sort, column priority, row budget, pagination/search/export scope, and row detail/action behavior; complex/grouped table headers preserve `columnTree`/nested columns, leaf fields, computed spans/depth, fixed whole-header behavior, frozen row/primary columns, filter separation, tooltip definitions, and useful body rows; Pivot Tables preserve row/column dimensions, measures, aggregation formulas, subtotal/grand-total rules, frozen headers, density fallback, and exact cell tooltip/drilldown behavior.
 - Download/print audit: scrollable pages taller than 1080px export or print their full resolved height across multiple 1920x1080 pages; no print/download path may clip to only the first viewport.
 - Regression audit: changing one filter cannot leave any KPI, chart, table, drawer, or export on the previous scope.

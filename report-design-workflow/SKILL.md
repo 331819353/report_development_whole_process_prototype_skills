@@ -45,6 +45,7 @@ Default policy: load `$report-prototype-design-thinking` for the generic design-
 - Stage gates and modes: `references/01-workflow-modes-and-stage-gates.md`; load `references/01a-workflow-visual-implementation-gates.md` for Stage 8 visual layout, Stage 9 component style, and Stage 10 template/implementation gates.
 - Preflight understanding gate: `$quality-gate-validation` `references/preflight-understanding-gate.md`
 - Default prototype design thinking: `$report-prototype-design-thinking` before display theme, report type, layout, or template decisions.
+- Good-report decision path: `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when report/dashboard/BI pages are designed, mapped, accepted, or repaired.
 - Startup/deployment self-check: `references/02-self-check-startup-deployment.md`
 - Output quality and avoid list: `references/03-output-quality-and-avoid.md`
 - Display themes and pattern chain: `references/04-common-display-theme-pattern-chain.md`
@@ -81,6 +82,7 @@ Default policy: load `$report-prototype-design-thinking` for the generic design-
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, input inventory, prototype design-thinking output, core narrative, user path, key decision points, target user/scenario/decision/action, `displayTheme`, pattern cards, report type, and core question.
+- Good-report decision-path output: primary decision question, 3-second main point, conclusion/evidence/cause/detail/action sequence, comparison baseline, metric relationship network, drilldown/action path, and `RPT-*` findings.
 - Style baseline decision when applicable: inherited source hierarchy, modern SaaS / BI Dashboard / UI Kit contract mapping, and unresolved `VIS-*` design-language findings.
 - Visual constraint decision: information-flow vs dashboard rhythm, KPI scope boundary, card-border reduction strategy, and brand-vs-status color rule.
 - Action reflection checkpoints for non-trivial mode/template/component/renderer/source-code decisions, especially when HTML/source samples are used.
@@ -104,6 +106,7 @@ Default policy: load `$report-prototype-design-thinking` for the generic design-
 - Do not implement before display theme, report type, binding matrix, layout, and template/custom shell decision exist.
 - Do not implement a requested modern SaaS / BI Dashboard / UI Kit page before the positive style contract is mapped to tokens, hierarchy, component count, and chart-lightness proof obligations.
 - Do not implement a prototype as a same-weight bordered-card grid, KPI wall, or red/green semantic-color page unless the report-decision gate records an explicit business reason and proof obligations.
+- Do not implement a report prototype that is only an information collection. The page must help the reader make one primary judgment, then expose evidence, cause, detail, and action paths according to the report type.
 - Do not reuse one sentinel value such as `all` for detail rows, aggregate rows, and empty/no-filter state. "All detail rows", "aggregate row", and "empty filter value" must be declared as separate semantics before implementation.
 - Do not choose custom development when a bundled template can satisfy the request.
 - Template-native filters and shell slots must be reused unless template-level redesign is explicitly requested.

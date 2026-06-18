@@ -19,7 +19,7 @@ type ComponentMappingCoreFields = {
   answerAtom: string;
   semanticRole: string;
   block: string;
-  // Top-level page-grid occupant. Uses the report page `8 * N` grid.
+  // Top-level page-grid occupant. Uses the report page `12 * N` grid.
   parentBlockId?: string;
   // Optional local region inside the parent block body. Not a page-grid block.
   subBlockId?: string;

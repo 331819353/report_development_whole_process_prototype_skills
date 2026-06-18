@@ -248,14 +248,14 @@ export const singlePageLightConfigTemplate = {
     layout: {
       designWidth: 1920,
       designHeight: 1080,
-      topbarHeight: 72,
-      contentGap: 14,
+      topbarHeight: 160,
+      contentGap: 0,
     },
     grid: {
-      contentStartY: 88,
-      contentEndY: 1064,
-      rowHeight: 316,
-      cellPadding: 0,
+      contentStartY: 160,
+      contentEndY: 1080,
+      rowHeight: 115,
+      cellPadding: 6,
       dominantTitleColor: '#20a8ff',
       innerBackgroundColor: 'rgba(255, 255, 255, 0.92)',
     },
@@ -266,7 +266,16 @@ export const singlePageLightConfigTemplate = {
     },
   },
   page: {
-    layoutRows: ['AAAABBBB', 'AAAABBBB', 'CCCCDDDD', 'EEEEFFFF'],
+    layoutRows: [
+      'AAABBBCCCDDD',
+      'AAABBBCCCDDD',
+      'EEEFFFGGGHHH',
+      'EEEFFFGGGHHH',
+      'IIIJJJKKKLLL',
+      'IIIJJJKKKLLL',
+      'MMNNOOPPQQRR',
+      'SSUUVVWWXXYY',
+    ],
     widgets: {
       A: widgetTemplates.dataBackedTable,
       B: widgetTemplates.localButtonFilters,

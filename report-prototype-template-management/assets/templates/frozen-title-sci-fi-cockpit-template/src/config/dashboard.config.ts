@@ -40,8 +40,8 @@ export const cockpitConfig: DashboardConfig = {
       titleBackgroundHeight: 164,
       // 标题背景从图片 y=多少开始显示。当前非透明内容从顶部开始，所以为 0。
       titleVisibleTop: 0,
-      // 标题区实际占用高度。当前根据标题图非透明区域测得为 116。
-      titleVisibleHeight: 116,
+      // 标题/菜单区实际占用高度。内容区从 160px 之后按 8 个可视行单元计算行高。
+      titleVisibleHeight: 160,
       // 主标题文字的垂直微调。负数向上，正数向下。
       titleOffsetY: -8,
       // 顶部普通图标按钮尺寸，包括刷新、导航、筛选、下载等按钮高度。
@@ -64,16 +64,18 @@ export const cockpitConfig: DashboardConfig = {
       backgroundTileWidth: 1920,
       // 背景图平铺单元高度，通常和设计稿高度一致。
       backgroundTileHeight: 1080,
-      // 内容分块之间的间距。只影响块与块之间，不影响块内部 padding。
-      contentGap: 10,
+      // 数学分块不设 gap，保证 1920/12=160、(1080-160)/8=115；视觉间距由 cellPadding 和卡片 padding 承担。
+      contentGap: 0,
     },
 
     // 内容网格的公共样式配置。每个页面具体怎么分块，在 nav[].layoutRows 里配置。
     grid: {
-      // 内容区起始 y 坐标。标题冻结后，内容仍从设计稿的 118px 位置开始。
-      contentStartY: 118,
+      // 内容区起始 y 坐标。标题/菜单区冻结后，内容从 160px 位置开始。
+      contentStartY: 160,
       // 内容区结束 y 坐标。默认铺到 1080px 底部。
       contentEndY: 1080,
+      // 内容区 920px 按 8 行等分，得到单个分块行高 115px。
+      rowHeight: 115,
       // 每个分块外层留白，控制透明块和块内背景之间的距离。
       cellPadding: 5,
       // 标题背景中占比最高的亮色，用于分块边框和高亮混色。
@@ -93,8 +95,9 @@ export const cockpitConfig: DashboardConfig = {
   },
 
   // 导航页配置。数组里有几个对象，导航抽屉里就显示几个页面。
-  // layoutRows 是当前导航页的分块布局：
+  // layoutRows 是当前导航页的分块布局，采用 12列*N行规则；首屏 rowHeight 按 8 个可视行单元计算：
   // 1. 每个字符串代表一行，每个字符代表一列。
+  //    每行必须保持 12 个字符；默认首屏提供 8 行内容分块；最小分块为 2*1，普通图表默认 3*2 且不超过 4*3。
   // 2. 相邻且相同的字符会合并成一个块，例如 "gg" 会横向跨两列。
   // 3. 同一个字符上下相邻也会合并，例如两行同列都是 "A" 会纵向合并。
   // 4. "." 或空格表示留空，不生成块。
@@ -122,36 +125,81 @@ export const cockpitConfig: DashboardConfig = {
       label: '经营总览',
       // 当前导航页图标。
       icon: 'Gauge',
-      // 经营总览页布局：8列3行；A-H 单格，i/k 跨两行，g/l/m/n/o/p 按相邻字符合并。
-      layoutRows: ['ABCDEFGH', 'iggkllmm', 'innkoopp'],
+      // 经营总览页布局：12列*N行示例；前三组是 12 个默认 3*2 主块，后两行是 12 个 2*1 补充块。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'industry',
       label: '产业经营',
       icon: 'Factory',
-      // 产业经营页布局示例：每两个相同字符合并成 2 列宽块。
-      layoutRows: ['AABBCCDD', 'eeffgghh', 'iijjkkll'],
+      // 产业经营页布局示例：8 行首屏分块。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'finance',
       label: '指标分析',
       icon: 'BarChart3',
-      // 指标分析页布局示例：A 和 F/J 是更宽的重点块。
-      layoutRows: ['AAAAFFFF', 'bbccddgg', 'hhiiJJJJ'],
+      // 指标分析页布局示例：8 行首屏分块。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'network',
       label: '组织链路',
       icon: 'Network',
-      // 组织链路页布局示例：A/B 跨两行，用于放更高的信息块。
-      layoutRows: ['AABBCCDD', 'AABBeeff', 'gghhiijj'],
+      // 组织链路页布局示例：左侧主块与右侧链路/列表块保持 12 列矩形。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'settings',
       label: '模板配置',
       icon: 'Settings',
-      // 模板配置页布局示例：上方两个宽块，下方多个小块。
-      layoutRows: ['AAAABBBB', 'ccddeeff', 'gghhiijj'],
+      // 模板配置页布局示例：上方默认主块，下方多个 2*1 配置/审计块。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
   ],
 

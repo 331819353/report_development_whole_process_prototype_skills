@@ -8,6 +8,14 @@ Use `06c-table-card-patterns.md` when visual samples or requirements need reusab
 
 Use Detail Tables for row-level records such as orders, customers, products, stores, transactions, tickets, budget rows, metric details, and audit evidence. The table's job is record lookup, row-to-row comparison, anomaly/status location, detail drill-through, and light row action. It is not a decorative dense database dump.
 
+## Low-Noise Table Baseline
+
+- Apply `00b-low-noise-high-density-baseline.md` when table polish, 高级感, 好看, 好用, 易懂, or outside-guideline-inspired table design is in scope.
+- Tables are scan-first components. Visual quality comes from stable row rhythm, typed alignment, readable headers, restrained separators, and exact-value disclosure, not from colorful backgrounds or heavy card styling.
+- Header fill, hover fill, selected row fill, subtotal fill, and conditional formatting must each have a distinct semantic role. Do not layer many tinted backgrounds in one table.
+- Permanent row operations are bounded. Show one primary row action when needed; move secondary actions to `更多`, row drawer, or contextual reveal.
+- Status is badge/icon/text with restrained color. Full-row red/green backgrounds are reserved for incident or alert tables with explicit severity semantics.
+
 Business fit:
 
 - Use a Detail Table when the user needs to inspect exact records, compare rows, locate exceptions, sort/filter rows, export evidence, or open a row detail drawer.

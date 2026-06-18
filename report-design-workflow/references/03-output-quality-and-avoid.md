@@ -22,14 +22,15 @@ Use this structure:
 2. 展示主题、模式卡片与报表类型.
 3. 用户与核心问题.
 4. 业务设计思路.
-5. 信息区块、模式卡片与组件映射.
-6. 数据策略.
-7. 筛选策略.
-8. 数据交互策略.
-9. 视觉布局策略.
-10. 组件风格策略.
-11. 质量验收清单.
-12. 假设与缺口.
+5. 好报表决策路径: 3秒主判断、唯一主结论、What/Why/So what、对比参照、指标关系网络、下钻/action 路径.
+6. 信息区块、模式卡片与组件映射.
+7. 数据策略.
+8. 筛选策略.
+9. 数据交互策略.
+10. 视觉布局策略.
+11. 组件风格策略.
+12. 质量验收清单.
+13. 假设与缺口.
 
 ### Implementation Plan Output
 
@@ -56,9 +57,10 @@ Use this structure:
 2. Root design causes.
 3. Affected components/blocks.
 4. Affected display-theme and pattern-card decisions.
-5. Fix strategy by workflow stage.
-6. Concrete implementation changes if requested.
-7. Verification checks.
+5. Good-report path findings: primary question, comparison, metric network, What/Why/So what, drilldown/action, and `RPT-*` gaps.
+6. Fix strategy by workflow stage.
+7. Concrete implementation changes if requested.
+8. Verification checks.
 
 ### Self-Check Report Output
 
@@ -90,6 +92,9 @@ Before final delivery, verify:
 - No unimplemented pattern is described as done; unsupported patterns are marked as gaps or future work.
 - Secondary report types only appear where they change a block or flow.
 - The core user question is answered in the first meaningful viewport.
+- The first meaningful viewport exposes one primary judgment, not only a metric catalogue or chart collection.
+- Primary metrics have comparison baselines and connect to a result -> driver -> dimension/object -> detail -> action/source network.
+- What happened, why it happened, and what the reader should check or do next are either visible in the page path or recorded as explicit `RPT-*` gaps.
 - `pageShellPath` is declared as `template` or `custom`.
 - `pageStyleSource` is declared. If no page style and no HTML/source/sample styling is provided, a bundled template is used by default.
 - Exactly one `brandMode` is declared and its logo/global UI token implications are followed.
@@ -122,7 +127,7 @@ Before final delivery, verify:
 - Filtered KPI totals, chart totals, table rows, summary counts, and drawer records reconcile against the same dataset and permission scope.
 - Interactions preserve period, scope, object, metric, filters, permissions, and return path.
 - Open drawers, selected rows, chart marks, and drill paths reset or show stale-selection state when filters remove the selected object.
-- Layout follows the 8*N rectangular grid.
+- Layout follows the 12*N rectangular grid.
 - Haier logo usage follows light/dark rules.
 - Page layout owns page shell identity and block placement, while business components own visible title/function/local-filter areas inside their widget viewport.
 - Peer component groups or repeated sub-blocks inside one parent block use the internal exact `M * N` distribution only when `actualTotal > 4`; for `actualTotal <= 4`, use a small-group layout based on content and block shape. When the algorithm applies, normally `layoutTotal = actualTotal`; when `actualTotal` is prime, use `layoutTotal = actualTotal + 1`; then choose `layoutTotal = M * N`, columns `M >= N`, and the minimal `M - N` among valid factor pairs. This is an internal sub-block matrix; it does not replace the top-level parent block span. After choosing it, preserve `5px` parent inset and `5px` sibling gap, then check whether the parent block needs vertical expansion with `heightExpansionRows = ceil(N * 2 / 3)`. Do not add arbitrary empty placeholders; the only allowed spare cell is the single prime-balancing cell created when the algorithm applies to a prime count, and it must not create fake metrics or mock data. Split the group if the exact shape is unreadable.

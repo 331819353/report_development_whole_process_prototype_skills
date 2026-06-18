@@ -17,6 +17,9 @@ Component-internal local filters are governed by `10-in-component-controls.md` a
 ## Layout
 
 - High-frequency filters stay visible; low-frequency filters move into an advanced filter popover or drawer.
+- The default page/global filter surface should feel weak in visual weight: neutral background, compact height, restrained border, no large filled buttons, and no decorative tag wall.
+- Keep only key decision filters visible by default. When visible controls exceed the available header row, or when the user would need to scan many low-frequency dimensions, collapse secondary filters into `高级筛选`, a popover, drawer, or saved view.
+- Show active conditions through compact chips or an active-count summary. Extra chips collapse into `更多条件` before pushing the report title, primary action, or content grid out of alignment.
 - Page/global filters own cross-component scope. Component-local filters stay near the component title/header and must not duplicate the page/global filter surface.
 - Controls in one row share height, baseline, border radius, and label alignment.
 - Use a grid or flex wrap. Do not squeeze filters until labels or selected values overflow.

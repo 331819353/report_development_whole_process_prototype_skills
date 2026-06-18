@@ -69,7 +69,7 @@ For report/dashboard/BI/data-screen work, classify the affected surface before e
 | --- | --- |
 | Haier-branded or enterprise Web application baseline, including report/dashboard apps | `$haier-enterprise-app-ui-design-spec` for color, typography, spacing, radius, shadows, base controls, states, brand/logo, and cross-platform rules |
 | Whole report baseline, reusable rules, anti-AI/report-decision gate | `$report-design-system-governance` for report-specific hierarchy, visualization, metric, chart/table/filter, state, and engineering acceptance rules |
-| Page shell, navigation, global filters, first viewport, `8 * N` grid | `$report-visual-layout-design` |
+| Page shell, navigation, global filters, first viewport, `12 * N` grid | `$report-visual-layout-design` |
 | Parent block/container height, width, overflow, viewport fit | `$report-layout-size-constraint-spec` |
 | Chart type, ECharts option fidelity, legend, axis, labels, tooltip, plot budget | `$report-chart-design-spec` |
 | Detail/pivot/grouped tables, column width, alignment, row height, pagination, fixed columns | `$report-table-design-spec` |

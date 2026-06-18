@@ -17,7 +17,7 @@ All template families use the same conceptual layers:
 1. Design frame: fixed design width/height, normally `1920 * 1080`.
 2. Shell frame: topbar, left-nav, or frozen title/header area.
 3. Content canvas: vertical region bounded by `screen.grid.contentStartY` and `screen.grid.contentEndY`, or by row count and `rowHeight` when the page scrolls.
-4. `8 * N` block grid: `layoutRows` characters resolve into rectangular blocks.
+4. Content block grid: `layoutRows` characters resolve into rectangular blocks on a 12-column grid; column width comes from `(visibleWidth - menuOrSidebarWidth) / 12`, rowHeight comes from `(visibleHeight - menuOrHeaderHeight) / 8`, and long pages reuse the same rowHeight for `N` rows.
 5. Block frame: `.placeholder-cell` reserves `cellPadding` around the block.
 6. Block card: `.placeholder-cell-inner` owns the visible card/frame surface, body viewport, radius, shadow, and theme surface.
 7. Widget viewport: `.placeholder-cell-body > .widget-renderer` fills the card body and gives the business component or composite parent widget a stable `100% * 100%` viewport.
@@ -34,7 +34,7 @@ Normal report delivery should change these fields through `src/config/dashboard.
 | `topbarHeight` / sidebar widths / title asset sizes | `screen.layout` | Shell-specific reserved area. | Preserve selected template shell; do not recreate a second shell. |
 | `contentStartY`, `contentEndY` | `screen.grid` | Content canvas vertical range. | Move these only when shell height or first-viewport hierarchy changes. |
 | `contentGap` | `screen.layout` | Gap between resolved grid blocks. | Controls block-to-block spacing only, not card internal padding. |
-| `rowHeight` | `screen.grid`, scroll templates | Minimum resolved grid-row height. | Never shrink below 220px; grow/scroll instead of squeezing content. |
+| `rowHeight` | `screen.grid`, scroll templates | Resolved grid-row height from the visible content area. | Calculate from the first viewport: `(contentEndY - contentStartY) / 8`; do not recalculate from total report rows. |
 | `cellPadding` | `screen.grid` | Space between grid cell and visible card surface. | Use `0` for clean enterprise cards; use small values such as `5px` for cockpit frames. |
 | `dominantTitleColor` | `screen.grid` | Accent color hint for component-owned titles, glow, and weak highlights. | Keep aligned with brand/template theme. |
 | `innerBackgroundColor` | `screen.grid` | Block body/frame background hint. | Do not use as business-widget data surface when component scoped styles own the body. |
@@ -45,9 +45,9 @@ These values are the current shared baseline extracted from bundled template cod
 
 | Family | Content range | `contentGap` | `rowHeight` | `cellPadding` | Card padding/radius | Component title/control ownership | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Topbar scroll | `88 -> 1064`, page may grow beyond 1080 | `14px` | `316px`, min `220px` | `0` | `8px / 8px` | component-owned, no shell-reserved title band | Topbar is `72px`; content starts after 16px breathing space. |
-| Left-nav workbench | `0 -> 1032`, right content scrolls | `16px` | `320px`, min `220px` | `0` | `8px / 8px` | component-owned, no shell-reserved title band | Left shell width is `256px`, collapsed `80px`; content padding is `24px`. |
-| Frozen cockpit | `118 -> 1080`, fixed screen | `10px` | proportional rows in fixed canvas | `5px` | `8px / 8px` | component-owned, no shell-reserved title band | Title image visible height is `116px`; content begins at `118px`. |
+| Topbar scroll | `160 -> 1080`, page may grow beyond 1080 | `0px` | `115px` | `6px` | `8px / 8px` | component-owned, no shell-reserved title band | Topbar/menu is horizontal: menu height `160px`, menu width `0`; content width is `1920px`, content height is `920px`. |
+| Left-nav workbench | `0 -> 1080`, right content scrolls | `0px` | `135px` | `6px` | `8px / 8px` | component-owned, no shell-reserved title band | Left shell is vertical: menu width `256px`, menu height `0`; content width is `1664px`, content height is `1080px`. |
+| Frozen cockpit | `160 -> 1080`, fixed review canvas or controlled scroll | `0px` | `115px` | `5px` | `8px / 8px` | component-owned, no shell-reserved title band | Title/menu shell reserves `160px`; content splits `920px` into 8 visible rows. |
 
 ## 4. Block Anatomy Contract
 
@@ -103,7 +103,7 @@ Rules:
 - Do not reserve a template title-band gap. Component-owned headers/controls manage their own internal spacing.
 - Use `5px` as the fixed spacing inside composite parent widgets: parent viewport to sub-block edge is `5px`, and sub-block to sub-block spacing is `5px`.
 - Use `999px` radius only for chips, badges, and pill controls.
-- Keep block-to-block spacing in `contentGap`; do not simulate it with widget margins.
+- Keep mathematical grid splitting gapless (`contentGap: 0`) when following the exact grid-unit formulas. Visual breathing room belongs in `cellPadding`, card padding, and component scoped spacing, not in a grid gap that changes the block unit.
 - Keep block-internal spacing in `cardPadding`, title/body gap, and component scoped styles; do not change `cellPadding` to solve widget-level density.
 - In scroll templates, increase rows or allow page scroll when content is dense. In fixed cockpit, reduce visible content, split pages, or use drilldown rather than compressing the 1080px canvas.
 
@@ -129,7 +129,7 @@ Rules:
 | Change | Preferred place | Avoid |
 | --- | --- | --- |
 | Reorder blocks or change spans | `layoutRows` in `dashboard.config.ts` | CSS grid overrides in `styles.css`. |
-| Change block gap | `screen.layout.contentGap` | Margins on widgets or block children. |
+| Change block visual breathing room | `screen.grid.cellPadding`, card padding, or component spacing | Changing `screen.layout.contentGap` away from `0` when exact 12-column/8-row block units are required. |
 | Change content vertical area | `screen.grid.contentStartY/contentEndY` | Absolute offsets on individual blocks. |
 | Change minimum row height | `screen.grid.rowHeight` in scroll templates | Shrinking widget internals below fit rules. |
 | Change block accent/surface | `dominantTitleColor`, `innerBackgroundColor`, theme tokens | One-off colors per block without design-system reason. |
@@ -142,8 +142,9 @@ Rules:
 ## 9. Review Checklist
 
 - The selected template family is named and its shell contract is preserved.
-- `layoutRows` remains rectangular and every row is compatible with the `8 * N` grid.
-- `contentGap`, `rowHeight`, `cellPadding`, card padding, and radius are not changed ad hoc.
+- `layoutRows` remains rectangular; every row has exactly 12 characters; row count is `N` and is not capped by the grid rule.
+- Top-level blocks are at least `2*1`; ordinary analytical/chart widgets default to `3*2` and chart widgets do not exceed `4*3` unless they are replaced by a conclusion/detail/fullscreen pattern.
+- `contentGap`, `rowHeight`, `cellPadding`, card padding, and radius are not changed ad hoc. `rowHeight` must match the 8-row visible content split.
 - Component-owned title/control/local filter/link areas and body content have stable geometry inside the widget.
 - Component control area follows selection rules: one component-local filter with `2-4` short values and fit proof uses sliding capsule; one filter with `>4` values, long labels, or failed fit uses dropdown; multiple filter groups use panel trigger; detail actions use lightweight links.
 - Widgets receive a stable measurable viewport and do not depend on the template shell for internal component labels.

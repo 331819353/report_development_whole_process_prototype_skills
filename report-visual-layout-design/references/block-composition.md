@@ -1,10 +1,10 @@
 # Block Composition
 
-Use this file when one `8 * N` parent content block needs to contain internal sub-blocks, and those sub-blocks need to contain components.
+Use this file when one `12 * N` parent content block needs to contain internal sub-blocks, and those sub-blocks need to contain components.
 
 ## Core Rule
 
-At the page grid level, one parent block is still one rectangular `8 * N` grid occupant. Inside that parent block, the layout may define internal sub-blocks. Each internal sub-block may contain one component or one tightly related micro-group.
+At the page grid level, one parent block is still one rectangular `12 * N` grid occupant. Inside that parent block, the layout may define internal sub-blocks. Each internal sub-block may contain one component or one tightly related micro-group.
 
 Do not treat internal sub-blocks as separate page-grid blocks. They live inside the parent widget viewport and respect the parent component's padding, title/function area, and overflow strategy.
 
@@ -13,7 +13,7 @@ Before deciding to create sub-blocks, choose the parent span from the default di
 Hierarchy:
 
 ```text
-page content grid: 8 * N
+page content grid: 12 * N
   parent block: rectangular page-grid occupant
     parent component-owned title/action area: one business title for the whole parent block
     parent body viewport
@@ -55,7 +55,7 @@ Create internal sub-blocks inside one parent block when they answer one business
 - Composite Panel: one shared topic with KPI/metric strip, one primary child, one or two auxiliary children, optional short detail preview, shared local filter, shared legend/unit, and linked hover/click behavior.
 - Micro Dashboard Card: one large parent card that contains one themed management topic with a KPI strip, multiple bounded child sections, and one compact exact-value/status path.
 
-Split into separate `8 * N` parent blocks when:
+Split into separate `12 * N` parent blocks when:
 
 - The sub-blocks/components answer different business questions.
 - Each sub-block/component needs its own independent title, filters, actions, or drilldown path; independent visible titles usually mean the content should become separate page-grid parent blocks, each with its own component-owned title/function area.

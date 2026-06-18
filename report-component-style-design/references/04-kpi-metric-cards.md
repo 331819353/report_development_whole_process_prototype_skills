@@ -10,6 +10,8 @@ Use `04a-kpi-card-patterns.md` after this file when the task needs reusable KPI 
 
 - Use KPI cards only for metrics that the reader must judge quickly. If the content is mainly narrative, evidence, drilldown, process, or action, choose the matching component family instead of KPI styling.
 - Do not create a page where most modules share KPI anatomy. KPI overview areas should be bounded, usually one summary strip/card group plus downstream diagnostic evidence.
+- A single KPI card must have one primary metric. If there are two or more equally prominent values, either select the decision-leading metric, convert to a governed KPI overview/multi-metric card, or split the content.
+- Do not use a KPI card as a miniature dashboard. Full line/bar/radar/pie/table/diagram evidence belongs in chart, table, composite, or detail blocks unless the KPI family reference explicitly defines a compact evidence zone and the fit proof passes.
 - A metric shown inside a table row, chart label, narrative sentence, or status list is not automatically a KPI card.
 - If a card lacks formula, unit, baseline/target/comparison, status/direction rule, source/freshness, or detail/action route, keep it out of KPI-card readiness and record `RPT-KPI-EVERYWHERE` or `VIS-KPI-EVERYWHERE` when the layout relies on such cards.
 
@@ -305,6 +307,8 @@ Suggested CSS tokens:
 ## Mini Trends
 
 - Mini line/bar trends are secondary. Hide point labels by default.
+- Mini trends inside KPI cards are evidence hints, not full charts. They must hide axes/legends by default, keep the value anchor dominant, and expose exact period values through tooltip/detail.
+- If a mini trend needs axis labels, multiple series, legends, or reference lines to be understood, move it to a chart card or a governed KPI time-series/composite pattern.
 - For one-point mini trends, center the point and show exact value in tooltip.
 - For two-point mini trends, keep the two marks center-symmetric unless the full time range is represented.
 - Show latest, max/min, or anomaly label only when it fits without colliding with the KPI value.

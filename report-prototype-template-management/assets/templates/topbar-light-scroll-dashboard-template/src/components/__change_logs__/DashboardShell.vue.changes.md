@@ -15,6 +15,22 @@
 
 ## Version Entries
 
+### v20260618-12x8-content-grid - 2026-06-18
+
+- Change ID: ad-hoc-12x8-content-grid
+- Actor: Codex
+- Change type: update
+- Summary: Let the configured 8-row content-grid rowHeight drive rendered block height.
+- Modified functionality: `contentRowHeight` runtime calculation.
+- Code ranges: `contentRowHeight` computed value.
+- Modified content: Replaced the previous 220px floor with a minimal positive fallback so `rowHeight: 115` can render exactly.
+- Affected contracts: 1920x1080 prototype content grid; configured rowHeight from `(contentEndY - contentStartY) / 8`.
+- Verification: `npm run validate:dashboard` passed in `topbar-light-scroll-dashboard-template`.
+- Rollback note: Restore the previous 220px floor only together with reverting the 12x8 grid contract.
+- Related files: `src/config/dashboard.config.ts`, `scripts/validate-dashboard-contract.mjs`.
+- Change evidence: working-tree diff for `src/components/DashboardShell.vue` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T13:02:46.560Z
 
 - Change ID: baseline

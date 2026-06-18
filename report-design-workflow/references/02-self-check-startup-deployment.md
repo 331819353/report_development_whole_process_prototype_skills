@@ -56,8 +56,8 @@ Self-check dimensions:
    - Failure, no-permission, loading, empty, and stale states are visible and not silent.
 
 5. Configuration completeness.
-   - `layoutRows` follows the 8*N rule and every block is rectangular.
-   - For scrollable page templates, every resolved content block is at least 220px tall; if the total grid height exceeds 1080px, vertical scrolling is enabled instead of row compression. Fixed sci-fi/big-screen templates are exempt.
+   - `layoutRows` follows the 12*N rule and every block is rectangular.
+   - For prototype templates, column width comes from the visible width after menu/sidebar width is deducted, rowHeight comes from the first 8 visible content rows after menu/header height is deducted; if the total grid height exceeds the first viewport, vertical scrolling is enabled instead of row compression.
    - For single-page analysis/diagnostic prototypes, the layout may exceed 1080px in height. Treat 1080px as the first viewport, not a compression target.
    - Every configured widget mounts to an existing block, declares `visualType`, and either declares `data` or an explicit `dataPolicy`.
    - Widget registry, widget props/types, data-source registry, filter sources, modals, assets, logo, theme, toolbar, and route/download configs are complete.

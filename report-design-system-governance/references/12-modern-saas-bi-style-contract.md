@@ -23,6 +23,7 @@ If a company/template baseline conflicts with this contract, keep the inherited 
 - Cards and report blocks use white or near-white surfaces only when the content is an independent analytical object or interaction surface. Do not make a uniform bordered-card grid the default page language. Thin borders, small radii, and light shadows are allowed, but typography, spacing, section rhythm, subtle dividers, and local grouping must do the first pass of information separation.
 - Avoid nested cards. A parent report block can contain internal sub-blocks, but those sub-blocks use headings, indentation, dividers, soft fills, or local spacing rather than full card-in-card styling.
 - Decoration is not the page language. No orb, glass, neon, particle, heavy gradient, oversized shadow, or large illustrative background may replace hierarchy, data, or workflow.
+- This contract is not a "large whitespace" rule. In report prototypes, the preferred expression is low-noise high information density: enough breathing room for reading, but no large empty regions when the grid span can carry useful conclusion, evidence, detail/action, or trust/source content.
 
 ### Information Hierarchy
 
@@ -50,7 +51,7 @@ If a company/template baseline conflicts with this contract, keep the inherited 
 
 - Charts are selected for task fit, not visual variety. Trend, ranking, composition, distribution, relationship, driver diagnosis, detail, and action tasks each need the chart family that best answers the question.
 - Prefer fewer, clearer chart families per first viewport. A business dashboard should normally have one primary chart plus bounded supporting evidence; additional charts need distinct business questions.
-- Chart styling stays light: restrained gridlines, key-only labels, muted axes, semantic series colors, readable legend placement, exact-value tooltip/detail, and no decorative backgrounds inside plot areas.
+- Chart styling stays light: restrained gridlines, key-only labels, muted axes, semantic series colors, readable legend placement, exact-value tooltip/detail, and no decorative backgrounds inside plot areas. Avoid rainbow palettes unless category identity, status semantics, or business convention explicitly requires multiple hues.
 - Do not use multiple mini charts inside KPI cards or overview cards unless the component-family rule explicitly allows one compact evidence visual and the fit budget passes.
 - Heavy chart treatment, high-saturation palettes, dense permanent labels, competing legends, or chart/table crowding is `VIS-CHART-OVERWEIGHT` unless the business task and geometry proof justify it.
 

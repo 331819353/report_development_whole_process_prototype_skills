@@ -23,6 +23,8 @@ Core intent:
 
 Prototype story gate: this workflow does not call `$report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds how the user finds the exact record, verifies it, traces its source, exports it, or takes the required row-level action.
 
+Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 are supplemental by default and stay in tooltip/detail/dictionary/handoff unless explicitly requested as visible page content.
+
 ## Child Skills
 
 | Stage | Skill |
@@ -75,6 +77,7 @@ Prototype story gate: this workflow does not call `$report-prototype-design-thin
 
 - Do not design only a field list; query efficiency and traceability are part of the prototype.
 - Do not start layout or table design until the lookup/verification story, user path, row identity, trace/export/action outcome, and trust signal are explicit or safely inferred.
+- Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 are rendered as page modules without an explicit display requirement.
 - Do not start implementation or repair from this workflow alone when table/filter/placement surfaces require their specific front-door skills.
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
 - Do not put every available field into the first visible table.

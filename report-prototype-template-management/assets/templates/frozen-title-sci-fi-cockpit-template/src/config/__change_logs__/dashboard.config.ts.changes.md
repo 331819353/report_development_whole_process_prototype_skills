@@ -15,6 +15,38 @@
 
 ## Version Entries
 
+### v20260618-n-row-menu-axis-grid - 2026-06-18
+
+- Change ID: ad-hoc-n-row-menu-axis-grid
+- Actor: Codex
+- Change type: config
+- Summary: Clarified the frozen cockpit template as a 12-column/N-row grid where rowHeight is calculated from the first 8 visible content row units.
+- Modified functionality: title/menu shell comments and nav layoutRows comments.
+- Code ranges: `screen.layout`; `screen.grid`; `nav[].layoutRows`.
+- Modified content: Reworded fixed `12x8`/`12列*8` language to `12列*N行`, kept `titleVisibleHeight/contentStartY: 160`, `contentEndY: 1080`, and `rowHeight: 115`.
+- Affected contracts: horizontal title/menu height deduction; `(1080 - 160) / 8 = 115`; 12 fixed columns; `N` uncapped rows.
+- Verification: `npm run validate:dashboard` and `npm run build:preview` passed in `frozen-title-sci-fi-cockpit-template`.
+- Rollback note: Restore the previous comments only if the layout contract is changed back to a fixed row budget.
+- Related files: `scripts/validate-dashboard-contract.mjs`, `$report-visual-layout-design`.
+- Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
+- Follow-up: none
+
+### v20260618-12x8-content-grid - 2026-06-18
+
+- Change ID: ad-hoc-12x8-content-grid
+- Actor: Codex
+- Change type: config
+- Summary: Rebased the frozen cockpit defaults on a 160px shell and 8-row visible content grid.
+- Modified functionality: title/menu shell height; screen.layout contentGap; screen.grid contentStartY/rowHeight; nav page layoutRows.
+- Code ranges: `screen.layout`; `screen.grid`; `nav[].layoutRows`.
+- Modified content: Set `titleVisibleHeight/contentStartY` to 160, changed the mathematical grid gap to 0, added `rowHeight: 115`, and expanded default nav layouts to 8 visible rows.
+- Affected contracts: 1920x1080 prototype content grid; 12 columns; 8 visible row units; 12-row scroll budget.
+- Verification: `npm run validate:dashboard` passed in `frozen-title-sci-fi-cockpit-template`.
+- Rollback note: Restore the previous title/content offsets, gap, proportional rows, and three-row nav layouts together with DashboardShell/style/type/validator changes.
+- Related files: `src/components/DashboardShell.vue`, `src/styles/index.scss`, `src/types/dashboard.ts`, `scripts/validate-dashboard-contract.mjs`.
+- Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T12:42:32.974Z
 
 - Change ID: baseline

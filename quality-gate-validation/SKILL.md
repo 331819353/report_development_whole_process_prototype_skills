@@ -36,6 +36,7 @@ Primary shared gates:
 - `$metric-number-display-contract` when judging numeric unit, precision, rounding, percent, tooltip/export, or formatter ownership.
 - `$report-design-system-governance` relevant references when judging report/dashboard/BI/data-screen readiness.
 - `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when modern SaaS / BI Dashboard / UI Kit style is requested or claimed.
+- `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when judging whether a report/dashboard/BI prototype can help the reader make the intended decision.
 
 ## Gate Types
 
@@ -78,6 +79,7 @@ Primary shared gates:
 - Anti-laziness findings or explicit no-finding result when the work is implementation, repair, QA, acceptance, or handoff.
 - Proof obligations and pass/fail evidence when visual/layout/component contracts are part of the readiness claim.
 - Rule strength audit when a standard/spec contains advisory wording that may affect correctness, runtime fit, renderer ownership, data trust, filters, permissions, accessibility, or readiness.
+- Good-report decision-path findings when report/prototype design is in scope: primary question, first judgment, What/Why/So what, comparison baseline, metric relationship network, drilldown/action route, and any `RPT-*` gaps.
 - Findings table with ID, severity, expected, actual, impact, owner, required action, and readiness impact.
 - Readiness result: `ready`, `partial`, or `blocked`.
 - Confirmation questions only for decisions that block affected work.

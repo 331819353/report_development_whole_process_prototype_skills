@@ -24,12 +24,12 @@ When the user provides a sample but does not demand exact restoration, treat the
 
 ## Routing Matrix
 
-Only `frozen-title-sci-fi-cockpit-template` is fixed to a full 1920*1080 screen. All other bundled templates are scrollable `8 * N` report grids with a business overview/cockpit atmosphere, not fixed big-screen frames.
+Only `frozen-title-sci-fi-cockpit-template` is fixed to a full 1920*1080 screen. All other bundled templates are scrollable `12 * N` report grids with a business overview/cockpit atmosphere, not fixed big-screen frames.
 
 | Asset | Use When | Avoid When |
 | --- | --- | --- |
-| `topbar-light-scroll-dashboard-template` | One compact report theme, top bar only, light enterprise shell, one scrollable `8 * N` content grid, daily office reports, readable analysis, and business handoff pages without fixed big-screen constraints. | Multi-chapter suite, persistent side navigation, dark command/cockpit atmosphere, or fixed big-screen display is needed. |
-| `left-nav-analytics-workbench-template` | Multi-page report suite, complex analysis, dense tables, repeated filtering, enterprise workbench, status/diagnosis/detail/action chapters; each nav page uses a scrollable `8 * N` content grid. | The page is a compact one-theme dashboard, only one homepage can be populated, or a large-screen command center. |
+| `topbar-light-scroll-dashboard-template` | One compact report theme, top bar only, light enterprise shell, one scrollable `12 * N` content grid, daily office reports, readable analysis, and business handoff pages without fixed big-screen constraints. | Multi-chapter suite, persistent side navigation, dark command/cockpit atmosphere, or fixed big-screen display is needed. |
+| `left-nav-analytics-workbench-template` | Multi-page report suite, complex analysis, dense tables, repeated filtering, enterprise workbench, status/diagnosis/detail/action chapters; each nav page uses a scrollable `12 * N` content grid. | The page is a compact one-theme dashboard, only one homepage can be populated, or a large-screen command center. |
 | `frozen-title-sci-fi-cockpit-template` | Fixed 1920*1080 exhibition screen, monitoring wall, command center, leadership cockpit, frozen title/background visual assets; nav drawer pages must all be substantial when retained. | Daily office analytics, long text, frequent editing, dense forms, table-heavy workbench, scrollable report reading, or only one cockpit page can be populated. |
 
 ## Display Theme Hints

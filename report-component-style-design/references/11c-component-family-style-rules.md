@@ -89,7 +89,7 @@ Design:
 
 Fit rules:
 
-- In an 8*N grid, text explanation, abstract, and conclusion components must use `visualType: 'text-summary'` and a final span of at least `4*2`.
+- In a 12*N grid, text explanation, abstract, and conclusion components must use `visualType: 'text-summary'` and a final span of at least `4*2`.
 - One-row text is allowed only for title, filter, status, or KPI-strip surfaces with their own validated type; narrative text summaries should use `4*2`, `5*2`, `6*2`, `8*2`, or larger. Use a drawer or wider section for longer narrative.
 - Short conclusions may use 2-3 lines; longer explanation should move to drawer, expandable area, or lower full-width section.
 - If the component is in a narrow right column, use concise sentence fragments and avoid long unbroken text.

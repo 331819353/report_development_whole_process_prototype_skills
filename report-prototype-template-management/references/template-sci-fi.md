@@ -9,15 +9,15 @@ Use `assets/templates/frozen-title-sci-fi-cockpit-template` only for fixed 1920*
 - Title area and page navigation suitable for large screens.
 - Navigation/filter drawers instead of office-style dense controls.
 - `nav[].layoutRows` and `nav[].widgets` per cockpit page.
-- Exempt from the 220px scrollable-row rule; fit content inside 1920*1080.
-- Use the sci-fi 1920 preset from `$report-visual-layout-design`; 3 visible rows are about `314px` tall, while 4 visible rows drop to about `233px`.
+- Uses the same 1920 content-area split unless a documented one-screen cockpit exception is accepted: reserve horizontal menu/header height and vertical menu/sidebar width when present, then split the remaining visible content area into 12 columns and 8 row units for sizing.
+- With a 160px title/menu shell, `rowHeight = (1080 - 160) / 8 = 115px`.
 
 ## Core Config
 
 ```ts
 screen: {
-  layout: { titleVisibleHeight: 116, contentGap: 10 },
-  grid: { contentStartY: 118, contentEndY: 1080, cellPadding: 5 },
+  layout: { titleVisibleHeight: 160, contentGap: 0 },
+  grid: { contentStartY: 160, contentEndY: 1080, rowHeight: 115, cellPadding: 5 },
 },
 assets: {
   logoSrc: '/haier-logo.svg',
@@ -28,7 +28,16 @@ nav: [
   {
     id: 'cockpit',
     label: 'Cockpit',
-    layoutRows: ['ABCDEFGH', 'iijjkkll'],
+    layoutRows: [
+      'AAABBBCCCDDD',
+      'AAABBBCCCDDD',
+      'EEEFFFGGGHHH',
+      'EEEFFFGGGHHH',
+      'IIIJJJKKKLLL',
+      'IIIJJJKKKLLL',
+      'MMNNOOPPQQRR',
+      'SSUUVVWWXXYY',
+    ],
     widgets: {},
   },
 ],
@@ -38,7 +47,7 @@ filters: [],
 ## Shared Layout Contract
 
 - This family follows `template-layout-design-system.md`; shared spacing, cockpit card radius, component title/control handoff, widget viewport, and hover/focus behavior are template-level design decisions.
-- Default content range is `118 -> 1080`; visible title band is `116px`; block gap is `contentGap: 10`.
+- Default content range is `160 -> 1080`; visible title/menu shell is `160px`; mathematical block gap is `contentGap: 0`; `rowHeight = 115px`.
 - Default block anatomy is `placeholder-cell` -> `placeholder-cell-inner` -> body viewport -> `widget-renderer`; visible block titles and local controls are component-owned.
 - Card padding and card radius are both `8px`; `cellPadding: 5` leaves a small outer inset for cockpit frame effects.
 

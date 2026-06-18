@@ -8,10 +8,10 @@ Classify every component into one of the following component types. `min_outer_w
 
 | component_type | min_outer_width_px | min_outer_height_px | size_check_hint | notes |
 | --- | ---: | ---: | --- | --- |
-| `title` | 600 | 56 | `8x1` | Page main title |
-| `section_header` | 360 | 48 | `8x1` | Section or chapter title |
-| `filter_bar` | 600 | 64 | `8x1` | Filter and query controls |
-| `tab_bar` | 500 | 56 | `8x1` | Tabs or dimension switch |
+| `title` | 600 | 56 | `12x1` | Page main title |
+| `section_header` | 360 | 48 | `12x1` | Section or chapter title |
+| `filter_bar` | 600 | 64 | `12x1` | Filter and query controls |
+| `tab_bar` | 500 | 56 | `12x1` | Tabs or dimension switch |
 | `simple_kpi` | 220 | 120 | `2x1_or_2x2` | Single metric card |
 | `rich_kpi` | 300 | 160 | `3x2` | Multi-line KPI with comparison |
 | `mini_chart_kpi` | 320 | 180 | `3x2` | KPI with sparkline or mini chart |
@@ -30,30 +30,30 @@ Classify every component into one of the following component types. `min_outer_w
 | `spatial_map_kpi` | 460 | 320 | `5x4_or_6x4` | Horizontal KPI card with primary value plus projection-safe map body, visualMap/legend, and selective labels |
 | `paired_compare_kpi` | 420 | 260 | `4x3_or_5x3` | Horizontal KPI card with two comparable panes, central VS rail, mini evidence, and bottom conclusion strip |
 | `wide_kpi_banner` | 560 | 160 | `5x2_or_8x2` | Wide KPI banner with split value/evidence zones |
-| `kpi_group` | 600 | 180 | `8x2` | Group of KPI cards |
-| `composite_panel` | 640 | 360 | `6x4_or_8x4` | Multi-component analysis card with one shared topic and one primary child |
+| `kpi_group` | 600 | 180 | `12x2` | Group of KPI cards |
+| `composite_panel` | 640 | 360 | `6x3_or_8x3` | Multi-component analysis card with one shared topic and one primary child |
 | `micro_dashboard_card` | 680 | 620 | `8x7_or_larger` | Large single-topic mini dashboard card with KPI strip, multiple child charts, status/detail evidence, and shared filters |
 | `state_feedback` | 220 | 160 | `component_body_or_block` | Empty/loading/error/no-permission/building state; inline states may use 180x120 if geometry is preserved |
-| `line_chart` | 420 | 280 | `4x3` | Line chart |
-| `area_chart` | 420 | 300 | `4x3` | Area or stacked area chart |
-| `bar_chart` | 420 | 300 | `4x3` | Vertical bar chart |
-| `horizontal_bar_chart` | 460 | 300 | `4x3_or_5x3` | Horizontal bar chart; left labels need room |
-| `stacked_bar_chart` | 480 | 320 | `4x4` | Stacked or percentage bar chart |
-| `combo_chart` | 520 | 340 | `5x4` | Bar-line combo or dual-axis chart |
-| `scatter_chart` | 460 | 320 | `4x4` | Scatter plot |
-| `bubble_chart` | 480 | 340 | `4x4` | Bubble chart |
-| `parallel_coordinates` | 560 | 360 | `6x4_or_8x4` | Parallel coordinates need multi-axis width |
-| `pie_chart` | 320 | 320 | `3x3_or_4x3` | Pie chart needs near-square plot |
-| `donut_chart` | 360 | 320 | `3x3_or_4x3` | Donut chart, often with center metric |
-| `funnel_chart` | 420 | 300 | `4x3` | Ordered conversion funnel; horizontal bar default |
-| `waterfall_chart` | 520 | 320 | `5x4` | Waterfall or attribution chart |
-| `radar_chart` | 360 | 340 | `4x4` | Radar chart |
-| `treemap_chart` | 420 | 320 | `4x3` | Treemap chart |
-| `sunburst_chart` | 420 | 360 | `4x4` | Multi-level sunburst hierarchy |
-| `heatmap_chart` | 480 | 340 | `5x4` | Matrix heatmap |
-| `calendar_heatmap` | 640 | 280 | `6x3_or_8x3` | Calendar heatmap |
-| `boxplot_chart` | 480 | 320 | `4x4` | Boxplot |
-| `histogram_chart` | 420 | 280 | `4x3` | Histogram or distribution chart |
+| `line_chart` | 420 | 280 | `3x2_default_4x3_max` | Line chart |
+| `area_chart` | 420 | 300 | `3x2_default_4x3_max` | Area or stacked area chart |
+| `bar_chart` | 420 | 300 | `3x2_default_4x3_max` | Vertical bar chart |
+| `horizontal_bar_chart` | 460 | 300 | `3x2_default_4x3_max` | Horizontal bar chart; left labels need room |
+| `stacked_bar_chart` | 480 | 320 | `3x2_default_4x3_max` | Stacked or percentage bar chart |
+| `combo_chart` | 520 | 340 | `3x2_default_4x3_max` | Bar-line combo or dual-axis chart |
+| `scatter_chart` | 460 | 320 | `3x2_default_4x3_max` | Scatter plot |
+| `bubble_chart` | 480 | 340 | `3x2_default_4x3_max` | Bubble chart |
+| `parallel_coordinates` | 560 | 360 | `3x2_default_4x3_max` | Parallel coordinates need multi-axis width |
+| `pie_chart` | 320 | 320 | `3x2_default_4x3_max` | Pie chart needs near-square plot |
+| `donut_chart` | 360 | 320 | `3x2_default_4x3_max` | Donut chart, often with center metric |
+| `funnel_chart` | 420 | 300 | `3x2_default_4x3_max` | Ordered conversion funnel; horizontal bar default |
+| `waterfall_chart` | 520 | 320 | `3x2_default_4x3_max` | Waterfall or attribution chart |
+| `radar_chart` | 360 | 340 | `3x2_default_4x3_max` | Radar chart |
+| `treemap_chart` | 420 | 320 | `3x2_default_4x3_max` | Treemap chart |
+| `sunburst_chart` | 420 | 360 | `3x2_default_4x3_max` | Multi-level sunburst hierarchy |
+| `heatmap_chart` | 480 | 340 | `3x2_default_4x3_max` | Matrix heatmap |
+| `calendar_heatmap` | 640 | 280 | `4x3_max` | Calendar heatmap |
+| `boxplot_chart` | 480 | 320 | `3x2_default_4x3_max` | Boxplot |
+| `histogram_chart` | 420 | 280 | `3x2_default_4x3_max` | Histogram or distribution chart |
 | `distribution_card` | 480 | 320 | `5x3_or_5x4` | Distribution or interval card with histogram, donut, CDF, statistic strip, and exact-value path |
 | `distribution_density_card` | 520 | 340 | `5x4_or_6x4` | Density/KDE card with estimator policy, sample count, and statistics |
 | `distribution_heatmap_card` | 560 | 340 | `6x4_or_8x4` | Distribution heatmap, calendar heatmap, or density heatmap with cell legend and missing-vs-zero policy |
@@ -82,9 +82,9 @@ Classify every component into one of the following component types. `min_outer_w
 | `detail_list` | 360 | 240 | `4x3` | Detail, event, or log summary list |
 | `text_block` | 360 | 180 | `4x2` | Analysis text |
 | `insight_block` | 420 | 200 | `4x2` | Insight card |
-| `conclusion_block` | 600 | 180 | `8x2` | Conclusion section |
-| `recommendation_block` | 600 | 220 | `8x3` | Recommendations, actions, next steps |
-| `analysis_summary_bar` | 280 | 56 | `4x1_or_8x1` | One-line analysis summary or conclusion strip |
+| `conclusion_block` | 600 | 180 | `6x2_or_12x1` | Conclusion section; exception to ordinary chart max when a wider reading strip is required |
+| `recommendation_block` | 600 | 220 | `6x2_or_12x2` | Recommendations, actions, next steps |
+| `analysis_summary_bar` | 280 | 56 | `6x1_or_12x1` | One-line analysis summary or conclusion strip |
 | `analysis_insight_card` | 320 | 128 | `3x2_or_4x2` | One conclusion with evidence/action |
 | `analysis_diagnosis_card` | 480 | 180 | `4x2_or_5x2` | Anomaly, attribution, risk, target diagnosis |
 | `analysis_side_panel` | 220 | 240 | `2x3_or_3x3` | Chart-side insight list, max 25% of parent area |
@@ -271,7 +271,7 @@ Classify every component into one of the following component types. `min_outer_w
 - Recommended outer size is `560-960px` wide and `360-480px` high; minimum is `320x240px` only when subtitle, metric strip, ordinary labels, footer, and secondary legend items are collapsed.
 - The inner plot remains dominant: `plotH >= CH * 0.48`. Collapse footer, secondary metric strip, legend detail, component-local filters, ordinary data labels, and line points before shrinking the plot.
 - Combo blocks are valid only when bar and line/target metrics share one ordered category/time axis. If the relationship is weak or exact audit is the task, allocate separate bar/line/table blocks instead of forcing a dual-axis chart.
-- Use `4x3` only for simple one-bar + one-line states with short labels. Use `5x4`, `6x4`, or larger when dual axes, target labels, grouped/stacked bars, or `N > 12` categories are present.
+- Use the default `3x2` for ordinary Combo charts and grow only to `4x3`. When dual axes, target labels, grouped/stacked bars, or `N > 12` categories cannot fit within `4x3`, split into separate bar/line/table blocks, reduce visible density, or move detail to drawer/fullscreen instead of enlarging the chart canvas.
 
 ### Gauge Rules
 
@@ -321,7 +321,7 @@ Classify every component into one of the following component types. `min_outer_w
 ### Parallel Coordinates Rules
 
 - `parallel_coordinates` needs enough body width for `3-12` vertical axes, axis titles, line density, highlighted objects, brush ranges, legend, and component-local filters. Treat the table minimum above as the outer block minimum; the inner plot still needs `plotH >= CH * 0.48`.
-- Axis spacing must pass `axisGap = plotW / (dimension_count - 1)`. Minimum `axisGap` is `56px`, and long axis titles should use `72-96px`. If the gap fails, reduce visible dimensions, use horizontal scroll, enlarge to an `8x4` span, or switch to table/scatter/bar fallback.
+- Axis spacing must pass `axisGap = plotW / (dimension_count - 1)`. Minimum `axisGap` is `56px`, and long axis titles should use `72-96px`. If the gap fails within `4x3`, reduce visible dimensions, use horizontal scroll, move to fullscreen/detail, or switch to table/scatter/bar fallback.
 - `dimension_count < 3` should not use parallel coordinates; use scatter, bar, KPI, or table. `3-5` dimensions are clearest, `6-8` are the recommended upper range, `9-12` require short labels and tick reduction, and `>12` requires dimension filtering or another component.
 - Sample count controls density: `<=30` lines may display normally, `31-100` lowers ordinary-line opacity, `101-500` needs very low opacity plus brush/filter, and `>500` needs sampling, aggregation, density view, or detail table fallback.
 - Collapse footer, secondary metric strip, legend, and local filters before shrinking the plot. Axis titles and exact-value tooltip/detail access are not optional.

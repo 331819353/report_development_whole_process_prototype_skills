@@ -15,6 +15,22 @@ Use this reference to design how users move from data to context, evidence, and 
 
 Do not make every element clickable. Only add interaction when it advances judgment, positioning, explanation, verification, or action.
 
+## Good Report Drilldown Rules
+
+For every primary judgment component, define at least one next path:
+
+| Source judgment | Next path |
+| --- | --- |
+| KPI/status/target gap | driver dimension, target gap drawer, or responsible object list |
+| Trend anomaly | selected period detail, threshold explanation, affected object list, or source records |
+| Ranking/Top N item | detail drawer, cross-filter, or source-system jump with active filters |
+| Structure/composition item | contribution explanation, exact category rows, or filtered detail table |
+| Process/funnel loss | stage detail, loss objects, owner/action route, or source records |
+| Data quality/trust issue | rule evidence, source lineage, exception sample rows, or governance action |
+| Action recommendation | owner, deadline, expected impact, execution status, and action route |
+
+If a primary component has no tooltip, drawer, drilldown, export, fullscreen, or action route, record why it is static. Runnable prototypes should avoid primary static evidence unless the report is intentionally presentation-only.
+
 ## Interaction Types
 
 When an overlay, drawer, modal, action sheet, notification, navigation drawer, or detail panel is reusable, choose `overlayPanelPattern` from `$report-component-style-design` `references/08a-overlay-drawer-modal-patterns.md` and include the trigger payload, inherited filters, close behavior, mask behavior, focus behavior, scroll behavior, and stale-state rule in the mapping.

@@ -77,6 +77,8 @@ For each key point, decide:
 
 These points deserve stronger interaction/state design than ordinary information blocks.
 
+For report prototypes, a key decision point must reduce judgment effort. It should name the primary question, the comparison or threshold used for judgment, the evidence that explains why, and the next drilldown/action when the user wants to verify or act.
+
 ## 5. 补齐展示层（让别人看得懂）
 
 The prototype is often reviewed by product managers, engineering, stakeholders, and decision makers. 很多优秀原型，其实是“半文档 + 半产品”:
@@ -110,7 +112,7 @@ If the story cannot be told smoothly, the prototype is not ready even if the pag
 - Core narrative: user/problem/scenario/one-sentence value.
 - User path: entry, first action, core flow, result feedback.
 - Functional architecture: main functions, supporting functions, information display.
-- Key decision points with default, guidance, error, success, and edge states.
+- Key decision points with default, guidance, comparison basis, evidence path, drilldown/action route, error, success, and edge states.
 - Presentation plan: explanation titles, flow marks, annotations, and 30-second review path.
 - Walkthrough risks: stuck points, logic jumps, explanation dependencies, and removable steps.
 

@@ -4,112 +4,77 @@ This file was split from `block-size-constraints.md`. Load it only for this focu
 
 ## 7. Practical Presets
 
-Use these rounded values for planning visible block size. Exact implementation may use CSS variables from the selected template, but the layout decision must remain consistent with these limits. These presets do not cap total report height.
+Use these rounded values for planning visible block size. Exact implementation may use CSS variables from the selected template, but the layout decision must remain consistent with these limits. These presets do not cap total report height. They use the prototype content-area split: `1920x1080` review viewport, menu/sidebar deducted horizontally, menu/header deducted vertically, 12 equal columns, 8 equal visible row units for sizing, and no mathematical grid gap.
 
-### Full-Width 1920 Viewport
+### Full-Width 1920 Viewport With 160px Menu
 
 Applies to custom pages and `topbar-light-scroll-dashboard-template`.
 
 - `contentWidth = 1920`
-- `gap = 14`
-- `rowHeight = 316`
-- `columnWidth = 228`
+- `menuOrHeaderHeight = 160`
+- `contentVisibleHeight = 920`
+- `visibleGridRows = 8`
+- `rowCount = N`, uncapped
+- `gap = 0` for mathematical grid splitting
+- `rowHeight = 115`
+- `columnWidth = 160`
 
 | Span | Width | 1 row | 2 rows | 3 rows |
 | --- | ---: | ---: | ---: | ---: |
-| `1*N` | 228 | 316 | 646 | 976 |
-| `2*N` | 470 | 316 | 646 | 976 |
-| `3*N` | 711 | 316 | 646 | 976 |
-| `4*N` | 953 | 316 | 646 | 976 |
-| `5*N` | 1195 | 316 | 646 | 976 |
-| `6*N` | 1437 | 316 | 646 | 976 |
-| `7*N` | 1678 | 316 | 646 | 976 |
-| `8*N` | 1920 | 316 | 646 | 976 |
+| `2*N` | 320 | 115 | 230 | 345 |
+| `3*N` | 480 | 115 | 230 | 345 |
+| `4*N` | 640 | 115 | 230 | 345 |
+| `6*N` | 960 | 115 | 230 | 345 |
+| `8-col` | 1280 | 115 | 230 | 345 |
+| `12*N` | 1920 | 115 | 230 | 345 |
 
 ### Left-Nav 1920 Viewport
 
 Applies to `left-nav-analytics-workbench-template` with expanded sidebar.
 
 - `contentWidth = 1664`
-- `gap = 16`
-- `rowHeight = 320`
-- `columnWidth = 194`
+- `menuOrSidebarWidth = 256`
+- `contentVisibleHeight = 1080`
+- `visibleGridRows = 8`
+- `rowCount = N`, uncapped
+- `gap = 0` for mathematical grid splitting
+- `rowHeight = 135`
+- `columnWidth ~= 139`
 
 | Span | Width | 1 row | 2 rows | 3 rows |
 | --- | ---: | ---: | ---: | ---: |
-| `1*N` | 194 | 320 | 656 | 992 |
-| `2*N` | 404 | 320 | 656 | 992 |
-| `3*N` | 614 | 320 | 656 | 992 |
-| `4*N` | 824 | 320 | 656 | 992 |
-| `5*N` | 1034 | 320 | 656 | 992 |
-| `6*N` | 1244 | 320 | 656 | 992 |
-| `7*N` | 1454 | 320 | 656 | 992 |
-| `8*N` | 1664 | 320 | 656 | 992 |
+| `2*N` | 277 | 135 | 270 | 405 |
+| `3*N` | 416 | 135 | 270 | 405 |
+| `4*N` | 555 | 135 | 270 | 405 |
+| `6*N` | 832 | 135 | 270 | 405 |
+| `8-col` | 1109 | 135 | 270 | 405 |
+| `12*N` | 1664 | 135 | 270 | 405 |
 
 ### Sci-Fi 1920 Cockpit
 
-Applies to `frozen-title-sci-fi-cockpit-template` when the content area starts near `Y = 118` and uses 3 visible grid rows.
+Applies to `frozen-title-sci-fi-cockpit-template` when the title/menu shell reserves `160px`.
 
 - `contentWidth = 1920`
-- `gap = 10`
-- `availableContentHeight = 962`
-- `rowHeight ~= 314`
-- `columnWidth = 231`
+- `menuOrHeaderHeight = 160`
+- `availableContentHeight = 920`
+- `visibleGridRows = 8`
+- `rowCount = N`, uncapped
+- `gap = 0` for mathematical grid splitting
+- `rowHeight = 115`
+- `columnWidth = 160`
 
 | Span | Width | 1 row | 2 rows | 3 rows |
 | --- | ---: | ---: | ---: | ---: |
-| `1*N` | 231 | 314 | 638 | 962 |
-| `2*N` | 473 | 314 | 638 | 962 |
-| `3*N` | 714 | 314 | 638 | 962 |
-| `4*N` | 955 | 314 | 638 | 962 |
-| `5*N` | 1196 | 314 | 638 | 962 |
-| `6*N` | 1438 | 314 | 638 | 962 |
-| `7*N` | 1679 | 314 | 638 | 962 |
-| `8*N` | 1920 | 314 | 638 | 962 |
+| `2*N` | 320 | 115 | 230 | 345 |
+| `3*N` | 480 | 115 | 230 | 345 |
+| `4*N` | 640 | 115 | 230 | 345 |
+| `6*N` | 960 | 115 | 230 | 345 |
+| `8-col` | 1280 | 115 | 230 | 345 |
+| `12*N` | 1920 | 115 | 230 | 345 |
 
-If a sci-fi page needs 4 visible rows, row height drops to about `233px`; only compact KPI, status, and simple chart blocks should use one row.
+If a page needs more than the 8 visible row units, it extends down with `N` rows instead of recomputing a smaller row height.
 
-### Full-Width 1280 Viewport
-
-Applies to small custom pages and small topbar scroll template previews.
-
-- `contentWidth = 1280`
-- `gap = 10`
-- `rowHeight = 220`
-- `columnWidth = 151`
-
-| Span | Width | 1 row | 2 rows | 3 rows |
-| --- | ---: | ---: | ---: | ---: |
-| `1*N` | 151 | 220 | 450 | 680 |
-| `2*N` | 313 | 220 | 450 | 680 |
-| `3*N` | 474 | 220 | 450 | 680 |
-| `4*N` | 635 | 220 | 450 | 680 |
-| `5*N` | 796 | 220 | 450 | 680 |
-| `6*N` | 958 | 220 | 450 | 680 |
-| `7*N` | 1119 | 220 | 450 | 680 |
-| `8*N` | 1280 | 220 | 450 | 680 |
-
-### Left-Nav 1280 Viewport
-
-At `1280x768`, prefer collapsed or low-intrusion navigation. With a collapsed `80px` sidebar:
-
-- `contentWidth = 1200`
-- `gap = 10`
-- `rowHeight = 220`
-- `columnWidth = 141`
-
-| Span | Width | 1 row | 2 rows | 3 rows |
-| --- | ---: | ---: | ---: | ---: |
-| `1*N` | 141 | 220 | 450 | 680 |
-| `2*N` | 293 | 220 | 450 | 680 |
-| `3*N` | 444 | 220 | 450 | 680 |
-| `4*N` | 595 | 220 | 450 | 680 |
-| `5*N` | 746 | 220 | 450 | 680 |
-| `6*N` | 898 | 220 | 450 | 680 |
-| `7*N` | 1049 | 220 | 450 | 680 |
-| `8*N` | 1200 | 220 | 450 | 680 |
-
-Do not keep a wide 256px sidebar permanently open on a 1280-wide work surface unless the report is navigation-first and content density is intentionally reduced.
+The prototype-stage bundled templates use one fixed review preset. If a downstream implementation later adds responsive breakpoints, handle that in the frontend stage without changing the 1920x1080 prototype acceptance target.
 
 
 ## 8. Composite Block Checks
@@ -161,12 +126,12 @@ If the current parent body height is smaller, expand the parent block's row span
 - The page-grid span belongs to the top-level parent block; internal sub-blocks must not create nested page grids.
 - Internal sub-blocks are local layout regions inside the parent body. They may use local grid/flex tracks, but they must have explicit min size, gap, overflow, and state behavior.
 - Internal sub-blocks use `5px` inset from the parent body and `5px` sibling gaps. Do not silently collapse these gaps to make a cramped block pass.
-- Do not treat `1920x1080` or `1280x768` as the report's maximum height.
+- Do not treat `1920x1080` as the report's maximum height.
 - Do not reduce `N`, row height, title space, chart body height, or table body height to force the full report into one viewport.
 - Do not divide available viewport height by `N` to create smaller rows.
 - Do not skip the default span distribution before size checking.
 - Do not render any component whose computed outer size or content viewport is smaller than its final required size.
-- Do not accept domain navigation, Tabs, or Segment controls whose visible item/card content viewport fails `scrollHeight <= clientHeight + 2` or `scrollWidth <= clientWidth + 2` at `1920x1080` or `1280x768`.
+- Do not accept domain navigation, Tabs, or Segment controls whose visible item/card content viewport fails `scrollHeight <= clientHeight + 2` or `scrollWidth <= clientWidth + 2` at `1920x1080`.
 - Do not pack more than two primary information layers into one perspective navigation card.
 - Do not accept fixed-height navigation/cards without a declared padding, line-height, gap, and height-budget calculation.
 - Do not accept fixed-height navigation/cards whose measured DOM has `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2`, even if the screenshot looks acceptable.
@@ -176,7 +141,7 @@ If the current parent body height is smaller, expand the parent block's row span
 - Do not use a generic `chart`, `table`, `map`, or `other` label when a precise component type exists.
 - Do not use more than one internal scroll area in one block.
 - If a title, legend, axis label, table column, toolbar, or status tag does not fit, increase the span or simplify the component.
-- On `1280x768`, promote mixed components by at least one span tier compared with 1920 planning.
+- Do not expand a sparse component just to fill space. If the allocated `3*2` or larger block lacks enough content, enrich it with labels, target/average lines, exact-value paths, lists, or actions, or reduce/split the block.
 - If a block needs long explanations, detailed table review, or multiple independent actions, use a drawer/detail page instead of expanding the card forever.
 
 
@@ -190,11 +155,11 @@ If the current parent body height is smaller, expand the parent block's row span
 6. Apply base minimum size and complexity expansion.
 7. Compute actual parent outer/body pixel size and sub-block viewport sizes.
 8. For fixed-height navigation/cards, declare padding, explicit line-height, row count, gaps, and footer/status heights; verify `requiredContentHeight <= cardHeight`.
-9. For domain navigation, Tabs, and Segments, run DOM no-clipping checks at `1920x1080` and `1280x768`: `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`.
+9. For domain navigation, Tabs, and Segments, run DOM no-clipping checks at `1920x1080`: `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`.
 10. Keep the default span if it passes; otherwise try the next larger candidate span or redesign the block.
 11. If total report height exceeds the first viewport, keep block sizes and enable vertical scrolling.
 12. If the block still fails any constraint, either:
    - increase the span,
    - switch simultaneous sub-blocks/components to tabs/segmented views,
    - move details to a drawer/modal,
-   - or split into separate `8 * N` blocks.
+   - or split into separate `12 * N` blocks.

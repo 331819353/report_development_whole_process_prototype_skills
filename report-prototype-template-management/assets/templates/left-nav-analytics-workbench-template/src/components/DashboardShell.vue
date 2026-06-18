@@ -238,7 +238,7 @@ const layoutRowCount = computed(() => Math.max(layoutRows.value.length, 1));
 const layoutBlocks = computed<LayoutBlock[]>(() => buildLayoutBlocks(layoutRows.value));
 const navToggleLabel = computed(() => (isNavOpen.value ? props.config.screen.controls.navigation : '展开'));
 const navToggleIcon = computed(() => (isNavOpen.value ? ChevronLeft : ChevronRight));
-const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 220, 220));
+const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 1, 1));
 const contentGridHeight = computed(
   () => layoutRowCount.value * contentRowHeight.value + Math.max(layoutRowCount.value - 1, 0) * props.config.screen.layout.contentGap,
 );

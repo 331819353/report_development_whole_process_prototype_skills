@@ -242,11 +242,20 @@ const titleBackgroundRenderedHeight = computed(
 );
 const titleRenderedHeight = computed(() => props.config.screen.layout.titleVisibleHeight * titleScale.value);
 const titleBackgroundOffsetY = computed(() => -(props.config.screen.layout.titleVisibleTop * titleScale.value));
+const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 1, 1));
+const contentAreaHeight = computed(() => props.config.screen.grid.contentEndY - props.config.screen.grid.contentStartY);
+const contentGridHeight = computed(
+  () => layoutRowCount.value * contentRowHeight.value + Math.max(layoutRowCount.value - 1, 0) * props.config.screen.layout.contentGap,
+);
+const canvasHeight = computed(() => Math.max(contentAreaHeight.value, contentGridHeight.value));
+const resolvedDesignHeight = computed(() =>
+  Math.max(props.config.screen.layout.designHeight, props.config.screen.grid.contentStartY + canvasHeight.value),
+);
 const appStyle = computed(() => ({
   '--page-background-image': `url("${props.config.assets.backgroundSrc}")`,
   '--title-background-image': `url("${props.config.assets.titleBackgroundSrc}")`,
   '--design-width': `${props.config.screen.layout.designWidth}px`,
-  '--design-height': `${props.config.screen.layout.designHeight}px`,
+  '--design-height': `${resolvedDesignHeight.value}px`,
   '--title-background-width': `${props.config.screen.layout.titleBackgroundWidth}px`,
   '--title-background-height': `${props.config.screen.layout.titleBackgroundHeight}px`,
   '--title-current-width': `${titleRenderedWidth.value}px`,
@@ -269,6 +278,9 @@ const appStyle = computed(() => ({
   '--grid-rows': String(layoutRowCount.value),
   '--content-start-y': `${props.config.screen.grid.contentStartY}px`,
   '--content-end-y': `${props.config.screen.grid.contentEndY}px`,
+  '--content-row-height': `${contentRowHeight.value}px`,
+  '--content-grid-height': `${contentGridHeight.value}px`,
+  '--canvas-height': `${canvasHeight.value}px`,
   '--cell-padding': `${props.config.screen.grid.cellPadding}px`,
   '--cell-inner-background': props.config.screen.grid.innerBackgroundColor,
   '--title-dominant-color': props.config.screen.grid.dominantTitleColor,

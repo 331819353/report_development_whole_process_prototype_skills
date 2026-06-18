@@ -15,6 +15,22 @@
 
 ## Version Entries
 
+### v20260618-12x8-content-grid - 2026-06-18
+
+- Change ID: ad-hoc-12x8-content-grid
+- Actor: Codex
+- Change type: update
+- Summary: Switched frozen cockpit grid rows from proportional tracks to configured rowHeight tracks.
+- Modified functionality: `.canvas-shell` height; `.placeholder-grid` row template.
+- Code ranges: `.canvas-shell`; `.placeholder-grid`.
+- Modified content: Used `--canvas-height` and `--content-row-height` so the frozen template follows the same 12x8 content-grid row unit as other templates.
+- Affected contracts: 1920x1080 prototype content grid; configured rowHeight from `(contentEndY - contentStartY) / 8`.
+- Verification: `npm run validate:dashboard` passed in `frozen-title-sci-fi-cockpit-template`.
+- Rollback note: Restore `calc(var(--content-end-y) - var(--content-start-y))` and proportional `1fr` rows only with the config/runtime revert.
+- Related files: `src/components/DashboardShell.vue`, `src/config/dashboard.config.ts`.
+- Change evidence: working-tree diff for `src/styles/index.scss` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T12:51:54.381Z
 
 - Change ID: baseline

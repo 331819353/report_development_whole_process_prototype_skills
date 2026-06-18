@@ -21,7 +21,7 @@ Use this file for common adjustments and final verification after changing a tem
 
 0. Run `npm run ledger:code -- --file src/config/dashboard.config.ts --stage before` and read the sidecar ledger before editing.
 1. Edit `layoutRows`.
-2. Keep 8 columns per row unless the template explicitly supports another grid.
+2. Keep 12 columns per row and normally provide at least 8 visible row units for the first `1920x1080` content viewport.
 3. Keep repeated characters rectangular.
 4. Read `template-layout-design-system.md` when changing `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, or content range.
 5. Calculate the actual block width/height with `$report-visual-layout-design`.
@@ -94,7 +94,7 @@ Use this file for common adjustments and final verification after changing a tem
 - Layout tokens match the selected template family or deviations are documented: content range, `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, and component-owned title/control handoff.
 - Outer block validation does not replace component-internal fit checks. Composite widgets must be reviewed with `$report-component-style-design` for summary columns, nested KPI grids, text wrapping, min-height, and no critical nowrap/ellipsis clipping.
 - Composite widget no-data masks are scoped by child data states: if all child sub-blocks are no-data, show one parent-block mask; if only some child sub-blocks are no-data, mask only those sub-blocks and include their title/control area plus component body.
-- `1920 * 1080` and `1280 * 768` are used as viewport checks, not total report height caps.
+- `1920 * 1080` is used as the prototype viewport check, not a total report height cap.
 - Layout blocks do not clip titles, legends, charts, tables, empty states, or controls.
 - `npm run validate:dashboard` runs after the minimal required dependencies are installed.
 - Stack-contract failures from `npm run validate:dashboard` block handoff even if Vite build or screenshots appear fine.

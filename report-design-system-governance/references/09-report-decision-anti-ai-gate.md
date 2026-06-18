@@ -162,7 +162,7 @@ A real decision report normally needs several trust/action details:
 - Data updated time.
 - Data source or source-system label.
 - Statistical period and snapshot/batch/version.
-- Metric口径 or method note.
+- Metric口径 or method note. Treat requirement-document metric口径 and 指标清单 as supplemental by default; keep them in tooltip/detail/dictionary/handoff unless explicit page display is requested.
 - Delay/partial-sync warning.
 - Abnormal marker and explanation.
 - Permission scope.

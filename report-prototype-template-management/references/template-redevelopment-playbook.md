@@ -11,14 +11,14 @@ Use this file when building a new business report from a copied template or heav
    - Use `options` for stable enum filters.
    - Use `source` for time, organization, product, customer, project, owner, source system, and data version.
    - Default templates keep only a global parameter entry; add business filters only when the requirement needs them.
-3. Design the `8 * N` grid:
+3. Design the `12 * N` grid:
    - Use 8 characters per row.
    - Use repeated characters for rectangular merged blocks.
    - Keep block ids stable.
    - Use `template-layout-design-system.md` before changing shared template layout tokens such as `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, content range, or hover/focus surfaces.
    - Keep the shared block anatomy: grid block -> card frame -> body viewport -> `widget-renderer`.
    - Before finalizing `layoutRows`, calculate each block's actual size with `$report-visual-layout-design`.
-   - Check whether the block can safely hold its component count and component mix at the `1920 * 1080` and `1280 * 768` viewport baselines.
+   - Check whether the block can safely hold its component count and component mix at the `1920 * 1080` viewport baseline.
    - Let `layoutRows` grow when the report needs more content; do not cap the report at one viewport.
 4. Define widgets:
    - Every widget needs `type`, `visualType`, `title`, and either `data` or `dataPolicy`.

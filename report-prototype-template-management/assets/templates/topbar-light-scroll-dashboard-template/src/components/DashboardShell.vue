@@ -217,7 +217,7 @@ const layoutRows = computed(() => normalizeLayoutRows(activePage.value.layoutRow
 const layoutColumnCount = computed(() => Math.max(...layoutRows.value.map((row) => Array.from(row).length), 1));
 const layoutRowCount = computed(() => Math.max(layoutRows.value.length, 1));
 const layoutBlocks = computed<LayoutBlock[]>(() => buildLayoutBlocks(layoutRows.value));
-const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 220, 220));
+const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 1, 1));
 const contentAreaHeight = computed(() => props.config.screen.grid.contentEndY - props.config.screen.grid.contentStartY);
 const contentGridHeight = computed(
   () => layoutRowCount.value * contentRowHeight.value + Math.max(layoutRowCount.value - 1, 0) * props.config.screen.layout.contentGap,

@@ -6,6 +6,11 @@ Detailed mapping constraints moved out of `SKILL.md`. Load this for implementati
 
 - A component is valid only when it answers a named business question.
 - A report component is valid only when it participates in a decision path: state, target/baseline, trend, driver, abnormality, detail, trust, or action. Generic KPI cards and decorative charts without this role are rejected.
+- A report mapping must declare one primary decision question. A bundle that only lists metrics, charts, or fields without the lead question is `RPT-NO-PRIMARY-QUESTION` and stays `partial`.
+- Primary metrics must form a relationship network, not a flat list: result metric -> driver metric -> dimension/object -> detail record -> action/source. A flat KPI wall is `RPT-FLAT-METRIC-LIST` unless the page is explicitly a narrow status-monitoring cockpit with a documented scan task.
+- Every primary metric needs a comparison basis: target, prior period, same period last year, benchmark, historical range, threshold, or denominator/total for shares/rates. Missing comparison is `RPT-MISSING-COMPARISON` and the metric cannot be the primary judgment anchor.
+- Decision reports place judgment/evidence before dense detail. Detail-first layout is `RPT-DETAIL-FIRST` unless the report is explicitly detail-query, reconciliation-first, audit-first, or source-record lookup.
+- Every primary judgment should carry a next path: tooltip, drilldown, drawer, cross-filter, export, fullscreen, source jump, action route, or explicit presentation-only static exception. Missing next path for an action/diagnosis report is `RPT-NO-SO-WHAT`.
 - Every primary metric-bearing component must have formula/denominator, grain, period, source/freshness, numeric display contract, baseline, and owner/action notes when the output is implementation-ready.
 - Every visible metric field must declare value type, raw/display unit, display scale, screen precision, tooltip/export precision, rounding mode, null/zero/denominator-zero display, negative-zero handling, small-nonzero behavior when relevant, formula precision policy, and formatter ownership. Ambiguous `0-1` vs `0-100` percent scale or display-only formatted strings are not implementation-ready.
 - Generic marketing sections, decorative cards, generic AI/SaaS feature lists, empty slogan panels, and interchangeable icon blocks are not valid report components unless they map to a real user task, data object, decision, evidence, or workflow action.
@@ -104,8 +109,9 @@ Detailed mapping constraints moved out of `SKILL.md`. Load this for implementati
 - Every implementation mapping must declare data source, grain, required fields, formulas, control semantics, filter mapping, interaction state, update triggers, and validation cases.
 - Every implementation mapping selected from a viewing intent must declare `analysisPerspective`; when the same component supports multiple perspectives, declare one primary value plus `secondaryAnalysisPerspectives`.
 - Every binding matrix row must include `controlSemantics` and `componentSchemaImpact`. `componentSchemaImpact` must state whether the control changes metric names, component collection, table headers, dimensions, formulas/口径, domain vocabulary, or only narrows rows.
-- Every layout must fit the local `8 * N` rectangular grid and legal span rules documented in `references/07-routing-layout-quality.md`.
-- The top-level `8 * N` grid maps to parent blocks. A parent block may define internal sub-blocks, and components are placed in those sub-blocks when the components answer one shared business question. Sub-block composition always preserves `5px` parent inset and `5px` sibling gap. Do not flatten every component into its own top-level block when a composed parent block is clearer and passes fit checks.
+- Every layout must fit the local `12 * N` rectangular grid and legal span rules documented in `references/07-routing-layout-quality.md`.
+- The top-level `12 * N` grid maps to parent blocks. A parent block may define internal sub-blocks, and components are placed in those sub-blocks when the components answer one shared business question. Sub-block composition always preserves `5px` parent inset and `5px` sibling gap. Do not flatten every component into its own top-level block when a composed parent block is clearer and passes fit checks.
+- Metric口径, calculation notes, and 指标清单 from requirement documents are supplemental unless page display is explicit. Do not create visible definition/help,口径卡, or指标清单 blocks by default.
 - Generated IDs, dataset names, filter IDs, `visualType`, action types, and matrix columns must follow the controlled vocabulary and naming rules in `08-generation-stability.md`.
 - When information is missing, use the documented fallback rule and mark the assumption; do not invent unsupported component types, visual types, filters, or actions.
 
@@ -138,6 +144,7 @@ Before finalizing, verify:
 
 - Every key business concern maps to at least one visible block or interaction.
 - The five report decision questions can be answered or have named gaps.
+- The good-report decision path can be answered or has named `RPT-*` gaps: primary question, first judgment, What/Why/So what, comparison baseline, metric relationship network, detail evidence, and next action/drilldown.
 - The component bundle includes a data story path appropriate to the report type: state -> target/baseline -> driver -> abnormality -> detail -> action.
 - Generic dashboard KPI/chart shells are removed or converted into metric-tree-backed components.
 - No component exists only to make the page look polished, AI-like, or template-complete.
@@ -146,7 +153,7 @@ Before finalizing, verify:
 - Every sample-derived reusable style maps to `styleGeneralization` and can be reproduced from text without accessing raw screenshots or image vectors.
 - There is one primary answer area, not a flat wall of equal-weight charts.
 - Every component has a distinct semantic role, dimension, grain, or workflow purpose.
-- Parent blocks and sub-blocks are explicit when one `8 * N` block contains multiple components.
+- Parent blocks and sub-blocks are explicit when one `12 * N` block contains multiple components.
 - Analysis & Insight mappings have `analysisInsightContract`, one main point per component, conclusion-before-evidence copy, relevant action/trust/source/freshness fields, local-filter scope, and validation cases for default, filtered, empty/insufficient, and permission/data-delay states.
 - Conclusion/insight mappings have controlled `conclusionCardPattern`, controlled `conclusionEvidenceBodyMode`, `conclusionEvidenceBinding`, one evidence body, source/freshness/detail route, state coverage, and validation cases for missing comparison, missing denominator/formula, contradictory evidence, long copy, no-permission, and stale data.
 - Definition/help mappings have `definitionHelpCardPattern`, `definitionHelpEvidenceBinding`, one explanation task, metric meaning, formula/scope/source/freshness, numeric formats, tooltip/detail/dictionary route, and validation cases for missing formula, missing source, denominator zero, long口径, no-permission, stale freshness, and changed local condition.

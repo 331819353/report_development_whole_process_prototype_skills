@@ -21,6 +21,7 @@ Default policy: this is the generic thinking layer used by the original `$report
 
 - Prototype story method: `references/00-prototype-story-design-thinking.md`
 - Report decision method: `references/01-general-prototype-design-thinking.md`
+- Good report decision-path gate: `references/02-good-report-decision-path.md`
 
 ## Anti-Laziness Gate
 
@@ -36,11 +37,12 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 6. Identify two or three key decision points and their default, guidance, error, success, empty, partial, and no-permission states.
 7. Identify target user, decision scenario, managed object, business question, time scope, expected action, and output form.
 8. Separate report content into `coreMetrics`, `analysisMetrics`, and `detailFields`; do not turn a raw field list directly into page blocks.
-9. Define the analysis path before layout. A common report path is: overall state -> trend -> dimension/driver split -> ranking/anomaly -> detail/action.
-10. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
-11. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
-12. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, and unresolved gaps.
-13. Hand off the design-thinking output to `$report-type-design`, `$report-info-component-mapping`, `$report-visual-layout-design`, and `$report-prototype-template-management`.
+9. Run the good-report decision-path gate: one primary decision question, conclusion-before-evidence order, What/Why/So what coverage, comparison baseline, metric relationship network, drilldown/action path, and 3-second self-check.
+10. Define the analysis path before layout. A common report path is: overall state -> trend -> dimension/driver split -> ranking/anomaly -> detail/action.
+11. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
+12. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
+13. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, and unresolved gaps.
+14. Hand off the design-thinking output to `$report-type-design`, `$report-info-component-mapping`, `$report-visual-layout-design`, and `$report-prototype-template-management`.
 
 ## Required Output
 
@@ -49,6 +51,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Functional architecture: main functions, supporting functions, information display, and key decision points.
 - Target users, usage scenario, business question, decision/action, managed object, time scope, and output mode.
 - Metric/field layering: core metrics, analysis metrics, detail fields, dimensions, baselines, thresholds, and known口径 gaps.
+- Good report decision path: one primary decision question, 3-second main point, What/Why/So what coverage, comparison baseline, metric relationship network, drilldown/action path, and `RPT-*` gaps.
 - Analysis path and first-viewport answer.
 - Page rhythm decision: information-flow report vs KPI/dashboard grid, KPI scope boundary, and card-border reduction direction.
 - Page block proposal with each block's business purpose.
@@ -64,6 +67,9 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not skip entry path, first action, result feedback, or key states when they affect whether the story can be understood.
 - Do not treat "报表" as one fixed page shape. When the user explicitly needs monitoring, explanation, exploration, or exact record verification, use the corresponding specialized prototype workflow instead of branching inside this skill.
 - Do not place all requested fields on the main canvas. Detail fields belong in detail tables, drawers, exports, or appendix unless they are needed for the first decision.
+- Do not accept a report prototype whose primary metrics are isolated numbers without target/baseline/benchmark/denominator/threshold comparison.
+- Do not accept a flat metric list as the core report structure. Core metrics need driver, dimension, detail, action, or trust relationships.
+- Do not place detail/source rows above judgment and evidence unless the report is explicitly detail-query or reconciliation-first.
 - Do not default to a dashboard/card-grid shape. Use an information-flow structure for analysis, review, detail, and decision-support pages.
 - Do not KPI-ize every module. KPI cards are reserved for primary decision metrics with formula, baseline/target or comparison, status rule, source/freshness, and detail/action route.
 - Do not use red/green as the default visual answer. Brand/product colors and neutral hierarchy should carry identity and reading order; semantic colors need explicit business meaning.

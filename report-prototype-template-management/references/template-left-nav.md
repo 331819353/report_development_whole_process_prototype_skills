@@ -10,16 +10,16 @@ Use `assets/templates/left-nav-analytics-workbench-template` for multi-page ente
 - Sidebar-anchored filter popover.
 - Multiple pages through `nav`.
 - Each nav page has its own `layoutRows` and `widgets`.
-- Each nav page uses a scrollable `8 * N` content grid.
+- Each nav page uses a scrollable content grid with 12 columns, 8-row sizing basis, and N report rows.
 - Right content area scrolls vertically when grid height exceeds the active viewport.
-- Expanded 1920 pages use about `1664px` of content width; 1280 pages should prefer collapsed navigation and the left-nav 1280 preset from `$report-visual-layout-design`.
+- Expanded 1920 pages use about `1664px` of content width and the `1920x1080` left-nav preset from `$report-visual-layout-design`.
 
 ## Core Config
 
 ```ts
 screen: {
-  layout: { sidebarWidth: 256, sidebarCollapsedWidth: 80, contentGap: 16 },
-  grid: { contentStartY: 0, contentEndY: 1032, rowHeight: 320, cellPadding: 0 },
+  layout: { sidebarWidth: 256, sidebarCollapsedWidth: 80, contentGap: 0 },
+  grid: { contentStartY: 0, contentEndY: 1080, rowHeight: 135, cellPadding: 6 },
 },
 assets: {
   logoSrc: '/haier-logo.svg',
@@ -28,7 +28,16 @@ nav: [
   {
     id: 'overview',
     label: 'Overview',
-    layoutRows: ['AAAABBBB', 'CCDDEEFF'],
+    layoutRows: [
+      'AAABBBCCCDDD',
+      'AAABBBCCCDDD',
+      'EEEFFFGGGHHH',
+      'EEEFFFGGGHHH',
+      'IIIJJJKKKLLL',
+      'IIIJJJKKKLLL',
+      'MMNNOOPPQQRR',
+      'SSUUVVWWXXYY',
+    ],
     widgets: {},
   },
 ],
@@ -38,9 +47,9 @@ filters: [],
 ## Shared Layout Contract
 
 - This family follows `template-layout-design-system.md`; shared spacing, card radius, component title/control handoff, widget viewport, and hover/focus behavior are template-level design decisions.
-- Default right-content range is `0 -> 1032`; expanded sidebar is `256px`, collapsed sidebar is `80px`, and block gap is `contentGap: 16`.
+- Default right-content range is `0 -> 1080`; expanded sidebar is `256px`, collapsed sidebar is `80px`, mathematical block gap is `contentGap: 0`, and `rowHeight = 1080 / 8 = 135px`.
 - Default block anatomy is `placeholder-cell` -> `placeholder-cell-inner` -> body viewport -> `widget-renderer`; visible block titles and local controls are component-owned.
-- Card padding and card radius are both `8px`; `cellPadding` is `0` for the clean workbench-card surface.
+- Card padding and card radius are both `8px`; `cellPadding` is `6px` to provide visual breathing room without changing the 12-column/8-row grid unit.
 
 ## `nav[]` Content Gate
 
@@ -53,7 +62,7 @@ filters: [],
 
 1. Add a new item in `nav`.
 2. Give it stable `id` and concise `label`.
-3. Define `layoutRows` with 8 columns per row.
+3. Define `layoutRows` with 12 columns per row. Row count is `N`; use as many rows as the business content needs without recalculating rowHeight.
 4. Mount widgets under that nav item's `widgets`.
 5. Add page-specific filters through `scope` / `filterScope`.
 6. Let components own page jump, popup, drilldown, and detail behavior. Use `actions/registry.ts` only when the shell or host product needs to observe a component event.

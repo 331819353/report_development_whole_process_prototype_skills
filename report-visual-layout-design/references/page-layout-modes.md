@@ -50,7 +50,7 @@ Custom pages need these capabilities, but they do not need to be three separate 
 - Title identity: Haier logo, report title, period/scope, data status, and primary actions.
 - Navigation: view switching, report hierarchy, chapter jump, or cross-report entry when needed.
 - Filter access: scope setting and active filter feedback.
-- Content display: the `8 * N` report grid.
+- Content display: the `12 * N` report grid.
 
 Design title, navigation, and filter access as one coherent header/control area when that improves simplicity. Do not force a separate title strip, separate nav strip, and separate filter strip unless the product style or task genuinely needs them.
 
@@ -73,7 +73,7 @@ Good custom-page shell patterns:
 Custom-page content rules:
 
 - The content display area starts after the unified control area.
-- Use an `8 * N` rectangular grid.
+- Use a `12 * N` rectangular grid.
 - `N` grows with content. Enable vertical scrolling when the grid exceeds the first viewport.
 - Do not compress row heights to force all blocks into one screen.
 
@@ -89,8 +89,8 @@ Rules:
 - If the template exposes `public/haier-logo.svg`, keep that asset for the light/default logo slot unless a dark theme requires the white logo variant.
 - If the template defines invoked filters, keep that pattern and map filter requirements to `filters[]`, native trigger/panel/popover/drawer, and binding rules. Do not generate a standalone filter toolbar/bar unless the task explicitly approves template-level redesign.
 - If the template defines persistent filters, keep them compact and aligned with the template's own controls instead of adding another filter row.
-- For scrollable templates, keep row/block heights and enable vertical scrolling when the `8 * N` content exceeds the active viewport height.
-- Treat `1920x1080` and `1280x768` as visible viewport baselines, not full report height limits.
+- For scrollable templates, keep row/block heights and enable vertical scrolling when the `12 * N` content exceeds the active viewport height.
+- Treat `1920x1080` as the visible prototype review viewport, not the full report height limit.
 - For fixed big-screen templates, respect the fixed 1920*1080 canvas and do not force the 220px scrollable-row rule.
 
 ## 4. Navigation Guidance

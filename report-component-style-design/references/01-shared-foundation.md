@@ -14,6 +14,7 @@ Apply these rules to every component before applying component-specific rules.
 
 ## Aspect Ratio And Geometry Integrity
 
+- Component internals default to center-axis symmetry. After reserving the title/control/legend/footer bands, place the primary value, chart plot, hero visual, or evidence group on the component's central axis, while keeping tables, long text, and lists scan-friendly inside that balanced composition.
 - Treat charts, SVG, canvas, maps, gauges, paths, icons, and complex diagrams as geometry, not as stretchable backgrounds.
 - Define a canonical design size and coordinate system for any custom graphic: SVG `viewBox`, canvas logical width/height, ECharts graphic group bounds, or diagram layout coordinate range.
 - Preserve that coordinate system with equal scaling. Use `preserveAspectRatio="xMidYMid meet"`, CSS `aspect-ratio`, or an inner fit box where `scale = min(containerWidth / designWidth, containerHeight / designHeight)` and the graphic is centered.
@@ -37,6 +38,9 @@ Apply these rules to every component before applying component-specific rules.
 ## Global UI And Metric Semantics
 
 - Components inherit the page/global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and control styles. HTML/source/custom layouts may control structure, but they must not introduce one-off local colors or surfaces that conflict with the global UI.
+- When the component is being optimized for 高级感, 好看, 好用, 易懂, or outside-guideline-inspired polish, also apply `00b-low-noise-high-density-baseline.md`. The default is semantic low-noise tokens plus substantial report evidence, not decorative minimalism or empty space.
+- Implementation-ready specs must identify whether a color is `brand`, `neutral`, `chart-series`, `status`, `risk`, `direction`, `category`, or `selection`. A color without an owned role is a visual-drift risk.
+- Component spacing must come from inherited spacing tokens or a declared slot algorithm. Arbitrary one-off margins are allowed only as documented fit exceptions with geometry proof.
 - Rate, completion, variance-rate, YoY, MoM, and change labels use `%` in visible Chinese UI. Do not show `pt`, `p.p.`, or `percentage point` labels unless explicitly requested.
 - Change-rate and variance-rate indicators use positive-red-up and negative-green-down semantics only when inherited company, finance, market, or explicit business convention requires it; otherwise use brand/neutral emphasis with sign/icon/label and reserve red/green for documented status or direction semantics.
 - Color is not enough for rate/change state; pair color with sign, icon, text, badge, or shape.
@@ -75,6 +79,7 @@ requiredContentHeight <= componentHeight
 
 - Every component declares a display budget before styling acceptance. The budget must name the bounded count it controls, such as visible summary items, KPI tiles, journey cards, list rows, table columns, table body rows, chart categories, chart series, labels, annotations, nodes, links, hierarchy depth, or local-filter options.
 - The display budget must also declare the overflow strategy: Top N + other, aggregation, label sampling, internal scroll, pagination, collapse, drilldown/drawer, fullscreen, zoom/pan, split component, or table/detail fallback. "Auto", "fit content", or hidden overflow alone is not a strategy.
+- Display budgets should protect both density and clarity. A component fails if it is either crowded beyond readability or visually empty while lacking evidence, context, source/freshness, detail/action, or a justified smaller span.
 - Default family budgets unless a narrower component reference overrides them: `text-summary` visible decision items `<=3`; repeated peer cards or journey cards `<=6` in one fixed block; KPI peer tiles `<=6` before grouping/splitting; local-filter visible options `<=4`; permanent chart annotations `<=3`; chart visible series normally `<=4`; table first-view columns `5-8` and large-table columns `8-12`; table body rows `4-6` before pagination/scroll.
 - Calculate a visible label budget from the real viewport before rendering labels.
 - Reserve separate collision boxes for section titles, layer/stage/lane titles, card titles, badges, values, legends, and diagram nodes before drawing or positioning content.
@@ -94,6 +99,7 @@ requiredContentHeight <= componentHeight
 
 - Every hidden or abbreviated value must be inspectable.
 - Tooltip must show full name, exact value, unit, period/dimension, comparison value, and status when relevant.
+- Tooltip/help copy that explains UI behavior should stay short; long formulas, metric definitions, lineage, and examples move to a popover, drawer, or definition card. Do not make a tooltip carry an entire requirements document.
 - Hover emphasis may reveal one temporary label, but it must not move surrounding layout.
 - In fixed grid blocks, KPI cards, chart/table containers, and compact controls, hover/focus feedback should use stable border color, outline, inset glow, or an in-bounds pseudo-element. Avoid hover `translate`, `scale`, or outer shadows that can be clipped by `overflow: hidden` or shift visual alignment.
 - If a parent block clips overflow, keep the glow inside the component bounds with `box-shadow: inset ...` or `outline-offset: -1px`; do not rely on an outside shadow to communicate interactivity.

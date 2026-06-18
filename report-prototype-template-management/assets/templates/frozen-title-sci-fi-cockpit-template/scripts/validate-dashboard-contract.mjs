@@ -47,6 +47,18 @@ const getStringValue = (node) => {
   return '';
 };
 
+const getNumberValue = (node) => {
+  if (!node) {
+    return undefined;
+  }
+
+  if (ts.isNumericLiteral(node)) {
+    return Number(node.text);
+  }
+
+  return undefined;
+};
+
 const getObjectKeys = (objectNode) =>
   isObject(objectNode)
     ? objectNode.properties
@@ -59,6 +71,31 @@ const getStringArray = (node) =>
   isArray(node)
     ? node.elements.map((element) => getStringValue(element)).filter(Boolean)
     : [];
+
+const collectGridConfigs = () => {
+  const gridConfigs = [];
+
+  const visit = (node) => {
+    if (isObject(node)) {
+      const layoutNode = getProperty(node, 'layout');
+      const gridNode = getProperty(node, 'grid');
+
+      if (isObject(layoutNode) && isObject(gridNode)) {
+        gridConfigs.push({
+          contentGap: getNumberValue(getProperty(layoutNode, 'contentGap')),
+          contentStartY: getNumberValue(getProperty(gridNode, 'contentStartY')),
+          contentEndY: getNumberValue(getProperty(gridNode, 'contentEndY')),
+          rowHeight: getNumberValue(getProperty(gridNode, 'rowHeight')),
+        });
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+  return gridConfigs;
+};
 
 const collectFilterIds = () => {
   const filterIds = [];
@@ -82,6 +119,11 @@ const collectFilterIds = () => {
 };
 
 const filterIds = collectFilterIds();
+const gridConfigs = collectGridConfigs();
+const requiredGridColumns = 12;
+const visibleGridRows = 8;
+const minimumSpanColumns = 2;
+const rowHeightTolerance = 1;
 const reservedActionHooks = new Set(['dashboardAction']);
 const requiredStackDependencies = ['vue', '@vitejs/plugin-vue', 'vite', 'typescript', 'vue-tsc', 'element-plus', 'echarts', 'axios'];
 const chartVisualTypes = new Set([
@@ -108,30 +150,30 @@ const chartVisualTypes = new Set([
 const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
 
 const allowedSpansByVisualType = {
-  line: ['2x1', '2x2', '3x2', '3x3', '4x4', '4x2', '4x3'],
-  bar: ['2x1', '2x2', '3x2', '3x3', '4x4', '4x2', '4x3'],
-  combo: ['2x2', '3x2', '4x2', '3x3', '4x3', '4x4'],
-  candlestick: ['2x1', '2x2', '3x2', '3x3', '4x4', '4x2', '4x3'],
-  heatmap: ['2x1', '2x2', '3x2', '3x3', '4x4', '4x2', '4x3'],
-  pie: ['1x1', '2x2', '3x2', '2x3', '3x3', '4x4'],
-  radar: ['1x1', '2x2', '3x2', '2x3', '3x3', '4x4'],
-  path: ['2x2', '3x2', '3x3', '4x3', '4x4'],
-  sunburst: ['3x3', '4x3', '3x4', '4x4'],
-  gauge: ['1x1', '2x2', '3x2', '2x3', '3x3', '4x4'],
-  scatter: ['3x1', '2x2', '3x2', '2x3', '3x3', '2x4', '4x4', '4x2', '4x3', '3x4'],
-  boxplot: ['3x1', '2x2', '3x2', '2x3', '3x3', '2x4', '4x4', '4x2', '4x3', '3x4'],
-  parallel: ['3x2', '3x3', '4x2', '4x3', '3x4', '4x4'],
-  map: ['2x2', '3x2', '3x3', '4x3', '4x4'],
-  graph: ['2x2', '3x2', '3x3', '4x3', '4x4'],
-  tree: ['2x2', '3x2', '3x3', '4x3', '4x4'],
-  treemap: ['2x2', '3x2', '3x3', '4x3', '4x4'],
-  sankey: ['3x2', '3x3', '4x3', '4x4'],
-  funnel: ['2x2', '3x2', '3x3', '4x3', '4x4'],
-  'metric-card': ['1x1', '2x1'],
-  'text-summary': ['4x1', '5x1', '6x1', '7x1', '8x1', '3x2'],
-  table: ['3x2', '4x2', '5x2', '3x3', '4x3', '5x3', '6x3', '7x3', '8x3', '4x4', '5x4', '6x4', '7x4', '8x4'],
-  pivot: ['4x3', '5x3', '6x3', '7x3', '8x3', '4x4', '5x4', '6x4', '7x4', '8x4', '6x5', '7x5', '8x5'],
-  other: ['2x1', '2x2', '3x2', '3x3', '4x4', '4x2', '4x3'],
+  line: ['3x2', '4x2', '3x3', '4x3'],
+  bar: ['3x2', '4x2', '3x3', '4x3'],
+  combo: ['3x2', '4x2', '3x3', '4x3'],
+  candlestick: ['3x2', '4x2', '3x3', '4x3'],
+  heatmap: ['3x2', '4x2', '3x3', '4x3'],
+  pie: ['3x2', '3x3', '4x3'],
+  radar: ['3x2', '3x3', '4x3'],
+  path: ['3x2', '3x3', '4x3'],
+  sunburst: ['3x2', '3x3', '4x3'],
+  gauge: ['3x2', '3x3', '4x3'],
+  scatter: ['3x2', '4x2', '3x3', '4x3'],
+  boxplot: ['3x2', '4x2', '3x3', '4x3'],
+  parallel: ['3x2', '4x2', '3x3', '4x3'],
+  map: ['3x2', '3x3', '4x3'],
+  graph: ['3x2', '3x3', '4x3'],
+  tree: ['3x2', '3x3', '4x3'],
+  treemap: ['3x2', '3x3', '4x3'],
+  sankey: ['3x2', '3x3', '4x3'],
+  funnel: ['3x2', '3x3', '4x3'],
+  'metric-card': ['2x1', '3x2'],
+  'text-summary': ['3x2', '4x1', '4x2', '6x1', '6x2', '8x1', '8x2', '12x1', '12x2'],
+  table: ['3x2', '4x2', '6x2', '8x2', '12x2', '4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
+  pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
+  other: ['2x1', '3x2', '4x2', '3x3', '4x3'],
 };
 
 const emptyGridMarks = new Set(['.', ' ']);
@@ -143,7 +185,13 @@ const buildLayoutBlockSpans = (rowsToBuild, location) => {
   const spans = new Map();
 
   rowsToBuild.forEach((row, rowIndex) => {
-    Array.from(row).forEach((label, columnIndex) => {
+    const rowLabels = Array.from(row);
+
+    if (rowLabels.length !== requiredGridColumns) {
+      errors.push(`${location}[${rowIndex}]: layoutRows must use ${requiredGridColumns} columns; received ${rowLabels.length}.`);
+    }
+
+    rowLabels.forEach((label, columnIndex) => {
       if (!emptyGridMarks.has(label)) {
         cells.set(`${rowIndex}:${columnIndex}`, label);
       }
@@ -206,13 +254,37 @@ const buildLayoutBlockSpans = (rowsToBuild, location) => {
       return;
     }
 
-    spans.set(label, {
+    const span = {
       columns: maxColumn - minColumn + 1,
       rows: maxRow - minRow + 1,
-    });
+    };
+
+    if (span.columns < minimumSpanColumns) {
+      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x1.`);
+      return;
+    }
+
+    spans.set(label, span);
   });
 
   return spans;
+};
+
+const validateAllLayoutRows = () => {
+  const visit = (node) => {
+    if (isObject(node)) {
+      const layoutRows = getStringArray(getProperty(node, 'layoutRows'));
+      const widgetsNode = getProperty(node, 'widgets');
+
+      if (layoutRows.length > 0 && !isObject(widgetsNode)) {
+        buildLayoutBlockSpans(layoutRows, 'layoutRows');
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
 };
 
 const validateActionObject = (actionNode, location) => {
@@ -297,7 +369,7 @@ const validateWidget = (widgetNode, location, span) => {
   }
 
   if (!visualType) {
-    errors.push(`${location}: widget must set visualType so the 8*N span can be validated.`);
+    errors.push(`${location}: widget must set visualType so the 12*N span can be validated.`);
   } else if (!allowedSpansByVisualType[visualType]) {
     errors.push(`${location}: unsupported visualType "${visualType}".`);
   } else if (!span) {
@@ -1215,6 +1287,37 @@ const validateWidgetSource = (filePath) => {
   }
 };
 
+if (gridConfigs.length === 0) {
+  errors.push('screen.layout and screen.grid must be configured so the 12-column/N-row content grid can be validated.');
+}
+
+gridConfigs.forEach(({ contentGap, contentStartY, contentEndY, rowHeight }, index) => {
+  const location = `screen grid config ${index + 1}`;
+
+  if (contentGap !== 0) {
+    errors.push(`${location}: screen.layout.contentGap must be 0 so columns and rows keep exact grid-unit formulas.`);
+  }
+
+  if (
+    contentStartY === undefined ||
+    contentEndY === undefined ||
+    rowHeight === undefined ||
+    contentEndY <= contentStartY
+  ) {
+    errors.push(`${location}: contentStartY, contentEndY, and rowHeight must define a valid visible content area.`);
+    return;
+  }
+
+  const expectedRowHeight = (contentEndY - contentStartY) / visibleGridRows;
+
+  if (Math.abs(rowHeight - expectedRowHeight) > rowHeightTolerance) {
+    errors.push(
+      `${location}: screen.grid.rowHeight must equal (contentEndY - contentStartY) / ${visibleGridRows}; expected ${expectedRowHeight}, received ${rowHeight}.`,
+    );
+  }
+});
+
+validateAllLayoutRows();
 validateStackContract();
 collectWidgets().forEach(({ node, location, span }) => validateWidget(node, location, span));
 walkVueFiles(widgetComponentsPath).forEach(validateWidgetSource);

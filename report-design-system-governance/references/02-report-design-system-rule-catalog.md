@@ -51,7 +51,7 @@ Use these rules only when the user explicitly asks for modern SaaS Dashboard, BI
 ## Layout Rules
 
 - Define page shell areas: logo/brand, title, scope/status, navigation, filter surface, toolbar/actions, content blocks, feedback area.
-- Top-level report blocks must use stable rectangular `8 * N` parent spans. A parent block may contain internal sub-blocks; sub-blocks are local layout regions, not page-grid cells, and they need their own fit rules.
+- Top-level report blocks must use stable rectangular `12 * N` parent spans. A parent block may contain internal sub-blocks; sub-blocks are local layout regions, not page-grid cells, and they need their own fit rules.
 - Internal sub-blocks must declare component owner, local grid/flex tracks, `5px` parent inset, `5px` sibling gap, min width/height, state behavior, and overflow policy.
 - Template-based pages must use template-owned filters, title bands, card padding/radius, row height, and hover/focus behavior unless a template-level redesign is approved.
 - Define first-viewport priority: primary conclusion or action, supporting evidence, breakdown, detail, and next action.

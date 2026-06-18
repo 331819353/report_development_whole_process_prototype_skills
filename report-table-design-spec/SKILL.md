@@ -25,6 +25,7 @@ Use `$report-component-style-design` for mixed components; use this skill when t
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Screenshot/sample-derived table style generalization | `$report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Low-noise high-density visual baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when table polish, operation clutter, status color noise, or outside/general table guidance is in scope |
 | Table source map and exact placement files | `references/01-table-reference-map.md` |
 | Analytical table visual/content rules | `$report-component-style-design` `references/06-analytical-tables.md` |
 | Report chart/table format baseline | `$report-design-system-governance` `references/05-report-charts-tables-format-guidelines.md` |
@@ -58,6 +59,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not hide critical columns through nowrap truncation, unplanned horizontal scroll, or decorative density.
+- Do not accept table styling that uses strong colored backgrounds, many permanent row operations, or tag noise as the main visual language. Tables must remain scan-first: restrained header, stable rows, typed alignment, bounded actions, and exact-value disclosure.
 - Do not accept a sample-derived table style that remains image-only or lacks a controlled table pattern, composed pattern decision, or documented `requires-pattern-extension` gap.
 - Do not repair or accept table visuals before row grain, primary key/object identity, column type/width/alignment metadata, and density limits are known.
 - Do not use pivot/S2 patterns when a detail table answers the task more directly.

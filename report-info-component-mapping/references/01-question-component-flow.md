@@ -4,6 +4,33 @@ Use this reference when deciding how a business question becomes answer atoms, c
 
 Before this step, classify the request with `00-analysis-perspective-card-taxonomy.md` when the user uses viewing intents such as 看现状, 看目标, 看趋势, 看排名, 看原因, 看行动, 看质量, or 看明细. The perspective is the stable routing layer; answer atoms and component bundles are the implementation layer.
 
+Also apply `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when the input is a broad report topic, a metric list, or a requirement document with proposed charts/components. A good mapping starts from one primary decision question and then creates the shortest answer path.
+
+## Good Report Mapping Path
+
+Default mapping chain:
+
+```text
+primary decision question
+  -> conclusion / status judgment
+  -> comparison baseline
+  -> driver / cause / dimension split
+  -> exact detail / source evidence
+  -> action / owner / next step
+```
+
+Use this chain to decide block priority:
+
+| Report layer | Must answer | Component implications |
+| --- | --- | --- |
+| Conclusion layer | What should the user judge now? | conclusion strip, KPI judgment, target/actual, anomaly/status |
+| Evidence layer | What proves the judgment? | trend, comparison, target line, ranking, structure |
+| Cause layer | Why did it happen or where is the issue? | decomposition, driver split, funnel/process, contribution, dimension drill |
+| Detail layer | Which records or objects prove it? | Detail Table, drawer, source link, export |
+| Action layer | What should happen next? | action recommendation, task/owner/status, jump, operation route |
+
+If a proposed component cannot be assigned to one of these layers, mark it as supplemental, detail-only, or remove it.
+
 ## Answer Atom Decision Tree
 
 | If the user asks... | Required answer atom | Typical component bundle |
@@ -31,7 +58,7 @@ Before this step, classify the request with `00-analysis-perspective-card-taxono
 | 核心问题 | Executive summary | Question statement, conclusion card, decision prompt, `visualType: 'text-summary'` |
 | 时间 / 组织 / 范围 | Filter block / header meta | Date picker, org selector, scope selector, active filter chips |
 | 核心结论 | Executive summary | Text summary card, key finding list, conclusion strip, conclusion/evidence/action card with `conclusionCardPattern` and `conclusionEvidenceBodyMode` |
-| 洞察 / 诊断 / 建议 / 口径说明 | Analysis insight block | Conclusion card, insight card, anomaly/risk card, attribution card, recommendation card, data-quality card, definition/help card with `definitionHelpCardPattern`, chart annotation |
+| 洞察 / 诊断 / 建议 / 明确要求页面展示口径说明 | Analysis insight block | Conclusion card, insight card, anomaly/risk card, attribution card, recommendation card, data-quality card, explicit definition/help card with `definitionHelpCardPattern`, chart annotation |
 | 核心 KPI / 业务总览 | KPI block | KPI overview card when `2-5` peer metrics answer one domain topic; KPI judgment card when the main question is status/health/rating/gauge judgment; KPI goal execution card when the main question is target attainment/gap/progress/milestone execution; otherwise KPI card, metric card, sparkline card |
 | 实际 vs 目标 / 预算 | Target/variance block | KPI goal execution card with `kpiGoalExecutionCardPattern`, bullet chart, progress bar, target card, comparison card |
 | 差异额 / 差异率 | Target/variance block | Gap KPI goal execution card, variance bar, comparison bar, waterfall only when attribution is additive |
@@ -50,7 +77,7 @@ Before this step, classify the request with `00-analysis-perspective-card-taxono
 | 异常 / 风险 / 预警 | Alert block | Alert card, severity badge, warning list, SLA table |
 | 任务 / 整改 / 跟进 | Task/action block | Task card, task table, Kanban, Gantt, progress stepper |
 | 证据 / 附件 / 来源 | Evidence block | Evidence drawer, source list, attachment list, linked records |
-| 口径 / 公式 / 规则 / 指标什么意思 / 怎么算 | Definition help block | Definition/help card with `analysisPerspective: definitionHelp`, `definitionHelpCardPattern`, `definitionHelpEvidenceBinding`, help icon, popover, rule drawer, formula note |
+| 明确要求展示口径 / 公式 / 规则 / 指标什么意思 / 怎么算 | Definition help block | Definition/help card with `analysisPerspective: definitionHelp`, `definitionHelpCardPattern`, `definitionHelpEvidenceBinding`, help icon, popover, rule drawer, formula note |
 | 数据质量 / 数据差异 / 可信度 | Data trust block | Data-quality trust card with `analysisPerspective: dataQualityTrust`, `dataQualityTrustCardPattern`, and `dataQualityEvidenceBinding`; side-by-side comparison table, diff table, lineage graph, log table |
 | 导出 / 下载 / 刷新 / 全屏 | Header actions or toolbar | Icon buttons with tooltips, menu actions |
 
@@ -66,7 +93,8 @@ Before this step, classify the request with `00-analysis-perspective-card-taxono
 - Read grouped table fields: grouped table header with business column groups, `columnTree`, computed `colSpan`/`rowSpan`, leaf units/definitions, fixed multi-level header, and frozen row/primary columns when horizontal scroll exists.
 - Complete a mini analysis loop inside one container: Composite Panel with one shared topic, one primary child, summary -> trend/structure -> contribution/exception -> detail/action sequence, panel-level local filter, shared legend/unit, and linked child interaction.
 - Explain a decision point: Analysis & Insight component with one subtype, one main conclusion, supporting evidence, affected object, action or trust context, and `analysisInsightContract`. For 看结论 / 洞察 / 摘要 / 解读 cards, set `analysisPerspective: conclusionInsight`, `conclusionCardPattern`, `conclusionEvidenceBodyMode`, and `conclusionEvidenceBinding`.
-- Explain a metric definition or口径: definition/help card with `analysisPerspective: definitionHelp`, `definitionHelpCardPattern`, metric meaning, formula, scope, source/freshness, denominator or example evidence, and tooltip/popover/drawer disclosure.
+- Explain a metric definition or口径 on the page only when explicitly requested: definition/help card with `analysisPerspective: definitionHelp`, `definitionHelpCardPattern`, metric meaning, formula, scope, source/freshness, denominator or example evidence, and tooltip/popover/drawer disclosure.
+- When metric口径 or 指标清单 appears only as requirement-document supplementary material, bind it to metric contracts, tooltip/detail/dictionary payloads, export metadata, and validation cases instead of adding a visible report-page block.
 - Compare multi-metric object profiles: parallel coordinates with object/dimension/axis contracts, plus detail table for exact values.
 - Explain why: waterfall, decomposition tree, funnel/process chart, contribution analysis.
 - Trace source-to-target flow: Sankey with node/link schema, Top N aggregation, main-flow highlight, and exact link tooltip/detail.
@@ -76,9 +104,27 @@ Before this step, classify the request with `00-analysis-perspective-card-taxono
 - Prove data correctness: data-quality trust card with `dataQualityTrustCardPattern`, source comparison, lineage, version list, operation log.
 - Present a story: conclusion cards, chapter blocks, timeline, action plan table.
 
+## Metric Network Mapping
+
+Do not map core metrics as parallel tiles by default. Build a metric relationship network:
+
+```text
+result metric -> driver metric -> split dimension/object -> detail record -> action/source
+```
+
+Rules:
+
+- A result metric owns the top judgment only when it has a baseline/target/threshold/denominator.
+- Driver metrics explain the result and should not have the same visual weight as the result unless the question is explicitly driver comparison.
+- Dimension/object splits locate where the result changed or where action is needed.
+- Detail records verify the issue and support export, drawer, or source-system jump.
+- Action/source routes close the loop; otherwise the report may explain but not help the user act.
+
 ## Component Selection Constraints
 
 - A component is valid only when it answers a named business question.
+- A primary metric component is valid only when it helps answer What, Why, or So what. Metrics that only show existence are context/detail fields.
+- A primary metric without target/baseline/benchmark/historical range/threshold/denominator is not a judgment component; downgrade it or add a comparison source.
 - In sample/source restoration, a visible source module is not automatically `must-have`. Classify each source module as:
   - `businessRequired`: directly answers the user's stated report question.
   - `sampleStructure`: needed to preserve the sample's shell, hierarchy, or module rhythm, but not a business-required component.

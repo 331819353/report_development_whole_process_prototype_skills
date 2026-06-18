@@ -9,11 +9,11 @@ When asked to design a report visual layout, use this structure:
 3. 页面外壳: unified page identity/navigation/filter control surface for custom pages, or the selected template's native shell/navigation/filter slots for template-based pages; include logo placement, actions, and template mapping if applicable.
 4. 品牌风格: Haier logo asset discovery result, logo variant or placeholder, Haier blue/white palette, typography, spacing, density, surfaces.
 5. 内容结构: summary, breakdown, evidence, detail, action, or another report-appropriate flow.
-6. 栅格方案: `8 * N` parent block grid, parent spans, internal sub-block plan when used, row height/scroll strategy, chart/table/container/complex-diagram safety.
+6. 栅格方案: `1920x1080` content grid, menu/sidebar occupied width, menu/header occupied height, 12-column split, 8 visible row-unit sizing basis, columnWidth/rowHeight calculation, N-row scroll behavior, parent spans, internal sub-block plan when used, chart/table/container/complex-diagram safety.
 7. 关键组件: parent block -> sub-block -> component placement for KPI cards, charts, tables, Analysis & Insight components, text summaries, drawers/popovers, toolbar actions.
 8. 模板路由: chosen template and config files to adjust.
 9. 交互与状态: filters, drilldown, drawer/modal, refresh/export/fullscreen, empty/loading/error/no-permission, responsive behavior.
-10. 视角导航验收: domain navigation, Tabs, Segments, or other first-level perspective controls; include `1920x1080` and `1280x768` DOM no-clipping results.
+10. 视角导航验收: domain navigation, Tabs, Segments, or other first-level perspective controls; include `1920x1080` DOM no-clipping results.
 11. 设计校验: first-viewport value, sample fidelity when applicable, brand correctness, grid correctness, visual restraint, no clipping/overlap.
 
 ## 2. Quality Checklist
@@ -48,12 +48,13 @@ Before finalizing, verify:
 - Rate/change fields use `%` in visible Chinese UI, not `pt`, `p.p.`, or `percentage point` labels unless explicitly requested.
 - Change-rate and variance-rate indicators use the inherited or explicitly documented color/icon convention; positive-red-up / negative-green-down is required only when that convention applies.
 - Redundant information, decorative elements, and visual noise are removed.
-- The content area uses an `8 * N` rectangular grid.
+- The content area uses the `1920x1080` prototype grid: deduct menu/sidebar width for columns, deduct menu/header height for rows, split into 12 equal columns and 8 equal row units for sizing, and keep all N report rows on the same rowHeight.
+- The minimum top-level block is `2*1`; the default analytical/chart block is `3*2`.
 - Every top-level parent block occupies complete rectangular page-grid cells.
 - Components may be placed inside internal sub-blocks of a parent block; sub-blocks are local layout regions and do not count as page-grid cells.
 - Page layout owns page shell identity and block placement, not block title-area design. Business components own visible title/function/local-filter areas inside their widget viewport.
-- Every chosen block span has been checked against `1920x1080` or `1280x768` practical viewport constraints.
-- `1920x1080` and `1280x768` are not treated as total report height limits.
+- Every chosen block span has been checked against `1920x1080` practical viewport constraints, including the actual rowHeight from the 8-row visible split.
+- `1920x1080` is not treated as a total report height limit.
 - If one parent grid block contains multiple sub-blocks/components, the composite parent component carries one clear business title/control area and the internal sub-block labels/components remain visually subordinate.
 - Every sub-block has a declared purpose, component owner, local size, `5px` parent inset, `5px` sibling gap, state behavior, and overflow rule.
 - Analysis & Insight blocks declare `analysisInsightContract`, reserve conclusion/evidence/action/trust/source/freshness/state zones, fit summary bars/cards/side panels/annotation bubbles to their size tier, and stay visually subordinate to the primary chart/table unless the block is explicitly explanation-first.
@@ -63,9 +64,9 @@ Before finalizing, verify:
 - Components are not narrow, tiny, crowded, or forced into cramped spans. Increase span/height, split content, add scroll/zoom/fullscreen, or reduce visible labels before accepting the layout.
 - Shape- or density-sensitive visuals such as gauges, radar, maps, pies, Combo charts, funnel charts, sunburst charts, treemap/rectangular tree maps, parallel-coordinate charts, path/user/process paths, tree/hierarchical trees, relation/network graphs, SVG/canvas diagrams, flow paths, and custom ECharts graphics use aspect-compatible or axis-density-compatible blocks or centered uniform fit boxes. A warped curve, stretched map, oval radar/circle, squeezed gauge, false/compressed dual axis, clipped/overcrowded Combo, clipped/overcrowded funnel, clipped/overcrowded sunburst, clipped/overcrowded treemap, clipped/overcrowded parallel-axis plot, clipped/overcrowded path, all-expanded/clipped tree, or clipped/hairball relation graph fails layout QA.
 - Parallel-coordinate blocks reserve plot height, axis-title and bottom-label bands, legend/filter zones, `axisGap >= 56px`, `plotH >= CH * 0.48`, and fallback to dimension filtering, horizontal scroll, sampling/aggregation, fullscreen, or table/scatter/bar when dimensions or sample lines exceed readability.
-- Scrollable report pages keep usable row/block heights and support vertical scrolling when content exceeds the first viewport.
+- Scrollable report pages keep the first-viewport rowHeight and support vertical scrolling when content exceeds the first 8 visible row units; they do not recompute rowHeight from total report rows.
 - Navigation is present only when it helps orientation and remains low-intrusion.
-- Domain navigation, Tabs, and Segments are checked at `1920x1080` and `1280x768`; each visible navigation/control item or card content viewport passes `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`.
+- Domain navigation, Tabs, and Segments are checked at `1920x1080`; each visible navigation/control item or card content viewport passes `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`.
 - Screenshot evidence does not replace DOM no-clipping evidence for first-level perspective navigation.
 - Fixed-height navigation/cards include a height budget: declared height, padding, explicit line-height for each text row, row count, gaps, badge/status/footer heights, and a `requiredContentHeight <= cardHeight` calculation.
 - A navigation/card DOM check where `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2` is recorded as clipping, even when the screenshot looks visually acceptable.
@@ -133,7 +134,7 @@ Before finalizing, verify:
 - Do not use naked native `<select>` controls as the final visual surface for primary filters.
 - Do not use masonry, staggered, irregular, diagonal, or non-rectangular component layouts.
 - Do not duplicate a block/page title inside the component body.
-- Do not force every component into its own top-level `8 * N` block when a parent block with clear internal sub-blocks better answers one business question.
+- Do not force every component into its own top-level `12 * N` block when a parent block with clear internal sub-blocks better answers one business question.
 - Do not make components too narrow, too small, or crowded when internal sub-block layout plus parent-block expansion can carry the content.
 - Do not let section/stage/layer/lane titles collide with or sit on top of component cards, node cards, connector lines, or child labels.
 - Do not let business-question text, labels, legends, chart marks, treemap rectangles, cards, or diagram nodes overlap, stack, or visually merge.

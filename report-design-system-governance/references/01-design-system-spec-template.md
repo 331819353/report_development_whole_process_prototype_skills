@@ -25,7 +25,7 @@ Use this template to produce a complete, non-empty report design system specific
 | Semantic tokens | Use role-based tokens instead of one-off raw styles | Every raw color/spacing/shadow maps to a token or exception |
 | Stable geometry | Hover/focus/loading/error states preserve layout size | No cards, buttons, charts, or tables shift on interaction |
 | Measurable component placement | Implementation-ready components define internal coordinates and alignment before visual polish | Each component family has slot x/y rules, main visual center, size tiers, and state geometry |
-| Parent/sub-block composition | `8 * N` defines parent blocks; parent blocks may contain internal sub-blocks | Parent block and sub-block layout are both documented and pass fit checks |
+| Parent/sub-block composition | `12 * N` defines parent blocks; parent blocks may contain internal sub-blocks | Parent block and sub-block layout are both documented and pass fit checks |
 | Exact value access | Dense visuals must expose exact values | Tooltip, table, drawer, export, or label path exists |
 | Reusable governance | Every rule has source, owner, status, and exception policy | Governance matrix contains no ownerless stable rule |
 
@@ -45,7 +45,7 @@ Minimum rows: color, typography, spacing, grid, radius, border, shadow, state, d
 | Color | `text.secondary` | Inherited or value | Descriptions, helper text, secondary labels | Must remain readable in dense cards | stable/variant/gap |
 | Color | `state.success/warning/error/info` | Inherited or value | Status tags, alerts, trend indicators | Semantic color cannot be decorative | stable/variant/gap |
 | Typography | `font.title/page/block/body/caption` | Size, weight, line-height | Page titles, block titles, body text, captions | No viewport-width font scaling | stable/variant/gap |
-| Spacing | `space.page/block/card/control` | Value scale | Page padding, block gap, card padding, controls | Must support 1280px and baseline viewport | stable/variant/gap |
+| Spacing | `space.page/block/card/control` | Value scale | Page padding, block gap, card padding, controls | Must support 1920x1080 prototype viewport | stable/variant/gap |
 | Grid | `grid.report` | Column/row/gap rule | Top-level parent report blocks | Legal rectangular spans only | stable/variant/gap |
 | Grid | `grid.subBlock` | Local grid/flex rule | Internal sub-blocks inside parent blocks | Explicit tracks, 5px parent inset, 5px sibling gap, min size, overflow | stable/variant/gap |
 | Spacing | `space.subBlock.inset/gap` | `5px / 5px` unless approved exception | Parent-to-sub-block and sibling sub-block spacing | Must be subtracted during fit checks | stable/variant/gap |
@@ -121,11 +121,11 @@ Minimum rows: amount/count, percentage/rate, change/variance, rank/score, time/d
 
 | Component | Long text surface | Wrap/line clamp | Min size | Tooltip/expand/scroll rule | Critical text that must remain visible | Regression viewport |
 | --- | --- | --- | --- | --- | --- | --- |
-| KPI card | Title, value, unit, helper | 1-2 line title, value never hidden | Declared by template/component | Tooltip/drawer for full label and value basis | Metric value, unit, status | 1280px and design baseline |
-| Chart | Axis labels, legends, tooltip | Label budget with sampling/rotation rules | Aspect-compatible viewport | Tooltip/fullscreen/table fallback | Axis meaning, unit, key outliers | 1280px and design baseline |
-| Table | Headers, cells, action names | Header/cell wrap or tooltip | Column min widths | Horizontal scroll, frozen action, drawer | Row key, values, actions | 1280px and design baseline |
-| Filter | Field label, selected chips | Chip wrap or overflow counter | Stable filter surface | Popover/panel for overflow | Active filters and reset path | 1280px and design baseline |
-| Summary text | Conclusion, reason, action | Multiline with max height or expand | Stable card height | Expand/drawer for long narrative | Main conclusion and action | 1280px and design baseline |
+| KPI card | Title, value, unit, helper | 1-2 line title, value never hidden | Declared by template/component | Tooltip/drawer for full label and value basis | Metric value, unit, status | 1920x1080 design baseline |
+| Chart | Axis labels, legends, tooltip | Label budget with sampling/rotation rules | Aspect-compatible viewport | Tooltip/fullscreen/table fallback | Axis meaning, unit, key outliers | 1920x1080 design baseline |
+| Table | Headers, cells, action names | Header/cell wrap or tooltip | Column min widths | Horizontal scroll, frozen action, drawer | Row key, values, actions | 1920x1080 design baseline |
+| Filter | Field label, selected chips | Chip wrap or overflow counter | Stable filter surface | Popover/panel for overflow | Active filters and reset path | 1920x1080 design baseline |
+| Summary text | Conclusion, reason, action | Multiline with max height or expand | Stable card height | Expand/drawer for long narrative | Main conclusion and action | 1920x1080 design baseline |
 
 ## Interaction Feedback Rule
 

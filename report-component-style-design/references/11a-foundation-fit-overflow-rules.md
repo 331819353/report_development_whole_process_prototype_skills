@@ -278,7 +278,7 @@ Component size behavior:
 
 - Width follows the assigned block.
 - Height follows the assigned row span or content rules.
-- In scrollable page templates, the resolved height of any report block must be at least 220px. If a one-row block would be shorter, increase the grid row height or choose a larger row span.
+- In prototype templates, the resolved report-block size must follow the configured grid unit: column width from visible width minus menu/sidebar width divided by 12, and rowHeight from visible height minus menu/header height divided by 8. If a one-row block is too short for the component, choose a larger row span, split the content, or move detail to drawer/fullscreen; do not increase or recalculate rowHeight ad hoc.
 - Typography uses a small set of fixed semantic sizes and may step down within bounds.
 - Charts recalculate plot area after title, axes, legends, and labels.
 - Tables first adapt column widths to content and viewport. When full column content cannot fit, use internal horizontal scrolling instead of ellipsis or clipped text.
@@ -324,7 +324,7 @@ Use these strategies:
 Rules:
 
 - Do not set fixed component height when content length is variable unless internal scroll is defined.
-- In scrollable page templates, do not let any assigned report block resolve below 220px tall. If the full grid becomes taller than 1080px, use vertical page/content scrolling instead of shrinking blocks.
+- In prototype templates, do not shrink the configured rowHeight to make more content fit. Column width comes from visible width minus menu/sidebar width, and rowHeight comes from visible height minus menu/header height divided by 8; if the full grid becomes taller than the first viewport, use vertical page/content scrolling, split, drawer, or detail routing instead of shrinking blocks.
 - Do not hide overflow for charts, titles, KPI values, status labels, or action buttons.
 - Do not let a component's child element define a width larger than the component viewport.
 - Do not let legends, labels, controls, or values extend beyond component bounds.

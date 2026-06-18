@@ -33,20 +33,20 @@ export const cockpitConfig: DashboardConfig = {
       sidebarWidth: 256,
       // 左侧导航折叠宽度，只保留图标和 logo。
       sidebarCollapsedWidth: 80,
-      // 内容分块之间的间距。只控制块与块之间，不控制块内部 padding。
-      contentGap: 16,
+      // 数学分块不设 gap，保证右侧内容区列宽按 12 列切分、行高按 8 个可视行单元计算；视觉间距由 cellPadding 和卡片 padding 承担。
+      contentGap: 0,
     },
 
     grid: {
-      // 右侧内容区从顶部到下方全部用于页面内容。
-      // contentEndY - contentStartY 是右侧内容画布的最小高度。
+      // 右侧内容区从顶部到下方全部用于页面内容。纵向菜单只扣宽度，不扣高度。
+      // contentEndY - contentStartY 是右侧内容画布的基准高度。
       contentStartY: 0,
-      contentEndY: 1032,
-      // 每一行的基础高度。layoutRows 有 N 行时，右侧内容高度会按 N 自动计算；
-      // 如果超过屏幕高度，右侧内容区会出现纵向滚动条。
-      rowHeight: 320,
-      // 每个分块外层留白。浅色卡片模板通常保持 0，让卡片对齐更干净。
-      cellPadding: 0,
+      contentEndY: 1080,
+      // 右侧内容区 1080px 按 8 行等分，得到单个分块行高 135px；
+      // 如果超过 8 个可视行单元，右侧内容区会出现纵向滚动条。
+      rowHeight: 135,
+      // 每个分块外层留白。用于提供视觉间距，不参与数学分块尺寸计算。
+      cellPadding: 6,
       // 保留给组件卡片的主题色，框架样式会用它做弱高亮。
       dominantTitleColor: '#004ac6',
       // 分块内部主体背景色。这里使用白色卡片，业务组件可在自己的 scoped style 中覆盖内部视觉。
@@ -64,9 +64,9 @@ export const cockpitConfig: DashboardConfig = {
   },
 
   // 导航页配置。数组里有几个对象，左侧导航就显示几个页面。
-  // layoutRows 是当前导航页的内容分块布局，采用 8*N 规则：
+  // layoutRows 是当前导航页的内容分块布局，采用 12列*N行规则；首屏 rowHeight 按 8 个可视行单元计算：
   // 1. 每个字符串代表一行，每个字符代表一列。
-  // 2. 每行必须保持 8 个字符，即固定 8 列；数组有几行就是 N。
+  // 2. 每行必须保持 12 个字符，即固定 12 列；数组有几行就是 N。
   // 3. 相邻且相同的字符会合并成一个块，例如 "AAAA" 会横向跨四列。
   // 4. 同一个字符上下相邻也会合并，例如两行同列都是 "A" 会纵向合并。
   // 5. "." 或空格表示留空，不生成块。
@@ -76,7 +76,8 @@ export const cockpitConfig: DashboardConfig = {
   // 9. 组件数据不要写死在这里。默认 JSON 数据放到 src/data/dashboard.dataset.json；
   //    常规 API 使用 data.id: 'apiData' + data.api 配置；复杂 API/provider 再到 src/dataSources/registry.ts 注册。
   //    这里仅保留引用关系。
-  // 10. visualType 用来声明组件视觉类型，校验脚本会用它检查当前块占位是否合法。
+  // 10. visualType 用来声明组件视觉类型，校验脚本会用它检查当前块占位是否合法；最小分块为 2*1，普通图表默认 3*2 且不超过 4*3。
+  //     行数为 N，不设上限；更长报表继续按同一 rowHeight 向下滚动，不重新压缩行高。
   // 11. filterScope 用来声明当前组件受哪些有 scope 的筛选项影响。
   //     组件的数据源用 filterFields 映射筛选字段；用 requiredFilters 防止漏配后静默失效；
   //     用 ignoredFilters + ignoredFilterReasons 显式声明组件不受某些全局筛选影响。
@@ -91,36 +92,81 @@ export const cockpitConfig: DashboardConfig = {
       id: 'dashboard',
       label: '数据看板',
       icon: 'Gauge',
-      // 8列3行：第一行 8 个单块，第二/三行示例包含横向合并块。
-      layoutRows: ['ABCDEFGH', 'iijjkkll', 'mmnnoopp'],
+      // 12列*N行示例：前三组是 12 个默认 3*2 主块，后两行是 12 个 2*1 补充块。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'analytics',
       label: '分析查询',
       icon: 'BarChart3',
-      // 8列4行：适合明细表、筛选结果、趋势卡片混排；超过可视高度时右侧滚动。
-      layoutRows: ['AAAABBBB', 'CCCCDDDD', 'eeffgghh', 'iijjkkll'],
+      // 12列*N行示例：适合明细表、筛选结果、趋势卡片混排；超过 8 行时右侧滚动。
+      layoutRows: [
+        'AAAABBBBCCCC',
+        'AAAABBBBCCCC',
+        'DDDEEEFFFGGG',
+        'DDDEEEFFFGGG',
+        'HHHIIIJJJKKK',
+        'HHHIIIJJJKKK',
+        'LLMMNNOOPPQQ',
+        'RRSSUUVVWWXX',
+      ],
     },
     {
       id: 'reports',
       label: '报表中心',
       icon: 'Factory',
-      // 8列3行：左右重点区 + 底部多个小块。
-      layoutRows: ['AAAABBBB', 'AAAABBBB', 'ccddeeff'],
+      // 12列*N行示例：左右重点区 + 底部多个小块。
+      layoutRows: [
+        'AAAABBBCCCDD',
+        'AAAABBBCCCDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'team',
       label: '组织协同',
       icon: 'Network',
-      // 8列3行：左侧高块 + 右侧列表块。
-      layoutRows: ['AABBCCDD', 'AABBEEFF', 'gghhiijj'],
+      // 12列*N行示例：左侧高块 + 右侧列表块。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
     {
       id: 'security',
       label: '安全审计',
       icon: 'Settings',
-      // 8列3行：配置、审计、告警类内容占位。
-      layoutRows: ['AAAABBBB', 'CCDDEEFF', 'gghhiijj'],
+      // 12列*N行示例：配置、审计、告警类内容占位。
+      layoutRows: [
+        'AAABBBCCCDDD',
+        'AAABBBCCCDDD',
+        'EEEFFFGGGHHH',
+        'EEEFFFGGGHHH',
+        'IIIJJJKKKLLL',
+        'IIIJJJKKKLLL',
+        'MMNNOOPPQQRR',
+        'SSUUVVWWXXYY',
+      ],
     },
   ],
 

@@ -27,14 +27,16 @@ Do not solve fit problems by simply shrinking typography below readability.
 
 ### Default Span And Fit Rules
 
-When the page uses an `8 * N` grid, use `$report-visual-layout-design` for default span distribution and block-size constraints, then check whether the assigned body viewport remains readable after padding, title, legend, axes, controls, table headers, and footer are reserved.
+When the page uses a `12 * N` grid, use `$report-visual-layout-design` for default span distribution and block-size constraints, then check whether the assigned body viewport remains readable after padding, title, legend, axes, controls, table headers, and footer are reserved.
+
+Ordinary chart blocks default to `3*2` and must not exceed `4*3`; conclusion cards are the exception when a wider reading strip is needed.
 
 Rules:
 
 - Keep the default span when the component fits.
 - If the assigned viewport fails fit, try a larger default candidate span, split, paginate, collapse, aggregate, or move details to drilldown.
-- For scrollable page templates, final spans are valid only after the row-height rule is satisfied: every resulting block must be at least 220px tall.
-- Do not calculate row height by dividing the viewport height by `N`; increase `N`, scroll, split, or paginate.
+- For prototype templates, final spans are valid only after the content-grid rule is satisfied: column width comes from visible width minus menu/sidebar width, and rowHeight comes from visible height minus menu/header height divided by 8.
+- Do not calculate row height by dividing the viewport height by total `N`; increase rows, scroll, split, or paginate.
 
 If the selected default span still feels cramped after validation, choose a larger candidate span or redesign the component placement.
 

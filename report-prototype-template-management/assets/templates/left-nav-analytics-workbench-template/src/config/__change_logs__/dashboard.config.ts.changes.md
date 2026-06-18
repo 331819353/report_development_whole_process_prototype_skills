@@ -15,6 +15,38 @@
 
 ## Version Entries
 
+### v20260618-n-row-menu-axis-grid - 2026-06-18
+
+- Change ID: ad-hoc-n-row-menu-axis-grid
+- Actor: Codex
+- Change type: config
+- Summary: Aligned the left-nav template with the vertical-menu formula: sidebar width is deducted from columns, while content height remains the full 1080px basis for rowHeight.
+- Modified functionality: screen.grid content range/rowHeight comments and nav layoutRows comments.
+- Code ranges: `screen.layout`; `screen.grid`; `nav[].layoutRows`.
+- Modified content: Set the vertical-menu content range to `0 -> 1080`, set `rowHeight: 135`, kept 12-column layoutRows, and clarified that row count is `N` with scrolling beyond the first 8 visible row units.
+- Affected contracts: vertical menu width deduction; `(1080 - 0) / 8 = 135`; 12 fixed columns; `N` uncapped rows.
+- Verification: `npm run validate:dashboard` and `npm run build:preview` passed in `left-nav-analytics-workbench-template`.
+- Rollback note: Restore the prior 1032px content range only if the vertical shell reintroduces a fixed bottom offset outside the grid formula.
+- Related files: `src/styles/index.scss`, `scripts/validate-dashboard-contract.mjs`, `$report-visual-layout-design`.
+- Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
+- Follow-up: none
+
+### v20260618-12x8-content-grid - 2026-06-18
+
+- Change ID: ad-hoc-12x8-content-grid
+- Actor: Codex
+- Change type: config
+- Summary: Rebased the left-nav template defaults on an 8-row visible right-content grid.
+- Modified functionality: screen.layout contentGap token; screen.grid rowHeight/cellPadding; nav page layoutRows.
+- Code ranges: `screen.layout`; `screen.grid`; `nav[].layoutRows`.
+- Modified content: Changed the mathematical grid gap to 0, set `rowHeight: 129` for the `0 -> 1032` right-content range, added visual `cellPadding: 6`, and expanded default nav layouts to 8 visible rows.
+- Affected contracts: 1920x1080 prototype content grid; 12 columns; 8 visible row units; 12-row scroll budget.
+- Verification: `npm run validate:dashboard` passed in `left-nav-analytics-workbench-template`.
+- Rollback note: Restore the previous gap, rowHeight, cellPadding, and shorter nav layoutRows together with the DashboardShell and validator changes.
+- Related files: `src/components/DashboardShell.vue`, `scripts/validate-dashboard-contract.mjs`, `$report-visual-layout-design` grid references.
+- Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T12:42:33.635Z
 
 - Change ID: baseline

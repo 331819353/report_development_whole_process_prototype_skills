@@ -27,6 +27,7 @@ It sits between `$report-design-system-governance` and `$report-component-style-
 | Component-family source map | `references/01-component-spec-source-map.md` |
 | Reusable component spec template | `references/02-component-spec-template.md` |
 | Screenshot/sample-derived style generalization target | `$report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Low-noise high-density component baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when external/general design standards, 高级感, 好看, 好用, 易懂, 降噪, UI Kit/SaaS/BI component language, or component visual drift are in scope |
 | Report design-system baseline | `$report-design-system-governance` relevant references |
 | Modern SaaS / BI Dashboard / UI Kit component language | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
 | Detailed component family rules | `$report-component-style-design` matching references |
@@ -64,7 +65,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 4. Load the report/common-app baseline and the smallest matching component-family references.
 5. For each component family, define anatomy, required/optional slots, data contract, metric/formula/unit/source needs, interaction contract, states, accessibility, responsive behavior, and exact-value disclosure.
 6. Define placement rules through `$report-component-placement-spec`: coordinate variables, slot ownership, main visual center, local-filter geometry, size tiers, fallback order, and state geometry.
-7. Define visual tokens and variants as semantic rules, not one-off colors or decorative effects. When modern SaaS / BI Dashboard / UI Kit language is requested, map component surfaces, borders, radius, shadow, UI controls, hierarchy, and chart-lightness constraints to the positive style contract.
+7. Define visual tokens and variants as semantic rules, not one-off colors or decorative effects. When an outside/general design guideline is provided, use it to find gaps, then translate only the useful intent through the inherited baseline and `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md`. When modern SaaS / BI Dashboard / UI Kit language is requested, map component surfaces, borders, radius, shadow, UI controls, hierarchy, and chart-lightness constraints to the positive style contract.
 8. Classify normative rules: `MUST/fail` for data contract, renderer ownership, metric display, filter scope, layout fit, accessibility, state coverage, and readiness evidence; `SHOULD/exception-required` for recommended visual defaults or density choices; `MAY/optional` for enhancements.
 9. Add implementation handoff: ECharts/S2/Element Plus usage, config fields, API/view-model expectations, DOM/CSS/option proof hooks, QA crops, DOM overflow checks, and version/adoption notes.
 10. Run component acceptance gates and list any gaps, deprecated patterns, or project exceptions.
@@ -82,6 +83,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not write a component spec that only lists colors, font sizes, radius, and shadows.
+- Do not directly import external design tokens or generic dashboard recipes into a reusable component standard. Extract semantic intent, then define project-owned rules for low-noise color, high information density, component anatomy, hidden-complexity disclosure, and proof obligations.
 - Do not accept a modern SaaS / BI Dashboard / UI Kit component standard that lacks semantic light-surface/UI Kit token mapping, reduced uniform card-frame rules, brand/product color hierarchy, display-budget limits, bounded KPI scope, and component-pileup/chart-overweight failure handling.
 - Do not create or accept a reusable component standard before component-family scope, source-of-truth hierarchy, inherited baseline, and implementation surface are clear.
 - Do not accept a component family without business purpose, data grain, exact-value path, states, and placement rules.

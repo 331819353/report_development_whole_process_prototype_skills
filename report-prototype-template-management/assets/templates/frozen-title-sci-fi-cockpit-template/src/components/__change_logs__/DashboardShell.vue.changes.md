@@ -15,6 +15,22 @@
 
 ## Version Entries
 
+### v20260618-12x8-content-grid - 2026-06-18
+
+- Change ID: ad-hoc-12x8-content-grid
+- Actor: Codex
+- Change type: update
+- Summary: Added configured rowHeight and dynamic canvas height support to the frozen cockpit shell.
+- Modified functionality: content rowHeight, content grid height, canvas height, resolved design height, CSS variable export.
+- Code ranges: `contentRowHeight`; `contentGridHeight`; `canvasHeight`; `resolvedDesignHeight`; `appStyle`.
+- Modified content: Derived cockpit rows from `screen.grid.rowHeight`, exported row/canvas CSS variables, and allowed design height to grow when layoutRows exceed the first visible content area.
+- Affected contracts: 1920x1080 prototype content grid; configured rowHeight from `(contentEndY - contentStartY) / 8`.
+- Verification: `npm run validate:dashboard` passed in `frozen-title-sci-fi-cockpit-template`.
+- Rollback note: Restore proportional fixed-height rows only together with reverting the frozen grid config and CSS changes.
+- Related files: `src/config/dashboard.config.ts`, `src/styles/index.scss`, `src/types/dashboard.ts`, `scripts/validate-dashboard-contract.mjs`.
+- Change evidence: working-tree diff for `src/components/DashboardShell.vue` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T13:02:45.998Z
 
 - Change ID: baseline

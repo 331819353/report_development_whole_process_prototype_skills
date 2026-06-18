@@ -85,7 +85,7 @@ Use when:
 
 Implementation rules:
 
-- Preserve the selected template's shell and block contract: logo slot, shell title/control area, navigation model, filter mechanism, `8 * N` grid, widget viewport, component-owned title/control/local filter tools, and action hook boundary.
+- Preserve the selected template's shell and block contract: logo slot, shell title/control area, navigation model, filter mechanism, `12 * N` grid, widget viewport, component-owned title/control/local filter tools, and action hook boundary.
 - Use the built-in `apiData` / `httpData` config for ordinary REST/BFF endpoints; templates use a shared axios instance with request/response interceptors under this data-source boundary. Move complex provider calls into `src/dataSources/registry.ts` or the existing project's equivalent service layer; do not scatter axios or legacy fetch calls inside widgets.
 - Keep adapters at the data-source boundary so widgets receive stable rows/props.
 - Global/page-level filters must be passed through `api.query`, `api.body`, or the provider resolver before shaping component data. Component-title `localFilters` may filter only the already fetched component dataset.

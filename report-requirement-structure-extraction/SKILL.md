@@ -82,6 +82,8 @@ Use this sequence for every requirement transformation:
 4. Extract facts, assumptions, and missing inputs.
    Facts come from the user or provided files. Assumptions are safe inferences. Missing inputs are items that may affect scope, data, permission, acceptance, or delivery.
 
+   If the input is a requirement document that already contains a design idea, page structure, component plan, chart choice, or layout sketch, first classify it as an existing design proposal and run a reasonableness check before downstream prototype work. Do not treat existing design prose as automatically accepted implementation guidance when it conflicts with the business story, user path, `1920x1080` / `12 * N` layout rules, chart sizing, or metric-display boundaries.
+
 5. Identify users, stakeholders, and usage moments.
    Capture target users, maintainers, data owners, reviewers, approvers, external systems, and when/why they use the delivered result.
 
@@ -96,6 +98,8 @@ Use this sequence for every requirement transformation:
 
 9. Load the relevant scenario playbook.
    Use only the reference files that match the selected scenario and requested deliverable.
+
+   Metric definitions, metric dictionaries, calculation口径, and indicator lists in requirement documents are supplemental evidence by default. Use them to build the metric/data contract, tooltip/detail/dictionary payload, validation criteria, and downstream handoff. Do not create visible report-page cards,口径说明 blocks, or indicator-list modules from them unless the requirement explicitly asks to display指标说明/口径说明/指标清单 on the page.
 
 10. Convert to tasks and acceptance criteria.
    Write requirements as capability statements with measurable acceptance criteria, data/API dependencies, permission behavior, error/empty states, and test evidence.

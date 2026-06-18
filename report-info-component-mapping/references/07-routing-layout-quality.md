@@ -22,10 +22,10 @@ Do not create a decorative domain overlay. Domain words such as 产业, 区域, 
 
 - Put high-level judgment before detailed evidence unless the report type is detail query or reconciliation-first.
 - In sample/source restoration, distinguish business necessity from visual restoration. A visible module should be `businessRequired` only when it directly answers the stated report question; otherwise classify it as `sampleStructure` or `optionalEnhancement`.
-- Use the `8 * N` grid from `report-visual-layout-design`; every top-level parent block must occupy a rectangular group of page-grid cells.
+- Use the `12 * N` grid from `report-visual-layout-design`; every top-level parent block must occupy a rectangular group of page-grid cells.
 - Components may live directly in a parent block or inside internal sub-blocks. Use sub-blocks when multiple components jointly answer one business question inside the same parent block.
 - Choose each parent block's span from the legal component span matrix in `report-visual-layout-design`, based on the dominant or most layout-demanding sub-block/component.
-- Preserve the scrollable template block-height rule: every resolved block must be at least 220px tall, and layouts taller than 1080px must scroll vertically instead of compressing rows. Fixed sci-fi/big-screen templates are exempt.
+- Preserve the prototype content-grid rule: column width is derived after menu/sidebar width is deducted, rowHeight is derived from the first 8 visible content rows after menu/header height is deducted, and layouts taller than the first viewport must scroll vertically instead of recomputing or compressing rowHeight.
 - For bundled templates, do not allocate header or grid space to a standalone filter bar when the selected template already has native filter invocation. The mapping may define main filters, but the visual surface remains `filters[]` plus the template trigger/panel/popover/drawer or local title-band controls. Schema-changing first-level perspectives use nav/page/route/tab/segment/perspective state rather than template `filters[]`.
 - Page layout owns page shell identity and block placement, while each block owns its own title/function/local-filter area. Component mappings may keep a `title` field as metadata, but component bodies should not render duplicate visible titles when the surrounding block already has one.
 - Peer component groups or repeated sub-blocks inside one large parent block should use internal exact `M * N` distribution only when `actualTotal > 4`; for `actualTotal <= 4`, use a small-group layout based on content and block shape. When the algorithm applies, normally `layoutTotal = actualTotal`; when `actualTotal` is prime, use `layoutTotal = actualTotal + 1`; then choose `layoutTotal = M * N`, columns `M >= N`, and minimal `M - N` among valid factor pairs. The resulting internal `N` rows must feed the parent-block height decision with `heightExpansionRows = ceil(N * 2 / 3)`. Do not pad arbitrary empty slots; the single prime-balancing cell must not create fake metrics or mock data. Split by business meaning, tabs, pagination, drawer, or another parent block when the factor pair is unreadable.
@@ -109,7 +109,7 @@ For implementation tasks, component bundle, data model, filter model, interactio
 - Filtered KPI totals, chart totals, table rows, drawer records, exports, jumps, and refresh share context.
 - Selected objects reset or show stale-selection state when filters remove them from scope.
 - Dense components have overflow, zoom, drawer, or fullscreen strategy.
-- The mapping can be implemented within the `8 * N` rectangular parent grid, and any internal sub-blocks have explicit component owner, local size, `5px` parent inset, `5px` sibling gap, state, and overflow rules.
+- The mapping can be implemented within the `12 * N` rectangular parent grid, and any internal sub-blocks have explicit component owner, local size, `5px` parent inset, `5px` sibling gap, state, and overflow rules.
 
 ## Avoid
 

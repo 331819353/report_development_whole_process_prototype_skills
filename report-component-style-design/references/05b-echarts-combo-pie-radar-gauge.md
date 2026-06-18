@@ -108,6 +108,7 @@ States:
 
 - Use only when category count is small and part-to-whole proportions matter. Do not use pie/donut for trend, exact ranking, precise audit comparison, negative values, or visually similar shares that users must compare exactly.
 - Donut is the default report shape. Plain pie is allowed when center content is unnecessary or the component is too small. Semi-donut/progress donut is a separate single-progress pattern and must not be mixed with normal category composition.
+- Donut center content must carry one meaningful summary only: total, selected category, Top1 share, completion value, or empty/all-zero message. Do not stack multiple competing KPIs in the center.
 - Recommended category count: `2-6`; maximum before merging is `8`. When category count is `> 8`, or when small categories make the legend/label ring unreadable, use `Top5 + 其他`, ranked bar, table, or detail drawer.
 - Merge small items deterministically:
 
@@ -169,6 +170,7 @@ innerR = outerR * 0.62
 ## Radar
 
 - Use radar only for multi-dimensional score/health/profile comparison where shape, balance, strengths, weaknesses, or actual-vs-target gap is the main task. Do not use it for precise value lookup or unrelated raw-unit comparison.
+- Radar must remain an easy-to-read profile, not a decorative polygon. If the user needs exact ranking or many comparable objects, use bar/table/facets instead.
 - Recommended dimensions: `5-8`. `3-4` is allowed but weak; `9-10` requires abbreviated labels and hidden ordinary value labels; `>10` should become facets, bar chart, or table.
 - Recommended visible series: `1-2`; maximum normal visible series is `3`. More objects require a selector, facets, small multiples, bar chart, or table.
 - Radar values must share one comparable scale, normally `0-100`. If raw fields use different units, plot standardized scores and expose raw value, target, and score in tooltip.

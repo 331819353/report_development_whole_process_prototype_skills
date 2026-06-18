@@ -17,3 +17,4 @@ This file is now a routing index. Load the smallest matching split file instead 
 - Load `12a-placement-foundation-controls.md` first when local-filter geometry or shared coordinate variables are needed.
 - Load only the split file that matches the component family in the user request.
 - Pair the placement file with the visual/content reference for the same family, such as `05-echarts-charts.md`, `06-analytical-tables.md`, `03-text-summary.md`, or `04-kpi-metric-cards.md`.
+- Ordinary basic chart blocks default to `3*2` in the page grid and must not exceed `4*3`. If the chart still cannot fit, split density, move detail to drawer/fullscreen/table, or change component type; conclusion cards are the only wide-reading exception.

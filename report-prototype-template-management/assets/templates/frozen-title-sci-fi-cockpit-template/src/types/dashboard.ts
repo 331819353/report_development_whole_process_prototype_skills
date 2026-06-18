@@ -22,6 +22,7 @@ export interface NavItem {
 export interface DashboardGridConfig {
   contentStartY: number;
   contentEndY: number;
+  rowHeight: number;
   cellPadding: number;
   innerBackgroundColor: string;
   dominantTitleColor: string;

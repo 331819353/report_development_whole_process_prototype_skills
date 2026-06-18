@@ -26,6 +26,7 @@ Use `filter-linkage-completeness-test` when the task is runtime testing; use thi
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Filter source map | `references/01-filter-reference-map.md` |
 | Screenshot/sample-derived style generalization target | `$report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Low-noise high-density visual baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when filter polish, weak-presence filters, hidden complexity, advanced-filter disclosure, or outside/general filter guidance is in scope |
 | Filter selector patterns from visual samples | `references/02-filter-selector-patterns.md` |
 | Page/global filter visuals | `$report-component-style-design` `references/02-filter-controls.md` |
 | Component-local controls | `$report-component-style-design` `references/10-in-component-controls.md` |
@@ -61,6 +62,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not hide a perspective switch or schema-changing view switch as an ordinary filter.
+- Do not let filters become the visual center of a report page. Keep key filters visible, collapse low-frequency filters into an advanced surface, and expose active conditions through a compact summary/chip path.
 - Do not design, repair, or accept filters before filter scope, option source, default/reset behavior, and affected component/query contracts are known.
 - Component-local filters cannot silently change page/global scope, export scope, backend aggregation, or other components.
 - Filter controls are not ready until default, non-default, empty, no-permission, reset, and cascade states are defined or explicitly blocked.

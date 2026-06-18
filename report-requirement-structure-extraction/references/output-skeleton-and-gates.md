@@ -17,8 +17,10 @@ When transforming a requirement, use this structure. Keep small inputs concise, 
 11. 非功能需求: performance, freshness, reliability, observability, compatibility, deployment, rollback.
 12. 测试与验收标准: acceptance criteria, test cases, evidence, data consistency checks, integration smoke tests.
 13. UI/设计基线: Haier/company application baseline, report development baseline, inherited dual baseline, or explicit non-Haier/native/neutral exception, with downstream skills that must apply it.
-14. 后续调用建议: exact downstream skills/workflows and why.
-15. 风险与待确认问题: unresolved risks, questions, decisions needed before implementation.
+14. 既有设计思路审查: accepted/repaired/rejected existing design proposals from the source requirement, including conflicts with story, path, hierarchy, `1920x1080`, `12 * N`, chart sizing, density, or metric-display rules.
+15. 指标展示边界: visible metrics/components versus supplemental metric口径, calculation notes, and indicator lists that stay in tooltip/detail/dictionary/handoff unless explicitly requested for page display.
+16. 后续调用建议: exact downstream skills/workflows and why.
+17. 风险与待确认问题: unresolved risks, questions, decisions needed before implementation.
 
 For implementation-ready tasks, add `开发任务清单`: task name, target file/module or artifact, dependency, and acceptance condition. Read `references/object-model-and-acceptance.md` for the detailed object and acceptance model.
 
@@ -49,6 +51,8 @@ Before finalizing, verify:
 - Scenario-specific requirements are detailed enough for the selected downstream skill.
 - Data, API, UI, permission, process, nonfunctional, and test needs are separated.
 - Page requirements identify whether the Haier/company application baseline, report development baseline, or inherited dual baseline must be applied downstream; Haier/enterprise report pages require both unless an explicit exception is recorded.
+- Existing design ideas in requirement documents are checked before being accepted into prototype work.
+- Metric口径, calculation notes, and indicator lists are not promoted to visible page modules unless the requirement explicitly asks for page display.
 - Acceptance criteria are measurable and tied to tests or evidence.
 - Recommended downstream skills are specific and minimal.
 - Remaining risks and questions are not hidden.
@@ -60,6 +64,8 @@ Before finalizing, verify:
 - Do not jump from vague intent to UI/code without scenario judgment.
 - Do not design APIs without data source, table/model, permission, and response transformation considerations.
 - Do not design visual pages without metrics, dimensions, filters, interactions, and data binding.
+- Do not blindly implement a requirement document's existing design idea without checking its story, layout, component, and metric-display logic.
+- Do not convert supplemental 指标口径 or 指标清单 into report-page content by default.
 - Do not design tests without acceptance criteria, test data, expected results, and evidence.
 - Do not list every possible artifact; include what the selected scenario needs.
 - Do not ask broad clarification questions when safe assumptions can move the work forward.

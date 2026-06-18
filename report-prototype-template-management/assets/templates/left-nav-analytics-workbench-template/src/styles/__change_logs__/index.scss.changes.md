@@ -15,6 +15,22 @@
 
 ## Version Entries
 
+### v20260618-n-row-menu-axis-grid - 2026-06-18
+
+- Change ID: ad-hoc-n-row-menu-axis-grid
+- Actor: Codex
+- Change type: style
+- Summary: Removed right-content outer padding so vertical-menu layouts deduct width only and keep the full 1080px content-height basis.
+- Modified functionality: main content scroll container sizing.
+- Code ranges: `.analytics-main`.
+- Modified content: Changed `.analytics-main` padding from `24px` to `0`; visual spacing remains owned by grid `cellPadding` and card/component padding.
+- Affected contracts: vertical menu width deduction; `(visibleHeight - menuOrHeaderHeight) / 8` rowHeight formula with `menuOrHeaderHeight = 0` for left-nav.
+- Verification: `npm run validate:dashboard` and `npm run build:preview` passed in `left-nav-analytics-workbench-template`.
+- Rollback note: Restore outer padding only if it is included in the declared menu/header height or content-area formula.
+- Related files: `src/config/dashboard.config.ts`, `scripts/validate-dashboard-contract.mjs`.
+- Change evidence: working-tree diff for `src/styles/index.scss` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T12:51:55.800Z
 
 - Change ID: baseline

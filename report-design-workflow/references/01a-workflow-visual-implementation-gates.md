@@ -16,9 +16,9 @@ Output must include:
 - Page shell choice.
 - Haier logo usage.
 - Header, native/template filter surface or custom filter bar, toolbar, sidebar/menu, footer decisions.
-- 8*N rectangular grid structure.
+- 12*N rectangular grid structure with minimum `2*1` blocks and default `3*2` analytical/chart blocks.
 - Legal component span matrix and each component's selected `columns * rows` span.
-- Block-height and overflow rule: for scrollable page templates, all resolved blocks are at least 220px tall, and grids taller than 1080px use vertical scrolling. Fixed sci-fi/big-screen templates are exempt.
+- Block-height and overflow rule: for prototype templates, column width comes from the visible width after menu/sidebar width is deducted, rowHeight comes from the first 8 visible content rows after menu/header height is deducted, and grids taller than the first viewport use vertical scrolling instead of row compression.
 - Content pattern: 总分总, 总分, 分总, 明细优先, 告警处理, 执行闭环, or recap narrative.
 - Visual style preset.
 - Empty/loading/error states.
@@ -37,7 +37,7 @@ Output must include:
 - Component title style.
 - Background, typography, color, border, shadow.
 - Card-frame reduction, KPI eligibility, brand/product color hierarchy, and red/green status-color exception rules.
-- Alignment and centering.
+- Center-axis symmetry intent, alignment, and centering exceptions for tables/long text/lists.
 - Label and legend rules.
 - Header/body fit rules for every component viewport.
 - Overflow/clipping strategy.
@@ -78,7 +78,7 @@ Template selection rules:
 | Situation | Choose | Why |
 | --- | --- | --- |
 | Primary type is analysis/diagnostic and the user does not explicitly ask for sidebar, multi-page suite, workbench, big screen, or fixed 1920x1080 cockpit | `topbar-light-scroll-dashboard-template` | Analysis pages should default to one focused reading flow; use the light topbar template for office readability and handoff clarity. |
-| Compact report: one decision question, usually 1-3 sections, roughly 4-12 components, no persistent page navigation, and users need a direct first-screen answer | `topbar-light-scroll-dashboard-template` | A topbar shell keeps the frame light and lets one 8*N content grid carry the report. |
+| Compact report: one decision question, usually 1-3 sections, roughly 4-12 components, no persistent page navigation, and users need a direct first-screen answer | `topbar-light-scroll-dashboard-template` | A topbar shell keeps the frame light and lets one 12*N content grid carry the report. |
 | Large report: one report theme but multiple chapters, more than 3-4 sections, many components/tables, or separate views such as 总览 / 诊断 / 明细 / 任务 / 核对 | `left-nav-analytics-workbench-template` | Sidebar navigation can represent report chapters as well as different report modules, but each nav page must be substantial. |
 | Daily operational analysis, dense tables, repeated filtering, saved workbench behavior, or several related reports in one app | `left-nav-analytics-workbench-template` | It is optimized for enterprise work rather than showpiece display, provided the workbench pages are all populated. |
 | Large screen, monitoring wall, command center, exhibition, leadership cockpit, or presentation scenario | `frozen-title-sci-fi-cockpit-template` | It is optimized for fixed 1920x1080 full-screen viewing and high visual impact; retained nav pages must all be substantial. |

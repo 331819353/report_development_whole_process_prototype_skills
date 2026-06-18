@@ -6,20 +6,21 @@ This file was split from `block-size-constraints.md`. Load it only for this focu
 
 Separate these concepts:
 
-- Viewport size: the visible browser/screen window, usually `1920x1080` or `1280x768`.
-- Content display area: the report's usable grid area after header, nav, filters, sidebar, and margins.
-- Report height: the full height produced by all `8 * N` rows. It may exceed the viewport.
+- Viewport size: the visible browser/screen window for prototype review, fixed at `1920x1080`.
+- Content display area: the report's usable grid area after menu/sidebar width and menu/header height are deducted.
+- First-viewport grid: the visible content display area split into 12 equal columns and 8 equal row units.
+- Report height: the full height produced by all `12 * N` rows. It may exceed the viewport; row count is not capped by the grid rule, and row height is still derived from the first 8 visible row units.
 - First viewport: the portion visible before scrolling. It should show the core answer, but it does not need to contain the entire report.
 
 Design principle:
 
-- Plan block width and row height from the active viewport.
-- Let `N` grow with business content.
+- Plan block width and row height from the active `1920x1080` viewport after menu/sidebar width and menu/header height are deducted.
+- Let `N` grow with business content. Do not cap row count at 8 or 12 merely because of the grid formula.
 - Keep row/block heights usable.
 - Enable vertical scrolling when total grid height exceeds the viewport.
 - Do not compress charts, tables, cards, or text just to fit the whole report into one screen.
 
-Only the sci-fi cockpit template is normally fixed to one `1920x1080` screen. Do not apply that fixed-height behavior to ordinary report pages.
+Only a documented cockpit exception may force all content into one `1920x1080` screen. Do not apply fixed-height compression to ordinary report pages.
 
 
 ## 1.1 Perspective Navigation Viewport Checks
@@ -28,7 +29,7 @@ First-level perspective controls include domain navigation, top or side perspect
 
 Required viewport checks:
 
-- Run layout checks at both `1920x1080` and `1280x768`.
+- Run layout checks at `1920x1080`.
 - For each visible navigation/control item or card content viewport, the DOM acceptance condition is:
 
 ```text
@@ -72,9 +73,10 @@ Navigation information density:
 Compute the actual top-level block size after choosing a default candidate span from `grid-containers.md`.
 
 ```text
-columnWidth = (contentWidth - (8 - 1) * gap) / 8
-blockWidth(cols) = columnWidth * cols + gap * (cols - 1)
-blockHeight(rows) = rowHeight * rows + gap * (rows - 1)
+columnWidth = (visibleWidth - menuOrSidebarWidth) / 12
+rowHeight = (visibleHeight - menuOrHeaderHeight) / 8
+blockWidth(cols) = columnWidth * cols
+blockHeight(rows) = rowHeight * rows
 ```
 
 Then estimate usable body size:
@@ -82,17 +84,18 @@ Then estimate usable body size:
 ```text
 bodyWidth = blockWidth - horizontalPadding * 2
 bodyHeight = blockHeight - headerHeight - verticalPadding * 2
-totalGridHeight = rowCount * rowHeight + (rowCount - 1) * gap
+totalGridHeight = rowCount * rowHeight
 ```
 
 If `totalGridHeight` is taller than the available viewport height, keep the block sizes and let the report scroll vertically.
 
-Do not calculate `rowHeight` by dividing the viewport height by `N`. `rowHeight` is a configured minimum. When content needs more vertical space, add rows, split the content, allow scrolling, or paginate.
+Do not calculate `rowHeight` by dividing the viewport height by the total report row count `N`. `rowHeight` is fixed by the first visible 8-row content area. When content needs more vertical space, add rows, split the content, allow scrolling, or paginate.
 
 Default report cards:
 
-- 1920 viewport baseline: `horizontalPadding = 20-24`, `headerHeight = 44-56`.
-- 1280 viewport baseline: `horizontalPadding = 16-20`, `headerHeight = 40-48`.
+- 1920 viewport baseline for horizontal menu: `menuOrSidebarWidth = 0`, `menuOrHeaderHeight = 160`, so `columnWidth = 160`, `contentVisibleHeight = 920`, `rowHeight = 115`.
+- 1920 viewport baseline for vertical menu: `menuOrSidebarWidth = 256`, `menuOrHeaderHeight = 0`, so `columnWidth ~= 138.67`, `contentVisibleHeight = 1080`, `rowHeight = 135`.
+- Visual gaps must not change the mathematical grid unit. Put breathing room inside cells/cards through `cellPadding`, card padding, and component spacing.
 - Dense sci-fi blocks: padding may be smaller, but title, legend, and chart viewport must still have fixed space.
 
 
@@ -125,18 +128,20 @@ computed_outer_width_px >= final_required_width_px
 computed_outer_height_px >= final_required_height_px
 ```
 
-For viewport breakpoints, use the computed body size rather than the breakpoint name alone. Two nearby widths such as `1279px` and `1281px` should not produce contradictory choices when the actual body size is effectively the same.
+For viewport checks, use the computed body size at `1920x1080` rather than generic breakpoint names.
 
 
 ## 4. Pixel Calculation Details
 
-For an 8-column page:
+For a 12-column page:
 
 ```text
-availableWidth = pageWidth - 2 * pagePadding
-columnWidth = (availableWidth - 7 * gridGap) / 8
-outerWidth = colSpan * columnWidth + (colSpan - 1) * gridGap
-outerHeight = rowSpan * rowHeight + (rowSpan - 1) * gridGap
+availableWidth = pageWidth - menuOrSidebarWidth
+contentVisibleHeight = pageHeight - menuOrHeaderHeight
+columnWidth = availableWidth / 12
+rowHeight = contentVisibleHeight / 8
+outerWidth = colSpan * columnWidth
+outerHeight = rowSpan * rowHeight
 contentWidth = outerWidth - 2 * componentPadding
 contentHeight = outerHeight - 2 * componentPadding - reservedVerticalSpace
 ```
@@ -156,22 +161,23 @@ textReserve = titleHeight
 
 Default calculation constants when the selected template does not provide more specific tokens:
 
-| Token | Default | Compact below 1280px | Minimum |
-| --- | ---: | ---: | ---: |
-| `gridColumns` | 8 | 8 | 8 |
-| `pagePadding` | 32px | 24px | 24px |
-| `gridGap` | 16px | 12px | 12px |
-| `componentPadding` | 16px | 14px | 12px |
-| `innerGap` | 8px | 8px | 8px |
-| `rowHeight` | template value | template value | 96px; 220px for scrollable templates |
-| `titleHeight` | 24px | 24px | 20px |
-| `subtitleHeight` | 20px | 20px | 18px |
-| `optionalSubtitleHeight` | 18px | 18px | 0px |
-| `optionalMetricStripHeight` | 48px | 40px | 0px |
-| `legendHeight` | 28px | 28px | 24px |
-| `axisReservedHeight` | 32px | 32px | 28px |
-| `tableHeaderHeight` | 36px | 36px | 32px |
-| `groupedHeaderRowHeight` | 36px | 36px | 32px |
-| `tableRowHeight` | 36px | 36px | 32px |
+| Token | Default at 1920x1080 | Minimum |
+| --- | ---: | ---: |
+| `gridColumns` | 12 | 12 |
+| `visibleGridRows` | 8 | 8 |
+| `rowCount` | N, uncapped | 1 |
+| `gridGap` | 0px | 0px |
+| `componentPadding` | 16px | 12px |
+| `innerGap` | 8px | 8px |
+| `rowHeight` | `(1080 - menuOrHeaderHeight) / 8` | template-calculated value |
+| `titleHeight` | 24px | 20px |
+| `subtitleHeight` | 20px | 18px |
+| `optionalSubtitleHeight` | 18px | 0px |
+| `optionalMetricStripHeight` | 48px | 0px |
+| `legendHeight` | 28px | 24px |
+| `axisReservedHeight` | 32px | 28px |
+| `tableHeaderHeight` | 36px | 32px |
+| `groupedHeaderRowHeight` | 36px | 32px |
+| `tableRowHeight` | 36px | 32px |
 
 Do not reduce padding, gap, row height, or line height below the minimums to force a failed block to pass.

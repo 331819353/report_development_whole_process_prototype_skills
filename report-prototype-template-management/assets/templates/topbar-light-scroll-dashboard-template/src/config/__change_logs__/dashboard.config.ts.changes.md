@@ -15,6 +15,38 @@
 
 ## Version Entries
 
+### v20260618-n-row-menu-axis-grid - 2026-06-18
+
+- Change ID: ad-hoc-n-row-menu-axis-grid
+- Actor: Codex
+- Change type: config
+- Summary: Clarified the topbar template as a 12-column/N-row grid where rowHeight is calculated from the first 8 visible content row units.
+- Modified functionality: layout comments and grid contract documentation in config comments.
+- Code ranges: `screen.layout`; `screen.grid`; `page.layoutRows` comments.
+- Modified content: Reworded fixed `12x8`/`12列*8` language to `12列*N行`, kept `topbarHeight/contentStartY: 160`, `contentEndY: 1080`, and `rowHeight: 115`.
+- Affected contracts: horizontal menu height deduction; `(1080 - 160) / 8 = 115`; 12 fixed columns; `N` uncapped rows.
+- Verification: `npm run validate:dashboard` and `npm run build:preview` passed in `topbar-light-scroll-dashboard-template`.
+- Rollback note: Restore the previous comments only if the layout contract is changed back to a fixed row budget.
+- Related files: `scripts/validate-dashboard-contract.mjs`, `$report-visual-layout-design`.
+- Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
+- Follow-up: none
+
+### v20260618-12x8-content-grid - 2026-06-18
+
+- Change ID: ad-hoc-12x8-content-grid
+- Actor: Codex
+- Change type: config
+- Summary: Rebased the template default grid on a 1920x1080 viewport with a 160px topbar and an 8-row visible content area.
+- Modified functionality: screen.layout topbar/contentGap tokens; screen.grid content range/rowHeight/cellPadding; default page/pages layoutRows.
+- Code ranges: `screen.layout`; `screen.grid`; `page.layoutRows`; `pages.*.layoutRows`.
+- Modified content: Changed the mathematical grid gap to 0, set `contentStartY: 160`, `contentEndY: 1080`, `rowHeight: 115`, added visual `cellPadding: 6`, and expanded default layouts to 8 visible rows.
+- Affected contracts: 1920x1080 prototype content grid; 12 columns; 8 visible row units; 12-row scroll budget.
+- Verification: `npm run validate:dashboard` passed in `topbar-light-scroll-dashboard-template`.
+- Rollback note: Restore the previous topbar height, gap, rowHeight, cellPadding, and three-row layoutRows together with the DashboardShell and validator changes.
+- Related files: `src/components/DashboardShell.vue`, `scripts/validate-dashboard-contract.mjs`, `$report-visual-layout-design` grid references.
+- Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
+- Follow-up: none
+
 ### baseline - 2026-06-11T12:42:34.948Z
 
 - Change ID: baseline

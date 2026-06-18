@@ -17,6 +17,15 @@ This file was split from `05-echarts-charts.md`. Load it only for this focused r
 - Initialize and resize from the measured chart body viewport. Do not use CSS transforms or stretched parent boxes to scale a previously rendered chart.
 - Preserve geometry for charts whose shape carries meaning, including pie/donut/rose, radar, gauge, map, sunburst, graph, Sankey, funnel, custom paths, and pictorial/custom series.
 
+## Low-Noise Chart Visual Defaults
+
+- Chart styling inherits `00b-low-noise-high-density-baseline.md` when the task asks for polish, 高级感, 好看, 好用, 易懂, or outside-guideline-inspired design.
+- Use a semantic chart palette. The first/primary series should use the brand/product emphasis token; secondary series use ordered tints, neutral contrast, or documented category/status tokens. Arbitrary rainbow colors fail unless category identity or status semantics require them.
+- Gridlines are guides, not decoration. Use restrained line weight and opacity, fewer split lines when the plot is short, and no plot-area gradients or decorative image backgrounds.
+- Axis labels, units, legends, and tooltips should recover meaning with minimal visible clutter. Prefer tooltip/detail for exact values and permanent labels only for key evidence.
+- A chart cannot be "premium" by being large and empty. Sparse charts should add target/reference/context, adjacent evidence, a useful annotation, source/freshness, or reduce/split the span.
+- A chart cannot be "usable" by hiding everything. If labels, legends, filters, or series are collapsed, the disclosure path must be visible through tooltip, legend interaction, drawer, fullscreen, or table fallback.
+
 ## ECharts Resize Lifecycle Contract
 
 Use this gate for every implementation-ready ECharts chart, including charts rendered through a project wrapper.
@@ -147,7 +156,7 @@ Allowed non-ECharts SVG/canvas use:
 - Do not force shape-sensitive charts to fill both width and height of a non-square container. Extra horizontal or vertical breathing space is preferable to warped arcs, paths, circles, symbols, or maps.
 - For ECharts `graphic`, custom series, pictorial paths, or hand-authored SVG overlays, define a logical design box and map it to the body viewport with uniform scale. Avoid separate x-scale/y-scale factors unless the graphic is intentionally a data-coordinate chart.
 - If a graphic uses an image or SVG asset, keep the asset aspect ratio. Use `contain`/letterbox behavior, not `fill` stretching.
-- Verify at both the design viewport and at least one narrower/wider container. If a gauge, radar, map, or custom path changes shape instead of only changing size, it fails visual QA.
+- Verify at the `1920x1080` design viewport. If a gauge, radar, map, or custom path changes shape instead of only changing size, it fails visual QA.
 
 
 ## Axis Labels
@@ -171,6 +180,8 @@ Allowed non-ECharts SVG/canvas use:
 ## Bar And Column Charts
 
 - Keep enough bar width for visual comparison. If bars become too thin, use scroll/dataZoom or Top N.
+- Ordinary bars should use a stable declared width or width algorithm. Over-thick bars in sparse charts and hairline bars in dense charts both fail readability; adjust category count, orientation, scroll/dataZoom, or span before styling.
+- Border radius on bars is subtle and must not break stacked continuity, target comparison, or exact reading. Avoid pill-like bars unless the component is explicitly a progress/status pattern.
 - End labels must not collide with bar ends, axis edge, or neighboring bars.
 - For long category names, prefer horizontal bars with a label column and value column.
 - Use `label column + visual column + value column` for ranked bars when exact values matter.

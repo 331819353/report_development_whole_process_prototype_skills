@@ -14,6 +14,8 @@ A report prototype is not a container for data. It is a decision path.
 
 Before choosing a page shape, decide whether the output is an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Do not default to a dashboard grid. Use KPI cards only for primary decision metrics, use typography/spacing/dividers before adding more card frames, and let brand/product color plus neutral hierarchy carry the page language before red/green status color is introduced.
 
+Also run `02-good-report-decision-path.md`. A good report should reduce one thinking step for the reader: it states the primary decision question, shows the conclusion or judgment first, explains why, provides exact evidence, and leaves a next action or drilldown route.
+
 ## 1. Business Goal
 
 Ask what problem the report solves and what the user should do after reading it.
@@ -48,6 +50,24 @@ Do not start by placing every field. Split the information first.
 | Core metrics | What the user checks first. | Bounded KPI summary, progress cards, status summary, or conclusion strip. |
 | Analysis metrics | Explain why the core metric changed. | Trend, comparison, structure, funnel, ranking, contribution analysis. |
 | Detail fields | Verify, trace, export, or process records. | Bottom table, drawer, appendix, export file, linked business document. |
+
+Primary metrics are not accepted as isolated numbers. Each primary metric needs a comparison basis such as target, previous period, same period last year, benchmark, historical range, threshold, or denominator/total when it is a share/rate.
+
+## 3a. Metric Relationship Network
+
+Before layout, express the core metric as a network rather than a list:
+
+```text
+result metric -> driver metric -> dimension/object -> detail record -> action/source
+```
+
+Examples:
+
+- GMV -> traffic -> conversion rate -> average order value.
+- Completion rate -> actual -> target -> gap -> responsible object.
+- Alert count -> severity -> affected process -> owner/action state.
+
+If a metric does not answer What / Why / So what, treat it as context or detail instead of a first-viewport primary block.
 
 ## 4. Analysis Path Before Layout
 
@@ -85,9 +105,12 @@ Typical sales prototype path:
 
 - Core narrative and user path inherited from `00-prototype-story-design-thinking.md`.
 - User, scenario, decision/action, business object, time scope.
+- One primary decision question and 3-second main-point statement.
 - Main entry type and rejected competing entries.
 - Core metrics, analysis metrics, detail fields.
+- Metric relationship network, comparison baselines, and What/Why/So what coverage.
 - Analysis path and first-viewport answer.
+- Drilldown/action path for each primary judgment.
 - Page rhythm: information-flow report vs KPI dashboard vs detail/query/report narrative, plus KPI scope boundary.
 - Component proposal by question, not by decoration.
 - Filters, drilldowns, exports, permissions, data source/freshness, empty/error/no-permission states.

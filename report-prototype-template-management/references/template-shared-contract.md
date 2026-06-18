@@ -90,7 +90,7 @@ Avoid shell replacement in generated projects:
 Layout design rules:
 
 - Use `template-layout-design-system.md` for shared page layout, block spacing, block inner padding, radius, component-owned title/control handoff, hover/focus, and template-token decisions.
-- Change layout tokens through `dashboard.config.ts` first: `contentGap`, `contentStartY`, `contentEndY`, `rowHeight`, `cellPadding`, `dominantTitleColor`, and `innerBackgroundColor`.
+- Change layout tokens through `dashboard.config.ts` first: `contentGap`, `contentStartY`, `contentEndY`, `rowHeight`, `cellPadding`, `dominantTitleColor`, and `innerBackgroundColor`. For the prototype grid baseline, keep `contentGap: 0`, calculate column width from the visible width after vertical menu/sidebar width is deducted, and calculate `rowHeight` from the visible height after horizontal menu/header height is deducted.
 - Keep the common block anatomy: `placeholder-cell` -> `placeholder-cell-inner` -> body viewport -> `widget-renderer`.
 - For composite parent blocks, keep the same outer anatomy and define internal sub-blocks inside `widget-renderer`; use `padding: 5px` for parent-to-sub-block inset and `gap: 5px` between sub-blocks. Do not create additional `layoutRows` cells or nested card shells for sub-blocks.
 - Do not solve business-widget density by rewriting template shell padding or card radius. Route component title/control/body fit to `$report-component-style-design`.
@@ -120,7 +120,7 @@ Interaction feedback rules:
 
 - Template-level hover/focus styles for cards, blocks, toolbar buttons, nav items, filter options, and local chips should preserve geometry.
 - Prefer border-color changes, inset glow, in-bounds pseudo-elements, or stable background changes.
-- Do not use hover `translate`, `scale`, or outside-only shadows in fixed `8 * N` blocks, overflow-hidden cells, or compact shell controls unless screenshots prove the effect is not clipped.
+- Do not use hover `translate`, `scale`, or outside-only shadows in fixed `12 * 8` / `12 * N` blocks, overflow-hidden cells, or compact shell controls unless screenshots prove the effect is not clipped.
 
 Template assets intentionally exclude `node_modules` and `dist`.
 
