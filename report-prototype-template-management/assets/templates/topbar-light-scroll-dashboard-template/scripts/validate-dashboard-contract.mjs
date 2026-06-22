@@ -121,11 +121,20 @@ const collectGridConfigs = () => {
       const gridNode = getProperty(node, 'grid');
 
       if (isObject(layoutNode) && isObject(gridNode)) {
+        const designWidth = getNumberValue(getProperty(layoutNode, 'designWidth'));
+        const sidebarWidth = getNumberValue(getProperty(layoutNode, 'sidebarWidth')) ?? 0;
+        const contentWidth = getNumberValue(getProperty(layoutNode, 'contentWidth')) ?? (
+          designWidth === undefined ? undefined : designWidth - sidebarWidth
+        );
+
         gridConfigs.push({
+          designWidth,
+          contentWidth,
           contentGap: getNumberValue(getProperty(layoutNode, 'contentGap')),
           contentStartY: getNumberValue(getProperty(gridNode, 'contentStartY')),
           contentEndY: getNumberValue(getProperty(gridNode, 'contentEndY')),
           rowHeight: getNumberValue(getProperty(gridNode, 'rowHeight')),
+          cellPadding: getNumberValue(getProperty(gridNode, 'cellPadding')) ?? 0,
         });
       }
     }
@@ -164,6 +173,14 @@ const requiredGridColumns = 12;
 const visibleGridRows = 8;
 const minimumSpanColumns = 2;
 const rowHeightTolerance = 1;
+const minimumAxisChartContainerWidth = 300;
+const warningAxisChartContainerWidth = 400;
+const denseAxisChartContainerWidth = 500;
+const minimumAxisChartContainerHeight = 200;
+const warningAxisChartContainerHeight = 250;
+const minimumAxisChartBodyHeight = 180;
+const minimumAxisPlotHeight = 120;
+const denseAxisPlotHeight = 140;
 const reservedActionHooks = new Set(['dashboardAction']);
 const requiredStackDependencies = ['vue', '@vitejs/plugin-vue', 'vite', 'typescript', 'vue-tsc', 'element-plus', 'echarts', 'axios'];
 const chartVisualTypes = new Set([
@@ -242,6 +259,86 @@ const allowedSpansByVisualType = {
 const emptyGridMarks = new Set(['.', ' ']);
 
 const formatAllowedSpans = (visualType) => allowedSpansByVisualType[visualType]?.join(', ') ?? '';
+
+const roundPx = (value) => Math.round(value * 10) / 10;
+
+const getPrimaryGridConfig = () =>
+  gridConfigs.find(({ contentWidth, rowHeight }) => contentWidth !== undefined && rowHeight !== undefined) ??
+  gridConfigs[0] ??
+  {};
+
+const estimateBlockContentSize = (span) => {
+  if (!span) {
+    return undefined;
+  }
+
+  const { contentWidth, rowHeight, cellPadding = 0 } = getPrimaryGridConfig();
+
+  if (contentWidth === undefined || rowHeight === undefined) {
+    return undefined;
+  }
+
+  const columnWidth = contentWidth / requiredGridColumns;
+
+  return {
+    width: roundPx(Math.max(0, columnWidth * span.columns - cellPadding * 2)),
+    height: roundPx(Math.max(0, rowHeight * span.rows - cellPadding * 2)),
+  };
+};
+
+const formatBlockSize = (size) => `${size.width}px x ${size.height}px`;
+
+const axisSqueezeStrategyFields = [
+  'squeezeStrategy',
+  'axisLabelStrategy',
+  'denseLabelStrategy',
+  'labelOverflowStrategy',
+  'categoryDensityStrategy',
+  'xAxisLabelStrategy',
+  'dataZoomStrategy',
+  'chartFallback',
+  'fallbackStrategy',
+  'visualDensityStrategy',
+];
+
+const hasAxisSqueezeStrategy = (contractScopes, widgetText) =>
+  hasPropertyInAny(contractScopes, axisSqueezeStrategyFields) ||
+  /(?:squeezeStrategy|axisLabelStrategy|denseLabelStrategy|categoryDensityStrategy|labelOverflowStrategy|dataZoomStrategy|chartFallback|fallbackStrategy|visualDensityStrategy|dataZoom\s*:|axisLabel\s*:[\s\S]{0,700}(?:hideOverlap\s*:\s*true|rotate\s*:\s*(?:[1-9]\d?))|labelLayout\s*:[\s\S]{0,500}hideOverlap\s*:\s*true|\bsampling\s*:|\blabelStep\b|labelInterval\s*:\s*(?!0\b)|axisLabelInterval\s*:\s*(?!0\b)|Top\s*N|TopN|visibleCategoryLimit|categoryLimit|maxVisibleCategories|tableFallback|drawer|fullscreen|horizontalScroll|横向滚动|抽屉|详情|全屏|采样|标签旋转|自动隐藏|防重叠)/i.test(
+    widgetText,
+  );
+
+const getAxisCategoryDensity = (contractScopes, widgetText, size) => {
+  const categoryCount = getNumberFromAny(contractScopes, [
+    'categoryCount',
+    'xAxisCategoryCount',
+    'maxCategoryCount',
+    'visibleCategoryCount',
+    'dataPointCount',
+    'pointCount',
+  ]);
+  const labelMaxChars = getNumberFromAny(contractScopes, [
+    'xAxisLabelMaxChars',
+    'maxXAxisLabelChars',
+    'categoryLabelMaxChars',
+    'maxCategoryLabelChars',
+    'labelMaxChars',
+  ]);
+  const denseDeclared =
+    getBooleanFromAny(contractScopes, ['denseData', 'denseAxis', 'longLabels', 'highDensity']) === true ||
+    /(?:denseData|denseAxis|longLabels|highDensity|标签过长|类目密集|数据密集)/i.test(widgetText);
+  const perLabelWidth = labelMaxChars === undefined ? 56 : labelMaxChars > 6 ? 72 : labelMaxChars > 4 ? 56 : 44;
+  const requiredWidth = categoryCount === undefined ? undefined : categoryCount * perLabelWidth;
+  const labelBudgetFails = size?.width !== undefined && requiredWidth !== undefined && requiredWidth > size.width;
+  const unknownNarrowDensity = size?.width !== undefined && size.width < denseAxisChartContainerWidth && categoryCount === undefined;
+
+  return {
+    categoryCount,
+    labelMaxChars,
+    isDense: Boolean(denseDeclared || labelBudgetFails || (labelMaxChars !== undefined && labelMaxChars > 6)),
+    unknownNarrowDensity,
+    requiredWidth,
+  };
+};
 
 const buildLayoutBlockSpans = (rowsToBuild, location) => {
   const cells = new Map();
@@ -518,6 +615,7 @@ const validateCompactSparklineContract = (widgetNode, location, contractScopes) 
 const validateAxisChartGeometryContract = (widgetNode, location, span, visualType) => {
   const contractScopes = getWidgetContractScopes(widgetNode, chartContractNodeNames);
   const widgetText = widgetNode.getText(sourceFile);
+  const estimatedSize = estimateBlockContentSize(span);
   const isCompactSparkline =
     visualType === 'compact-sparkline' ||
     /chartMode\s*:\s*['"]compact-sparkline['"]|compactSparkline\s*:\s*true|sparklineMode\s*:\s*true/.test(widgetText);
@@ -531,19 +629,70 @@ const validateAxisChartGeometryContract = (widgetNode, location, span, visualTyp
     return;
   }
 
+  const hasSqueezeStrategy = hasAxisSqueezeStrategy(contractScopes, widgetText);
+  const density = getAxisCategoryDensity(contractScopes, widgetText, estimatedSize);
   const chartBodyH = getNumberFromAny(contractScopes, ['chartBodyH', 'chartBodyHeight', 'chartBodyHeightPx', 'plotH', 'plotHeightPx']);
+  const plotH = getNumberFromAny(contractScopes, ['plotH', 'plotHeight', 'plotHeightPx']);
+
+  if (estimatedSize) {
+    if (estimatedSize.width < minimumAxisChartContainerWidth || estimatedSize.height < minimumAxisChartContainerHeight) {
+      errors.push(
+        `${location}: estimated full-axis ECharts content area is ${formatBlockSize(estimatedSize)}; full line/bar/combo charts require at least ${minimumAxisChartContainerWidth}px width and ${minimumAxisChartContainerHeight}px height after grid block padding. Enlarge/split the block or switch to compact-sparkline/detail.`,
+      );
+    } else if (
+      (estimatedSize.width < warningAxisChartContainerWidth || estimatedSize.height < warningAxisChartContainerHeight) &&
+      !hasSqueezeStrategy
+    ) {
+      errors.push(
+        `${location}: estimated full-axis ECharts content area is ${formatBlockSize(estimatedSize)}; blocks below ${warningAxisChartContainerWidth}px wide or ${warningAxisChartContainerHeight}px high must declare squeezeStrategy/axisLabelStrategy/dataZoomStrategy or switch to compact-sparkline.`,
+      );
+    }
+
+    if ((density.isDense || density.unknownNarrowDensity) && !hasSqueezeStrategy) {
+      const densityHint =
+        density.categoryCount === undefined
+          ? `category density is undeclared on a ${estimatedSize.width}px-wide block`
+          : `estimated category label width ${roundPx(density.requiredWidth ?? 0)}px exceeds block width ${estimatedSize.width}px`;
+      errors.push(
+        `${location}: ${densityHint}; dense or long-label axis charts under ${denseAxisChartContainerWidth}px must declare label rotation/hideOverlap/sampling/dataZoom/TopN/table fallback before readiness.`,
+      );
+    }
+  }
 
   if (chartBodyH === undefined) {
     errors.push(
-      `${location}: full line/bar/combo axis charts must declare chartBodyH >= 180px, or switch to visualType "compact-sparkline" with legend, Y-axis unit/name, and permanent labels hidden.`,
+      `${location}: full line/bar/combo axis charts must declare chartBodyH >= ${minimumAxisChartBodyHeight}px, or switch to visualType "compact-sparkline" with legend, Y-axis unit/name, and permanent labels hidden.`,
     );
     return;
   }
 
-  if (chartBodyH < 180) {
+  if (chartBodyH < minimumAxisChartBodyHeight) {
     const spanText = span ? `${span.columns}x${span.rows}` : 'unknown span';
     errors.push(
-      `${location}: chartBodyH is ${chartBodyH}px on ${spanText}; full axis charts require chartBodyH >= 180px. Expand the block to 3+ rows or explicitly switch to compact-sparkline.`,
+      `${location}: chartBodyH is ${chartBodyH}px on ${spanText}; full axis charts require chartBodyH >= ${minimumAxisChartBodyHeight}px. Expand the block to 3+ rows or explicitly switch to compact-sparkline.`,
+    );
+  }
+
+  if (estimatedSize && chartBodyH > estimatedSize.height) {
+    errors.push(
+      `${location}: chartBodyH ${chartBodyH}px is larger than the estimated block content height ${estimatedSize.height}px; compute the chart body after title/legend/axis bands or enlarge the block.`,
+    );
+  }
+
+  if (plotH !== undefined) {
+    const plotFloor = density.isDense ? denseAxisPlotHeight : minimumAxisPlotHeight;
+    const minimumPlotH = Math.max(plotFloor, Math.ceil(chartBodyH * 0.45));
+
+    if (plotH < minimumPlotH) {
+      errors.push(
+        `${location}: plotH is ${plotH}px; full axis charts require plotH >= ${minimumPlotH}px after grid.top/bottom, labels, and dataZoom are reserved.`,
+      );
+    }
+  }
+
+  if (density.labelMaxChars !== undefined && density.labelMaxChars > 6 && !hasSqueezeStrategy) {
+    errors.push(
+      `${location}: x-axis label max length is ${density.labelMaxChars} characters; labels over 6 characters require rotation, hideOverlap, sampling, dataZoom, horizontal scroll, or a table/detail fallback.`,
     );
   }
 };
@@ -865,6 +1014,10 @@ const validateWidgetSource = (filePath) => {
     /(?:visualType|type)\s*:\s*['"]combo['"]|combo(?:Data|Rows?|Series|Option|Config)|柱线组合图|柱状图\s*\+\s*折线图|ComboChart|series\s*:[\s\S]{0,1600}type\s*:\s*['"]bar['"][\s\S]{0,1600}type\s*:\s*['"]line['"]|series\s*:[\s\S]{0,1600}type\s*:\s*['"]line['"][\s\S]{0,1600}type\s*:\s*['"]bar['"]/.test(
       text,
     );
+  const hasPieChart =
+    /type\s*:\s*['"](?:pie|donut|rose)['"]|visualType\s*:\s*['"](?:pie|donut|rose)['"]|series\s*:[\s\S]{0,900}type\s*:\s*['"]pie['"]|PieChart|DonutChart|RoseChart|饼图|环形图|玫瑰图/.test(
+      text,
+    );
   const unitTokenPattern = String.raw`(?:%|percent|元|万元|亿元|人|人数|次|件|个|台|单|订单|天|小时|分钟|分|吨|kg|KG|kWh|m3|m³|m2|㎡)`;
   const hasCartesianAxisChart = hasBarChart || hasLineChart || hasComboChart || hasBoxplot || hasHeatmap;
   const hasEchartsLegend = /legend\s*:/.test(text);
@@ -1008,6 +1161,10 @@ const validateWidgetSource = (filePath) => {
 
   if (hasCartesianAxisChart && hasSingleSeriesOnly && hasVisibleLegend && !hasSingleSeriesLegendException) {
     errors.push(`${label}: single-series Cartesian charts should use the chart title to describe the data and hide the legend unless a documented legend exception exists.`);
+  }
+
+  if (hasPieChart && !/(?:minAngle\s*:|minimumSliceAngle|pieMinAngle|minSectorAngle|tinySliceStrategy|smallSliceStrategy|aggregateSmallSlices|otherAggregation|Top\s*N|TopN|其他|小扇区)/.test(text)) {
+    errors.push(`${label}: pie/donut/rose charts must declare minAngle or a tiny-slice aggregation/fallback strategy so small sectors are not squeezed invisible.`);
   }
 
 
@@ -1600,11 +1757,19 @@ if (gridConfigs.length === 0) {
   errors.push('screen.layout and screen.grid must be configured so the 12-column/N-row content grid can be validated.');
 }
 
-gridConfigs.forEach(({ contentGap, contentStartY, contentEndY, rowHeight }, index) => {
+gridConfigs.forEach(({ contentWidth, contentGap, contentStartY, contentEndY, rowHeight, cellPadding }, index) => {
   const location = `screen grid config ${index + 1}`;
 
   if (contentGap !== 0) {
     errors.push(`${location}: screen.layout.contentGap must be 0 so columns and rows keep exact grid-unit formulas.`);
+  }
+
+  if (contentWidth === undefined || contentWidth <= 0) {
+    errors.push(`${location}: screen.layout.designWidth/contentWidth must define a positive content width so chart container geometry can be estimated.`);
+  }
+
+  if (cellPadding < 0) {
+    errors.push(`${location}: screen.grid.cellPadding cannot be negative.`);
   }
 
   if (

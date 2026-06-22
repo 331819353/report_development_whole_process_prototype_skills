@@ -77,6 +77,27 @@ Failures:
 
 Use this gate when a chart appears as a thin band, y-axis ticks stack together, gridlines crowd into a stripe, or a chart shares one card with a table/list/detail preview.
 
+Post-layout container estimate:
+
+```text
+contentW = contentWidth / 12 * cols - cellPadding * 2
+contentH = rowHeight * rows - cellPadding * 2
+
+hard floor for full axis charts:
+  contentW >= 300px
+  contentH >= 200px
+
+squeeze-risk band:
+  contentW < 400px
+  contentH < 250px
+  contentW < 500px with dense data, many bars/points, or x-axis labels longer than 4-6 characters
+```
+
+- Compute the container after the grid block is chosen, before deciding whether the chart remains a full line/bar/combo chart.
+- A full axis chart below the hard floor must be enlarged, split, or changed to `compact-sparkline`/detail/table fallback.
+- A chart inside the squeeze-risk band must declare a real mitigation: `axisLabel.hideOverlap`, 30-45 degree rotation, calculated interval/sampling, dataZoom, Top N/`其他`, horizontal scroll, drawer/detail/table fallback, or an explicit compact-sparkline downgrade.
+- Do not use `axisLabel.interval: 0` as the dense-label default. It forces every x-axis label to render and commonly makes the squeeze worse unless a measured label budget proves it fits.
+
 Minimum viable axis-chart body:
 
 ```text
@@ -191,6 +212,12 @@ Allowed non-ECharts SVG/canvas use:
 - Use `axisLabel.hideOverlap`, calculated `interval`, wrapping, two-line labels, or 30-45 degree rotation only when still readable.
 - If category labels still collide, use dataZoom, horizontal scroll, pagination, Top N, or a table fallback.
 - Do not rotate labels to 60-90 degrees in dense business dashboards unless there is no better component choice.
+
+## Pie / Donut Tiny Slices
+
+- Pie, donut, and rose charts must preserve visible proportional geometry. When small values can disappear, set ECharts `series.minAngle` or aggregate tiny slices into Top N + `其他`.
+- Small-slice labels should not be forced permanently into the chart. Reveal exact values through tooltip/detail and keep only key labels visible.
+- If the chart box is too small to preserve both sector geometry and labels, split the component, move detail to drawer/table, or use a ranked bar/list instead of shrinking the pie.
 
 
 ## Data Labels

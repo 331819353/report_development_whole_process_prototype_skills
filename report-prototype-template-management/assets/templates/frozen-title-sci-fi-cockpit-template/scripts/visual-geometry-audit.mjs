@@ -36,8 +36,12 @@ const thresholds = {
   overlapArea: Number(getArg('--overlap-area', '12')),
   overlapRatio: Number(getArg('--overlap-ratio', '0.02')),
   minTextItemHeight: Number(getArg('--min-text-item-height', '32')),
+  minAxisChartWidth: Number(getArg('--min-axis-chart-width', '300')),
+  warningAxisChartWidth: Number(getArg('--warning-axis-chart-width', '400')),
   minChartHeight: Number(getArg('--min-chart-height', '180')),
   minDenseChartHeight: Number(getArg('--min-dense-chart-height', '220')),
+  minAxisChartContainerHeight: Number(getArg('--min-axis-chart-container-height', '200')),
+  warningAxisChartContainerHeight: Number(getArg('--warning-axis-chart-container-height', '250')),
   minChartRenderedHeight: Number(getArg('--min-chart-rendered-height', '120')),
   minPlotHeight: Number(getArg('--min-plot-height', '140')),
 };
@@ -54,9 +58,10 @@ Options:
   --out-dir             Output directory for screenshots and JSON. Default: visual-check.
   --fail-on             none | minor | major | blocker. Default: major.
   --wait-ms             Navigation/network wait budget. Default: 12000.
-  --stabilize-ms        Extra wait after fonts/network. Default: 800.
-  --row-overflow-tolerance  List row clipping tolerance in px. Default: 1.
-`);
+	  --stabilize-ms        Extra wait after fonts/network. Default: 800.
+	  --row-overflow-tolerance  List row clipping tolerance in px. Default: 1.
+	  --min-axis-chart-width    Minimum full-axis chart container width. Default: 300.
+	`);
 };
 
 const parseViewports = (spec) =>
@@ -562,6 +567,46 @@ const evaluateGeometry = (auditThresholds) => {
     const plotElement =
       container.querySelector('[data-chart-plot], [data-ui-role*="plot" i], .chart-plot, .plot-area') || rendered[0] || container;
     const plotHeight = plotElement ? plotElement.getBoundingClientRect().height : renderedHeight;
+    const hasSqueezeStrategy = /squeeze|datazoom|sample|sampling|hide-overlap|hideoverlap|rotate|spark|compact|topn|fallback|drawer|detail/i.test(
+      classText,
+    );
+
+    if (!isMini && isAxisChart && rect.width < auditThresholds.minAxisChartWidth) {
+      addFinding({
+        id: 'VIS-CHART-CONTAINER-NARROW',
+        severity: 'major',
+        category: 'chart squeezed',
+        element: container,
+        observation: `Axis chart container width ${round(rect.width)}px is below ${auditThresholds.minAxisChartWidth}px.`,
+        impact: 'Titles, legends, axes, category labels, and bars/lines cannot fit reliably in the available width.',
+        suggestedFix: 'Enlarge or split the block, switch to compact-sparkline, or move dense detail to tooltip/drawer/table fallback.',
+        evidence: {
+          width: round(rect.width),
+          minimum: auditThresholds.minAxisChartWidth,
+        },
+      });
+    }
+
+    if (
+      !isMini &&
+      isAxisChart &&
+      rect.width < auditThresholds.warningAxisChartWidth &&
+      !hasSqueezeStrategy
+    ) {
+      addFinding({
+        id: 'VIS-CHART-CONTAINER-NARROW',
+        severity: 'major',
+        category: 'chart squeezed',
+        element: container,
+        observation: `Axis chart container width ${round(rect.width)}px is below the ${auditThresholds.warningAxisChartWidth}px squeeze-risk band without visible squeeze strategy metadata.`,
+        impact: 'X-axis labels and columns often collide in the 300-400px range unless rotation, sampling, dataZoom, or fallback behavior is intentional.',
+        suggestedFix: 'Declare/render a squeeze strategy such as hideOverlap, 30-45deg label rotation, sampling, dataZoom, Top N, or table/detail fallback.',
+        evidence: {
+          width: round(rect.width),
+          riskBand: auditThresholds.warningAxisChartWidth,
+        },
+      });
+    }
 
     if (!isMini && rect.width >= 220 && rect.height < minHeight) {
       addFinding({
@@ -577,6 +622,43 @@ const evaluateGeometry = (auditThresholds) => {
           height: round(rect.height),
           minimum: minHeight,
           hasDenseCompanion,
+        },
+      });
+    }
+
+    if (!isMini && isAxisChart && rect.height < auditThresholds.minAxisChartContainerHeight) {
+      addFinding({
+        id: 'VIS-CHART-CONTAINER-SHORT',
+        severity: 'major',
+        category: 'chart squeezed',
+        element: container,
+        observation: `Axis chart container height ${round(rect.height)}px is below ${auditThresholds.minAxisChartContainerHeight}px.`,
+        impact: 'A full coordinate-axis chart cannot safely reserve title, legend, axes, labels, and plot area.',
+        suggestedFix: 'Increase the block height, remove companion preview content, or switch to compact-sparkline mode.',
+        evidence: {
+          height: round(rect.height),
+          minimum: auditThresholds.minAxisChartContainerHeight,
+        },
+      });
+    }
+
+    if (
+      !isMini &&
+      isAxisChart &&
+      rect.height < auditThresholds.warningAxisChartContainerHeight &&
+      !hasSqueezeStrategy
+    ) {
+      addFinding({
+        id: 'VIS-CHART-CONTAINER-SHORT',
+        severity: 'major',
+        category: 'chart squeezed',
+        element: container,
+        observation: `Axis chart container height ${round(rect.height)}px is inside the ${auditThresholds.minAxisChartContainerHeight}-${auditThresholds.warningAxisChartContainerHeight}px squeeze-risk band without visible squeeze strategy metadata.`,
+        impact: 'Y-axis labels, legends, and grid bands can compress the plot even when the rendered chart is not technically clipped.',
+        suggestedFix: 'Reserve chartBodyH/plotH, tighten grid bands, hide permanent labels, or switch to compact-sparkline.',
+        evidence: {
+          height: round(rect.height),
+          riskBand: auditThresholds.warningAxisChartContainerHeight,
         },
       });
     }

@@ -325,3 +325,18 @@
    // 再在这里增加 source 引用；若选项来自接口，使用 source.id: 'apiData' + source.api。
 ```
 - Follow-up: none
+
+### v20260622035051 - 2026-06-22T03:50:51Z
+
+- Change ID: echarts-container-squeeze-config-comments
+- Actor: codex
+- Change type: update
+- Summary: Add dashboard config guidance for post-layout ECharts container sizing and squeeze strategies.
+- Modified functionality: dashboard.config developer guidance
+- Code ranges: `visualType` comment block
+- Modified content: Documented contentW/contentH formulas, full-axis chart minimum width/height/body floors, squeeze-risk bands, dense-label mitigation options, `interval: 0` caveat, and pie/donut/rose minAngle or fallback requirement.
+- Affected contracts: template config handoff comments; validate-dashboard chart geometry contract; visual geometry audit
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview; negative 3x2 line-chart probe failed as expected.
+- Rollback note: remove the added comment lines only if the ECharts container contract changes.
+- Related files: scripts/validate-dashboard-contract.mjs; scripts/visual-geometry-audit.mjs; src/widgets/templates/WidgetTemplate.vue
+- Follow-up: none

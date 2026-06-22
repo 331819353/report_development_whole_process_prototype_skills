@@ -142,3 +142,18 @@
 - Rollback note: remove the added chart guidance lines only if the ECharts anatomy contract changes.
 - Related files: scripts/validate-dashboard-contract.mjs; src/config/dashboard.config.ts
 - Follow-up: none
+
+### v20260622035051 - 2026-06-22T03:50:51Z
+
+- Change ID: echarts-container-squeeze-template-guidance
+- Actor: codex
+- Change type: update
+- Summary: Document ECharts post-layout container sizing and dense-label mitigation in the widget template.
+- Modified functionality: Widget development template chart comments
+- Code ranges: top chart-rule comment block
+- Modified content: Added contentW/contentH formulas, full-axis chart container/body floors, squeeze-risk strategy guidance for dense or long x-axis labels, warning against default `interval: 0`, and pie/donut/rose minAngle or fallback guidance.
+- Affected contracts: widget authoring handoff; validate-dashboard chart geometry contract; visual geometry audit
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview; negative 3x2 line-chart probe failed as expected.
+- Rollback note: remove the added chart geometry guidance lines only if the ECharts container contract changes.
+- Related files: scripts/validate-dashboard-contract.mjs; scripts/visual-geometry-audit.mjs; src/config/dashboard.config.ts
+- Follow-up: none

@@ -79,8 +79,12 @@ export const cockpitConfig: DashboardConfig = {
   // 10. visualType 用来声明组件视觉类型，校验脚本会用它检查当前块占位是否合法；最小分块为 2*1，普通图表默认 3*2 且不超过 4*3。
   //     行数为 N，不设上限；更长报表继续按同一 rowHeight 向下滚动，不重新压缩行高。
   //     列表类组件必须声明 rowHeightPx、visibleRowCount、overflowStrategy；3x2 行动列表最多展示 2 行。
-  //     完整折线/柱状/组合轴图必须声明 chartBodyH >= 180；不足时扩到 3 行以上或显式改为 compact-sparkline。
+  //     分块后先按 contentW = contentWidth / 12 * cols - cellPadding * 2、contentH = rowHeight * rows - cellPadding * 2 估算容器。
+  //     完整折线/柱状/组合轴图必须声明 chartBodyH >= 180；contentW < 300 或 contentH < 200 不得使用完整轴图。
+  //     contentW < 400、contentH < 250，或 contentW < 500 且类目密集/标签超过 4-6 字符时，必须声明 squeezeStrategy/axisLabelStrategy/dataZoomStrategy。
+  //     密集标签优先使用 hideOverlap、30-45deg 旋转、抽样、dataZoom、TopN/其他或详情/表格兜底；不要用 interval: 0 强行展示所有标签。
   //     笛卡尔图表默认多系列图例顶部居中、单系列隐藏图例；NPS/评分/比率/目标类图表动态计算 Y 轴范围；grid 四边紧凑；Y 轴标题放左右侧，X 轴标题放底部，目标线标签用 insideEndTop。
+  //     饼图/环图/玫瑰图必须配置 minAngle 或小扇区聚合/tooltip/detail 兜底，避免小数值扇区被挤到不可见。
   // 11. filterScope 用来声明当前组件受哪些有 scope 的筛选项影响。
   //     组件的数据源用 filterFields 映射筛选字段；用 requiredFilters 防止漏配后静默失效；
   //     用 ignoredFilters + ignoredFilterReasons 显式声明组件不受某些全局筛选影响。

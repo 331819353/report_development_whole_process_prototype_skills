@@ -123,3 +123,18 @@
 - Related files: src/components/DashboardShell.vue, src/styles/index.scss, src/widgets/types.ts, src/config/dashboard.config.ts, src/widgets/templates/WidgetTemplate.vue, src/types/actions.ts
 - File snapshot: 178 lines, sha256 `990554d5c92e13cc6b3fb684605cc9f8302244790bda70f6fae6a1c3d59db4b7`
 - Follow-up: none
+
+### v20260622035051 - 2026-06-22T03:50:51Z
+
+- Change ID: echarts-container-squeeze-config-comments
+- Actor: codex
+- Change type: update
+- Summary: Add dashboard config guidance for post-layout ECharts container sizing and squeeze strategies.
+- Modified functionality: dashboard.config developer guidance
+- Code ranges: `visualType` comment block
+- Modified content: Documented contentW/contentH formulas, full-axis chart minimum width/height/body floors, squeeze-risk bands, dense-label mitigation options, `interval: 0` caveat, and pie/donut/rose minAngle or fallback requirement.
+- Affected contracts: template config handoff comments; validate-dashboard chart geometry contract; visual geometry audit
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview
+- Rollback note: remove the added comment lines only if the ECharts container contract changes.
+- Related files: scripts/validate-dashboard-contract.mjs; scripts/visual-geometry-audit.mjs; src/widgets/templates/WidgetTemplate.vue
+- Follow-up: none

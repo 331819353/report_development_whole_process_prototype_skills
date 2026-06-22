@@ -188,3 +188,18 @@
 - Rollback note: revert this validator entry together with sibling template validators and chart/spec guidance if the chart anatomy contract changes.
 - Related files: report-chart-design-spec/SKILL.md, report-component-style-design/SKILL.md, report-prototype-template-management/SKILL.md
 - Follow-up: none
+
+### v20260622035051 - 2026-06-22T03:50:51Z
+
+- Change ID: echarts-container-squeeze-contract
+- Actor: codex
+- Change type: update
+- Summary: Enforce post-layout ECharts container size and dense-label squeeze contracts.
+- Modified functionality: collectGridConfigs; validateAxisChartGeometryContract; validateWidgetSource pie checks
+- Code ranges: grid config collection; axis chart geometry validation; chart source option validation
+- Modified content: Added contentWidth/cellPadding-based block content size estimates, full-axis chart hard floors, squeeze-risk strategy checks for narrow/short/dense blocks, plotH floor validation when declared, and pie/donut/rose minAngle or tiny-slice fallback enforcement.
+- Affected contracts: bundled template chart geometry contract; report chart squeeze-prevention gates
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview; negative 3x2 line-chart probe failed for 468px x 218px without squeeze strategy and undeclared density.
+- Rollback note: revert this validator entry together with sibling template validators, visual geometry scripts, and chart/spec guidance if chart container thresholds change.
+- Related files: scripts/visual-geometry-audit.mjs; src/config/dashboard.config.ts; src/widgets/templates/WidgetTemplate.vue
+- Follow-up: none

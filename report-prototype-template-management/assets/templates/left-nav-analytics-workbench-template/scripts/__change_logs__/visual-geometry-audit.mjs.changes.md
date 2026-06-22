@@ -62,3 +62,18 @@
 - Rollback note: revert this file together with sibling template visual geometry scripts and validator contract changes.
 - Related files: scripts/validate-dashboard-contract.mjs
 - Follow-up: none
+
+### v20260622035051 - 2026-06-22T03:50:51Z
+
+- Change ID: runtime-chart-container-geometry
+- Actor: codex
+- Change type: update
+- Summary: Add runtime detection for narrow and short axis chart containers.
+- Modified functionality: visual geometry audit thresholds and chart findings
+- Code ranges: CLI thresholds; chart container checks inside evaluateGeometry
+- Modified content: Added min/warning axis chart container width and height thresholds, `VIS-CHART-CONTAINER-NARROW`, `VIS-CHART-CONTAINER-SHORT`, and squeeze-risk strategy metadata detection before chart body/plot checks.
+- Affected contracts: `npm run visual:geometry`; runtime visual QA; chart squeeze-prevention readiness
+- Verification: node --check scripts/visual-geometry-audit.mjs; npm run build:preview
+- Rollback note: revert this file together with sibling template visual geometry scripts and validator chart container contract changes.
+- Related files: scripts/validate-dashboard-contract.mjs
+- Follow-up: none
