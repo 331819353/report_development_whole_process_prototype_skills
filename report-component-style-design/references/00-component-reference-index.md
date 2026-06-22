@@ -5,18 +5,20 @@ Use this index to load only the component rules needed for the current task.
 ## Loading Order
 
 1. For screenshot-derived, sample-derived, or reusable adaptive component standards, first read `00a-style-generalization-goal.md` so every sample is routed to a controlled pattern, composed pattern, extension gap, or out-of-scope one-off.
-2. Always read `01-shared-foundation.md` for viewport, typography, overflow, density, and hover disclosure rules.
-3. Read `00b-low-noise-high-density-baseline.md` when the task mentions 高级感, 好看, 好用, 易懂, 降噪, UI Kit, SaaS/BI style, or provides an outside/general design guideline as inspiration.
-4. Read the files matching the requested component types.
-5. Read `12-internal-placement-algorithms.md` whenever the task asks for component design, component restoration, component-internal local filters, or an implementation-ready component spec. It is now an index; load only the split placement file that matches the component family.
-6. If the component is mixed, such as a KPI card with a mini chart, read every relevant file and apply the stricter fit rule.
-7. If the component cannot satisfy the relevant rules inside its current block, recommend a larger span, split component, drawer, fullscreen, internal scroll, zoom/pan, or table fallback.
+2. If the sample defines parent block title chrome, component-container background, or "先选分块样式再填内容" behavior, also read `$report-visual-layout-design` `references/block-chrome-style-patterns.md` and route the sample to `blockChromePattern` before styling body components.
+3. Always read `01-shared-foundation.md` for viewport, typography, overflow, density, and hover disclosure rules.
+4. Read `00b-low-noise-high-density-baseline.md` when the task mentions 高级感, 好看, 好用, 易懂, 降噪, UI Kit, SaaS/BI style, or provides an outside/general design guideline as inspiration.
+5. Read the files matching the requested component types.
+6. Read `12-internal-placement-algorithms.md` whenever the task asks for component design, component restoration, component-internal local filters, or an implementation-ready component spec. It is now an index; load only the split placement file that matches the component family.
+7. If the component is mixed, such as a KPI card with a mini chart, read every relevant file and apply the stricter fit rule.
+8. If the component cannot satisfy the relevant rules inside its current block, recommend a larger span, split component, drawer, fullscreen, internal scroll, zoom/pan, or table fallback.
 
 ## Component File Map
 
 | Component type | Read this reference | Use when |
 | --- | --- | --- |
 | Style generalization target and screenshot-to-text abstraction | `00a-style-generalization-goal.md` plus `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` | Any screenshot/sample-derived reusable component style, adaptive generation goal, or "沉淀为 skill" request |
+| Parent block title/body chrome style | `$report-visual-layout-design` `references/block-chrome-style-patterns.md` | HTML/screenshot/sample defines title badge, component-container title stage, body background family, or requires selecting the block style before filling content |
 | Low-noise high-density component baseline | `00b-low-noise-high-density-baseline.md` | External/general design guideline comparison, 高级感, 好看, 好用, 易懂, 降噪, UI Kit/SaaS/BI style, token drift, chart rainbow, filter clutter, table operation clutter, over-empty minimalism |
 | Shared containers, titles, labels, units, badges, empty states, aspect-ratio integrity | `01-shared-foundation.md` | Any component style task, especially SVG/canvas/custom graphics that may deform |
 | Filters, query bars, filter chips, advanced filter popovers | `02-filter-controls.md`; for reusable selector patterns also load `$report-filter-control-design-spec` `references/02-filter-selector-patterns.md` | Page/global filters, date, organization, status, owner, metric, baseline, simple dropdown, tag multi-select, date range, searchable select, tree path selector, advanced drawer, combined chipbar |
@@ -86,4 +88,5 @@ For every component style output, state:
 - The aspect-ratio strategy for SVG/canvas/ECharts custom graphics, maps, gauges, radar, pies, paths, and complex diagrams.
 - The in-component controls used, their placement, selected state, dropdown behavior, and what content each control changes.
 - When component-local filters exist, the `组件内筛选区 / 局部筛选区` rules used: affected component only, suitable/unsuitable filters, `2-4` capsule vs `>4` dropdown decision, placement, title/unit/legend relationship, and responsive collapse.
+- When parent block chrome is affected, the selected `blockChromePattern`, title-stage geometry, body background relation, implementation proof hook, and reason it was selected before content was filled.
 - For reusable screenshot/sample-derived work, the selected controlled pattern field, `styleGeneralization.generalizationStatus`, adaptive variables, fallback, and proof that the pattern is usable without raw image access.

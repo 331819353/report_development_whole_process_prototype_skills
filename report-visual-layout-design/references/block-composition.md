@@ -89,6 +89,18 @@ Avoid:
 - Nested cards with their own shadows.
 - A block title that says "Chart + Table"; use the business question instead.
 
+## Block Chrome First
+
+When a parent block needs a styled title and content-background family, load `block-chrome-style-patterns.md` and select the parent `blockChromePattern` before filling the body with charts, tables, lists, KPI strips, or text.
+
+Rules:
+
+- The block chrome belongs to the parent component or composite widget, not the page shell. It may render a component-owned title stage, local control area, title/body divider, body background tint, and decorative accents.
+- Internal sub-blocks do not get their own heavy chrome. Use lighter local labels, legends, dividers, tabs, or segmented controls inside the body.
+- The sample-derived chrome family defaults to a `33px` title stage. Long titles must be shortened, moved to subtitle/tooltip/drawer, or split into a different block; do not increase the title stage until it squeezes the body.
+- The body background must stay subordinate to the content. Reserve chart/table/list floors first, then place background decoration away from axes, legends, cells, labels, and controls.
+- If the selected chrome pattern makes the block too tight, change the block span, split the content, switch to `plain-enterprise`/`template-default`, or move details to drawer/fullscreen before accepting the composition.
+
 ## Peer Distribution
 
 When one parent block or internal section contains repeated peer sub-blocks/cards/charts/tiles, use internal exact `M * N` distribution where `M` is local columns and `N` is local rows:

@@ -5,6 +5,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 ## Hard Rules
 
 - Page layout does not design block title areas. Business components own their own visible title/function/local-filter area and body viewport; template shells provide only the parent block frame and measurable widget viewport.
+- When a parent block needs styled title/body chrome, layout must choose or inherit `blockChromePattern` before body content is filled. The page layout may record the style matrix and geometry budget, but the business component or composite widget owns the rendered title stage, local controls, body background, and proof hook.
 - Layout must be driven by user task, business priority, real content density, and next action. A page that only looks modern, clean, high-end, or "科技感" without a clear task path fails layout design.
 - Do not default to a generic dashboard composition such as four KPI cards, two big charts, three small charts, a right list, and one top date filter. Use that pattern only when it is justified by the metric tree and decision path.
 - Do not use uniform bordered cards as the default information separator. Page hierarchy must be legible through typography, spacing, section rhythm, subtle dividers, and grouped information flow before adding card frames. Card frames are allowed for independent repeated objects, interaction surfaces, or explicit template constraints.
@@ -77,6 +78,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Perspective navigation density and DOM no-clipping check plan for `1920x1080`.
 - Fixed-height navigation/card height budget: declared height, padding, explicit line heights, row count, gaps, footer/status heights, and pass/fail calculation.
 - Block title/function handoff: title text, required component-local controls, local-filter needs, and downstream owner (`business widget` or `$report-component-style-design`). Do not design or render the title area in page layout.
+- Block chrome style matrix: `blockChromePattern`, source/inheritance reason, title-stage geometry, body background relation, density, fallback, implementation proof hook, and downstream owner for every styled parent block.
 - Filter surface mapping: template-native page/global filter trigger/panel/popover/drawer, custom page/global filter bar, component-local filter handoff, or explicit redesign exception.
 - Modern BI style proof when requested: source hierarchy, page/card token mapping, first-viewport priority, component-pileup scan, and chart-lightness layout scan.
 - Information-flow proof: page rhythm classification, reading sequence, KPI scope boundary, card-border reduction decision, and brand-vs-status color rule.
@@ -101,6 +103,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Layouts without a named information flow fail as `VIS-NO-INFORMATION-FLOW` or `RPT-NO-INFORMATION-FLOW` when the page is not a true current-state dashboard.
 - Sections and cards are not evenly weighted by default; priority and workflow path are visibly encoded.
 - Every block with a visible title/function area declares a component-owned title/function handoff; component-local filters follow `2-4` capsule, `>4`/failed-fit dropdown, multi-group panel rules inside the component rather than as a page-layout title strip.
+- Every styled parent block declares `blockChromePattern` or an inherited default before content placement. Title/body chrome cannot duplicate shell titles, use raw copied HTML wrappers, hide overflow, or consume the minimum chart/table/list body area required by its component family.
 - Analysis & Insight blocks pass the size-role check: they have enough space for one conclusion and its evidence/action/trust context, do not become long essays, do not visually dominate the primary chart/table, and use explanatory states instead of plain `暂无数据`.
 - Domain navigation, Tabs, and Segments pass DOM no-clipping checks at `1920x1080`: `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2` for each visible item/card content viewport. Screenshot-only evidence is insufficient.
 - Fixed-height navigation/cards declare padding, explicit line-height, gaps, and height budget; `padding + line-height boxes + gaps <= card height` at the `1920x1080` baseline.

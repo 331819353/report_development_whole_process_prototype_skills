@@ -22,7 +22,8 @@ All template families use the same conceptual layers:
 6. Block card: `.placeholder-cell-inner` owns the visible card/frame surface, body viewport, radius, shadow, and theme surface.
 7. Widget viewport: `.placeholder-cell-body > .widget-renderer` fills the card body and gives the business component or composite parent widget a stable `100% * 100%` viewport.
 8. Component-owned title/control area: visible block titles, local filters, panel triggers, links, and detail actions are rendered inside the business component or composite parent widget, not by the page layout or template shell.
-9. Optional internal sub-blocks: when a parent widget contains multiple components, the widget defines local grid/flex sub-blocks inside `.widget-renderer`; these are not page-grid blocks. The sub-block grid uses `5px` inset from the parent widget viewport and `5px` gap between sibling sub-blocks.
+9. Optional component-owned block chrome: when `blockChromePattern` is selected, the business component/composite widget renders its title-stage chrome and body-background family inside `.widget-renderer`; the template shell still owns only the outer block viewport.
+10. Optional internal sub-blocks: when a parent widget contains multiple components, the widget defines local grid/flex sub-blocks inside `.widget-renderer`; these are not page-grid blocks. The sub-block grid uses `5px` inset from the parent widget viewport and `5px` gap between sibling sub-blocks.
 
 ## 2. Config-Owned Tokens
 
@@ -96,6 +97,19 @@ Rules:
 - Composite widgets own no-data mask scope. Compute every child sub-block data state first. If all child sub-blocks are no-data, render one parent-block mask over `.placeholder-cell-inner`, covering the component-owned title/control area and widget body. If only some child sub-blocks are no-data, render masks inside those sub-blocks only, covering each sub-block label/control strip plus its component body.
 - Template fallback for an unbound widget is reader-facing `建设中` only. Do not show engineering terms such as `未绑定`, `待配置组件`, or file/config instructions inside the report UI.
 
+## 4a. Block Chrome Style Contract
+
+Use `$report-visual-layout-design` `references/block-chrome-style-patterns.md` when a report block needs selectable title chrome and body background style.
+
+Rules:
+
+- `blockChromePattern` is a widget/composite-owned style decision. It may be stored in widget config, widget props, scoped component style, or an inspectable DOM attribute such as `data-block-chrome-pattern`.
+- The template shell must not render a second title band for this decision. `.placeholder-cell`, `.placeholder-cell-inner`, and `.placeholder-cell-body` keep the same structural ownership.
+- The common sample-derived title stage defaults to `33px`; if a selected template component inherits another title height, record `titleStageHeightPx: "template-inherited"` and the reason.
+- Choose or inherit the block chrome before filling the body content. Body content then uses the reserved viewport for ECharts, Element Plus tables/forms, S2 pivots, lists, text summaries, or composite children.
+- Body backgrounds must be same-family-but-subordinate to the title chrome. They cannot reduce chart body floors, hide table rows, cover local controls, or make list overflow invisible.
+- For dense evidence blocks, `template-default`, `plain-enterprise`, or `deep-panel` should be preferred over decorative patterns. `prism-badge` and `dual-arc` are reserved for business roles that benefit from those signals.
+
 ## 5. Spacing And Radius Rules
 
 - Use `8px` as the default card radius across template blocks and compact panels.
@@ -133,6 +147,7 @@ Rules:
 | Change content vertical area | `screen.grid.contentStartY/contentEndY` | Absolute offsets on individual blocks. |
 | Change minimum row height | `screen.grid.rowHeight` in scroll templates | Shrinking widget internals below fit rules. |
 | Change block accent/surface | `dominantTitleColor`, `innerBackgroundColor`, theme tokens | One-off colors per block without design-system reason. |
+| Choose parent block title/body chrome | Widget config/props/scoped style using `blockChromePattern`; inherit `template-default` when no special chrome is needed | Shell-rendered block title bands, raw copied HTML wrappers, or one-off CSS that cannot be inspected. |
 | Change business component padding | Widget scoped style | `placeholder-cell-body` padding. |
 | Add internal sub-blocks inside one parent block | Widget scoped CSS/config view model with `padding: 5px; gap: 5px` | Extra page-grid blocks, nested card shadows, or collapsed sub-block gaps. |
 | Change component title/control behavior | Business component or composite widget | Adding shell-rendered block titles/local controls. |
@@ -146,6 +161,7 @@ Rules:
 - Top-level blocks are at least `2*1`; ordinary analytical/chart widgets default to `3*2` and chart widgets do not exceed `4*3` unless they are replaced by a conclusion/detail/fullscreen pattern.
 - `contentGap`, `rowHeight`, `cellPadding`, card padding, and radius are not changed ad hoc. `rowHeight` must match the 8-row visible content split.
 - Component-owned title/control/local filter/link areas and body content have stable geometry inside the widget.
+- Styled parent widgets declare `blockChromePattern` or an inherited default before body content is filled; selected title/body chrome remains component-owned and keeps a measurable body viewport.
 - Component control area follows selection rules: one component-local filter with `2-4` short values and fit proof uses sliding capsule; one filter with `>4` values, long labels, or failed fit uses dropdown; multiple filter groups use panel trigger; detail actions use lightweight links.
 - Widgets receive a stable measurable viewport and do not depend on the template shell for internal component labels.
 - Composite widgets declare internal sub-blocks and component ownership; sub-blocks do not pretend to be top-level `layoutRows` cells.

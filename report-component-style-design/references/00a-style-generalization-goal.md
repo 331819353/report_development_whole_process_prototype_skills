@@ -19,10 +19,11 @@ For the user-provided sample universe, the standard aims for `100% routable cove
 
 1. Classify the business decision: state, target gap, trend, structure, ranking, process, cause, anomaly, detail, action, evidence, or data trust.
 2. Choose the component family: KPI, target/actual card, chart card, table card, filter, ranking, list/status, overlay, conclusion card, or flow/hierarchy diagram.
-3. Select a controlled pattern field from the binding contract, such as `kpiCardPattern`, `actionRecommendationCardPattern`, `basicChartCardPattern`, `tableCardPattern`, `filterControlPattern`, or `overlayPanelPattern`.
-4. Fill the adaptive variables: container size tier, title zone, value zone, plot/table/body zone, legend/control positions, item counts, density limits, tokens, and responsive fallback.
-5. Bind data and interaction: grain, primary key, required fields, formulas, numeric format, controls, filters, tooltip/detail/export path, and loading/empty/error/no-permission states.
-6. Validate with gates: text-only reproducibility, renderer ownership, layout fit, overflow strategy, exact-value access, anti-AI risks, and fallback behavior.
+3. If the sample defines parent block title chrome, component-container background, or "先选分块样式再填内容" behavior, select `blockChromePattern` through `$report-visual-layout-design` before selecting body component patterns.
+4. Select a controlled pattern field from the binding contract, such as `blockChromePattern`, `kpiCardPattern`, `actionRecommendationCardPattern`, `basicChartCardPattern`, `tableCardPattern`, `filterControlPattern`, or `overlayPanelPattern`.
+5. Fill the adaptive variables: container size tier, title zone, value zone, plot/table/body zone, legend/control positions, item counts, density limits, tokens, and responsive fallback.
+6. Bind data and interaction: grain, primary key, required fields, formulas, numeric format, controls, filters, tooltip/detail/export path, and loading/empty/error/no-permission states.
+7. Validate with gates: text-only reproducibility, renderer ownership, layout fit, overflow strategy, exact-value access, anti-AI risks, and fallback behavior.
 
 ## Required Pattern Contract
 
@@ -45,6 +46,7 @@ type StyleGeneralizationContract = {
   canonicalPatternRef: string;
   patternFields: string[];
   componentFamily: string;
+  blockChromePattern?: 'template-default' | 'plain-enterprise' | 'prism-badge' | 'deep-panel' | 'dual-arc';
   businessTrigger: string;
   dataShapeTrigger: string;
   adaptiveVariables: string[];
@@ -63,6 +65,7 @@ These pattern fields are the current reusable vocabulary. Prefer controlled valu
 
 | Pattern field | Covered surface |
 | --- | --- |
+| `blockChromePattern` | Parent block title/body chrome styles, including template-default, plain-enterprise, prism-badge, deep-panel, and dual-arc patterns where the title stage and body background family are selected before content is filled |
 | `conclusionCardPattern` plus `conclusionEvidenceBodyMode` | Conclusion, evidence, action, executive summary, insight, abstract, and interpretation cards, including KPI strip, trend comparison, composition structure, formula driver, segment action table, and findings/action evidence bodies |
 | `definitionHelpCardPattern` | Definition help / metric explanation cards for 指标说明, 注释, 定义, 口径, formula, scope, comparison, denominator, condition, and calculation examples |
 | `actionRecommendationCardPattern` plus `actionEvidenceBodyMode` | Action recommendation / 看行动 / 下一步行动 / 建议策略 / 待办执行 cards that combine trigger metric, evidence body, bounded action list, impact or execution metadata, detail route, and action route |
@@ -104,6 +107,7 @@ These pattern fields are the current reusable vocabulary. Prefer controlled valu
 ## Adaptive Design Rules
 
 - Match the pattern to the business job first, then adapt the visual density. Do not choose a pattern because it looks impressive.
+- When the sample is about parent block title/background chrome, choose `blockChromePattern` before filling the body component; content density and business role decide whether the block uses template-default, plain-enterprise, prism-badge, deep-panel, or dual-arc.
 - Preserve the underlying component renderer: ECharts for standard charts, AntV S2 for analytical pivot/cross tables, Element Plus or project controls for selectors, drawers, modals, lists, and simple tables.
 - Treat color, radius, shadow, and gradients as semantic variables, not the source of the pattern. The pattern survives theme changes.
 - Use composition before invention: a new card can combine a KPI headline, a chart pattern, local controls, and a bottom evidence strip if each child contract remains valid.
@@ -133,6 +137,7 @@ Reject the design or keep readiness `partial` when:
 ## Acceptance Checklist
 
 - Every reusable sample is mapped to a pattern field, a composed pattern contract, or `requires-pattern-extension`.
+- Parent block title/body background samples are mapped to `blockChromePattern` or a documented extension gap before body component styling.
 - The chosen pattern answers a named business question and has required data fields.
 - `styleGeneralization.textOnlyReproduction` is `true` for reusable knowledge.
 - Raw screenshot paths are absent from long-lived skill references unless retained for runtime asset, exact restoration, visual baseline, or audit evidence.

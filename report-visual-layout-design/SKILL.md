@@ -31,6 +31,7 @@ For Haier/enterprise Web surfaces, including report/dashboard/BI/data-screen lay
 | Block sizing and viewport constraints | `references/block-size-constraints.md` |
 | Direct block-size front door | `$report-layout-size-constraint-spec` |
 | Parent block and internal sub-block composition | `references/block-composition.md` |
+| Block title/body chrome style selection | `references/block-chrome-style-patterns.md` |
 | Toolbar, drawer, modal, responsive interactions | `references/components-interactions.md` |
 | Output checklist | `references/output-checklist.md` |
 | Detailed layout acceptance gates | `references/layout-acceptance-gates.md` |
@@ -54,9 +55,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 8. Plan the first meaningful viewport and downstream reading path.
 9. Declare the page rhythm: `information-flow report`, `KPI dashboard`, `detail/query report`, `analysis narrative`, or `cockpit/status monitor`. Default to information flow unless the central question is current-state monitoring. Use typography, spacing, section rhythm, and subtle dividers before uniform card borders; reserve KPI/card grids for justified status-overview needs.
 10. Lay out top-level parent blocks in legal spans on the content-area grid: 12 equal columns after menu/sidebar width is deducted, and rowHeight from 8 visible row units after menu/header height is deducted. Row count is `N` and is not capped by the grid rule. Then decide whether each block contains one component or composed internal sub-blocks.
-11. Size blocks and sub-blocks from content needs: KPI, summary, chart, table, complex diagram, task list, evidence panel, drawer/detail, or action area. Use `$report-layout-size-constraint-spec` when the task is mainly block size, height budget, overflow, or viewport fit.
-12. Define layout states, vertical scroll behavior, and overflow fallback for parent blocks and sub-blocks at `1920x1080`.
-13. Use `layout-acceptance-gates.md` before accepting implementation-ready layout or repairing overlap/cropping defects.
+11. Before filling detailed body content, choose or explicitly inherit one `blockChromePattern` for each top-level parent block through `references/block-chrome-style-patterns.md`. The block title/body chrome is chosen from business role, density, evidence type, and template family, then the internal content is placed inside the reserved body viewport.
+12. Size blocks and sub-blocks from content needs: KPI, summary, chart, table, complex diagram, task list, evidence panel, drawer/detail, or action area. Use `$report-layout-size-constraint-spec` when the task is mainly block size, height budget, overflow, or viewport fit.
+13. Define layout states, vertical scroll behavior, and overflow fallback for parent blocks and sub-blocks at `1920x1080`.
+14. Use `layout-acceptance-gates.md` before accepting implementation-ready layout or repairing overlap/cropping defects.
 
 ## Required Output
 
@@ -64,6 +66,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - First-viewport hierarchy and reading path.
 - Page rhythm decision: information-flow report vs KPI/dashboard grid, KPI scope boundary, and card-border reduction strategy.
 - Header/navigation/filter/toolbar/brand structure.
+- Block chrome style matrix: `blockChromePattern`, selection reason, title-stage geometry, body background relation, density, decoration budget, overflow/fallback, and implementation proof hook for every styled parent block.
 - Modern BI page-language plan when requested: light page canvas, white-card block surfaces, no nested-card strategy, first-viewport hierarchy, component-count rationale, and chart-lightness layout implications.
 - `1920x1080` content-area grid plan: menu/sidebar occupied width, menu/header occupied height, `12 * 8` first-viewport sizing units, row-height/column-width calculation, `N`-row scroll behavior, parent-block grid, and internal sub-block plan.
 - Block sizing rationale, state plan, `1920x1080` fit/overflow plan, and downstream component/template handoffs.
@@ -77,6 +80,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not accept Haier/enterprise report layout that applies report grid rules but omits Haier application typography, color, spacing, base surface, and brand/logo constraints.
 - Layout must be driven by task, data density, business priority, state coverage, and next action, not decorative polish.
 - Do not accept a layout where uniform bordered cards are the main information separator. Prefer typographic hierarchy, whitespace, section rhythm, and subtle dividers; card frames are justified only for independent objects, repeated items, or template-owned surfaces.
+- Do not fill business content into styled parent blocks before the block title/body chrome pattern is selected or an explicit inherited default such as `template-default` is recorded. The chrome decision must preserve component-owned title/control ownership and measurable body viewport floors.
 - Do not KPI-ize every block. KPI cards/metric tiles are allowed only for primary decision metrics; evidence, explanation, detail, action, trust, and workflow blocks must keep task-matched component forms.
 - Do not treat blank space as proof of premium layout. At `1920x1080`, parent blocks should use the `12列*N行` grid to carry meaningful conclusion, evidence, detail/action, and trust/source content; reduce noise with hierarchy and disclosure rather than leaving large empty regions.
 - Do not let red/green semantic color define the page hierarchy. Layout-level emphasis must come from brand/product color, scale, position, typography, and neutral contrast; red/green/orange status color is reserved for documented states or business-direction rules.

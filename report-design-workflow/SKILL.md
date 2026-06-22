@@ -51,6 +51,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Startup/deployment self-check: `references/02-self-check-startup-deployment.md`
 - Output quality and avoid list: `references/03-output-quality-and-avoid.md`
 - Display themes and pattern chain: `references/04-common-display-theme-pattern-chain.md`
+- Block title/body chrome style selection: `$report-visual-layout-design` `references/block-chrome-style-patterns.md` when source samples define parent-block title/background style or when styled report blocks are needed.
 - Modern SaaS / BI Dashboard / UI Kit positive style contract: `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when that design language is requested.
 - Detailed prototype implementation gates: `references/05-prototype-implementation-gates.md`
 - Code-file ledger: `$code-change-ledger-management` before code edits.
@@ -75,7 +76,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 12. Decide `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly requests HTML/static/single-file HTML output or exact static HTML preservation.
 13. Decide `pageShellPath`: default `template`; use `custom` only for explicit custom/free design, exact restoration, existing shell preservation, HTML/static output, or documented template limitation.
 14. If HTML/source is provided, classify any SVG/canvas/DOM chart marks as sample evidence, not standard-chart implementation. Standard charts must be rebuilt with ECharts/data-driven options unless an explicit custom-diagram exception is documented.
-15. Use `$report-visual-layout-design` for shell, navigation, filter surface, grid, block sizing, responsive plan, and page规范.
+15. Use `$report-visual-layout-design` for shell, navigation, filter surface, grid, block sizing, responsive plan, page规范, and per-parent-block `blockChromePattern` selection. Select or explicitly inherit the block title/body chrome before filling the block body with charts, tables, lists, KPI strips, or text.
 16. Use `$report-prototype-template-management` for template selection/copy/validation and bundled assets.
 17. Route chart, table, filter, component-placement, and reusable component work to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, `$report-component-placement-spec`, or `$report-component-design-spec` whenever those surfaces are affected.
 18. Use `$report-component-style-design` and `$report-component-design-spec` for component fit, chart/table/KPI readability, and reusable component rules.
@@ -93,6 +94,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Result-content boundary: visible business-value conclusions/evidence/actions versus internal process artifacts; record any removed 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate, dataset-field, or implementation-note content and where it moved.
 - Style baseline decision when applicable: inherited source hierarchy, modern SaaS / BI Dashboard / UI Kit contract mapping, and unresolved `VIS-*` design-language findings.
 - Visual constraint decision: information-flow vs dashboard rhythm, KPI scope boundary, card-border reduction strategy, and brand-vs-status color rule.
+- Block chrome style decision: for each styled parent block, record `blockChromePattern`, source evidence, business-role selection reason, title-stage geometry, body background relation, density, fallback, and proof hook; if no special chrome is used, record the inherited `template-default` or `plain-enterprise` decision.
 - Action reflection checkpoints for non-trivial mode/template/component/renderer/source-code decisions, especially when HTML/source samples are used.
 - Anti-laziness execution result: local/source evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
 - Affected-surface to owning-skill routing, including chart/table/filter/component-placement/design-system skills when applicable.
@@ -116,6 +118,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Do not output HTML or static single-file prototypes merely because the user provided HTML/MD/source files; HTML output requires an explicit user request for HTML/static/single-file HTML or exact static preservation.
 - Do not implement a requested modern SaaS / BI Dashboard / UI Kit page before the positive style contract is mapped to tokens, hierarchy, component count, and chart-lightness proof obligations.
 - Do not implement a prototype as a same-weight bordered-card grid, KPI wall, or red/green semantic-color page unless the report-decision gate records an explicit business reason and proof obligations.
+- Do not fill styled parent blocks with final business content before selecting or explicitly inheriting the block title/body chrome pattern. User-provided HTML/CSS block samples must become `blockChromePattern` evidence and controlled pattern contracts, not hidden one-off markup or output-format authority.
 - Do not implement a report prototype that is only an information collection. The page must help the reader make one primary judgment, then expose evidence, cause, detail, and action paths according to the report type.
 - Do not render design-process artifacts as report results. 下钻链路 may appear as an actionable control, breadcrumb, drawer/jump route, or detail entry tied to current context; it must not appear as a standalone design-chain list. 指标清单, component mappings, binding matrices, workflow/gate outputs, dataset field catalogues, and implementation notes stay out of the visible page unless the user explicitly asks for visible documentation or the item passes the business-value test as conclusion, evidence, trust, or action content.
 - Do not reuse one sentinel value such as `all` for detail rows, aggregate rows, and empty/no-filter state. "All detail rows", "aggregate row", and "empty filter value" must be declared as separate semantics before implementation.

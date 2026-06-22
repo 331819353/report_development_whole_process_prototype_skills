@@ -10,11 +10,12 @@ When asked to design a report visual layout, use this structure:
 4. 品牌风格: Haier logo asset discovery result, logo variant or placeholder, Haier blue/white palette, typography, spacing, density, surfaces.
 5. 内容结构: summary, breakdown, evidence, detail, action, or another report-appropriate flow.
 6. 栅格方案: `1920x1080` content grid, menu/sidebar occupied width, menu/header occupied height, 12-column split, 8 visible row-unit sizing basis, columnWidth/rowHeight calculation, N-row scroll behavior, parent spans, internal sub-block plan when used, chart/table/container/complex-diagram safety.
-7. 关键组件: parent block -> sub-block -> component placement for KPI cards, charts, tables, Analysis & Insight components, text summaries, drawers/popovers, toolbar actions.
-8. 模板路由: chosen template and config files to adjust.
-9. 交互与状态: filters, drilldown, drawer/modal, refresh/export/fullscreen, empty/loading/error/no-permission, responsive behavior.
-10. 视角导航验收: domain navigation, Tabs, Segments, or other first-level perspective controls; include `1920x1080` DOM no-clipping results.
-11. 设计校验: first-viewport value, sample fidelity when applicable, brand correctness, grid correctness, visual restraint, no clipping/overlap.
+7. 分块标题/背景样式: parent block `blockChromePattern` matrix, selection reason, title-stage geometry, body background relation, density, fallback, and proof hook.
+8. 关键组件: parent block -> sub-block -> component placement for KPI cards, charts, tables, Analysis & Insight components, text summaries, drawers/popovers, toolbar actions.
+9. 模板路由: chosen template and config files to adjust.
+10. 交互与状态: filters, drilldown, drawer/modal, refresh/export/fullscreen, empty/loading/error/no-permission, responsive behavior.
+11. 视角导航验收: domain navigation, Tabs, Segments, or other first-level perspective controls; include `1920x1080` DOM no-clipping results.
+12. 设计校验: first-viewport value, sample fidelity when applicable, brand correctness, grid correctness, visual restraint, no clipping/overlap.
 
 ## 2. Quality Checklist
 
@@ -53,6 +54,7 @@ Before finalizing, verify:
 - Every top-level parent block occupies complete rectangular page-grid cells.
 - Components may be placed inside internal sub-blocks of a parent block; sub-blocks are local layout regions and do not count as page-grid cells.
 - Page layout owns page shell identity and block placement, not block title-area design. Business components own visible title/function/local-filter areas inside their widget viewport.
+- Styled parent blocks declare or inherit `blockChromePattern` before body content is filled; title/body chrome remains component-owned, uses a stable title-stage geometry, and does not shrink chart/table/list floors.
 - Every chosen block span has been checked against `1920x1080` practical viewport constraints, including the actual rowHeight from the 8-row visible split.
 - `1920x1080` is not treated as a total report height limit.
 - If one parent grid block contains multiple sub-blocks/components, the composite parent component carries one clear business title/control area and the internal sub-block labels/components remain visually subordinate.
@@ -134,6 +136,7 @@ Before finalizing, verify:
 - Do not use naked native `<select>` controls as the final visual surface for primary filters.
 - Do not use masonry, staggered, irregular, diagonal, or non-rectangular component layouts.
 - Do not duplicate a block/page title inside the component body.
+- Do not choose parent block title/background chrome after the block body has already been filled. Select `blockChromePattern` or an inherited default first, then place business content inside the reserved body viewport.
 - Do not force every component into its own top-level `12 * N` block when a parent block with clear internal sub-blocks better answers one business question.
 - Do not make components too narrow, too small, or crowded when internal sub-block layout plus parent-block expansion can carry the content.
 - Do not let section/stage/layer/lane titles collide with or sit on top of component cards, node cards, connector lines, or child labels.

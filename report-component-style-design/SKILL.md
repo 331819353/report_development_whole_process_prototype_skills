@@ -28,6 +28,7 @@ Start with `references/00-component-reference-index.md`, then load the smallest 
 | Need | Read |
 | --- | --- |
 | Screenshot-derived, sample-derived, or adaptive reusable component style goal | `references/00a-style-generalization-goal.md` plus `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Parent block title/body chrome style selection | `$report-visual-layout-design` `references/block-chrome-style-patterns.md` when a sample defines block title chrome, content-background treatment, or "先选分块样式再填内容" behavior |
 | Low-noise, high-density, high-end-but-usable component baseline | `references/00b-low-noise-high-density-baseline.md` when the user provides an outside/general design guideline or asks for 高级感, 好看, 好用, 易懂, 降噪, UI Kit/SaaS/BI polish |
 | Shared viewport, typography, overflow, states | `references/01-shared-foundation.md` |
 | Modern SaaS / BI Dashboard / UI Kit component language | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
@@ -95,7 +96,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Workflow
 
 1. Run the Preflight understanding gate for implementation, repair, or acceptance work; name component family, parent container, data/decision contract, affected specialty skills, hard constraints, missing evidence, and start decision.
-2. For screenshot-derived or reusable style work, load `00a-style-generalization-goal.md` and classify each sample as an existing pattern, composed pattern, extension gap, or out-of-scope one-off.
+2. For screenshot-derived or reusable style work, load `00a-style-generalization-goal.md` and classify each sample as an existing pattern, composed pattern, extension gap, or out-of-scope one-off. If the sample defines parent block title/body chrome rather than the data component body, route it to `$report-visual-layout-design` `block-chrome-style-patterns.md` and select `blockChromePattern` before component body styling.
 3. Classify the component family, business purpose, data grain, viewport/container size, interaction state, and priority.
 4. Load `00-component-reference-index.md`, shared foundation, the matching component reference, and the matching placement reference only. When the task is purely chart, table, filter, or coordinate placement, prefer the specific front-door skill above.
 5. Confirm the data and decision contract before styling: metric/formula, field grain, source/freshness, numeric display contract, filter scope, exact-value path, state set, and next action.
@@ -112,6 +113,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Placement rules: container variables, slots, center-axis symmetry intent, alignment, size tiers, display budget, responsive degradation, and state geometry.
 - Visual and interaction rules: tokens, labels, legends, tooltips, hover/focus, overflow strategy, disclosure, and accessibility.
 - Style generalization result for reusable sample work: selected controlled pattern field, `styleGeneralization` status, adaptive variables, fallback, and whether a text-only model can reproduce the style.
+- Block chrome style result when applicable: selected `blockChromePattern`, title/body geometry, body background relation, selection trigger, fallback, and component/template ownership boundary.
 - Proof obligations: KPI alignment and alignment-intent classification, duplicate controls/title ownership, overflow/clipping, chart/table option evidence, ECharts resize lifecycle evidence, contract-to-DOM/CSS/renderer mapping, non-default states, and screenshot/crop or DOM assertion result when code/URL exists.
 - Acceptance result: `ready`, `partial`, or `blocked`, with `DESIGN-*`, `RPT-*`, `VIS-*`, or implementation gaps when relevant.
 
@@ -154,5 +156,6 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Data quality trust cards must declare `analysisPerspective: dataQualityTrust`, `dataQualityTrustCardPattern`, `dataQualityEvidenceBinding`, data object scope, numerator/denominator policy, formula or rule references, source/freshness/batch metadata, exact-value/detail/source-lineage route, density/fallback rules, and renderer ownership before styling; otherwise keep readiness `partial` with `RPT-DQ-*` or `VIS-DQ-*`.
 - If modern SaaS / BI Dashboard / UI Kit style is explicitly requested, it must be implemented as tokenized light surfaces, reduced uniform card frames, brand/product color hierarchy, UI Kit controls, bounded component count/KPI scope, and lightweight charts. Missing proof is `VIS-MODERN-BI-BASELINE-MISSING`, `VIS-CARD-BORDER-OVERUSE`, `VIS-KPI-EVERYWHERE`, `VIS-COMPONENT-PILEUP`, or `VIS-CHART-OVERWEIGHT`.
 - Screenshot-inspired reusable component rules must be converted into text/structured visual pattern contracts. Do not rely on raw screenshots, image paths, or image embeddings as the only durable source of truth unless the task is exact restoration, runtime asset retention, visual regression, or audit evidence.
+- Sample-derived parent block title/background styles must become `blockChromePattern` contracts or documented extension gaps. Do not bury them as raw CSS snippets, one-off decorative classes, or component-body styles selected after content has already been filled.
 - Screenshot-derived or sample-derived reusable styles are not ready unless each provided sample is routable to an existing controlled pattern, a composed pattern contract, or a documented `requires-pattern-extension` gap under `00a-style-generalization-goal.md`.
 - Load `12-component-acceptance-gates.md` before accepting dense charts, tables, Composite Panels, Micro Dashboard Cards, state feedback components, Analysis & Insight, KPI cards, local filters, or shape-sensitive graphics for implementation.

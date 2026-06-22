@@ -25,13 +25,14 @@ Use this structure:
 5. 好报表决策路径: 3秒主判断、唯一主结论、What/Why/So what、对比参照、指标关系网络、下钻/action 路径.
 6. 结果内容边界: 保留有业务价值的结论/证据/行动，移出下钻链路清单、指标清单、组件映射、绑定矩阵等过程产物.
 7. 信息区块、模式卡片与组件映射.
-8. 数据策略.
-9. 筛选策略.
-10. 数据交互策略.
-11. 视觉布局策略.
-12. 组件风格策略.
-13. 质量验收清单.
-14. 假设与缺口.
+8. 分块标题/背景样式矩阵: `blockChromePattern`, selection reason, title/body geometry, density, fallback, and proof hook.
+9. 数据策略.
+10. 筛选策略.
+11. 数据交互策略.
+12. 视觉布局策略.
+13. 组件风格策略.
+14. 质量验收清单.
+15. 假设与缺口.
 
 ### Implementation Plan Output
 
@@ -44,7 +45,7 @@ Use this structure:
 5. Mock data and filter state plan.
 6. Interaction state and parameter plan.
 7. Shell path, style source, brand mode, visual mode, and brand asset gate: `pageShellPath`, `pageStyleSource`, `brandMode`, `visualMode`, `customDesignPath` and `customLayoutPattern` if any, logo discovery result, logo slot/placeholder, sample-fidelity decision, and sample module classification.
-8. Visual layout and component style plan.
+8. Visual layout, block chrome style matrix, and component style plan.
 9. Technical architecture: TypeScript, Vue 3, Element Plus, ECharts, optional AntV S2 trigger, and template choice.
 10. Self-check report and repair-loop plan.
 11. Automatic deployment plan and expected URL source.
@@ -102,6 +103,7 @@ Before final delivery, verify:
 - `pageStyleSource` is declared. If no page style is specified, a bundled template is used by default; provided HTML/MD/source/sample styling is requirement and hierarchy evidence unless explicit restoration or HTML/static output is requested.
 - `outputArtifact` is declared. Default is `vueTemplatePrototype`; `htmlPrototype` appears only with explicit user wording for HTML/static/single-file HTML output or exact static preservation.
 - A source-material requirement matrix exists when the user provided HTML, Markdown/MD, source snippets, screenshots, documents, code, data, or config files.
+- When source material or design intent includes block title/background style, a `blockChromePattern` matrix exists before body content placement. It records selected or inherited pattern, business-role reason, title/body geometry, body background relation, fallback, and proof hook.
 - Exactly one `brandMode` is declared and its logo/global UI token implications are followed.
 - Exactly one `visualMode` is declared before implementation and remains consistent in the final self-check.
 - If `pageShellPath: custom`, `customDesignPath` is declared as `htmlReplica` or `freeDesign`.
@@ -172,6 +174,7 @@ Before final delivery, verify:
 - Do not choose a custom shell merely because the user did not specify page style.
 - Do not skip requirement transformation when the user provides HTML, Markdown/MD, copied source, screenshots, documents, code, data, or config files.
 - Do not output HTML/static/single-file prototypes merely because provided materials are HTML/MD/source; default runnable prototypes use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios unless explicit user wording says otherwise.
+- Do not treat block title/background sample styles as raw HTML/CSS to paste after content is complete. Convert them into `blockChromePattern` contracts before filling parent blocks.
 - Do not mark a `brandMode: haierBranded` custom shell complete when it has only a logo placeholder instead of a real bundled Haier logo.
 - Do not start implementation before declaring `pageShellPath`, `pageStyleSource`, `brandMode`, `visualMode`, custom design/layout paths when applicable, and passing the logo asset gate.
 - Do not use every skill for every task; use the smallest complete path.
