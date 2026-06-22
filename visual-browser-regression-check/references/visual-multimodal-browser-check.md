@@ -18,6 +18,7 @@ For runnable pages, do the visual check in this order:
 3. Capture deterministic screenshots before judging visual quality.
 4. Run deterministic checks:
    - Confirm nonblank rendering, stable viewport size, expected screenshot count, and key screenshot file paths.
+   - For bundled template projects, run `npm run visual:geometry -- --url <verified-url>` to generate `visual-check/geometry-report.json` and deterministic `VIS-*` findings for DOM overflow, clipped text, sibling overlap, squeezed repeated rows/cards, list-row clipping, hidden list overflow, squeezed ECharts/SVG/canvas chart bodies, plot-height squeeze, chart/table crowding, and SVG text overlap.
    - If approved baselines exist, run image diff and record threshold, diff count/ratio, ignored or masked dynamic regions, and diff output paths.
    - If no approved baseline exists, mark deterministic regression as `baseline missing` and save the current screenshots as baseline candidates rather than claiming regression pass.
 5. Run multimodal explanatory review on the screenshots when the model/service is available and visual acceptance is in scope.
@@ -62,6 +63,7 @@ Capture the smallest set that can prove the page is visually usable:
 - DOM overflow evidence for domain navigation, Tabs, Segments, and first-level perspective controls at `1920x1080`: each visible item/card content viewport must satisfy `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`. Screenshots are not a substitute for this evidence.
 - Height-budget and DOM overflow evidence for fixed-height navigation/cards/KPI tiles/compact summaries: padding, explicit line-height, gaps, badge/status/footer heights, and `requiredContentHeight <= componentHeight`. `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2` is a clipping defect unless the region is an intentional visible scroll area.
 - Fixed-height summary/ranking/card/KPI/composite content evidence must use `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`, or document visible scroll, expand/collapse, pagination, drawer/fullscreen, or split behavior. Parent `overflow: hidden` that masks decision-critical content is a visual defect, not proof of fit.
+- Operational/action/task/status/list row evidence must use `scrollHeight <= clientHeight + 1` and `scrollWidth <= clientWidth + 1`. A `3x2` action/task list may show at most `2` rows; extra rows need detail/tooltip/drawer/view-all/table fallback. Hidden overflow on list evidence/actions is `VIS-LIST-ROW-CLIPPED` or `VIS-LIST-OVERFLOW-HIDDEN`.
 - Modern SaaS / BI Dashboard / UI Kit style evidence is required when that language is requested or claimed: screenshot/crop and DOM/CSS evidence for light page canvas, optional analytical surfaces, reduced uniform card borders, small radii, restrained shadows, shared token family, first-viewport hierarchy, no nested-card/component pileup, information flow, and lightweight charts.
 - KPI/metric crop evidence must include DOM geometry and CSS cascade when inspectable: semantic roles such as `data-ui-role="kpi-card"`, `data-ui-role="kpi-value-anchor"`, `data-ui-role="kpi-value"`, and `data-ui-role="kpi-unit"` or project equivalents; X/Y center deltas within `8px`; value slot height ratio; numeral glyph size; and any template/global rule such as `.metric-number { text-align: right; }`, flex-end alignment, or auto margins that could defeat centering.
 - Alignment-intent evidence is required before judging "most core content is centered". Record which surfaces are supposed to center and which are intentionally scan-aligned: KPI value groups and empty/loading states default to center; chart plots/shape-sensitive graphics center inside the reserved plot body; tables, rankings, detail lists, and long text default to top-left/row alignment with numeric cells right-aligned. Do not fail a table or narrative summary for not being centered unless the owning spec explicitly required centered text.
@@ -77,6 +79,10 @@ axis chart plot height >= required floor when axes/legend are visible
 visible y-axis/x-axis label rectangles do not overlap
 visible gridlines do not merge into an unreadable stripe
 nonblank chart marks exist after resize
+multi-series legend is top-centered while single-series legend is hidden unless excepted
+Y-axis unit is configured outside raw numeric tick labels
+Y-axis title sits on the left/right side and X-axis title sits in the bottom band
+target/reference labels stay inside the plot with insideEndTop
 legend/axis/title/state rectangles stay inside the chart body or declared outer bands
 ```
 
@@ -89,8 +95,8 @@ If the page shell is fixed design-width and uses browser scrolling, label the re
 - Analysis & Insight option/config evidence when present: `analysisInsightContract` or equivalent metadata, subtype/family, conclusion, evidence or insufficient-data state, affected object/comparison/change/reason/source/freshness, recommended action/detail route or trust/definition disclosure, component-local filter scope, tooltip payload, and loading/empty/error/no-permission/data-delay states.
 - Complex/grouped table-header option/config evidence when present: `columnTree` or nested grouped columns, business group nodes, real leaf fields, unit/definition metadata, computed `colSpan`/`rowSpan` or max-depth/leaf-count rules, parent group widths tied to visible leaf widths, fixed whole-header behavior, frozen row/primary columns during horizontal scroll, component-local filter vs per-column header-filter separation, sort/filter/definition icon limits, tooltip disclosure, group collapse/column settings/fullscreen fallback, useful body-row budget, and loading/empty/error/no-permission states.
 - Pivot Table option/config evidence when present: multidimensional cross-summary task, `visualType: pivot`, S2/project analytical renderer, row dimensions, column dimensions, measures, aggregation formulas/functions, percentage/rate numerator-denominator recomputation rules, subtotal/grand-total placement, hierarchy depth, natural time sorting, fixed column header/frozen row dimension behavior, `pivotAreaH` and visible-row budget, row/column density fallback, restrained conditional formatting, exact cell tooltip/drilldown payload, local-filter scope, and loading/empty/error/no-permission states.
-- Combo option/config evidence when present: paired scale + rate/trend/target relationship, shared ordered x-axis, bar metric/unit, line or target metric/unit, left/right y-axis mapping, dual-axis rationale when used, visible series `<=4`, category-density fallback, `plotH >= CH * 0.48`, legend/filter separation, target/reference label rule, and axis-trigger tooltip exact payload. For a top-centered legend, require `legend.left: 'center'` or equivalent measured centering plus `grid.top` reserved space; right-anchored legends fail unless explicitly specified.
-- Axis-chart squeeze evidence when line/bar/combo charts share a card with top tabs, dense legend, metric strip, table/list preview, or detail rows: measure chart body height, `grid.top`, `grid.bottom`, plot height, y-axis label rectangles, and preview table/list row count. A standard axis chart should not pass with chart body `<180px`; chart + table/list or dense combo should not pass with chart body `<220px` or plot height `<140px` unless it is explicitly converted to a sparkline with axes/legend hidden.
+- Combo option/config evidence when present: paired scale + rate/trend/target relationship, shared ordered x-axis, bar metric/unit, line or target metric/unit, left/right y-axis mapping, dual-axis rationale when used, visible series `<=4`, category-density fallback, `plotH >= CH * 0.48`, legend/filter separation, target/reference label rule, and axis-trigger tooltip exact payload. For a top-centered legend, require `legend.left: 'center'` or equivalent measured centering plus `grid.top` reserved space; right-anchored legends fail unless explicitly specified. Target/reference labels default to `insideEndTop` so they do not create a right-side external band.
+- Axis-chart squeeze/anatomy evidence when line/bar/combo charts share a card with top tabs, dense legend, metric strip, table/list preview, or detail rows: measure chart body height, `grid.top/right/bottom/left`, plot height, y-axis label rectangles, axis-title rectangles, target/reference label rectangles, and preview table/list row count. A standard axis chart should not pass with chart body `<180px`; chart + table/list or dense combo should not pass with chart body `<220px` or plot height `<140px`. If the standard chart cannot meet `chartBodyH >=180px`, the only accepted alternatives are expanding to `3+` rows or explicitly converting to `compact-sparkline` with legend, Y-axis unit/name, and permanent labels hidden. Bounded NPS/score/rate/current-vs-target charts must show a dynamic Y-axis domain from current, comparison/same-period, and target/reference values rather than a default `0` baseline unless zero is documented as the business baseline.
 - Scatter/bubble option/config evidence when present: X/Y metric names and units, axis range/baseline rules, point count, radius/opacity/label density strategy, bubble `symbolSize` sqrt mapping when present, color/size legend behavior, reference line/quadrant/trend-line encoding, tooltip exact-value payload, and aggregation/sampling/zoom strategy for dense points.
 - Parallel-coordinate option/config evidence when present: object/sample identity fields, `3-12` ordered dimensions or `parallelAxis`, per-axis unit/range/direction, independent or standardized scale mode, `axisGap`/plot-height budget, sample count, line opacity, sampling/aggregation strategy, Top/anomaly/selected highlight, brush semantics when present, legend/filter separation, exact object tooltip payload, and too-many-dimensions/samples fallback.
 - Map/geographic option/config evidence when present: geography field or lon/lat binding, map resource/projection, fitBounds/center/zoom/aspect strategy, map viewport budget, `visualMap`/legend behavior, basemap boundary/fill strength, point/bubble radius or flow-width mapping when present, label strategy, clustering/heatmap/TopN fallback, missing-coordinate/unmatched-region handling, drilldown/zoom controls when present, and tooltip exact-value payload.
@@ -143,6 +149,33 @@ Deterministic finding schema:
 - `Likely owner`: `prototype`, `frontend`, `style/layout`, `data`, `environment`, or `unclear`.
 - `Suggested fix`: concrete repair direction.
 - `Retest criteria`: baseline diff and screenshot state that must pass after repair.
+
+## Automated Geometry Audit
+
+Bundled report templates include `scripts/visual-geometry-audit.mjs` and expose it through:
+
+```bash
+npm run visual:geometry -- --url <verified-url>
+```
+
+Use it after the page is stable and before manual screenshot judgment. Default viewports are `1365x768,1920x1080`; override with `--viewports` when the page has a stricter viewport contract. Default readiness threshold is `--fail-on major`.
+
+The audit writes:
+
+- `visual-check/geometry-<viewport>.png`
+- `visual-check/geometry-report.json`
+
+The audit fails readiness at the configured threshold for:
+
+- `VIS-CONTENT-CLIPPED` or `VIS-CONTENT-OVERFLOW`: measured `scrollHeight/clientHeight` or `scrollWidth/clientWidth` mismatch in meaningful cards, widgets, filters, nav, tabs, panels, and report surfaces.
+- `VIS-TEXT-CLIPPED`: text nodes exceed their visible box without an intentional disclosure/scroll strategy.
+- `VIS-ELEMENT-OVERLAP`: visible direct sibling rectangles overlap beyond the configured area/ratio threshold.
+- `VIS-LIST-ITEM-SQUEEZED`: repeated text rows/cards are below the minimum useful row height.
+- `VIS-CHART-SQUEEZED`: chart container or rendered SVG/canvas body is below the chart-height floor.
+- `VIS-CHART-TABLE-CROWDING`: chart and table/list content share a card without enough plot height.
+- `VIS-AXIS-LABEL-STACKED`: inspectable SVG chart text labels overlap.
+
+If Playwright or Chromium is missing, record the exact package/browser blocker and keep runtime visual readiness `partial` until the command runs or the environment limitation is accepted.
 
 ## Multimodal Anomaly Categories
 

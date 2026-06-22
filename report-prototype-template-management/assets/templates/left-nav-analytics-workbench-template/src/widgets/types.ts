@@ -91,6 +91,7 @@ export type WidgetVisualType =
   | 'line'
   | 'bar'
   | 'combo'
+  | 'compact-sparkline'
   | 'candlestick'
   | 'heatmap'
   | 'pie'
@@ -109,6 +110,9 @@ export type WidgetVisualType =
   | 'funnel'
   | 'metric-card'
   | 'text-summary'
+  | 'operational-list'
+  | 'action-recommendation-card'
+  | 'ranking-list'
   | 'table'
   | 'pivot'
   | 'other';

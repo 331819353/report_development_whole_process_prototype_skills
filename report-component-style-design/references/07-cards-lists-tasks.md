@@ -14,6 +14,7 @@ For reusable operational information lists, task progress lists, alert/exception
 - Do not turn every field into a badge. Reserve badges for status, priority, severity, or lifecycle.
 - Fixed-height cards must declare an internal height budget: padding + explicit line-height rows + vertical gaps + status/action/footer heights must be `<=` card height. Object name, main value/status, metadata, focus labels, and action text need explicit `line-height`.
 - Card/list groups must declare a visible-count budget. Repeated peer cards default to `<=6` visible cards in one fixed block; more records use pagination, internal scroll with visible affordance, Top N + other, grouping, drawer/detail, or a table fallback.
+- List-like components must declare the exact row contract fields `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`. This applies to operational lists, action lists, task lists, status lists, timelines, rankings, and detail-preview lists, even when the rows are visually simple.
 
 ## Fit And Overflow
 
@@ -21,8 +22,10 @@ For reusable operational information lists, task progress lists, alert/exception
 - Task titles, anomaly reasons, warning names, owners, deadlines, and next actions must not be clipped without disclosure.
 - Repeated cards in a fixed-height block use internal scroll or pagination. They must not overflow the report page.
 - Overflow strategy must be explicit: which records stay visible, how `+N` or pagination is labeled, whether sorting/ranking is stable, and how the full record can be inspected.
+- A `3x2` action list defaults to `visibleRowCount <= 2`. If the data has more actions, the third and later actions must move to detail, tooltip, drawer, view-all, or table fallback; do not reduce row height or apply `overflow:hidden` to make them appear to fit.
 - Keep action area stable so buttons do not move when status text changes.
 - `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2` on a fixed-height card body is a clipping failure unless the overflow behavior is an intentional visible scroll region or declared disclosure strategy.
+- Runtime geometry must also check each list row: `row.scrollHeight <= row.clientHeight + 1` and `row.scrollWidth <= row.clientWidth + 1`. A row that fails this check is `VIS-LIST-ROW-CLIPPED`, even when the parent card looks acceptable in a screenshot.
 
 ## Status And Severity
 

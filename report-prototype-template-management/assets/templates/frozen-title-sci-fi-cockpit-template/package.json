@@ -7,6 +7,7 @@
     "dev": "vite --mode development --host 0.0.0.0",
     "dev:auto": "node scripts/start-available-port.mjs --mode dev",
     "validate:dashboard": "node scripts/validate-dashboard-contract.mjs",
+    "visual:geometry": "node scripts/visual-geometry-audit.mjs",
     "ledger:code": "node scripts/update-code-ledger.mjs",
     "build": "npm run build:prod",
     "build:preview": "npm run validate:dashboard && vue-tsc --noEmit && vite build --mode preview",
@@ -31,6 +32,7 @@
     "vue-tsc": "^2.1.10"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1"
+    "@types/node": "^25.9.1",
+    "playwright": "^1.61.0"
   }
 }

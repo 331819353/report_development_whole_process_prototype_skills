@@ -31,6 +31,36 @@
 - Change evidence: working-tree diff for `src/config/dashboard.config.ts` in this change set.
 - Follow-up: none
 
+### v20260622030028 - 2026-06-22T03:00:28Z
+
+- Change ID: geometry-contract-config-comments
+- Actor: codex
+- Change type: update
+- Summary: Add widget config comments for list row and axis-chart geometry contracts.
+- Modified functionality: dashboard.config developer guidance
+- Code ranges: `visualType` comment block
+- Modified content: Documented required `rowHeightPx`, `visibleRowCount`, `overflowStrategy`, `3x2` action-list row budget, and full-axis `chartBodyH >= 180` / compact-sparkline alternative.
+- Affected contracts: template config handoff comments; validate-dashboard contract
+- Verification: npm run validate:dashboard passed
+- Rollback note: remove the added comments only.
+- Related files: scripts/validate-dashboard-contract.mjs
+- Follow-up: none
+
+### v20260622031757 - 2026-06-22T03:17:57Z
+
+- Change ID: echarts-axis-anatomy-config-comments
+- Actor: codex
+- Change type: update
+- Summary: Add dashboard config guidance for ECharts axis anatomy and dynamic Y-axis defaults.
+- Modified functionality: dashboard.config developer guidance
+- Code ranges: `visualType` comment block
+- Modified content: Documented top-centered multi-series legends, hidden single-series legends, dynamic NPS/score/rate/target Y-axis ranges, compact four-side grid, side/bottom axis titles, and `insideEndTop` target labels.
+- Affected contracts: template config handoff comments; validate-dashboard chart anatomy contract
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview; negative ECharts contract probe failed as expected for the new chart anatomy checks; git diff --check passed.
+- Rollback note: remove the added comment only.
+- Related files: scripts/validate-dashboard-contract.mjs; src/widgets/templates/WidgetTemplate.vue
+- Follow-up: none
+
 ### v20260618-12x8-content-grid - 2026-06-18
 
 - Change ID: ad-hoc-12x8-content-grid

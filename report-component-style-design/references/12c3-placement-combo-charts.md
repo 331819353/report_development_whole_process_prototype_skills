@@ -126,7 +126,7 @@ Hide secondary metrics before shrinking the plot.
 ```text
 legendW = measuredLegendWidth
 legendH = 20-28px
-legendX = P + CW - legendW
+legendX = P + (CW - legendW) / 2
 legendY = P + titleAreaH + metricH + 4px
 legendRect = [legendX, legendY, legendW, legendH]
 ```
@@ -136,12 +136,13 @@ Rules:
 - Required items normally include `■ 销售额`, `— 增长率`, and optional `┄ 目标`.
 - Recommended legend items `<=4`, hard max `5`.
 - Legend click may toggle series, but it must retain at least one primary bar/scale series and one valid comparison/target story, or the component must switch to an explicit split/empty state instead of showing a misleading orphan line.
+- Default Combo legend placement is top center (`legend.left: 'center'` or measured equivalent). Right/title-side placement requires an explicit filter/viewport exception and must still pass the axis-name overlap budget.
 - If legend and filter compete, collapse the legend to key series or a dropdown; do not merge legend and filter into one control.
 - A legend in the top band must be separated from y-axis names, axis units, title/subtitle, and local filters. Do not place `legend.top/right` with fixed numbers until `legendRect` has been checked against the axis-name rectangles below.
 
 ### Top-Band Axis Name Budget
 
-ECharts y-axis `name` is drawn as part of the chart, not inside `grid.containLabel`. For dual-axis Combo charts, `件`, `%`, `元`, `人`, `次`, and similar unit names can collide with a top legend unless the option budgets them.
+ECharts y-axis `name` is drawn as part of the chart, not inside `grid.containLabel`. For dual-axis Combo charts, `件`, `%`, `元`, `人`, `次`, and similar unit names belong on the left/right axis side with explicit `nameLocation`, `nameRotate`, and `nameGap`; avoid consuming the top legend band for y-axis titles.
 
 Required variables when any y-axis has `name`:
 
@@ -161,9 +162,9 @@ grid.top =
 
 Placement rules:
 
-- Prefer one unit strategy per axis: visible y-axis `name`, unit in `axisLabel.formatter`, subtitle/unit metadata, or tooltip-only metadata. Avoid showing the same unit in multiple places.
+- Prefer one unit strategy per axis: visible y-axis `name` or declared left/right axis-unit metadata, plus tooltip exact values. Avoid showing the same unit in multiple places.
 - If the top legend is inside ECharts and either y-axis keeps `nameLocation: 'end'`, calculate the left and right `axisNameRect` from the final `grid.top`, `nameGap`, `nameTextStyle`, `nameRotate`, and axis side. `legendRect` must not overlap either axis-name rectangle and must keep at least `8px` visual gap.
-- If the measured rectangles fail, repair in this order: move unit into `axisLabel.formatter` or subtitle, move `yAxis.nameLocation` to `middle` with explicit `nameRotate` and side budget, move/collapse legend, increase `grid.top`, then split the chart. Do not shrink plot height below `CH * 0.48` to hide the collision.
+- If the measured rectangles fail, repair in this order: move `yAxis.nameLocation` to `middle` with explicit `nameRotate` and side budget, shorten the unit text, move/collapse noncritical legend detail, increase `grid.top`, then split the chart. Do not move units into `axisLabel.formatter`, and do not shrink plot height below `CH * 0.48` to hide the collision.
 - Hard-coded top values such as `legend.top = 0`, `legend.right = 8`, and `grid.top = 38` fail implementation readiness for dual-axis Combo charts unless they are accompanied by measured text widths/heights and overlap evidence for every target viewport.
 
 ### Plot And Axes
@@ -180,8 +181,8 @@ plotH = H - P - xAxisH - footerH - plotY
 
 Left y-axis:
 
-- Default min is `0`.
-- Max is `niceMax(max(barValues, targetValues) * 1.1)`.
+- Default range is dynamic when the metric is bounded or target/reference-driven: compute from bar/current values, comparison/same-period values, and target/reference values with readable padding.
+- Use `min: 0` only when zero is the business baseline, such as amount/count/volume magnitude comparison.
 - Negative values require a visible zero baseline and `niceMin/niceMax`.
 
 Right y-axis:
@@ -246,11 +247,11 @@ Target/reference:
 ```text
 targetLineW = 1-1.5px
 targetLineStyle = dashed
-targetLabelX = plotX + plotW + 4-8px
+targetLabelPosition = insideEndTop
 targetLabelFont = 11-12px
 ```
 
-If the right gap cannot hold the target label, move target text to legend/tooltip.
+Target/reference labels stay inside the plot by default and must not create a right-side external band. If `insideEndTop` collides, move target text to tooltip/title context rather than widening `grid.right`.
 
 Draw order:
 

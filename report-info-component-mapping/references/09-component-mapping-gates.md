@@ -11,6 +11,8 @@ Detailed mapping constraints moved out of `SKILL.md`. Load this for implementati
 - Every primary metric needs a comparison basis: target, prior period, same period last year, benchmark, historical range, threshold, or denominator/total for shares/rates. Missing comparison is `RPT-MISSING-COMPARISON` and the metric cannot be the primary judgment anchor.
 - Decision reports place judgment/evidence before dense detail. Detail-first layout is `RPT-DETAIL-FIRST` unless the report is explicitly detail-query, reconciliation-first, audit-first, or source-record lookup.
 - Every primary judgment should carry a next path: tooltip, drilldown, drawer, cross-filter, export, fullscreen, source jump, action route, or explicit presentation-only static exception. Missing next path for an action/diagnosis report is `RPT-NO-SO-WHAT`.
+- Visible report content must pass the business-value test: it helps the reader judge, understand evidence/reason, verify trust/source, or take action. Content that does not pass is `RPT-NO-BUSINESS-VALUE`.
+- Design-process artifacts are not visible report components by default. 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, pattern-card inventories, and implementation notes shown as result content are `RPT-PROCESS-ARTIFACT-VISIBLE` unless the user explicitly asked for visible documentation or the item is rewritten as conclusion/evidence/trust/action content.
 - Every primary metric-bearing component must have formula/denominator, grain, period, source/freshness, numeric display contract, baseline, and owner/action notes when the output is implementation-ready.
 - Every visible metric field must declare value type, raw/display unit, display scale, screen precision, tooltip/export precision, rounding mode, null/zero/denominator-zero display, negative-zero handling, small-nonzero behavior when relevant, formula precision policy, and formatter ownership. Ambiguous `0-1` vs `0-100` percent scale or display-only formatted strings are not implementation-ready.
 - Generic marketing sections, decorative cards, generic AI/SaaS feature lists, empty slogan panels, and interchangeable icon blocks are not valid report components unless they map to a real user task, data object, decision, evidence, or workflow action.
@@ -126,17 +128,18 @@ When this skill is used, produce at least:
 5. Analysis perspective classification and answer atom decomposition.
 6. Parent block, sub-block, and component bundle mapping with priority.
    For sample/source restoration, include `sampleModuleRole`: `businessRequired`, `sampleStructure`, or `optionalEnhancement`.
-7. Mock/data model: datasets, grain, fields, formulas, numeric display contracts, signals, realistic messy cases, edge cases.
-8. Filter/query model: filter surface, filters, option sources, defaults, cascades, permissions, query params.
-9. Control semantics model: perspective switches, global filters, local filters, and drilldown params, including schema impact.
-10. Navigation metric lineage: source dataset, field/formula, grain, affected filters, and period behavior for navigation percentages, rankings, and status lights.
-11. Interaction model: clickable objects, interaction type, parameters, state preservation, failure states.
-12. Unified parent-block/sub-block/data/filter/control/component/interaction binding matrix, including `analysisPerspective`, `sourcePatternIds`, and `styleGeneralization` when pattern cards or sample-derived styles are used.
-13. Report type routing.
-14. Layout and style constraints.
-15. Missing information, assumptions, and removed decorative components.
+7. Result-content boundary: visible business-value content, interaction/contract-only items, supplemental handoff items, removed process artifacts, and any `RPT-PROCESS-ARTIFACT-VISIBLE` / `RPT-NO-BUSINESS-VALUE` gaps.
+8. Mock/data model: datasets, grain, fields, formulas, numeric display contracts, signals, realistic messy cases, edge cases.
+9. Filter/query model: filter surface, filters, option sources, defaults, cascades, permissions, query params.
+10. Control semantics model: perspective switches, global filters, local filters, and drilldown params, including schema impact.
+11. Navigation metric lineage: source dataset, field/formula, grain, affected filters, and period behavior for navigation percentages, rankings, and status lights.
+12. Interaction model: clickable objects, interaction type, parameters, state preservation, failure states.
+13. Unified parent-block/sub-block/data/filter/control/component/interaction binding matrix, including `analysisPerspective`, `sourcePatternIds`, and `styleGeneralization` when pattern cards or sample-derived styles are used.
+14. Report type routing.
+15. Layout and style constraints.
+16. Missing information, assumptions, and removed decorative components.
 
-For implementation tasks, items 6-10 are mandatory. Item 2 is also mandatory when the upstream workflow selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
+For implementation tasks, items 6-11 are mandatory. Item 2 is also mandatory when the upstream workflow selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
 
 ## Quick Quality Gate
 
@@ -147,6 +150,8 @@ Before finalizing, verify:
 - The good-report decision path can be answered or has named `RPT-*` gaps: primary question, first judgment, What/Why/So what, comparison baseline, metric relationship network, detail evidence, and next action/drilldown.
 - The component bundle includes a data story path appropriate to the report type: state -> target/baseline -> driver -> abnormality -> detail -> action.
 - Generic dashboard KPI/chart shells are removed or converted into metric-tree-backed components.
+- Visible content has passed the business-value screen; process artifacts are either removed or moved to contract, interaction, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence.
+- 下钻链路 is exposed as a user action/breadcrumb/drawer/jump/detail route, not as a standalone design-chain list; 指标清单 is visible only for explicit documentation/definition tasks.
 - No component exists only to make the page look polished, AI-like, or template-complete.
 - Primary titles, summaries, empty states, and actions are specific enough to name the user task, data object, condition, or next step.
 - Every selected pattern card maps to at least one visible component, control, data/API rule, interaction, export/share rule, operations note, or validation case.

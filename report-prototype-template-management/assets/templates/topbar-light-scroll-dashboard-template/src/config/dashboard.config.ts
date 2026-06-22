@@ -70,6 +70,9 @@ export const cockpitConfig: DashboardConfig = {
   //    这里仅保留引用关系。
   // 9. visualType 用来声明组件视觉类型，校验脚本会用它检查当前块占位是否合法；最小分块为 2*1，普通图表默认 3*2 且不超过 4*3。
   //    行数为 N，不设上限；更长报表继续按同一 rowHeight 向下滚动，不重新压缩行高。
+  //    列表类组件必须声明 rowHeightPx、visibleRowCount、overflowStrategy；3x2 行动列表最多展示 2 行。
+  //    完整折线/柱状/组合轴图必须声明 chartBodyH >= 180；不足时扩到 3 行以上或显式改为 compact-sparkline。
+  //    笛卡尔图表默认多系列图例顶部居中、单系列隐藏图例；NPS/评分/比率/目标类图表动态计算 Y 轴范围；grid 四边紧凑；Y 轴标题放左右侧，X 轴标题放底部，目标线标签用 insideEndTop。
   // 10. filterScope 用来声明当前组件受哪些有 scope 的筛选项影响。
   //    没有 scope 的筛选项是全局筛选，所有组件都会收到。
   // 11. localFilters 用来声明组件内部本地筛选，只过滤组件已加载 data，不作为接口参数。

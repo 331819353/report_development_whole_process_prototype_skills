@@ -59,6 +59,46 @@ const getNumberValue = (node) => {
   return undefined;
 };
 
+const getBooleanValue = (node) => {
+  if (!node) {
+    return undefined;
+  }
+
+  if (node.kind === ts.SyntaxKind.TrueKeyword) {
+    return true;
+  }
+
+  if (node.kind === ts.SyntaxKind.FalseKeyword) {
+    return false;
+  }
+
+  return undefined;
+};
+
+const getFirstProperty = (objectNodes, propertyNames) => {
+  for (const objectNode of objectNodes) {
+    if (!isObject(objectNode)) {
+      continue;
+    }
+
+    for (const propertyName of propertyNames) {
+      const propertyNode = getProperty(objectNode, propertyName);
+
+      if (propertyNode) {
+        return propertyNode;
+      }
+    }
+  }
+
+  return undefined;
+};
+
+const getNumberFromAny = (objectNodes, propertyNames) => getNumberValue(getFirstProperty(objectNodes, propertyNames));
+const getStringFromAny = (objectNodes, propertyNames) => getStringValue(getFirstProperty(objectNodes, propertyNames));
+const getBooleanFromAny = (objectNodes, propertyNames) => getBooleanValue(getFirstProperty(objectNodes, propertyNames));
+
+const hasPropertyInAny = (objectNodes, propertyNames) => Boolean(getFirstProperty(objectNodes, propertyNames));
+
 const getObjectKeys = (objectNode) =>
   isObject(objectNode)
     ? objectNode.properties
@@ -130,6 +170,7 @@ const chartVisualTypes = new Set([
   'line',
   'bar',
   'combo',
+  'compact-sparkline',
   'candlestick',
   'heatmap',
   'pie',
@@ -147,12 +188,31 @@ const chartVisualTypes = new Set([
   'sankey',
   'funnel',
 ]);
+const axisChartVisualTypes = new Set(['line', 'bar', 'combo']);
+const listLikeVisualTypes = new Set(['operational-list', 'action-recommendation-card', 'ranking-list']);
+const listContractFieldNames = {
+  rowHeightPx: ['rowHeightPx', 'rowHeight', 'itemRowHeightPx'],
+  visibleRowCount: ['visibleRowCount', 'maxVisibleRows', 'visibleRows'],
+  overflowStrategy: ['overflowStrategy', 'overflowMode', 'overflowBehavior'],
+};
+const listContractNodeNames = [
+  'listGeometryContract',
+  'listContract',
+  'operationalListContract',
+  'actionListContract',
+  'rowLayoutContract',
+  'displayBudget',
+];
+const chartContractNodeNames = ['chartGeometryContract', 'chartContract', 'plotContract', 'displayBudget'];
+const hiddenOverflowPattern = /^(?:hidden|clip|overflow-hidden|truncate|none)$/i;
+const actionDisclosureOverflowPattern = /(?:detail|drawer|tooltip|popover|collapse|view-all|table|详情|抽屉|提示|查看全部|明细)/i;
 const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
 
 const allowedSpansByVisualType = {
   line: ['3x2', '4x2', '3x3', '4x3'],
   bar: ['3x2', '4x2', '3x3', '4x3'],
   combo: ['3x2', '4x2', '3x3', '4x3'],
+  'compact-sparkline': ['2x1', '3x1', '4x1', '3x2', '4x2'],
   candlestick: ['3x2', '4x2', '3x3', '4x3'],
   heatmap: ['3x2', '4x2', '3x3', '4x3'],
   pie: ['3x2', '3x3', '4x3'],
@@ -171,6 +231,9 @@ const allowedSpansByVisualType = {
   funnel: ['3x2', '3x3', '4x3'],
   'metric-card': ['2x1', '3x2'],
   'text-summary': ['3x2', '4x1', '4x2', '6x1', '6x2', '8x1', '8x2', '12x1', '12x2'],
+  'operational-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
+  'action-recommendation-card': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
+  'ranking-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   table: ['3x2', '4x2', '6x2', '8x2', '12x2', '4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
   pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
   other: ['2x1', '3x2', '4x2', '3x3', '4x3'],
@@ -352,6 +415,139 @@ const validateAnalysisInsightContract = (contractNode, location) => {
   }
 };
 
+const getWidgetContractScopes = (widgetNode, contractNames) => {
+  const propsNode = getProperty(widgetNode, 'props');
+  const contractNode = getFirstProperty([widgetNode, propsNode], contractNames);
+  return [contractNode, propsNode, widgetNode].filter(Boolean);
+};
+
+const validateListGeometryContract = (widgetNode, location, span, widgetType, visualType) => {
+  const contractScopes = getWidgetContractScopes(widgetNode, listContractNodeNames);
+  const contractText = contractScopes.map((node) => node.getText(sourceFile)).join('\n');
+  const identityText = `${widgetType} ${visualType} ${contractText}`;
+  const isListLike =
+    listLikeVisualTypes.has(visualType) ||
+    /(?:list|ranking|task|timeline|status|alert|action|recommendation|行动|建议|任务|列表|排行|状态|时间线)/i.test(identityText);
+
+  if (!isListLike) {
+    return;
+  }
+
+  if (!hasPropertyInAny(contractScopes, listContractFieldNames.rowHeightPx)) {
+    errors.push(`${location}: list-like components must declare rowHeightPx in props/listContract/displayBudget.`);
+  }
+
+  if (!hasPropertyInAny(contractScopes, listContractFieldNames.visibleRowCount)) {
+    errors.push(`${location}: list-like components must declare visibleRowCount in props/listContract/displayBudget.`);
+  }
+
+  if (!hasPropertyInAny(contractScopes, listContractFieldNames.overflowStrategy)) {
+    errors.push(`${location}: list-like components must declare overflowStrategy; do not rely on overflow:hidden clipping.`);
+  }
+
+  const rowHeightPx = getNumberFromAny(contractScopes, listContractFieldNames.rowHeightPx);
+  const visibleRowCount = getNumberFromAny(contractScopes, listContractFieldNames.visibleRowCount);
+  const overflowStrategy = getStringFromAny(contractScopes, listContractFieldNames.overflowStrategy);
+
+  if (rowHeightPx !== undefined && rowHeightPx < 32) {
+    errors.push(`${location}: rowHeightPx must be at least 32px for readable list rows; received ${rowHeightPx}.`);
+  }
+
+  if (visibleRowCount !== undefined && visibleRowCount < 1) {
+    errors.push(`${location}: visibleRowCount must be at least 1; received ${visibleRowCount}.`);
+  }
+
+  if (overflowStrategy && hiddenOverflowPattern.test(overflowStrategy)) {
+    errors.push(`${location}: overflowStrategy "${overflowStrategy}" is not allowed; use detail, tooltip, drawer, view-all, table fallback, or a visible scroll contract.`);
+  }
+
+  const isActionList =
+    visualType === 'action-recommendation-card' ||
+    /(?:action|recommendation|task|nextStep|行动|建议|任务|下一步)/i.test(identityText);
+  const isThreeByTwo = span?.columns === 3 && span?.rows === 2;
+
+  if (!isActionList || !isThreeByTwo) {
+    return;
+  }
+
+  if (visibleRowCount !== undefined && visibleRowCount > 2) {
+    errors.push(
+      `${location}: 3x2 action lists may show at most 2 visible rows; set visibleRowCount <= 2 and route extra actions to detail/tooltip/drawer.`,
+    );
+  }
+
+  if (overflowStrategy && !actionDisclosureOverflowPattern.test(overflowStrategy)) {
+    errors.push(
+      `${location}: 3x2 action lists must use detail/tooltip/drawer/view-all disclosure for overflow; received overflowStrategy "${overflowStrategy}".`,
+    );
+  }
+};
+
+const validateCompactSparklineContract = (widgetNode, location, contractScopes) => {
+  const widgetText = widgetNode.getText(sourceFile);
+  const legendHidden =
+    getBooleanFromAny(contractScopes, ['legendVisible', 'showLegend']) === false ||
+    getBooleanFromAny(contractScopes, ['hideLegend', 'legendHidden']) === true ||
+    /legend\s*:\s*\{[\s\S]{0,500}show\s*:\s*false|legend(?:Placement|Position)\s*:\s*['"](?:hidden|none)['"]|hideLegend|legendHidden/.test(
+      widgetText,
+    );
+  const yAxisNameHidden =
+    getBooleanFromAny(contractScopes, ['yAxisNameVisible', 'showYAxisName', 'axisUnitVisible', 'showAxisUnit']) === false ||
+    getBooleanFromAny(contractScopes, ['hideYAxisName', 'yAxisNameHidden', 'hideAxisUnit', 'axisUnitHidden']) === true ||
+    /yAxisNameHidden|hideYAxisName|axisUnitHidden|hideAxisUnit|showYAxisName\s*:\s*false|showAxisUnit\s*:\s*false/.test(
+      widgetText,
+    );
+  const permanentLabelsHidden =
+    getBooleanFromAny(contractScopes, ['permanentLabelsVisible', 'showPermanentLabels', 'showLabels']) === false ||
+    getBooleanFromAny(contractScopes, ['hidePermanentLabels', 'hideLabels', 'permanentLabelsHidden']) === true ||
+    /label\s*:\s*\{[\s\S]{0,500}show\s*:\s*false|showLabels\s*:\s*false|hideLabels|permanentLabelsHidden/.test(widgetText);
+
+  if (!legendHidden) {
+    errors.push(`${location}: compact-sparkline must explicitly hide the legend.`);
+  }
+
+  if (!yAxisNameHidden) {
+    errors.push(`${location}: compact-sparkline must explicitly hide the Y-axis unit/name.`);
+  }
+
+  if (!permanentLabelsHidden) {
+    errors.push(`${location}: compact-sparkline must explicitly hide permanent labels.`);
+  }
+};
+
+const validateAxisChartGeometryContract = (widgetNode, location, span, visualType) => {
+  const contractScopes = getWidgetContractScopes(widgetNode, chartContractNodeNames);
+  const widgetText = widgetNode.getText(sourceFile);
+  const isCompactSparkline =
+    visualType === 'compact-sparkline' ||
+    /chartMode\s*:\s*['"]compact-sparkline['"]|compactSparkline\s*:\s*true|sparklineMode\s*:\s*true/.test(widgetText);
+
+  if (isCompactSparkline) {
+    validateCompactSparklineContract(widgetNode, location, contractScopes);
+    return;
+  }
+
+  if (!axisChartVisualTypes.has(visualType)) {
+    return;
+  }
+
+  const chartBodyH = getNumberFromAny(contractScopes, ['chartBodyH', 'chartBodyHeight', 'chartBodyHeightPx', 'plotH', 'plotHeightPx']);
+
+  if (chartBodyH === undefined) {
+    errors.push(
+      `${location}: full line/bar/combo axis charts must declare chartBodyH >= 180px, or switch to visualType "compact-sparkline" with legend, Y-axis unit/name, and permanent labels hidden.`,
+    );
+    return;
+  }
+
+  if (chartBodyH < 180) {
+    const spanText = span ? `${span.columns}x${span.rows}` : 'unknown span';
+    errors.push(
+      `${location}: chartBodyH is ${chartBodyH}px on ${spanText}; full axis charts require chartBodyH >= 180px. Expand the block to 3+ rows or explicitly switch to compact-sparkline.`,
+    );
+  }
+};
+
 const validateWidget = (widgetNode, location, span) => {
   if (!isObject(widgetNode)) {
     errors.push(`${location}: widget config must be an object.`);
@@ -391,6 +587,9 @@ const validateWidget = (widgetNode, location, span) => {
   if (analysisInsightNode) {
     validateAnalysisInsightContract(analysisInsightNode, location);
   }
+
+  validateListGeometryContract(widgetNode, location, span, widgetType, visualType);
+  validateAxisChartGeometryContract(widgetNode, location, span, visualType);
 
   if (dataNode) {
     const dataSourceId = getStringValue(getProperty(dataNode, 'id'));
@@ -654,6 +853,10 @@ const validateWidgetSource = (filePath) => {
     /type\s*:\s*['"]graph['"]|visualType\s*:\s*['"]graph['"]|series\s*:[\s\S]{0,900}type\s*:\s*['"]graph['"]/.test(
       text,
     );
+  const hasBarChart =
+    /type\s*:\s*['"]bar['"]|visualType\s*:\s*['"]bar['"]|series\s*:[\s\S]{0,900}type\s*:\s*['"]bar['"]/.test(
+      text,
+    );
   const hasLineChart =
     /type\s*:\s*['"]line['"]|visualType\s*:\s*['"]line['"]|series\s*:[\s\S]{0,900}type\s*:\s*['"]line['"]/.test(
       text,
@@ -662,6 +865,68 @@ const validateWidgetSource = (filePath) => {
     /(?:visualType|type)\s*:\s*['"]combo['"]|combo(?:Data|Rows?|Series|Option|Config)|柱线组合图|柱状图\s*\+\s*折线图|ComboChart|series\s*:[\s\S]{0,1600}type\s*:\s*['"]bar['"][\s\S]{0,1600}type\s*:\s*['"]line['"]|series\s*:[\s\S]{0,1600}type\s*:\s*['"]line['"][\s\S]{0,1600}type\s*:\s*['"]bar['"]/.test(
       text,
     );
+  const unitTokenPattern = String.raw`(?:%|percent|元|万元|亿元|人|人数|次|件|个|台|单|订单|天|小时|分钟|分|吨|kg|KG|kWh|m3|m³|m2|㎡)`;
+  const hasCartesianAxisChart = hasBarChart || hasLineChart || hasComboChart || hasBoxplot || hasHeatmap;
+  const hasEchartsLegend = /legend\s*:/.test(text);
+  const hasTopCenteredLegend =
+    /legend\s*:\s*\{[\s\S]{0,700}(?:left|x)\s*:\s*['"]center['"][\s\S]{0,700}(?:top|y)\s*:\s*(?:['"]top['"]|['"]0['"]|\d)/.test(
+      text,
+    ) ||
+    /legend\s*:\s*\{[\s\S]{0,700}(?:top|y)\s*:\s*(?:['"]top['"]|['"]0['"]|\d)[\s\S]{0,700}(?:left|x)\s*:\s*['"]center['"]/.test(
+      text,
+    );
+  const hasDocumentedLegendException =
+    /legend(?:Placement|Position)\s*:\s*['"](?:right|bottom|side|hidden|none)['"]|sideLegend|bottomLegend|legendException|legendHidden|hideLegend|sparkline|miniChart|pie|donut|rose/.test(
+      text,
+    );
+  const hasYAxisUnitConfig = new RegExp(
+    String.raw`yAxis\s*:[\s\S]{0,2200}(?:name\s*:\s*(?:[^,\n}\]]*unit|['"\`][^'"\`]*(?:单位|${unitTokenPattern})[^'"\`]*['"\`])|(?:leftAxisUnit|rightAxisUnit|yAxisUnit|axisUnit)\b|unit\s*:)`,
+  ).test(text);
+  const yAxisAxisLabelAddsUnit = new RegExp(
+    String.raw`yAxis\s*:[\s\S]{0,2400}axisLabel\s*:[\s\S]{0,700}formatter\s*:[\s\S]{0,360}(?:\+\s*(?:unit|['"\`][^'"\`]*${unitTokenPattern})|['"\`][^'"\`]*${unitTokenPattern}|%\})`,
+  ).test(text);
+  const hasNpsMetric = /\bNPS\b|净推荐值|推荐值/.test(text);
+  const hasDynamicYAxisRange =
+    /(?:build|compute|calculate|derive|create)(?:Nice)?YAxis(?:Range|Domain)|(?:dynamic|computed|auto)(?:YAxis|Axis)(?:Range|Domain)|yAxisRange|axisDomain|niceYAxisRange|rangeSource/.test(
+      text,
+    ) && /current|actual|value|samePeriod|previous|compare|target|当前|本期|同期|上期|目标/.test(text);
+  const yAxisStartsAtZero = /yAxis\s*:[\s\S]{0,1800}\bmin\s*:\s*(?:0\b|['"]0['"])/.test(text);
+  const hasZeroBaselineException = /zeroBaseline|zeroBaselineRequired|mustStartAtZero|零基线|从0开始/.test(text);
+  const hasGridConfig = /grid\s*:/.test(text);
+  const hasCompleteGridSides =
+    /grid\s*:[\s\S]{0,1200}\btop\s*:/.test(text) &&
+    /grid\s*:[\s\S]{0,1200}\bright\s*:/.test(text) &&
+    /grid\s*:[\s\S]{0,1200}\bbottom\s*:/.test(text) &&
+    /grid\s*:[\s\S]{0,1200}\bleft\s*:/.test(text);
+  const hasGridBudgetException =
+    /gridBudgetException|largeGridBudget|axisNameBudgetException|longAxisLabelBudget|outsideTargetLabelException|右侧外部边带|长轴标签/.test(
+      text,
+    );
+  const oversizedGridBand =
+    /grid\s*:[\s\S]{0,1200}\b(?:top|right|bottom|left)\s*:\s*(?:['"](?:[6-9]\d|[1-9]\d{2,})(?:px)?['"]|(?:[6-9]\d|[1-9]\d{2,})\b)/.test(
+      text,
+    );
+  const hasYAxisName = /yAxis\s*:[\s\S]{0,2200}\bname\s*:/.test(text);
+  const hasYAxisSideNamePlacement =
+    /yAxis\s*:[\s\S]{0,2400}(?:nameLocation\s*:\s*['"](?:middle|center)['"]|nameRotate\s*:\s*-?90|position\s*:\s*['"](?:left|right)['"]|yAxisNamePlacement\s*:\s*['"](?:left|right|side)['"])/.test(
+      text,
+    );
+  const hasXAxisName = /xAxis\s*:[\s\S]{0,2200}\bname\s*:/.test(text);
+  const hasXAxisBottomNamePlacement =
+    /xAxis\s*:[\s\S]{0,2400}(?:nameLocation\s*:\s*['"](?:middle|center|end)['"]|nameGap\s*:|xAxisNamePlacement\s*:\s*['"]bottom['"])/.test(
+      text,
+    );
+  const hasTargetReferenceLine = /markLine\s*:|targetLine|referenceLine|目标线|参考线|基准线/.test(text);
+  const hasInsideEndTopTargetLabel =
+    /(?:markLine|targetLine|referenceLine)[\s\S]{0,2000}label\s*:[\s\S]{0,800}position\s*:\s*['"]insideEndTop['"]|targetLineLabelPosition\s*:\s*['"]insideEndTop['"]/.test(
+      text,
+    );
+  const hasSingleSeriesOnly =
+    /series\s*:\s*\[\s*\{[\s\S]{0,2200}\}\s*\]/.test(text) &&
+    !/series\s*:\s*\[[\s\S]{0,2200}\}\s*,\s*\{/.test(text);
+  const hasVisibleLegend = hasEchartsLegend && !/legend\s*:\s*\{[\s\S]{0,500}show\s*:\s*false/.test(text);
+  const hasSingleSeriesLegendException =
+    /singleSeriesLegend|legendRequired|categoryLegend|legendException|图例保留|需要图例|多编码图例/.test(text);
   const hasCompositePanel =
     /(?:visualType|type)\s*:\s*['"]composite-panel['"]|CompositePanel|compositePanelContract|composite(?:Panel|Children|Layout|State|Tooltip)|multiComponent|multi-component|多组件组合图|组合面板|复合面板/.test(
       text,
@@ -699,6 +964,50 @@ const validateWidgetSource = (filePath) => {
     warnings.push(
       `${label}: line chart sorts labels/categories directly; verify every series is built from that same ordered category list or use sortRowsForCategoryAxis/buildSingleSeriesCategoryData.`,
     );
+  }
+
+  if (hasCartesianAxisChart && hasEchartsLegend && !hasTopCenteredLegend && !hasDocumentedLegendException) {
+    errors.push(`${label}: ECharts legends default to top-center; set legend.top and legend.left: 'center', or declare an explicit legend-placement exception.`);
+  }
+
+  if (hasCartesianAxisChart && /yAxis\s*:/.test(text) && !hasYAxisUnitConfig) {
+    errors.push(`${label}: Cartesian charts must configure the Y-axis unit through yAxis.name, yAxisUnit/axisUnit, or leftAxisUnit/rightAxisUnit.`);
+  }
+
+  if (hasCartesianAxisChart && yAxisAxisLabelAddsUnit) {
+    errors.push(`${label}: Y-axis tick labels must keep raw numeric values; do not append units in yAxis.axisLabel.formatter. Put the unit in yAxis.name and tooltip instead.`);
+  }
+
+  if (hasNpsMetric && hasCartesianAxisChart && yAxisStartsAtZero && !hasZeroBaselineException) {
+    errors.push(`${label}: NPS charts must not default the Y-axis to min: 0; compute a dynamic y-axis range from current, comparison/same-period, and target values.`);
+  }
+
+  if (hasNpsMetric && hasCartesianAxisChart && !hasDynamicYAxisRange) {
+    errors.push(`${label}: NPS charts must declare a dynamic Y-axis range helper/contract using current value, comparison/same-period value, and target value.`);
+  }
+
+  if (hasCartesianAxisChart && hasGridConfig && !hasCompleteGridSides) {
+    errors.push(`${label}: Cartesian ECharts grid must explicitly configure top, right, bottom, and left so the plot area budget is intentional.`);
+  }
+
+  if (hasCartesianAxisChart && oversizedGridBand && !hasGridBudgetException) {
+    errors.push(`${label}: Cartesian ECharts grid side bands are too large; tighten grid.top/right/bottom/left or document a measured gridBudgetException.`);
+  }
+
+  if (hasCartesianAxisChart && hasYAxisName && !hasYAxisSideNamePlacement) {
+    errors.push(`${label}: Y-axis titles must be placed on the left/right axis side with explicit nameLocation/nameRotate/nameGap or equivalent yAxisNamePlacement.`);
+  }
+
+  if (hasCartesianAxisChart && hasXAxisName && !hasXAxisBottomNamePlacement) {
+    errors.push(`${label}: X-axis titles must be placed in the bottom axis band with explicit nameLocation/nameGap or equivalent xAxisNamePlacement.`);
+  }
+
+  if (hasCartesianAxisChart && hasTargetReferenceLine && !hasInsideEndTopTargetLabel) {
+    errors.push(`${label}: target/reference line labels must use insideEndTop so they do not consume the right-side external band.`);
+  }
+
+  if (hasCartesianAxisChart && hasSingleSeriesOnly && hasVisibleLegend && !hasSingleSeriesLegendException) {
+    errors.push(`${label}: single-series Cartesian charts should use the chart title to describe the data and hide the legend unless a documented legend exception exists.`);
   }
 
 

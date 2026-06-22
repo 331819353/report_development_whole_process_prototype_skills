@@ -69,6 +69,27 @@ Each primary metric must answer at least one part of the decision path:
 
 Metrics that only "exist" but do not support What / Why / So what are supplemental. Keep them in detail, tooltip, drawer, export, or metric dictionary unless the user explicitly asks to display them.
 
+## Result Content Boundary
+
+The visible report result is not the place to show how the report was designed. Before layout, classify each proposed item:
+
+- `visible-result`: helps the reader judge, understand evidence/reason, verify trust/source, or take action.
+- `interaction-or-contract`: needed for tooltip, drawer, drilldown, jump, export, validation, data/API contract, or frontend implementation.
+- `supplemental-handoff`: useful for downstream design, development, QA, governance, appendix, or operating documentation.
+- `remove`: does not help the current business decision.
+
+Design-process artifacts are internal by default:
+
+- 下钻链路清单, analysis path lists, or drill trees.
+- 指标清单, metric dictionaries, raw field catalogues, and口径 notes.
+- Component mapping, binding matrix, pattern-card lists, workflow/gate checklists, implementation notes, and QA checklists.
+
+Keep conclusions, insights, recommendations, risk notes, and status summaries only when they have business value. A visible conclusion must carry a concrete judgment, evidence or an explicit insufficient-data state, affected object/scope when relevant, source/freshness or trust context, and a detail/action path when the report drives action.
+
+Drilldown is visible only as a user-facing route: breadcrumb, link, button, row action, chart interaction, drawer, or jump tied to the current metric/object/filter context. Do not show a standalone "下钻链路" design list as a report block.
+
+指标清单 is visible only when the user explicitly asks for metric documentation,口径说明, indicator glossary, or a business task needs a definition/help surface. Otherwise place it in metric contracts, tooltip/popover, dictionary drawer, export metadata, validation, or handoff.
+
 ## Comparison Requirement
 
 An isolated number is not a report judgment. Every primary metric needs at least one declared reference:
@@ -148,4 +169,5 @@ Use this before accepting a report prototype:
 | `RPT-NO-WHY` | The report shows what happened but cannot explain drivers or affected dimensions. | Add decomposition, ranking, structure, process, anomaly, or detail evidence. |
 | `RPT-NO-SO-WHAT` | The report gives no action, owner, drilldown, export, or source route when action is expected. | Add action/detail path and state rules. |
 | `RPT-STATIC-INFO-PILE` | The page is a static information pile with no judgment path. | Rebuild as conclusion -> evidence -> reason -> detail/action. |
-
+| `RPT-PROCESS-ARTIFACT-VISIBLE` | The visible result page shows 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, or implementation notes as if they were report content. | Move the artifact to interaction/config/tooltip/detail/dictionary/validation/handoff, or justify it as explicit visible documentation. |
+| `RPT-NO-BUSINESS-VALUE` | A visible block does not help judgment, evidence/reason, trust/source verification, or action. | Remove it, downgrade it to handoff/appendix, or rewrite it as conclusion/evidence/action content. |

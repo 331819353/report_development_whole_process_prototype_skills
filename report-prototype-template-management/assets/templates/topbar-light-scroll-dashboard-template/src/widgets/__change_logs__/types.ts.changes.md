@@ -46,6 +46,21 @@
 - File snapshot: 155 lines, sha256 `ef879a98fa7f74fb55c0d8a64e3acbd5952e4ddcc98c46887486f0bf246d9d4c`
 - Follow-up: none
 
+### v20260622030028 - 2026-06-22T03:00:28Z
+
+- Change ID: visual-type-geometry-contracts
+- Actor: codex
+- Change type: update
+- Summary: Add controlled visual types for list geometry and compact sparkline contracts.
+- Modified functionality: `WidgetVisualType`
+- Code ranges: `WidgetVisualType` union
+- Modified content: Added `compact-sparkline`, `operational-list`, `action-recommendation-card`, and `ranking-list`.
+- Affected contracts: widget config TypeScript contract; validate-dashboard visualType allowlist
+- Verification: node --check scripts/validate-dashboard-contract.mjs
+- Rollback note: remove the added union members together with validator allowlist entries.
+- Related files: scripts/validate-dashboard-contract.mjs
+- Follow-up: none
+
 ### v20260611133151 - 2026-06-11T13:31:51.972Z
 
 - Change ID: component-owned-title-construction-state

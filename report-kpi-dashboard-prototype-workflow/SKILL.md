@@ -25,7 +25,7 @@ Even in this workflow, "dashboard" does not mean every module becomes a KPI card
 
 Prototype story gate: this workflow does not call `$report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds what the current state is, which object or metric needs attention, and what drilldown or action should happen next.
 
-Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 are supplemental by default and stay in tooltip/detail/dictionary/handoff unless explicitly requested as visible page content.
+Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 and design-process artifacts such as 下钻链路清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes are supplemental by default and stay in tooltip/detail/dictionary/interaction contract/validation/handoff unless explicitly requested as visible page content or rewritten as business-value conclusion, evidence, trust/source, or action content.
 
 Visual quality gate: a dashboard that passes data/config validation can still fail as a prototype when the first viewport feels empty, fragmented, or template-like. Treat excessive blank space, oversized charts with too few marks, equal-weight blocks, low-contrast tiny copy, half-exposed next-row modules, and component content stretched away from its natural reading group as implementation defects, not polish preferences. A valid KPI dashboard prototype must prove that the first viewport is visually closed enough to answer the current-state question while still hinting at the next diagnostic layer intentionally.
 
@@ -73,6 +73,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Affected-surface to owning-skill routing, especially layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - KPI dictionary: formula, unit, period, target, threshold, baseline, owner/source, freshness, display status.
 - KPI scope boundary: which metrics are KPI cards, which metrics stay in charts/tables/text/lists, and why.
+- Result-content boundary: visible status/conclusion/evidence/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - First-viewport plan, trend/comparison/ranking plan, anomaly/detail/action plan.
 - Drilldown chain: state -> split -> object -> detail/action.
 - Visual density and first-viewport closure result: oversized/empty block scan, chart mark-to-area fit, text contrast/readability, next-section exposure, and evidence-backed repair decisions.
@@ -85,7 +86,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 
 - Do not turn a dashboard into a dense detail report.
 - Do not start layout or component selection until the current-state story, user path, protagonist metric/object/risk, and next drilldown/action are explicit or safely inferred.
-- Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 are rendered as page modules without an explicit display requirement.
+- Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not turn a KPI dashboard into a wall of KPI cards. The first viewport may have a bounded KPI summary, but trend, driver, anomaly, detail, action, and trust content must use task-matched component forms.
 - Do not rely on uniform card borders to separate every module; use typography, spacing, section rhythm, dividers, and hierarchy before adding more card frames.
 - Do not use green/red as the default dashboard language. Brand/product color and neutral hierarchy own identity and emphasis; status colors require documented semantics and non-color cues.

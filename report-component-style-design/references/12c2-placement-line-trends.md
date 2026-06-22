@@ -74,9 +74,8 @@ footerH = 0px or 20px
 Plot layout:
 
 ```text
-yAxisW = clamp(36px, maxYAxisLabelWidth + 8px, 80px)
-rightGap = 40-64px when target/average labels sit outside the plot
-rightGap = 8-16px otherwise
+yAxisW = clamp(36px, maxYAxisLabelWidth + 8px, 72px)
+rightGap = 8-16px because target/average labels stay inside the plot with `insideEndTop`
 
 chartTotalWidth = yAxisW + plotWidth + rightGap
 chartX = P + (CW - chartTotalWidth) / 2
@@ -112,6 +111,7 @@ grid.containLabel = true
 ```
 
 If title, metric strip, unit, or legend are approved DOM outside ECharts, subtract those bands before mounting ECharts and set `grid` relative to the measured plot viewport. ECharts still owns lines, area fills, points, axes, reference lines, tooltip, axisPointer, brush/dataZoom, and emphasis.
+Keep `grid.top/right/bottom/left` compact; do not reserve a wide right rail just to carry target labels.
 
 ### Header, Metric Strip, And Legend
 
@@ -156,12 +156,14 @@ Recommended metric strip content: current value, target, average, peak/low, and 
 Legend:
 
 ```text
-legendX = P + CW - legendWidth
+legendX = P + (CW - legendWidth) / 2
 legendY = P + titleH + titleMetricGap + metricH + metricLegendGap
 legendLineWidth = 16-24px
 legendIconTextGap = 4-6px
 legendItemGap = 12-16px
 ```
+
+Default axis-chart legend placement is top center: `legendX = P + (CW - legendWidth) / 2`, `legendY = P + titleH + titleMetricGap + metricH + metricLegendGap`, or ECharts `legend: { top, left: 'center' }` with the same reserved band. Right/title-side placement requires an explicit filter/viewport exception.
 
 For `6-8` series, default to a highlighted focus series plus muted secondary series or a selector. For more than `8` series, use filtering, facets, or small multiples rather than rendering every line at equal weight.
 
@@ -213,27 +215,29 @@ Point visibility:
 
 ### Y-Axis Range And Zero Baseline
 
-Default:
+Default for bounded movement charts:
+
+```text
+rangeValues = dataValues + comparisonValues + targetValues + referenceValues
+range = max(rangeValues) - min(rangeValues)
+yMin = niceMin(min(rangeValues) - max(range * 0.12, minimumReadableDelta))
+yMax = niceMax(max(rangeValues) + max(range * 0.12, minimumReadableDelta))
+```
+
+Zero-baseline exception for amount/count/volume charts where magnitude from zero is the business task:
 
 ```text
 yMin = 0
 yMax = niceMax(max(dataValues, targetValues, referenceValues) * 1.1)
 ```
 
-For metrics where a non-zero baseline improves trend readability, such as temperature, conversion rate, margin, inventory ratio, or other bounded/ratio metrics:
-
-```text
-range = maxValue - minValue
-yMin = niceMin(minValue - range * 0.1)
-yMax = niceMax(maxValue + range * 0.1)
-```
-
 Rules:
 
 - If `yMin` is not `0`, the chart must not visually imply absolute magnitude comparison from a zero baseline. Add axis labels clearly, keep grid lines visible, and avoid over-dramatic slope styling.
+- NPS, score, satisfaction, and rate trend charts must compute the Y-axis range from current value, same-period/comparison value, and target/reference value with readable padding. Starting at `0` is not the default for these bounded movement charts.
 - If negative values exist, show a visible zero baseline.
 - `tickCount = clamp(3, floor(plotHeight / 48px), 6)`.
-- Keep long units in the title/unit slot, not inside an oversized y-axis label band.
+- Keep units in `yAxis.name` or chart unit metadata, not inside an oversized y-axis label band. Y-axis tick labels remain raw numeric values after scale/precision formatting and do not append the unit on every tick.
 
 ### X-Axis Ordering And Labels
 
@@ -271,8 +275,8 @@ Unified target line:
 targetY = pointY(targetValue)
 targetLineX = plotX
 targetLineWidth = plotWidth
-targetLabelX = plotX + plotWidth + 4-8px
-targetLabelY = targetY - targetLabelHeight / 2
+targetLabelPosition = insideEndTop
+targetLabelX/Y = ECharts markLine label inside the plot
 ```
 
 Average line:
@@ -285,6 +289,7 @@ avgY = pointY(avgValue)
 Rules:
 
 - Target, average, warning, upper/lower limit, and forecast split lines use ECharts `markLine`, `markArea`, or data-driven line series. Do not hand-draw them outside ECharts.
+- Target/reference `markLine` labels use `label.position: 'insideEndTop'` by default and must not consume a right-side external band.
 - Target/warning lines outrank point value labels if they collide.
 - Average lines should be visually weaker than target/warning lines.
 - Forecast or estimated segments should use a different line style, such as dashed, with legend/tooltip explanation.

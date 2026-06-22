@@ -15,6 +15,8 @@ Use this reference to design how users move from data to context, evidence, and 
 
 Do not make every element clickable. Only add interaction when it advances judgment, positioning, explanation, verification, or action.
 
+A drilldown chain is an interaction contract, not report content. Do not show a standalone 下钻链路清单, drill tree, or implementation route list as a visible result block unless the user explicitly asks for documentation. In normal report pages, expose drilldown only through user-facing affordances such as breadcrumbs, links, row actions, chart clicks, drawers, jumps, or source-system routes tied to the current metric/object/filter context.
+
 ## Good Report Drilldown Rules
 
 For every primary judgment component, define at least one next path:

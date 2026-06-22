@@ -83,7 +83,7 @@ Every operational list should declare:
 3. Row metadata: owner, role, department, deadline, update time, error code, threshold, or subtitle.
 4. State signal: status chip, severity badge, availability dot, priority text, progress bar, or timeline node.
 5. Action affordance: operation menu, row click, detail drawer, retry, handle, ignore, contact, or no action.
-6. Display budget: visible row count, row height, and overflow strategy.
+6. Display budget: explicit `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`.
 7. State behavior: loading skeleton row count, empty reason, error state, disabled/no-permission row, stale selection, and hover/focus.
 8. Exact-value path: tooltip, detail drawer, table fallback, or event detail.
 
@@ -101,6 +101,13 @@ Default desktop sizes:
 | `event-timeline` | Card width `440-780px`; time column `92-120px`; rail `24-32px`; event row height `64-82px`; visible steps `4-8`. |
 | `user-object-list` | Card width `420-760px`; row height `48-62px`; avatar `24-32px`; visible rows `4-8`. |
 | `mixed-info-list` | Card width `420-780px`; row height `56-72px`; title/subtitle left; status/priority/owner/time right. |
+
+Hard list-fit rules:
+
+- Every operational/list-like implementation must expose the row contract as named fields: `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`. Equivalent prose such as "compact list" or "fits two rows" is not enough for implementation handoff.
+- A `3x2` action or task list defaults to `visibleRowCount <= 2`. Extra rows use `detail-drawer`, `tooltip`, `popover`, `view-all`, `collapse-plus-n`, or `table-fallback`; `internal-scroll` is acceptable only when the scroll affordance is visible and the user did not ask for a compact action list.
+- Do not use `overflow:hidden`, `clip`, fixed max-height, or silent ellipsis as the overflow strategy for hidden action/evidence rows.
+- Runtime QA must check each row with `scrollHeight <= clientHeight + 1` and `scrollWidth <= clientWidth + 1`; failing rows are `VIS-LIST-ROW-CLIPPED`.
 
 Mobile fallback:
 
@@ -272,7 +279,7 @@ type OperationalListContract = {
   sortRule: string;
   visibleRowCount: number;
   rowHeightPx: number;
-  overflowStrategy: 'pagination' | 'internal-scroll' | 'load-more' | 'detail-drawer' | 'table-fallback' | 'collapse-plus-n';
+  overflowStrategy: 'pagination' | 'internal-scroll' | 'load-more' | 'detail-drawer' | 'tooltip' | 'popover' | 'view-all' | 'table-fallback' | 'collapse-plus-n';
   statusDictionary: string[];
   actionPayload: string[];
   tooltipPayload: string[];
@@ -297,14 +304,18 @@ Reject or revise the component when:
 - User/object rows show avatars but lack stable object identity or status semantics.
 - The list crams many fields into cards when a table is the correct component.
 - Long names, descriptions, status text, or action labels are clipped without tooltip/detail.
+- A `3x2` action/task list shows more than `2` rows or hides extra rows with `overflow:hidden` / `clip`.
+- Runtime row geometry fails `scrollHeight <= clientHeight + 1` or `scrollWidth <= clientWidth + 1`.
 
 ## Acceptance Checklist
 
 - `visualType` is `operational-list` and `listStatusPattern` is one of the controlled values.
-- The component declares row grain, primary key, visible row count, row height, sort rule, and overflow strategy.
+- The component declares row grain, primary key, `rowHeightPx`, `visibleRowCount`, sort rule, and `overflowStrategy`.
+- `3x2` action/task lists show at most `2` rows and route overflow to detail/tooltip/drawer/view-all/table fallback.
 - Status/severity/priority dictionaries map raw values to visible label, icon/dot, color semantic, and allowed actions.
 - Task progress has a source field or formula and consistent percent display.
 - Alert/exception rows include severity or handling status plus time evidence.
 - Clickable rows/actions emit stable payload fields and preserve active filters.
 - Empty/loading/error/no-permission states preserve the same geometry.
+- Browser geometry evidence proves no list row has `scrollHeight > clientHeight + 1` or hard-clipped hidden overflow.
 - The raw screenshot is not the durable source of truth; the reusable pattern is captured in text fields and contract rules.

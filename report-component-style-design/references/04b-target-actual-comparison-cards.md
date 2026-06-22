@@ -21,7 +21,7 @@ targetActualCardPattern: one of the values below
 
 | `targetActualCardPattern` | Use when | Visual structure |
 | --- | --- | --- |
-| `standard-summary-panel` | Enterprise workbench or ordinary report cards need maximum clarity and auditability. | White card, compact header metric, full chart, bottom legend/value summary panel. |
+| `standard-summary-panel` | Enterprise workbench or ordinary report cards need maximum clarity and auditability. | White card, compact header metric, full chart, top-centered legend when multi-series, bottom value summary panel. |
 | `emphasis-header-summary` | One comparison card is the lead object in a mobile/first-viewport flow. | Strong brand header for metric, white chart body, bottom summary values. |
 | `soft-chip-summary` | A lighter overview card needs friendliness while keeping exact summary values visible. | Soft tinted surface, chart body, bottom chip-style summary values. |
 

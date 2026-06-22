@@ -57,12 +57,12 @@ If title, metric strip, local filter, or legend are DOM outside ECharts, subtrac
 
 Dual-axis name and legend collision contract:
 
-- Left and right axis units such as `件`, `元`, `%`, `人`, or `次` are real text elements. They must be represented in one declared place: y-axis `name`, axis-label formatter, subtitle/unit metadata, or tooltip/legend metadata. Do not duplicate the same unit in multiple visible places without a reason.
+- Left and right axis units such as `件`, `元`, `%`, `人`, or `次` are real text elements. They must be represented on the axis through y-axis `name` or declared left/right axis-unit metadata, with exact value + unit in tooltip. Do not duplicate the same unit in multiple visible places without a reason.
 - When a top legend is rendered inside the same ECharts instance and a y-axis `name` uses the default/top `nameLocation: 'end'`, the option must declare `legend.top`, `legend.left/right`, `grid.top`, `yAxis.nameGap`, `yAxis.nameLocation`, `yAxis.nameTextStyle`, and the expected safe gap between legend and axis names.
-- When the component spec says the Combo legend is top-centered, the option must use `legend.left: 'center'` or an equivalent measured centering strategy. `legend.right: 0`, `legend.right: 8`, or any right-anchored legend fails top-centered legend QA unless the spec explicitly changed to a right legend and the title/filter/axis-name budget still passes.
+- Combo legends are top-centered by default. The option must use `legend.left: 'center'` or an equivalent measured centering strategy. `legend.right: 0`, `legend.right: 8`, or any right-anchored legend fails top-centered legend QA unless the spec explicitly changed to a right legend and the title/filter/axis-name budget still passes.
 - Top-centered legend proof requires both option evidence and browser evidence: an option/source snippet for `legend.top`, `legend.left` or equivalent centering, `grid.top`, and y-axis unit placement; plus a crop or measured legend rectangle whose center is within `8px` of the chart plot/title-band center at each target viewport.
 - The top-band layout must either reserve separate vertical lanes or pass measured rectangle checks. Minimum safe gap between legend item text/marker boxes and any left/right y-axis name box is `8px`; overlap area greater than `4px²` is a visual defect.
-- Unit-only y-axis names should usually move to `axisLabel.formatter` such as `{value}%` / `{value}件`, to a subtitle/unit line, or to `nameLocation: 'middle'` with explicit `nameRotate` when the top legend is crowded. Keeping `nameLocation: 'end'` is allowed only with a passing budget and screenshot/DOM proof.
+- Unit-only y-axis names must not move into `axisLabel.formatter`; raw tick labels stay numeric. If the top legend is crowded, move `yAxis.nameLocation` to `middle` with explicit `nameRotate` and side budget, shorten the unit text, increase `grid.top`, collapse noncritical legend detail, or document a subtitle/unit metadata exception with tooltip proof.
 - Fixed magic numbers such as `legend: { top: 0, right: 8 }` plus `grid: { top: 38 }` are not accepted for dual-axis combo charts unless the measured legend, both axis names, and the required safe gaps are shown to fit at every target viewport.
 
 Category density and geometry:
@@ -78,7 +78,7 @@ Category density and geometry:
 
 Labels, legend, and tooltip:
 
-- Legend sits above the plot or in the title-function area, separate from component-local filters. Use items such as `■ 销售额`, `— 增长率`, `┄ 目标`.
+- Legend defaults to top center above the plot, separate from component-local filters. Use items such as `■ 销售额`, `— 增长率`, `┄ 目标`; side/right placement requires an explicit exception and overlap proof.
 - Legend interaction may toggle series, but it must preserve at least one primary bar/scale series or switch to an explicit split/empty state; never leave only a secondary rate line that implies an unsupported story.
 - Permanent bar labels are off by default. For `N <= 6`, show all only if they fit; for `7-12`, show max/min/anomaly/selected; for `>12`, hide.
 - Line labels show only latest, max/min, selected, or anomaly. If labels collide, preserve the line/target evidence and move ordinary bar labels to tooltip.

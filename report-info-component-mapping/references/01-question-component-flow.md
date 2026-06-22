@@ -31,6 +31,19 @@ Use this chain to decide block priority:
 
 If a proposed component cannot be assigned to one of these layers, mark it as supplemental, detail-only, or remove it.
 
+## Result Content Boundary
+
+Map the business answer, not the design process. Before creating blocks, classify every candidate item:
+
+| Candidate role | Where it belongs |
+| --- | --- |
+| Conclusion, insight, recommendation, risk/status note with evidence and action/trust value | Visible result content |
+| Tooltip, drawer, row action, breadcrumb, chart click, drilldown param, jump, export, validation case | Interaction or implementation contract |
+| Metric dictionary, 指标清单, 口径/calculation notes, raw field catalogue | Tooltip/detail/dictionary/export metadata/validation/handoff unless explicit visible documentation is requested |
+| 下钻链路清单, analysis-path checklist, component mapping, binding matrix, workflow/gate checklist, pattern-card inventory, implementation note | Internal process artifact; do not map to a visible report block by default |
+
+A candidate becomes visible only when it helps the reader make a business judgment, understand evidence/reason, verify source/trust, or take action. Otherwise it stays in the binding matrix, contract, tooltip/detail/dictionary, appendix/handoff, QA evidence, or is removed.
+
 ## Answer Atom Decision Tree
 
 | If the user asks... | Required answer atom | Typical component bundle |
@@ -95,6 +108,7 @@ If a proposed component cannot be assigned to one of these layers, mark it as su
 - Explain a decision point: Analysis & Insight component with one subtype, one main conclusion, supporting evidence, affected object, action or trust context, and `analysisInsightContract`. For 看结论 / 洞察 / 摘要 / 解读 cards, set `analysisPerspective: conclusionInsight`, `conclusionCardPattern`, `conclusionEvidenceBodyMode`, and `conclusionEvidenceBinding`.
 - Explain a metric definition or口径 on the page only when explicitly requested: definition/help card with `analysisPerspective: definitionHelp`, `definitionHelpCardPattern`, metric meaning, formula, scope, source/freshness, denominator or example evidence, and tooltip/popover/drawer disclosure.
 - When metric口径 or 指标清单 appears only as requirement-document supplementary material, bind it to metric contracts, tooltip/detail/dictionary payloads, export metadata, and validation cases instead of adding a visible report-page block.
+- Treat 下钻链路 as an interaction route, not a visible design list. Map it to breadcrumb, drilldown param, chart/table click, drawer, jump, or source-system route with payload and stale-state behavior.
 - Compare multi-metric object profiles: parallel coordinates with object/dimension/axis contracts, plus detail table for exact values.
 - Explain why: waterfall, decomposition tree, funnel/process chart, contribution analysis.
 - Trace source-to-target flow: Sankey with node/link schema, Top N aggregation, main-flow highlight, and exact link tooltip/detail.
@@ -124,6 +138,7 @@ Rules:
 
 - A component is valid only when it answers a named business question.
 - A primary metric component is valid only when it helps answer What, Why, or So what. Metrics that only show existence are context/detail fields.
+- A visible text, list, table, or control is invalid when it only exposes the design process. Use `RPT-PROCESS-ARTIFACT-VISIBLE` for visible 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, or implementation note that has not passed the business-value test.
 - A primary metric without target/baseline/benchmark/historical range/threshold/denominator is not a judgment component; downgrade it or add a comparison source.
 - In sample/source restoration, a visible source module is not automatically `must-have`. Classify each source module as:
   - `businessRequired`: directly answers the user's stated report question.

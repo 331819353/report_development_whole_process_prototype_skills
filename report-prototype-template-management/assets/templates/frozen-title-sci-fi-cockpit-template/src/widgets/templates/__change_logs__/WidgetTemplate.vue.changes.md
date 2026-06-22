@@ -61,3 +61,50 @@
 - Related files: src/components/DashboardShell.vue, src/styles/index.scss, src/widgets/types.ts, src/config/dashboard.config.ts, src/widgets/templates/WidgetTemplate.vue, src/types/actions.ts
 - File snapshot: 274 lines, sha256 `397f259db998571177e6dde0ad1a01ad16645ee3184c065b4d761292f5a4236b`
 - Follow-up: none
+
+### v20260622023542 - 2026-06-22T02:35:42.120Z
+
+- Change ID: ad-hoc
+- Actor: codex
+- Change type: update
+- Summary: Document default ECharts legend and Y-axis unit rules
+- Modified functionality: Widget development template chart comments
+- Code ranges: top chart-rule comment block
+- Modified content: Added component-template guidance for top-centered ECharts legends and Y-axis unit placement with raw numeric axis labels.
+- Affected contracts: none
+- Verification: npm run validate:dashboard passed
+- Rollback note: revert this file and listed related files together if needed
+- Related files: none
+- Before snapshot: 274 lines, sha256 `397f259db998571177e6dde0ad1a01ad16645ee3184c065b4d761292f5a4236b`, captured `2026-06-22T02:28:43.244Z`
+- After snapshot: 276 lines, sha256 `46944999144eb5163fb60ac89b175f36f184073f156effbd91ee1ebca91ef362`
+- Change evidence: inline unified diff:
+
+```diff
+--- a/src/widgets/templates/WidgetTemplate.vue
++++ b/src/widgets/templates/WidgetTemplate.vue
+@@ -139,6 +139,8 @@
+  * - 内容区背景由模板铺满整个 body，不要再做一个缩进背景或默认边框。
+  * - KPI 核心数字使用 28-32px；单位/同比/辅助标签使用 12-14px；表格/列表里的财务和指标数字右对齐。
+  * - 多系列 ECharts 必须显示 legend；隐藏外边框和纵向网格，横向网格用浅色虚线。
++ * - ECharts 图例默认顶部居中：使用 legend: { top: 0, left: 'center' } 或等效居中策略；右侧/底部/隐藏图例必须写明业务或小屏降级原因。
++ * - 笛卡尔坐标系图表必须在 yAxis.name、yAxisUnit/axisUnit 或 leftAxisUnit/rightAxisUnit 配置单位；yAxis.axisLabel 原始刻度只显示数值，不要在每个刻度后拼接 %, 元, 万元等单位，单位放在 Y 轴标题和 tooltip 中。
+  * - 折线图排序时先 sort rows，再用同一份 rows 生成 xAxis.data 和所有 series.data。
+  *   不要写 labels.sort() 后让 series.data 继续读取未排序 data。
+  * - 状态文字必须渲染成 badge/pill 或 icon+text，不要只输出纯文本。
+```
+- Follow-up: none
+
+### v20260622031757 - 2026-06-22T03:17:57Z
+
+- Change ID: echarts-axis-anatomy-template-guidance
+- Actor: codex
+- Change type: update
+- Summary: Document default ECharts dynamic axis, compact grid, axis-title placement, inside target labels, and single-series legend behavior in the widget template.
+- Modified functionality: Widget development template chart comments
+- Code ranges: top chart-rule comment block
+- Modified content: Added guidance that single-series charts hide legends, NPS/score/rate/current-vs-target charts compute dynamic Y-axis ranges, Cartesian grids explicitly tighten all four sides, target/reference labels use `insideEndTop`, and Y/X axis titles sit on side/bottom axes.
+- Affected contracts: widget authoring handoff; validate-dashboard contract
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview; negative ECharts contract probe failed as expected for the new chart anatomy checks; git diff --check passed.
+- Rollback note: remove the added chart guidance lines only if the ECharts anatomy contract changes.
+- Related files: scripts/validate-dashboard-contract.mjs; src/config/dashboard.config.ts
+- Follow-up: none

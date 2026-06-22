@@ -12,6 +12,7 @@ node_modules
 .vite
 dist
 dist-ssr
+visual-check/
 .env
 .env.local
 .env.*.local

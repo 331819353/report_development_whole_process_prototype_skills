@@ -23,14 +23,15 @@ Use this structure:
 3. 用户与核心问题.
 4. 业务设计思路.
 5. 好报表决策路径: 3秒主判断、唯一主结论、What/Why/So what、对比参照、指标关系网络、下钻/action 路径.
-6. 信息区块、模式卡片与组件映射.
-7. 数据策略.
-8. 筛选策略.
-9. 数据交互策略.
-10. 视觉布局策略.
-11. 组件风格策略.
-12. 质量验收清单.
-13. 假设与缺口.
+6. 结果内容边界: 保留有业务价值的结论/证据/行动，移出下钻链路清单、指标清单、组件映射、绑定矩阵等过程产物.
+7. 信息区块、模式卡片与组件映射.
+8. 数据策略.
+9. 筛选策略.
+10. 数据交互策略.
+11. 视觉布局策略.
+12. 组件风格策略.
+13. 质量验收清单.
+14. 假设与缺口.
 
 ### Implementation Plan Output
 
@@ -95,6 +96,8 @@ Before final delivery, verify:
 - The first meaningful viewport exposes one primary judgment, not only a metric catalogue or chart collection.
 - Primary metrics have comparison baselines and connect to a result -> driver -> dimension/object -> detail -> action/source network.
 - What happened, why it happened, and what the reader should check or do next are either visible in the page path or recorded as explicit `RPT-*` gaps.
+- Visible result content passes the business-value test: it helps the reader judge, understand evidence/reason, verify trust/source, or take action.
+- Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are absent from visible report results unless the user explicitly requested visible documentation or they were rewritten as conclusion/evidence/trust/action content.
 - `pageShellPath` is declared as `template` or `custom`.
 - `pageStyleSource` is declared. If no page style is specified, a bundled template is used by default; provided HTML/MD/source/sample styling is requirement and hierarchy evidence unless explicit restoration or HTML/static output is requested.
 - `outputArtifact` is declared. Default is `vueTemplatePrototype`; `htmlPrototype` appears only with explicit user wording for HTML/static/single-file HTML output or exact static preservation.
@@ -110,6 +113,7 @@ Before final delivery, verify:
 - Sample/source modules are classified as `businessRequired`, `sampleStructure`, or `optionalEnhancement`; no module is `must-have` only because it appears in the source.
 - Added conclusions, insights, or status summaries in `sampleRestore` are embedded into existing sample-equivalent regions instead of standalone horizontal bands.
 - Analysis & Insight components in runnable prototypes declare `analysisInsightContract`, show conclusion before evidence, expose evidence/action/trust/source/freshness or an explicit insufficient-data state, and have dedicated crop/source checks when present.
+- Conclusions, insights, recommendations, risk notes, and status summaries are kept visible only when they name a concrete business judgment, evidence or insufficient-data state, affected object/scope when relevant, source/freshness or trust context, and a detail/action path when action is expected.
 - HTML-replica and custom layouts use global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and controls unless exact restoration is explicitly requested.
 - Metrics include baselines, direction, unit, and formulas where needed.
 - Rate/change/completion fields use `%` in visible Chinese UI; change-rate and variance-rate indicators use positive-red-up / negative-green-down SVG/icon semantics only when inherited company, finance, market, or explicit business convention requires it.
@@ -186,6 +190,7 @@ Before final delivery, verify:
 - Do not finish sample/source restoration after changing the first viewport or main body layout unless the user asked for redesign or the change is labeled as an enhancement.
 - Do not promote a sample/source module to `must-have` only because it is visible in the sample.
 - Do not add an independent conclusion strip in `sampleRestore` unless the source already has an equivalent strip.
+- Do not put design process into the result page. 下钻链路 may be a breadcrumb, button, chart/table click, drawer, jump, or detail route; it must not become a standalone design-chain list. 指标清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes belong to contract, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence unless explicitly requested as visible documentation.
 - Do not show rate/change labels as `pt`, `p.p.`, or `percentage point` in Chinese UI unless explicitly required.
 - Do not reverse the required change-rate semantics: positive is red/up and negative is green/down.
 - Do not let copied HTML inline colors or one-off custom surfaces override global UI tokens.

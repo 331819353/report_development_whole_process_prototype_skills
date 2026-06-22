@@ -174,8 +174,8 @@ interface Props {
    * context 是模板自动提供的上下文，不需要在配置文件里写。
    * 常用字段：
    * - context.area：当前区域，模板主画布固定为 page
-   * - context.navId：兼容字段，单页模板固定为 single-page
-   * - context.navLabel：兼容字段，单页模板为当前页面标题
+   * - context.navId：当前页面/导航 id；未配置 pages 时回退为 single-page
+   * - context.navLabel：当前导航标签；未配置导航时回退为页面标题
    * - context.blockId：当前分块字符，例如 A、B、g
    * - context.filters：当前组件作用域内的筛选项选中值
    * - context.allFilters：全量筛选项选中值

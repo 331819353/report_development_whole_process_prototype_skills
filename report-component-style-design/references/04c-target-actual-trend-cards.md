@@ -21,7 +21,7 @@ targetActualTrendCardPattern: one of the values below
 
 | `targetActualTrendCardPattern` | Use when | Visual structure |
 | --- | --- | --- |
-| `emphasis-wave-trend` | One trend card is the lead first-read object and brand emphasis is allowed. | Brand/emphasis header, soft wave divider, neutral chart body, bottom legend/value summary rows. |
+| `emphasis-wave-trend` | One trend card is the lead first-read object and brand emphasis is allowed. | Brand/emphasis header, soft wave divider, neutral chart body, top-centered legend when multi-series, bottom value summary rows. |
 | `standard-summary-trend` | Enterprise workbench or ordinary report cards need maximum clarity and reconciliation. | Neutral card, compact KPI headline, full line chart, bottom row/panel summary. |
 | `soft-chip-trend` | A lighter mobile or secondary trend card needs exact values without heavy header emphasis. | Soft bordered/tinted surface, full line chart, bottom chip-style summary values. |
 

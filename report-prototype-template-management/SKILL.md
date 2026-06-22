@@ -72,6 +72,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 10. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
 11. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
 12. Run template validation, build, and dev/preview startup when a local URL is required.
+13. When widgets are configured, `npm run validate:dashboard` must check list and chart geometry contracts: list-like widgets declare `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`; `3x2` action lists show at most `2` rows and use detail/tooltip/drawer/view-all/table fallback; full line/bar/combo axis charts declare `chartBodyH >=180px` unless they explicitly use `compact-sparkline` with legend, Y-axis unit/name, and permanent labels hidden. ECharts Cartesian widgets also keep compact `grid.top/right/bottom/left`, side-placed Y-axis titles, bottom X-axis titles, `insideEndTop` target labels, dynamic NPS/score/rate Y-axis ranges, and no legend for single-series charts unless an exception is documented.
+14. When a runnable URL exists, run `npm run visual:geometry -- --url <url>` and include `visual-check/geometry-report.json` so clipped content, text overflow, sibling overlap, squeezed rows/cards, list rows where `scrollHeight > clientHeight + 1`, hidden list overflow, chart body/plot squeeze, chart/table crowding, and SVG label overlap are discovered automatically before readiness.
 
 ## Required Output
 
@@ -85,6 +87,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Empty-filter configuration and aggregate-row key policy when filters or data contain all/total/synthetic options.
 - Code-ledger proof for changed template source files.
 - Validation/startup commands, URL, blockers, and template limitations.
+- Automated visual geometry audit result: command, viewports, screenshot paths, JSON report path, `VIS-*` findings, or precise Playwright/browser blocker.
 
 ## Quality Gate
 
@@ -96,8 +99,9 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not render duplicate refresh, download/export, copy/share, period/date, global-filter, or toolbar controls in business widgets when the selected template already owns those controls. Duplicate visible controls are `VIS-DUPLICATE-CONTROL` or `RPT-SHELL-DUPLICATE` unless component ownership is explicitly declared and the corresponding template control is disabled/hidden.
 - Template `filters[]` is for horizontal constraints; schema-changing perspectives belong in nav/page/route/tab/segment/perspective state.
 - Template data sources must declare or inherit configurable `emptyFilterValues`; aggregate/subtotal rows must use a distinct `aggregateValue`, `rowRole`, or typed key and must not use `all` as a business primary key unless an upstream legacy contract is isolated, adapted, and downgraded from ready.
-- Standard chart/table widgets must use their declared renderer and data contract.
-- `npm run validate:dashboard` must pass the stack contract before readiness: package dependencies, Vue 3 `createApp`, Element Plus `app.use(ElementPlus, ...)`, Element Plus CSS, and ECharts runtime proof when chart visualTypes are present.
+- Standard chart/table widgets must use their declared renderer and data contract. Ordinary ECharts axis charts default multi-series legend placement to top center, hide legends for single-series charts, configure Y-axis units through `yAxis.name`/axis-unit metadata, keep raw Y-axis tick labels unit-free, place Y-axis titles on the left/right side, place X-axis titles at the bottom, use compact `grid.top/right/bottom/left`, put target/reference labels at `insideEndTop`, and compute dynamic Y-axis ranges for NPS/score/rate/current-vs-target charts; tooltip/detail carries exact value plus unit.
+- `npm run validate:dashboard` must pass the stack and geometry contracts before readiness: package dependencies, Vue 3 `createApp`, Element Plus `app.use(ElementPlus, ...)`, Element Plus CSS, ECharts runtime proof when chart visualTypes are present, required list row contracts, `3x2` action-list row budget, and full-axis chart `chartBodyH >=180px` or explicit `compact-sparkline` exception.
+- When a runnable URL exists, `npm run visual:geometry -- --url <url>` failures at `major` or above block `ready`. Do not bypass geometry audit by relying only on manual screenshot confirmation. List-row `scrollHeight > clientHeight + 1`, hard-hidden list overflow, axis chart body below `180px`, and plot-height failures are direct readiness failures.
 - Template validation scripts or config contracts do not replace runtime proof. Widget contracts such as `compositePanelContract`, `analysisInsightContract`, chart/table option contracts, and control ownership must map to DOM/CSS/renderer/browser evidence before readiness.
 - Changed copied-template source files require code-ledger read/create evidence and post-change version entries.
 - Load `template-routing-and-implementation-gates.md` before selecting, copying, editing, or accepting bundled report templates.

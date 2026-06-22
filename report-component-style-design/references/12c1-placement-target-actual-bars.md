@@ -13,12 +13,12 @@ Use this for column/bar charts that compare actual values against targets and op
 | Component-local filter | Optional | Title-right capsule/dropdown for current chart only |
 | Unit | Yes | Top-right beside title when one unit applies to the whole chart |
 | Metric strip | Yes | Actual, target, attainment, change-rate, and optional gap |
-| Legend | Recommended | Above plot, right-aligned by default; explains actual and target encoding |
+| Legend | Conditional | Above plot, top-centered for multiple encodings; hidden for a single actual series when the title states the metric |
 | Y-axis labels | Yes | Left of plot, right-aligned to ticks |
 | Plot area | Yes | Actual bars, target line/ticks/bars, grid lines, anomaly markers |
 | X-axis labels | Yes | Under plot, centered to category group or bar center |
 | Data labels | Optional | Above bar only when they fit; otherwise tooltip |
-| Target label | Optional | At target line/tick, with reserved right-side gap |
+| Target label | Optional | Inside the plot near the line end, using ECharts `insideEndTop` |
 | Footer metadata | Optional | Bottom-left explanation/source and bottom-right freshness |
 | Tooltip | Yes | Full category, actual, target, attainment, gap, unit, YoY/MoM |
 
@@ -40,7 +40,7 @@ Do not use target bars when category count is large and the bars become too narr
 | --- | --- | --- | --- |
 | Small | `W < 320px` or `H < 240px` | title, unit, actual/target/change metrics, bars, x-axis labels, tooltip | subtitle, dense legend, data labels, footer; reduce y-axis ticks to 3 |
 | Standard | `320px <= W < 720px` and `H >= 280px` | title, metric strip, legend, y-axis, x-axis, target line/ticks, tooltip | sample labels when categories are many |
-| Large | `W >= 720px` and `H >= 360px` | full structure, right-aligned legend, target label, key data labels, anomaly markers | dense per-bar labels still require fit proof |
+| Large | `W >= 720px` and `H >= 360px` | full structure, top-centered legend, target label, key data labels, anomaly markers | dense per-bar labels still require fit proof |
 | Many categories | `N > 30` | bars, tooltip, sampled x labels, dataZoom/scroll | permanent data labels; consider horizontal bar, Top N, or pagination |
 
 ### Container And Area Budget
@@ -75,9 +75,8 @@ footerH = 0px or 20px
 Plot budget:
 
 ```text
-yAxisW = clamp(36px, maxYAxisLabelWidth + 8px, 80px)
-rightGap = 40-64px when target labels sit outside the plot
-rightGap = 8-16px when no outside target label exists
+yAxisW = clamp(36px, maxYAxisLabelWidth + 8px, 72px)
+rightGap = 8-16px; target labels stay inside the plot with `insideEndTop`
 
 plotX = P + yAxisW
 plotY = P + titleH + titleMetricGap + metricH + metricLegendGap + legendH + legendPlotGap
@@ -94,6 +93,8 @@ grid.top = titleH + titleMetricGap + metricH + metricLegendGap + legendH + legen
 grid.bottom = xAxisH + footerH
 grid.containLabel = true
 ```
+
+Keep `grid.top/right/bottom/left` compact after external DOM title, filter, metric, and legend bands are reserved. Oversized `grid.right` used only for outside target labels is not accepted.
 
 If the title, metric strip, or legend is rendered by the approved page/component DOM outside ECharts, subtract those DOM bands before mounting ECharts and set `grid` relative to the measured plot viewport. ECharts still owns the actual bars, axes, target line/ticks/bars, tooltip, emphasis, and data labels.
 
@@ -145,13 +146,13 @@ When `M = 4` and width is sufficient, use one row: actual, target, attainment, c
 Legend:
 
 ```text
-legendX = P + CW - legendWidth
+legendX = P + (CW - legendWidth) / 2
 legendY = P + titleH + titleMetricGap + metricH + metricLegendGap
 legendItemGap = 12-16px
 legendIconTextGap = 4-6px
 ```
 
-If the legend competes with the metric strip or title, move it to the title-right area or hide it only when tooltip and encoding remain unambiguous.
+Default axis-chart legend placement is top center: `legendX = P + (CW - legendWidth) / 2`, `legendY = P + titleH + titleMetricGap + metricH + metricLegendGap`, or ECharts `legend: { top, left: 'center' }` with the same reserved band. If the legend competes with the metric strip or title, collapse noncritical legend detail or document an explicit title-right/mobile exception; do not silently right-anchor it by default.
 
 ### Bar And Target Geometry
 
@@ -187,8 +188,8 @@ targetY = valueToY(targetValue)
 targetLineX = plotX
 targetLineY = targetY
 targetLineWidth = plotWidth
-targetLabelX = plotX + plotWidth + 4-8px
-targetLabelY = targetY - targetLabelHeight / 2
+targetLabelPosition = insideEndTop
+targetLabelX/Y = ECharts markLine label inside the plot
 ```
 
 Category target tick:
@@ -222,6 +223,8 @@ If negative values exist:
 yMin = niceMin(min(actualValue, targetValue) * 1.1)
 yMax = niceMax(max(actualValue, targetValue) * 1.1)
 ```
+
+For NPS, score, satisfaction, rate, and target/reference charts, compute `yMin/yMax` from current/actual, same-period/comparison, and target/reference values with readable padding. Do not default to `0` unless zero is the explicit business baseline.
 
 Coordinate mapping:
 
@@ -261,7 +264,7 @@ yLabelY = tickY
 tickCount = clamp(3, floor(plotHeight / 48px), 6)
 ```
 
-Keep long units in the title/unit slot rather than forcing the y-axis label band wider.
+Keep units in `yAxis.name` or chart unit metadata rather than forcing the y-axis label band wider. Y-axis tick labels remain raw numeric values after scale/precision formatting and do not append the unit on every tick.
 
 Data labels:
 

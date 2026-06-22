@@ -141,6 +141,12 @@
  * - 内容区背景由模板铺满整个 body，不要再做一个缩进背景或默认边框。
  * - KPI 核心数字使用 28-32px；单位/同比/辅助标签使用 12-14px；表格/列表里的财务和指标数字右对齐。
  * - 多系列 ECharts 必须显示 legend；隐藏外边框和纵向网格，横向网格用浅色虚线。
+ * - ECharts 图例默认顶部居中：使用 legend: { top: 0, left: 'center' } 或等效居中策略；右侧/底部/隐藏图例必须写明业务或小屏降级原因。
+ * - 笛卡尔坐标系图表必须在 yAxis.name、yAxisUnit/axisUnit 或 leftAxisUnit/rightAxisUnit 配置单位；yAxis.axisLabel 原始刻度只显示数值，不要在每个刻度后拼接 %, 元, 万元等单位，单位放在 Y 轴标题和 tooltip 中。
+ * - 单系列/单指标图表默认隐藏 legend，用组件标题/副标题说明当前数据信息；只有多编码、对比解释或交互筛选需要时才保留图例。
+ * - NPS、评分、比率、当前值对目标值等有界移动图，Y 轴范围必须按当前值、同期/对比值、目标/参考值动态计算 min/max，加可读 padding，不要习惯性从 0 开始。
+ * - ECharts grid 必须显式且紧凑配置 top/right/bottom/left，释放绘图区；目标/参考线标签使用 label.position: 'insideEndTop'，不要占用右侧外部边带。
+ * - Y 轴标题放在左/右轴侧，X 轴标题放在底部轴带；不要把轴标题挤到图例、标题或目标线右侧边带里。
  * - 折线图排序时先 sort rows，再用同一份 rows 生成 xAxis.data 和所有 series.data。
  *   不要写 labels.sort() 后让 series.data 继续读取未排序 data。
  * - 状态文字必须渲染成 badge/pill 或 icon+text，不要只输出纯文本。

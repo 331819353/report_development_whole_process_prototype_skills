@@ -59,6 +59,8 @@ Do not use these patterns for KPI target/actual summary cards that already requi
 
 - Each card answers one chart question: compare categories, read trend, inspect composition, or relate scale to rate. It does not mix unrelated visuals for variety.
 - The card anatomy is restrained: title left, optional menu/control right, legend/unit in a predictable band, chart body below, tooltip for exact values.
+- Ordinary multi-series axis-chart legends default to top center above the plot; single-series charts normally hide the legend and use the chart title/subtitle to state the metric. Y-axis units are configured on the axis/unit metadata rather than repeated in every tick label.
+- Bounded movement charts such as NPS/score/rate use dynamic Y-axis ranges from current, comparison/same-period, and target/reference values instead of starting from `0` by default.
 - The visual hierarchy is practical. The primary data marks are strongest; gridlines, axes, borders, and card shadows stay quiet.
 - Color semantics are limited. Blue usually carries the primary series; green/orange/purple are used only for distinct series or composition parts.
 - Data labels appear only when the count is small enough. Dense trends use tooltip rather than permanent labels.
@@ -97,7 +99,7 @@ Every basic chart card should declare:
 1. Card surface: quiet white/light surface, subtle border, radius, and shadow inherited from the report system.
 2. Header: title left; optional menu, local range selector, or action right.
 3. Metric/unit band: visible unit, optional legend, and optional summary metric.
-4. Chart body: one ECharts-owned plot viewport with measured width and height.
+4. Chart body: one ECharts-owned plot viewport with measured width and height; when a legend is visible, it defaults to a top-centered band unless the pattern explicitly uses pie/donut side or bottom legend.
 5. Axes/geometry: x-axis labels, y-axis labels, gridline budget, pie/donut radius, or stack geometry.
 6. Exact-value path: tooltip, selected point, legend, detail drawer, or table fallback.
 7. State behavior: loading, empty, error, no-permission, dense data, missing series, denominator zero, and stale selected mark.
@@ -359,6 +361,7 @@ Reject or revise the chart card when:
 - `componentType` is `chart`; `visualType` is the real chart family; `basicChartCardPattern` is one of the controlled values.
 - The chart declares business question, data grain, value fields, units, source, freshness, and active filters.
 - The card declares title/control/legend/unit/plot/tooltip/state slot budgets.
+- ECharts axis cards use compact `grid.top/right/bottom/left`, side-placed Y-axis titles, bottom X-axis titles, and target/reference labels inside the plot with `insideEndTop`.
 - The category/series count fits the selected pattern or declares a fallback.
 - Metric-bearing fields have numeric display contracts.
 - ECharts owns visible chart marks and tooltip behavior.

@@ -163,7 +163,7 @@ Rules:
 Layout rules:
 
 - Reserve explicit zones for chart title/actions, legend, plot, axes, labels, and notes.
-- For ECharts Cartesian charts with visible x-axis labels and a bottom legend, set `grid.containLabel = true`, set `grid.bottom >= 56px`, and keep a clear safe distance between legend and axis-label bands.
+- For ECharts Cartesian charts with visible x-axis labels, use a reserved top-centered legend band for multi-series charts, hide single-series legends unless excepted, set an explicit compact `grid.bottom` for the x-axis label/title band, and keep legend, axis, and title bands visually separate.
 - Use `label column + visual column + value column` structure for horizontal bar/list charts so end values never collide with bars.
 - For waterfall, funnel, decomposition, and contribution charts, reserve extra side padding for labels and negative/positive values.
 - For funnel charts, reserve a left stage-label column, a bar/funnel body column, and a right value/share column; declare ordered stage data, shared population/cohort logic, entry share, stage conversion, drop value/rate, total conversion, and tooltip detail before accepting the visual.

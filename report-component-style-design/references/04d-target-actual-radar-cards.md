@@ -21,7 +21,7 @@ targetActualRadarCardPattern: one of the values below
 
 | `targetActualRadarCardPattern` | Use when | Visual structure |
 | --- | --- | --- |
-| `emphasis-wave-radar` | One radar card is the lead first-read object and brand emphasis is allowed. | Brand/emphasis header, soft wave divider, neutral radar body, bottom legend/value summary rows. |
+| `emphasis-wave-radar` | One radar card is the lead first-read object and brand emphasis is allowed. | Brand/emphasis header, soft wave divider, neutral radar body, top-centered legend when multi-series, bottom value summary rows. |
 | `standard-action-radar` | Enterprise workbench or ordinary report cards need clickable detail and repeatable clarity. | Neutral card, compact KPI headline, optional top-right action icon, radar plot, bottom row/panel summary. |
 
 Selection order:

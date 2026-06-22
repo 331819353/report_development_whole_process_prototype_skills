@@ -78,18 +78,20 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 2. Run the good-report decision-path check when mapping a report page: one primary decision question, conclusion/status first, What/Why/So what coverage, comparison baseline, metric relationship network, and drilldown/action path.
 3. Classify the primary `analysisPerspective` and any secondary perspectives, such as currentStatus, targetProgress, trendMovement, rankingContribution, causeDiagnosis, detailEvidence, or actionRecommendation.
 4. Decompose the selected perspectives into answer atoms such as state, target gap, trend, structure, ranking, process, cause, anomaly, detail, action, evidence, and data trust.
-5. Map answer atoms to parent blocks, optional sub-blocks, and component bundles with `must-have`, `should-have`, or `optional` priority. When a component bundle is a definition/help card, anomaly/risk/warning/outlier analysis card, Micro Dashboard Card, or state feedback surface, select the controlled pattern field before layout or visual handoff.
-6. Define data before controls: datasets, row grain, formulas, rollups, numeric display contracts, edge cases, realistic dirty-data cases, default/non-default states, empty/loading/error/no-permission/building states, and resolver/API branch needs.
-7. Classify every control as `perspective-switch`, `global-filter`, `local-filter`, or `drilldown-param`; never hide metric/schema-changing perspectives inside ordinary filters.
-8. Define filter/query behavior after the data model proves it can support option data, defaults, cascades, permissions, affected components, and non-default variations.
-9. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
-10. Produce the binding matrix linking business question, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, update triggers, and validation cases.
-11. Route to report-type, layout, component-style, API/model, frontend, and test skills as needed.
+5. Classify each candidate artifact as visible result content, interaction/contract content, supplemental/handoff content, or removed content. Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are not visible report blocks by default.
+6. Map answer atoms to parent blocks, optional sub-blocks, and component bundles with `must-have`, `should-have`, or `optional` priority. When a component bundle is a definition/help card, anomaly/risk/warning/outlier analysis card, Micro Dashboard Card, or state feedback surface, select the controlled pattern field before layout or visual handoff.
+7. Define data before controls: datasets, row grain, formulas, rollups, numeric display contracts, edge cases, realistic dirty-data cases, default/non-default states, empty/loading/error/no-permission/building states, and resolver/API branch needs.
+8. Classify every control as `perspective-switch`, `global-filter`, `local-filter`, or `drilldown-param`; never hide metric/schema-changing perspectives inside ordinary filters.
+9. Define filter/query behavior after the data model proves it can support option data, defaults, cascades, permissions, affected components, and non-default variations.
+10. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
+11. Produce the binding matrix linking business question, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, update triggers, and validation cases.
+12. Route to report-type, layout, component-style, API/model, frontend, and test skills as needed.
 
 ## Required Output
 
 - Theme, user scenario, primary question, decision, and report-decision risks or gaps.
 - Good report decision-path result: one primary decision question, first-viewport judgment, What/Why/So what answer atoms, metric relationship network, baselines, drilldown/action path, and `RPT-*` gaps.
+- Result-content boundary table: visible business-value content, interaction/contract-only items, supplemental handoff items, removed process artifacts, and the reason for each decision.
 - Analysis perspective classification, answer atom decomposition, and component bundle map.
 - Dataset/mock model with grain, fields, formulas, numeric display contracts, realistic edge cases, and reconciliation rules.
 - Control semantics model and filter/query model.
@@ -97,12 +99,13 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Unified binding matrix with stable IDs, controlled vocabularies, and validation cases.
 - Style generalization fields in the binding matrix when reusable sample-derived patterns are used.
 - Controlled `definitionHelpCardPattern`, `definitionHelpEvidenceBinding`, `actionRecommendationCardPattern`, `actionEvidenceBodyMode`, `actionRecommendationEvidenceBinding`, `reviewImpactCardPattern`, `reviewImpactEvidenceMode`, `reviewImpactEvidenceBinding`, `dataQualityTrustCardPattern`, `dataQualityEvidenceBinding`, `detailEvidenceCardPattern`, `detailEvidenceBinding`, `anomalyAnalysisCardPattern`, `anomalyAnalysisEvidenceBinding`, `microDashboardCardPattern`, `microDashboardContract`, `stateFeedbackPattern`, and `stateFeedbackContract` fields when those component classes are selected.
-- Metric口径, calculation notes, and 指标清单 from requirements are supplemental by default. Keep them in metric contracts, tooltip/detail/dictionary payloads, export metadata, validation cases, and handoff artifacts unless the user explicitly asks to show 指标说明/口径说明/指标清单 on the page.
+- Metric口径, calculation notes, and 指标清单 from requirements are supplemental by default. Keep them in metric contracts, tooltip/detail/dictionary payloads, export metadata, validation cases, and handoff artifacts unless the user explicitly asks to show 指标说明/口径说明/指标清单 on the page or the item is rewritten into business-value definition, evidence, trust/source, or action content.
 - Routing notes for report type, layout, component style, API/model, frontend, and testing.
 
 ## Quality Gate
 
 - Every component must answer a named business question and participate in a decision path.
+- Do not create visible report blocks from design-process artifacts. 下钻链路 can be an actionable route, breadcrumb, drawer, jump, or detail control; 指标清单 can be a metric contract, dictionary, tooltip, detail drawer, export metadata, validation case, or handoff artifact. Component mappings, binding matrices, workflow/gate outputs, dataset field catalogues, and implementation notes stay off the result page unless explicitly requested as visible documentation or justified as conclusion, evidence, trust, or action content.
 - A report mapping is not ready when it is only a metric list. Core metrics must be tied into a result -> driver -> dimension/object -> detail -> action/source relationship network.
 - Primary metrics need a comparison basis: target, previous period, same period last year, benchmark, historical range, threshold, or denominator/total for share/rate.
 - The first component group must make the primary judgment clear before dense detail unless the page is explicitly detail-query or reconciliation-first.

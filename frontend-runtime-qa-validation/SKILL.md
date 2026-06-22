@@ -39,14 +39,15 @@ It is not a test-case design skill. For test matrices use `integration-test-case
 3. Classify the UI baseline: Haier/enterprise app, report/dashboard, mixed, or unknown. For Haier/enterprise report pages, apply both Haier application baseline and report-specific baseline during visual judgment. When modern SaaS / BI Dashboard / UI Kit style is requested or claimed, also load the positive style contract before screenshot judgment.
 4. Open the target URL and confirm the page loads without blocking runtime errors.
 5. Capture screenshots before visual judgment: full page, responsive states, interactions, and component crops when report/chart/table components exist.
-6. Run DOM structural checks: expected card/component counts, fixed-height overflow, bounding-box overlap, and chart/table category uniqueness where inspectable.
-7. Run stack-contract and owning-skill proof obligations for implemented report components: Vue 3 bootstrap, Element Plus registration/style import/runtime controls, ECharts runtime ownership for chart visualTypes, KPI X/Y value alignment and CSS cascade, template/component control ownership, fixed-height overflow/clipping, ECharts/S2 option details such as legend/grid/axis budgets, ECharts axis-chart plot-height/anti-squeeze checks, modern BI page/card token checks, component-pileup and hierarchy checks, chart-lightness checks, contract-to-DOM/CSS/option mapping, and at least one non-default state when relevant.
-8. Inspect console, network, assets, routes, auth, and provider calls.
-9. Exercise filters, tabs, drawers, modals, chart clicks, table actions, pagination, sorting, export, refresh, fullscreen, hover, and focus states in scope.
-10. Apply anti-AI, report-decision, and multimodal/visual checks when relevant. Use `$visual-browser-regression-check` when the scope requires deterministic baseline diff, screenshot coverage, component crops, or structured `VIS-*` findings.
-11. Run action reflection before the QA conclusion: check whether the collected evidence really supports `ready`, whether any design/renderer/source authority issue should reroute to an owning skill, and whether HTML-derived charts need source inspection beyond screenshots.
-12. Run the anti-laziness execution gate from `$quality-gate-validation` before the final QA conclusion. Keep `LAZY-*` findings visible when evidence is screenshot-only, default-state-only, source-light, contract-only, or missing retest proof.
-13. Produce a compact QA note with findings, evidence paths, owner, retest criteria, URL, and readiness.
+6. Run automated geometry discovery before manual visual judgment when a bundled template URL is available: `npm run visual:geometry -- --url <url>` or `node scripts/visual-geometry-audit.mjs --url <url>`. It must produce screenshots and `visual-check/geometry-report.json` or an explicit blocker, and it must fail list rows where `scrollHeight > clientHeight + 1`, hidden list overflow, chart body squeeze, and plot-height squeeze at `major` or above.
+7. Run DOM structural checks: expected card/component counts, fixed-height overflow, bounding-box overlap, and chart/table category uniqueness where inspectable.
+8. Run stack-contract and owning-skill proof obligations for implemented report components: Vue 3 bootstrap, Element Plus registration/style import/runtime controls, ECharts runtime ownership for chart visualTypes, KPI X/Y value alignment and CSS cascade, template/component control ownership, fixed-height overflow/clipping, ECharts/S2 option details such as top-centered multi-series legends, hidden single-series legends, compact `grid.top/right/bottom/left`, Y-axis unit metadata with raw numeric ticks, side/bottom axis-title placement, dynamic NPS/score/rate Y-axis ranges, `insideEndTop` target/reference labels, ECharts axis-chart plot-height/anti-squeeze checks, modern BI page/card token checks, component-pileup and hierarchy checks, chart-lightness checks, contract-to-DOM/CSS/option mapping, and at least one non-default state when relevant.
+9. Inspect console, network, assets, routes, auth, and provider calls.
+10. Exercise filters, tabs, drawers, modals, chart clicks, table actions, pagination, sorting, export, refresh, fullscreen, hover, and focus states in scope.
+11. Apply anti-AI, report-decision, and multimodal/visual checks when relevant. Use `$visual-browser-regression-check` when the scope requires deterministic baseline diff, screenshot coverage, component crops, or structured `VIS-*` findings.
+12. Run action reflection before the QA conclusion: check whether the collected evidence really supports `ready`, whether any design/renderer/source authority issue should reroute to an owning skill, and whether HTML-derived charts need source inspection beyond screenshots.
+13. Run the anti-laziness execution gate from `$quality-gate-validation` before the final QA conclusion. Keep `LAZY-*` findings visible when evidence is screenshot-only, default-state-only, source-light, contract-only, or missing retest proof.
+14. Produce a compact QA note with findings, evidence paths, owner, retest criteria, URL, and readiness.
 
 ## Required Output
 
@@ -55,11 +56,12 @@ Use `references/qa-note-template.md` and include:
 - Commands run and blockers.
 - Preflight understanding result and scoped QA target.
 - URL and viewport/screenshot evidence.
+- Automated geometry audit result: command, `visual-check/geometry-report.json`, screenshots, failure threshold, and generated `VIS-*` findings such as `VIS-LIST-ROW-CLIPPED`, `VIS-LIST-OVERFLOW-HIDDEN`, `VIS-CHART-BODY-SQUEEZED`, or `VIS-CHART-PLOT-SQUEEZED`, or a precise blocker.
 - Console/network result.
 - Interaction/state checks.
 - Visual/DOM structural findings: overflow, card/component counts, bounding-box overlap, and category uniqueness.
 - Modern BI runtime proof when requested or claimed: page/card token evidence, first-viewport hierarchy, component-count/pileup scan, and chart-lightness evidence.
-- Proof obligation results: KPI alignment and CSS cascade, no duplicate template/component controls, fixed-height overflow/clipping, chart option/legend/grid checks, chart body/plot-height anti-squeeze checks, contract-to-DOM/CSS/option mapping, and non-default state coverage.
+- Proof obligation results: KPI alignment and CSS cascade, no duplicate template/component controls, fixed-height overflow/clipping, chart option/legend/grid/axis-title/axis-range/target-label checks, chart body/plot-height anti-squeeze checks, contract-to-DOM/CSS/option mapping, and non-default state coverage.
 - Stack-contract result for runnable templates: package dependency proof, Vue 3 `createApp`, Element Plus registration/style imports and control usage, ECharts runtime proof for chart visualTypes, and S2-only-when-needed status.
 - Action reflection result before readiness, including renderer/source authority concerns.
 - Anti-laziness execution result: coverage actually executed, `LAZY-*` findings or explicit no-finding result, source/DOM evidence inspected, retest proof, and readiness impact.
@@ -69,19 +71,22 @@ Use `references/qa-note-template.md` and include:
 ## Quality Gate
 
 - Do not mark visual/runtime readiness without screenshots or a precise blocker.
+- Do not mark visual/runtime readiness when a bundled template URL exists but automated geometry discovery was not run. The `visual:geometry` report or a precise Playwright/browser installation blocker is required before `ready`.
 - Do not execute or conclude visual/runtime QA before the target URL/app, affected surfaces, viewports, interactions, and required evidence are scoped.
 - Do not pass Haier/enterprise report visual QA when report-specific checks pass but Haier application baseline checks for typography, color, spacing, base controls, states, or brand/logo are missing.
 - Do not mark runtime QA ready for a requested modern SaaS / BI Dashboard / UI Kit page when screenshots and DOM/CSS/ECharts evidence do not prove the positive style contract, or when `VIS-MODERN-BI-BASELINE-MISSING`, `VIS-GENERIC-SAAS-SHELL`, `VIS-COMPONENT-PILEUP`, `VIS-CHART-OVERWEIGHT`, or `VIS-HIERARCHY-FLAT` remains unresolved.
 - Report/dashboard QA cannot rely only on full-page screenshots when component crops are needed.
 - Fixed-height content with `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2` fails unless it is an intentional visible scroll region or declared disclosure strategy.
 - Fixed-height summary/ranking/card/KPI/composite content with `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2` fails unless it is an intentional visible scroll region, expand/collapse, pagination, drawer/fullscreen, or split strategy. `overflow: hidden` does not make hidden decision content acceptable.
+- List-like rows fail when `scrollHeight > clientHeight + 1` or `scrollWidth > clientWidth + 1`; hard-hidden list overflow is a failure even when the card itself has no visible crop in the screenshot.
 - DOM QA must include count assertions for repeated cards/components, visible duplicate title/label checks inside the same block/card, bounding-box overlap checks for visible peer elements, KPI value-anchor bounding-box checks when metric cards exist, SVG/ECharts text-node overlap checks for legends, axis names, axis labels, and chart annotations when inspectable, and chart category uniqueness checks for rendered/configured category axes or equivalent categorical datasets when those elements exist.
 - DOM QA must include control ownership checks when a template shell exists: refresh, export/download, copy/share, global filters, period/date controls, topbar actions, and component local controls cannot be duplicated without an explicit ownership decision and disabled counterpart.
 - Data completeness must be checked before filter-linkage pass/fail.
 - Standard ECharts charts must show ECharts-owned rendering and interaction when that renderer is claimed.
+- Runtime-verifiable Cartesian ECharts charts must prove the default chart anatomy in source/options and rendered geometry: top-centered legend for multi-series charts, hidden legend for single-series charts unless excepted, compact `grid.top/right/bottom/left`, Y-axis unit metadata with raw numeric ticks, Y-axis title on the left/right side, X-axis title in the bottom band, dynamic Y-axis range for bounded NPS/score/rate/current-vs-target charts, and `insideEndTop` target/reference labels.
 - Do not mark runtime QA ready when a default report-template project uses Vue 3 but omits Element Plus or ECharts from dependencies/bootstrap/runtime proof. Vue 3 + ECharts without Element Plus, or Vue 3 + Element Plus with hand-drawn standard charts, remains `partial` or `blocked`.
 - When the implementation was derived from HTML/source, inspect chart components for copied hand-authored SVG/canvas/DOM chart marks. Standard chart readiness fails if source marks were ported instead of rebuilt through ECharts/data-driven options.
-- Do not mark runtime QA ready when full line/bar/combo axis charts are compressed into thin bands. Runtime QA must measure chart body height, plot-height floor, axis-label overlap/gridline readability, and chart + table/list allocation when both share one card; use `VIS-CHART-SQUEEZED`, `VIS-AXIS-LABEL-STACKED`, or `VIS-CHART-TABLE-CROWDING` for failures.
+- Do not mark runtime QA ready when full line/bar/combo axis charts are compressed into thin bands. Runtime QA must measure chart body height, plot-height floor, axis-label overlap/gridline readability, and chart + table/list allocation when both share one card; use `VIS-CHART-SQUEEZED`, `VIS-CHART-BODY-SQUEEZED`, `VIS-CHART-PLOT-SQUEEZED`, `VIS-AXIS-LABEL-STACKED`, or `VIS-CHART-TABLE-CROWDING` for failures.
 - Do not mark runtime QA ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, only full-page screenshots/default states were checked, or source/DOM proof is absent for renderer and layout claims.
 - Do not mark runtime QA ready when component contracts exist only as config/prose and lack matching DOM/CSS/ECharts/S2/browser evidence. Record `LAZY-CONTRACT-THEATER` or a specific `VIS-*`/`RPT-*` finding.
 - Load `runtime-qa-procedure.md` before full QA execution or final readiness judgment.

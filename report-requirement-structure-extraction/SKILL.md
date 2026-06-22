@@ -105,7 +105,7 @@ Use this sequence for every requirement transformation:
 9. Load the relevant scenario playbook.
    Use only the reference files that match the selected scenario and requested deliverable.
 
-   Metric definitions, metric dictionaries, calculation口径, and indicator lists in requirement documents are supplemental evidence by default. Use them to build the metric/data contract, tooltip/detail/dictionary payload, validation criteria, and downstream handoff. Do not create visible report-page cards,口径说明 blocks, or indicator-list modules from them unless the requirement explicitly asks to display指标说明/口径说明/指标清单 on the page.
+   Metric definitions, metric dictionaries, calculation口径, indicator lists, drilldown-chain lists, component mappings, binding matrices, workflow/gate checklists, dataset field catalogues, and implementation notes in requirement documents are supplemental evidence by default. Use them to build the metric/data contract, tooltip/detail/dictionary payload, interaction route, validation criteria, and downstream handoff. Do not create visible report-page cards,口径说明 blocks, indicator-list modules, drilldown-chain blocks, or process-explanation modules from them unless the requirement explicitly asks to display that documentation on the page or the content passes the business-value test as conclusion, evidence, trust/source, or action content.
 
 10. Convert to tasks and acceptance criteria.
    Write requirements as capability statements with measurable acceptance criteria, data/API dependencies, permission behavior, error/empty states, and test evidence.

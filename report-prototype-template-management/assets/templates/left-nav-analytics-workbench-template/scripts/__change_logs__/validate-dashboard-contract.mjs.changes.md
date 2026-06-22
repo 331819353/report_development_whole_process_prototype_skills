@@ -31,6 +31,21 @@
 - Change evidence: working-tree diff for `scripts/validate-dashboard-contract.mjs` in this change set.
 - Follow-up: none
 
+### v20260622030028 - 2026-06-22T03:00:28Z
+
+- Change ID: list-chart-geometry-contract
+- Actor: codex
+- Change type: update
+- Summary: Add static list row and axis-chart geometry contract checks.
+- Modified functionality: widget visualType allowlist, widget config validation, compact-sparkline exception validation
+- Code ranges: helpers/constants near top of file; `validateListGeometryContract`; `validateAxisChartGeometryContract`; `validateWidget`
+- Modified content: Added `operational-list`, `action-recommendation-card`, `ranking-list`, and `compact-sparkline` visual types; required `rowHeightPx`, `visibleRowCount`, and `overflowStrategy` for list-like widgets; capped `3x2` action lists at two visible rows; required full line/bar/combo charts to declare `chartBodyH >= 180px` or use explicit compact-sparkline hiding rules.
+- Affected contracts: bundled template widget config validation; report list geometry contract; ECharts axis-chart plot viability contract
+- Verification: node --check scripts/validate-dashboard-contract.mjs
+- Rollback note: revert this file together with sibling template validators and `src/widgets/types.ts` visual type additions.
+- Related files: scripts/visual-geometry-audit.mjs, src/widgets/types.ts
+- Follow-up: none
+
 ### v20260618-12x8-content-grid - 2026-06-18
 
 - Change ID: ad-hoc-12x8-content-grid
@@ -78,3 +93,98 @@
 - After snapshot: working tree, 1272 lines, sha256 `99e8453386016fd262cabe5744c3b1c1e0c158c1bc4674fb276c32f2ce3ab664`.
 - Change evidence: `git diff -- report-prototype-template-management/assets/templates/left-nav-analytics-workbench-template/scripts/validate-dashboard-contract.mjs` shows the added constants, helpers, stack validator, and invocation.
 - Follow-up: If the project adopts a dedicated ECharts wrapper such as `VueECharts`, add its import signature to `hasEchartsRuntime` if not already matched.
+
+### v20260622023541 - 2026-06-22T02:35:41.828Z
+
+- Change ID: ad-hoc
+- Actor: codex
+- Change type: update
+- Summary: Add ECharts default legend and Y-axis unit validation
+- Modified functionality: validateWidgetSource chart anatomy checks
+- Code ranges: validateWidgetSource chart detection and chart anatomy checks
+- Modified content: Added bar/cartesian chart detection plus failures for non-top-centered legends, missing Y-axis units, and unit suffixes in yAxis.axisLabel.formatter.
+- Affected contracts: none
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard
+- Rollback note: revert this file and listed related files together if needed
+- Related files: none
+- Before snapshot: 1333 lines, sha256 `aa04aa926a2d7dcc7177dcb93e463baaf6202ac7c15ac7fca25fc378fa91631d`, captured `2026-06-22T02:28:42.998Z`
+- After snapshot: 1369 lines, sha256 `2dabe0fdf98e4a54b48838b7414b5702a102eb3c25eaf3f2963636165a3b6284`
+- Change evidence: inline unified diff:
+
+```diff
+--- a/scripts/validate-dashboard-contract.mjs
++++ b/scripts/validate-dashboard-contract.mjs
+@@ -652,6 +652,10 @@
+     );
+   const hasGraph =
+     /type\s*:\s*['"]graph['"]|visualType\s*:\s*['"]graph['"]|series\s*:[\s\S]{0,900}type\s*:\s*['"]graph['"]/.test(
++      text,
++    );
++  const hasBarChart =
++    /type\s*:\s*['"]bar['"]|visualType\s*:\s*['"]bar['"]|series\s*:[\s\S]{0,900}type\s*:\s*['"]bar['"]/.test(
+       text,
+     );
+   const hasLineChart =
+@@ -660,8 +664,28 @@
+     );
+   const hasComboChart =
+     /(?:visualType|type)\s*:\s*['"]combo['"]|combo(?:Data|Rows?|Series|Option|Config)|柱线组合图|柱状图\s*\+\s*折线图|ComboChart|series\s*:[\s\S]{0,1600}type\s*:\s*['"]bar['"][\s\S]{0,1600}type\s*:\s*['"]line['"]|series\s*:[\s\S]{0,1600}type\s*:\s*['"]line['"][\s\S]{0,1600}type\s*:\s*['"]bar['"]/.test(
++      text,
++    );
++  const unitTokenPattern = String.raw`(?:%|percent|元|万元|亿元|人|人数|次|件|个|台|单|订单|天|小时|分钟|分|吨|kg|KG|kWh|m3|m³|m2|㎡)`;
++  const hasCartesianAxisChart = hasBarChart || hasLineChart || hasComboChart || hasBoxplot || hasHeatmap;
++  const hasEchartsLegend = /legend\s*:/.test(text);
++  const hasTopCenteredLegend =
++    /legend\s*:\s*\{[\s\S]{0,700}(?:left|x)\s*:\s*['"]center['"][\s\S]{0,700}(?:top|y)\s*:\s*(?:['"]top['"]|['"]0['"]|\d)/.test(
++      text,
++    ) ||
++    /legend\s*:\s*\{[\s\S]{0,700}(?:top|y)\s*:\s*(?:['"]top['"]|['"]0['"]|\d)[\s\S]{0,700}(?:left|x)\s*:\s*['"]center['"]/.test(
++      text,
++    );
++  const hasDocumentedLegendException =
++    /legend(?:Placement|Position)\s*:\s*['"](?:right|bottom|side|hidden|none)['"]|sideLegend|bottomLegend|legendException|legendHidden|hideLegend|sparkline|miniChart|pie|donut|rose/.test(
+       text,
+     );
++  const hasYAxisUnitConfig = new RegExp(
++    String.raw`yAxis\s*:[\s\S]{0,2200}(?:name\s*:\s*(?:[^,\n}\]]*unit|['"\`][^'"\`]*(?:单位|${unitTokenPattern})[^'"\`]*['"\`])|(?:leftAxisUnit|rightAxisUnit|yAxisUnit|axisUnit)\b|unit\s*:)`,
++  ).test(text);
++  const yAxisAxisLabelAddsUnit = new RegExp(
++    String.raw`yAxis\s*:[\s\S]{0,2400}axisLabel\s*:[\s\S]{0,700}formatter\s*:[\s\S]{0,360}(?:\+\s*(?:unit|['"\`][^'"\`]*${unitTokenPattern})|['"\`][^'"\`]*${unitTokenPattern}|%\})`,
++  ).test(text);
+   const hasCompositePanel =
+     /(?:visualType|type)\s*:\s*['"]composite-panel['"]|CompositePanel|compositePanelContract|composite(?:Panel|Children|Layout|State|Tooltip)|multiComponent|multi-component|多组件组合图|组合面板|复合面板/.test(
+       text,
+@@ -699,6 +723,18 @@
+     warnings.push(
+       `${label}: line chart sorts labels/categories directly; verify every series is built from that same ordered category list or use sortRowsForCategoryAxis/buildSingleSeriesCategoryData.`,
+     );
++  }
++
++  if (hasCartesianAxisChart && hasEchartsLegend && !hasTopCenteredLegend && !hasDocumentedLegendException) {
++    errors.push(`${label}: ECharts legends default to top-center; set legend.top and legend.left: 'center', or declare an explicit legend-placement exception.`);
++  }
++
++  if (hasCartesianAxisChart && /yAxis\s*:/.test(text) && !hasYAxisUnitConfig) {
++    errors.push(`${label}: Cartesian charts must configure the Y-axis unit through yAxis.name, yAxisUnit/axisUnit, or leftAxisUnit/rightAxisUnit.`);
++  }
++
++  if (hasCartesianAxisChart && yAxisAxisLabelAddsUnit) {
++    errors.push(`${label}: Y-axis tick labels must keep raw numeric values; do not append units in yAxis.axisLabel.formatter. Put the unit in yAxis.name and tooltip instead.`);
+   }
+```
+- Follow-up: none
+
+### v20260622031757 - 2026-06-22T03:17:57Z
+
+- Change ID: echarts-axis-anatomy-contract
+- Actor: codex
+- Change type: update
+- Summary: Enforce dynamic Y-axis ranges, compact ECharts grid, axis-title placement, inside target labels, and single-series legend hiding.
+- Modified functionality: validateWidgetSource Cartesian chart anatomy checks
+- Code ranges: validateWidgetSource chart detection and chart anatomy checks
+- Modified content: Added NPS dynamic range checks, zero-baseline blocking, complete/compact grid checks, side/bottom axis-title checks, target/reference `insideEndTop` label check, and single-series visible-legend blocking.
+- Affected contracts: bundled template ECharts chart option contract; report chart design spec
+- Verification: node --check scripts/validate-dashboard-contract.mjs; npm run validate:dashboard; npm run build:preview; negative ECharts contract probe failed as expected for the new chart anatomy checks; git diff --check passed.
+- Rollback note: revert this validator entry together with sibling template validators and chart/spec guidance if the chart anatomy contract changes.
+- Related files: report-chart-design-spec/SKILL.md, report-component-style-design/SKILL.md, report-prototype-template-management/SKILL.md
+- Follow-up: none
