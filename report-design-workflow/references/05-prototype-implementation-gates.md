@@ -9,6 +9,9 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 - Do not proceed from the top-level prototype workflow alone when a specific surface is affected. Chart defects require `$report-chart-design-spec`; table defects require `$report-table-design-spec`; filter defects require `$report-filter-control-design-spec`; parent block sizing requires `$report-layout-size-constraint-spec`; component-internal slot/collision defects require `$report-component-placement-spec`.
 - A `ready` prototype must show the preflight surface-to-skill routing or state why each specialty skill was not needed.
 - When multiple artifacts influence the prototype, run `$quality-gate-validation` before locking scope, visual source, API/mock contract, or implementation target. Unresolved high-impact conflicts keep the affected scope `partial` or `blocked`.
+- Every user-provided text, screenshot, HTML, Markdown/MD, copied source, code file, data file, or document must be converted into a source-material requirement matrix before implementation. The matrix records confirmed facts, inferred assumptions, missing gaps, component/data/filter/interaction constraints, acceptance checks, and whether the source explicitly controls output format.
+- Source artifact format is not implementation format. Provided HTML/MD/source files are requirement evidence by default; they do not force static HTML output, custom shell implementation, or HTML-replica structure.
+- Default runnable output is `outputArtifact: vueTemplatePrototype` with Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios. Use `outputArtifact: htmlPrototype` only when the user explicitly asks for HTML/static/single-file HTML output or exact static HTML preservation.
 - When a requirement document already contains design ideas, page layout, component choices, chart choices, or indicator-display suggestions, audit those ideas before implementation. Accept, repair, or reject them against the product/report story, user path, `1920x1080` viewport, `12 * N` grid, minimum `2*1`, default `3*2`, ordinary chart `4*3` max, first-viewport density, and metric-display boundary.
 - Metric口径, calculation notes, and 指标清单 are supplemental by default. Bind them to metric contracts, tooltip/detail/dictionary payloads, export metadata, validation cases, and handoff artifacts unless the user explicitly asks to show 指标说明/口径说明/指标清单 on the report page.
 - Before locking report type, display theme, page layout, or template, run `$report-prototype-design-thinking` unless the input already contains a structured prototype design brief with core narrative, user path, key decision points, user, scenario, decision/action, metric layers, analysis path, and block intent.
@@ -43,29 +46,31 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 ## Workflow
 
 1. Confirm prototype intent and choose mode: design spec, runnable implementation, screenshot/HTML restoration, repair, or URL handoff.
-2. Run `$report-prototype-design-thinking` as the default generic thinking layer. Do not branch into the four specialized prototype workflow types here.
-3. Normalize rough requirements with `$report-requirement-structure-extraction` when scope, users, metrics, screenshots, HTML, or acceptance rules are unclear.
-4. Classify the six-way `displayTheme` and select a small reusable pattern set from `references/04-common-display-theme-pattern-chain.md`; record rejected competing themes.
-5. Run the anti-AI design gate from `$report-design-system-governance` before layout/styling: record product context, real content, forbidden visual defaults, copy specificity, states, accessibility, and engineering readiness.
-6. Run the report decision anti-AI gate from `$report-design-system-governance`: record five decision-question answers, metric tree, metric dictionary completeness, data story, realistic data, linkage, trust/action details, and industry/report-designer checks.
-7. Run `$quality-gate-validation` when inputs conflict on scope, display theme, metric口径, visual source, API/mock contract, or implementation target.
-8. Before each non-trivial template, layout, component, renderer, HTML/sample conversion, data-binding, source edit, or readiness decision, run the action reflection loop. If it returns `revise-action` or `stop-and-route`, update the plan or route to the owning skill before editing.
-9. Use `$report-type-design` to choose one primary report type and any secondary local blocks.
-10. Use `$report-info-component-mapping` to produce analysis perspectives, answer atoms, selected pattern-to-component mapping, component bundles, datasets, filters, interactions, and binding matrix.
-11. Declare `pageShellPath` as `template` or `custom`; default to `template` when no hard custom/restoration/existing-shell reason exists.
-12. Use `$report-visual-layout-design` for page shell, header/navigation/native filter surface, `12 * N` grid, block sizing, and `1920x1080` fit/overflow layout.
-13. Use `$report-prototype-template-management` for default bundled-template selection, copy/merge, Vue/Vite scaffold handling, and template validation.
-14. Use `$report-component-style-design` for KPI/cards/charts/tables/drawers/complex-diagram style and readability.
-15. Apply `$report-design-system-governance` report guideline references as the default report baseline for metrics, charts, tables, filters, states, engineering handoff, and acceptance.
-16. Apply `$haier-enterprise-app-ui-design-spec` for Haier/enterprise application-level UI baseline on report pages, then apply report-specific design-system, layout, chart, table, filter, and component-placement rules.
-17. Before implementation or repair touches prototype source code, trigger the code-file ledger before-read step for every target file.
-18. Implement or repair the prototype in the selected target path when requested.
-19. Append code-file ledger version entries for every changed prototype source file before declaring implementation complete.
-20. Run build/start/visual QA when a runnable URL is requested and route findings through `$frontend-runtime-qa-validation`.
+2. Convert all provided source artifacts, including HTML/MD/source files, into requirement facts, assumptions, gaps, bindings, and acceptance checks with `$report-requirement-structure-extraction`; declare `outputArtifact`.
+3. Run `$report-prototype-design-thinking` as the default generic thinking layer. Do not branch into the four specialized prototype workflow types here.
+4. Normalize rough requirements with `$report-requirement-structure-extraction` when scope, users, metrics, screenshots, HTML, Markdown/MD, source files, or acceptance rules are unclear.
+5. Classify the six-way `displayTheme` and select a small reusable pattern set from `references/04-common-display-theme-pattern-chain.md`; record rejected competing themes.
+6. Run the anti-AI design gate from `$report-design-system-governance` before layout/styling: record product context, real content, forbidden visual defaults, copy specificity, states, accessibility, and engineering readiness.
+7. Run the report decision anti-AI gate from `$report-design-system-governance`: record five decision-question answers, metric tree, metric dictionary completeness, data story, realistic data, linkage, trust/action details, and industry/report-designer checks.
+8. Run `$quality-gate-validation` when inputs conflict on scope, display theme, metric口径, visual source, API/mock contract, output artifact, or implementation target.
+9. Before each non-trivial template, layout, component, renderer, HTML/sample conversion, data-binding, source edit, or readiness decision, run the action reflection loop. If it returns `revise-action` or `stop-and-route`, update the plan or route to the owning skill before editing.
+10. Use `$report-type-design` to choose one primary report type and any secondary local blocks.
+11. Use `$report-info-component-mapping` to produce analysis perspectives, answer atoms, selected pattern-to-component mapping, component bundles, datasets, filters, interactions, and binding matrix.
+12. Declare `pageShellPath` as `template` or `custom`; default to `template` when no hard custom/restoration/existing-shell/HTML-output reason exists.
+13. Use `$report-visual-layout-design` for page shell, header/navigation/native filter surface, `12 * N` grid, block sizing, and `1920x1080` fit/overflow layout.
+14. Use `$report-prototype-template-management` for default bundled-template selection, copy/merge, Vue/Vite scaffold handling, and template validation.
+15. Use `$report-component-style-design` for KPI/cards/charts/tables/drawers/complex-diagram style and readability.
+16. Apply `$report-design-system-governance` report guideline references as the default report baseline for metrics, charts, tables, filters, states, engineering handoff, and acceptance.
+17. Apply `$haier-enterprise-app-ui-design-spec` for Haier/enterprise application-level UI baseline on report pages, then apply report-specific design-system, layout, chart, table, filter, and component-placement rules.
+18. Before implementation or repair touches prototype source code, trigger the code-file ledger before-read step for every target file.
+19. Implement or repair the prototype in the selected target path when requested.
+20. Append code-file ledger version entries for every changed prototype source file before declaring implementation complete.
+21. Run build/start/visual QA when a runnable URL is requested and route findings through `$frontend-runtime-qa-validation`.
 
 ## Required Output
 
 - Workflow mode and input inventory.
+- Source-material requirement matrix for every user-provided message/file/source artifact, plus `outputArtifact` decision and explicit HTML/static-output authority when present.
 - Action reflection checkpoints for mode/template/layout/component/renderer/HTML-conversion/source-edit/readiness decisions when they are non-trivial or risky.
 - Prototype design-thinking output, core narrative, user path, key decision points, target user/scenario/decision/action, metric layers, and analysis path.
 - `displayTheme`, selected reusable pattern cards, rejected competing themes, primary report type, and core question.
@@ -89,6 +94,8 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 - Do not treat report prototypes as exempt from Haier enterprise UI baseline when the page is Haier-branded or an enterprise Web application.
 - Do not skip prototype design thinking for new prototype work unless an equivalent structured design brief with core narrative, user path, key decision points, user/scenario/decision/action, metric layers, analysis path, and block intent is already present.
 - Do not start implementation before display theme, selected pattern set, report type, binding matrix, layout, and template/custom shell decision exist.
+- Do not start implementation from raw HTML, Markdown/MD, copied source, code, screenshots, or documents before converting them into a source-material requirement matrix.
+- Do not output HTML/static/single-file prototypes merely because the source material is HTML/MD/source; default to Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios unless the user explicitly asks for HTML/static output or exact static preservation.
 - Do not start implementation from a requirement document's existing design idea before the design-idea audit is recorded.
 - Do not render supplemental metric口径 or 指标清单 as page modules unless the requirement explicitly asks for visible explanation/list content.
 - Do not start or continue implementation from a stale initial preflight. Re-run action reflection before mode/template/component/renderer/source-edit/readiness decisions and refresh preflight if new evidence changes authority, constraints, or owning skills.

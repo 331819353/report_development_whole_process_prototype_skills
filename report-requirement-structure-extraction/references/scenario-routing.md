@@ -19,7 +19,9 @@ These are routing labels for requirement transformation, not skill names. Use th
 ## Classification Rules
 
 - Pick the scenario by the user's intended deliverable, not by isolated keywords.
+- Provided file type is not the deliverable. HTML, Markdown/MD, screenshots, code, API docs, and data files are source materials to transform into requirements unless the user explicitly asks to output in that same format.
 - If the user wants a visible page or demo, prefer `prototype-design` or `data-visualization-frontend`.
+- If the user provides HTML/MD/source files for a report/page prototype without explicitly asking for HTML/static output, still route as `prototype-design` and hand off to the default Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios prototype path.
 - If the user asks how to build architecture/API/model/runtime artifacts before coding, prefer `technical-solution`.
 - If the user asks for 数据模型, 数据建模, 表字段映射, 业务对象建模, 模型文件, 指标粒度, 明细/汇总模型, or source-to-response model transformation, prefer `data-modeling` or add it as a secondary scenario under `technical-solution`.
 - If the user asks for 数据服务设计, API服务设计, 后端方案, or to implement service endpoints, prefer `data-service-backend`; use design mode unless the user explicitly asks for code/routes/runtime service.

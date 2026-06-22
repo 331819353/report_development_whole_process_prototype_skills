@@ -96,7 +96,9 @@ Before final delivery, verify:
 - Primary metrics have comparison baselines and connect to a result -> driver -> dimension/object -> detail -> action/source network.
 - What happened, why it happened, and what the reader should check or do next are either visible in the page path or recorded as explicit `RPT-*` gaps.
 - `pageShellPath` is declared as `template` or `custom`.
-- `pageStyleSource` is declared. If no page style and no HTML/source/sample styling is provided, a bundled template is used by default.
+- `pageStyleSource` is declared. If no page style is specified, a bundled template is used by default; provided HTML/MD/source/sample styling is requirement and hierarchy evidence unless explicit restoration or HTML/static output is requested.
+- `outputArtifact` is declared. Default is `vueTemplatePrototype`; `htmlPrototype` appears only with explicit user wording for HTML/static/single-file HTML output or exact static preservation.
+- A source-material requirement matrix exists when the user provided HTML, Markdown/MD, source snippets, screenshots, documents, code, data, or config files.
 - Exactly one `brandMode` is declared and its logo/global UI token implications are followed.
 - Exactly one `visualMode` is declared before implementation and remains consistent in the final self-check.
 - If `pageShellPath: custom`, `customDesignPath` is declared as `htmlReplica` or `freeDesign`.
@@ -155,7 +157,7 @@ Before final delivery, verify:
 - Export, refresh, download, share, and fullscreen actions respect filters and permissions.
 - Empty, loading, no-permission, error, and stale-selection states are defined.
 - Implementation uses existing project patterns and is verified locally when built.
-- Runnable prototypes use TypeScript + Vue 3 + Element Plus + ECharts as the base stack unless the existing project has an explicit conflicting stack. AntV S2 is installed and used only for pivot tables, cross tables, wide metric matrices, frozen-header analytical tables, dense financial grids, or equivalent table needs.
+- Runnable prototypes use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios as the base stack unless the existing project has an explicit conflicting stack. AntV S2 is installed and used only for pivot tables, cross tables, wide metric matrices, frozen-header analytical tables, dense financial grids, or equivalent table needs.
 - Runnable prototypes are automatically started on a verified available port and return the exact local URL when no public URL is available.
 - Deployment, when requested, builds successfully and returns a public URL or explains why only a local preview URL is available.
 
@@ -164,6 +166,8 @@ Before final delivery, verify:
 - Do not start from visual layout before classifying the report purpose.
 - Do not start from visual layout before classifying the display theme and selecting a bounded pattern-card set.
 - Do not choose a custom shell merely because the user did not specify page style.
+- Do not skip requirement transformation when the user provides HTML, Markdown/MD, copied source, screenshots, documents, code, data, or config files.
+- Do not output HTML/static/single-file prototypes merely because provided materials are HTML/MD/source; default runnable prototypes use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios unless explicit user wording says otherwise.
 - Do not mark a `brandMode: haierBranded` custom shell complete when it has only a logo placeholder instead of a real bundled Haier logo.
 - Do not start implementation before declaring `pageShellPath`, `pageStyleSource`, `brandMode`, `visualMode`, custom design/layout paths when applicable, and passing the logo asset gate.
 - Do not use every skill for every task; use the smallest complete path.

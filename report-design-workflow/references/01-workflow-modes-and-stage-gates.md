@@ -8,6 +8,13 @@ Before choosing a mode, enforce the trigger gate. Do not let adjacent words such
 
 Before implementation, also choose exactly one `pageShellPath`, exactly one `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`: `haierEnterprise`, `sampleRestore`, or `sciFiCockpit`. These are blocking decisions, not later polish choices.
 
+Source-material intake gate:
+
+- Treat every user-provided message, file, HTML, Markdown/MD, screenshot, source snippet, code file, data file, or document as requirement evidence first.
+- Convert source materials into confirmed facts, inferred assumptions, missing gaps, component/data/filter/interaction constraints, and acceptance checks before choosing shell, template, output format, or implementation target.
+- Source file format is not output-format authority. Provided HTML/MD/source files do not by themselves mean `htmlPrototype`, `pageShellPath: custom`, or `customDesignPath: htmlReplica`.
+- Declare exactly one `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly asks for HTML/static/single-file HTML output or exact static HTML preservation.
+
 ### 1. Prototype-Oriented Design Mode
 
 Use when the user asks for a concrete report prototype plan but has not yet requested code.
@@ -49,7 +56,7 @@ Deliver:
 
 - All prototype design outputs.
 - Display theme, pattern-card-to-component mapping, and pattern acceptance cases.
-- Technical architecture based on `TypeScript + Vue 3 + Element Plus + ECharts`, with ECharts standard charts including Combo through shared `xAxis` plus `bar` and `line`/`markLine` series, funnel through `series.type: 'funnel'` or a data-driven horizontal `bar` funnel, parallel coordinates through `parallelAxis` plus `series.type: 'parallel'`, and AntV S2 installed and used only when the binding matrix contains S2-class analytical tables.
+- Technical architecture based on `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`, with ECharts standard charts including Combo through shared `xAxis` plus `bar` and `line`/`markLine` series, funnel through `series.type: 'funnel'` or a data-driven horizontal `bar` funnel, parallel coordinates through `parallelAxis` plus `series.type: 'parallel'`, and AntV S2 installed and used only when the binding matrix contains S2-class analytical tables.
 - Template choice.
 - Data files or mock data.
 - Component implementation.
@@ -60,7 +67,7 @@ Deliver:
 - Public URL or local preview URL.
 - Screenshot or browser QA when applicable.
 
-Do not treat the word "report" as a single-page constraint. A report may be a one-page summary, a multi-chapter report suite, or a big-screen cockpit. Choose the template by content volume, chapter/view count, interaction density, and display scenario. Use the bundled template assets under `report-prototype-template-management/assets/templates/`: `topbar-light-scroll-dashboard-template` for compact focused reports, `left-nav-analytics-workbench-template` for multi-chapter analytics workbenches, and `frozen-title-sci-fi-cockpit-template` for fixed 1920x1080 cockpit screens. Topbar and left-nav templates may exceed 1080px and scroll vertically. Only select a template with `nav[]` when the content can be redesigned into multiple substantial nav pages; never use a navigation template while populating only the homepage. All bundled implementation paths use `TypeScript + Vue 3 + Vite + Element Plus + ECharts` as the base stack; add AntV S2 dependencies only when a generated component actually needs S2.
+Do not treat the word "report" as a single-page constraint. A report may be a one-page summary, a multi-chapter report suite, or a big-screen cockpit. Choose the template by content volume, chapter/view count, interaction density, and display scenario. Use the bundled template assets under `report-prototype-template-management/assets/templates/`: `topbar-light-scroll-dashboard-template` for compact focused reports, `left-nav-analytics-workbench-template` for multi-chapter analytics workbenches, and `frozen-title-sci-fi-cockpit-template` for fixed 1920x1080 cockpit screens. Topbar and left-nav templates may exceed 1080px and scroll vertically. Only select a template with `nav[]` when the content can be redesigned into multiple substantial nav pages; never use a navigation template while populating only the homepage. All bundled implementation paths use `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` as the base stack; add AntV S2 dependencies only when a generated component actually needs S2.
 
 ### 4. Review And Repair Mode
 
@@ -85,9 +92,11 @@ Clarify or infer:
 - Is there a specific report page or a report category?
 - Which of the six display themes is primary: 明细、汇总统计、经营看板、分析探索、管理报告/专题报告, or 监控告警?
 - Is the expected output text, specification, code, or both?
-- Which standard inputs are present: 需求文档, 指标清单, optional screenshot/image, optional HTML源码?
+- Which standard inputs are present: 需求文档, 指标清单, optional screenshot/image, optional HTML源码, optional Markdown/MD, optional copied source/code, optional data/config files?
+- What is the source-material requirement matrix: each source artifact, extracted facts, inferred assumptions, missing gaps, affected requirement areas, and whether it is explicit output-format authority?
+- Which `outputArtifact` is required: default `vueTemplatePrototype`, or `htmlPrototype` only with explicit HTML/static-output wording?
 - If screenshot/image input is present, is it a full page, first viewport, partial component, modal/drawer, mobile view, export page, or style reference?
-- If HTML源码 is present, is it a layout reference, full static page, partial component, or source of mock/chart configuration?
+- If HTML/MD/source content is present, is it a requirement source, layout reference, full static page, partial component, copy source, data source, style evidence, or source of mock/chart configuration?
 - If HTML源码 contains chart-like SVG/canvas/DOM marks, which evidence is legitimate to extract: layout rhythm, labels, series/categories, colors, mock values, or config hints? Do not treat the sample SVG/canvas marks themselves as the implementation for standard charts.
 - Is the page a single-page top-bar report, standard enterprise sidebar dashboard, or sci-fi/big-screen cockpit?
 - Does the user need automatic deployment, automatic local startup, and a returned URL?
@@ -120,10 +129,10 @@ Run this gate before Stage 8 visual layout and before Stage 10 implementation.
 Shell path:
 
 - Declare exactly one `pageShellPath`: `template` or `custom`.
-- Use `pageShellPath: template` when no page style is specified and no HTML/source/sample styling is provided.
-- Use `pageShellPath: custom` only when the user requests custom/free design, provides HTML/source/sample styling, or a template limitation is documented.
+- Use `pageShellPath: template` by default for runnable prototypes, including when HTML/MD/source/sample files are provided as requirement evidence, hierarchy evidence, or style reference.
+- Use `pageShellPath: custom` only when the user explicitly requests custom/free design, exact screenshot/HTML/source restoration, HTML/static output, existing shell preservation, or a documented template limitation.
 - If `pageShellPath: custom`, declare exactly one `customDesignPath`: `htmlReplica` or `freeDesign`.
-- Use `customDesignPath: htmlReplica` when replicating provided HTML/source/sample structure.
+- Use `customDesignPath: htmlReplica` only when the user explicitly asks to replicate the provided HTML/source/sample structure or `outputArtifact: htmlPrototype` requires static structure preservation.
 - Use `customDesignPath: freeDesign` when creating a custom shell from requirements without source visual authority.
 - Custom Haier pages default to `brandMode: haierBranded` and must configure a real bundled Haier logo before final delivery; explicit `sampleNative` or `neutral` pages must record why Haier branding is not required.
 
@@ -132,7 +141,7 @@ Style source:
 - Declare exactly one `pageStyleSource`: `templateDefault`, `userSpecified`, or `sampleProvided`.
 - Use `templateDefault` when no page style is specified and no HTML/source/sample styling is provided; choose a bundled template by scenario.
 - Use `userSpecified` when the user names a page style, shell, or design direction; follow that direction unless it violates hard gates.
-- Use `sampleProvided` when screenshot, image, HTML source, or display sample supplies the page structure; follow the provided design unless the user asks for optimization or redesign.
+- Use `sampleProvided` when screenshot, image, HTML source, Markdown/MD, copied source, or display sample supplies page structure/style evidence; this preserves evidence for hierarchy and tone, but it does not force `pageShellPath: custom` or `outputArtifact: htmlPrototype`.
 - Do not choose a custom shell merely because style requirements are absent.
 
 Brand mode:
@@ -162,6 +171,7 @@ Brand assets:
 Sample fidelity:
 
 - In `sampleRestore`, the source page shell, module order, container hierarchy, main control count, layer structure, and card proportions are acceptance constraints.
+- HTML/MD/source files may trigger `sampleRestore` only when the user asks to restore, follow, or build from their visible structure without redesign. If they are supplied as requirements or reference material, keep `visualMode: haierEnterprise` or the selected business mode and adapt their content into the selected Vue template.
 - In `sampleRestore`, source HTML/SVG chart marks are not renderer authority for standard report charts. Preserve sample layout intent and visual hierarchy, but rebuild standard charts with ECharts/data-driven options unless a custom-diagram exception is explicitly approved.
 - Any new filter, summary card, detail table, matrix, drawer, jump, or extra toolbar action is an enhancement. Label it as an enhancement and keep it from changing the sample's first viewport and main body layout unless the user asks for optimization or reconstruction.
 - Classify each visible sample/source module as `businessRequired`, `sampleStructure`, or `optionalEnhancement`. Source visibility alone is not enough to make a component `must-have`.
@@ -219,9 +229,12 @@ Hard rules:
 
 Use `report-requirement-structure-extraction`.
 
+Run this stage when any user-provided file/source artifact is present, including HTML, Markdown/MD, copied source, code, screenshot, document, data, or config. Skip only when the user already provides a clean structured brief and no extra source artifact needs requirement transformation.
+
 Output must include:
 
 - Report theme.
+- Source-material requirement matrix and `outputArtifact` decision.
 - Display theme and selected/rejected theme rationale.
 - User intent.
 - Design thinking.

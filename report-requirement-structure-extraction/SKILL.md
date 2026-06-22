@@ -15,6 +15,8 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this as the front-door skill for turning unclear or partial requirements into concrete development inputs. The output is not only a summary; it must become an actionable requirement package that downstream prototype, technical-solution, backend, frontend, data-service, visualization, testing, and integration workflows can use.
 
+All user-provided materials are requirement evidence first. Messages, HTML files, Markdown/MD files, copied DOM/source snippets, screenshots, documents, code, config, data, API notes, and mock files must be converted into confirmed facts, inferred assumptions, missing gaps, affected requirement areas, and acceptance checks. Do not preserve the source file format as the default output format unless the user explicitly requests that format.
+
 This skill answers:
 
 - What real business, service, technical, data, permission, integration, or delivery problem the user needs solved.
@@ -51,7 +53,9 @@ Load references only when their scenario is relevant. Do not bulk-load every ref
 
 Accept incomplete inputs and infer cautiously.
 
-Supported input forms include one-sentence ideas, PRDs, meeting notes, screenshots, prototypes, metric lists, data dictionaries, database fields, source-system metadata, API documents, mock data, frontend/backend code, logs, deployment notes, SSO/security notes, and mixed Chinese/English terminology.
+Supported input forms include one-sentence ideas, PRDs, meeting notes, screenshots, prototypes, HTML files/source, Markdown/MD documents, copied DOM snippets, static pages, metric lists, data dictionaries, database fields, source-system metadata, API documents, mock data, frontend/backend code, logs, deployment notes, SSO/security notes, and mixed Chinese/English terminology.
+
+When HTML/MD/source artifacts are provided for a report/page prototype, extract page intent, visible content, metric names, dimensions, filters, controls, chart labels/config hints, copy, hierarchy, states, and style evidence into the requirement package. The default downstream runnable implementation remains Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios; HTML/static output requires explicit user wording such as "输出 HTML", "单 HTML 文件", "HTML 格式原型", or "保留静态 HTML".
 
 When information is missing:
 
@@ -81,6 +85,8 @@ Use this sequence for every requirement transformation:
 
 4. Extract facts, assumptions, and missing inputs.
    Facts come from the user or provided files. Assumptions are safe inferences. Missing inputs are items that may affect scope, data, permission, acceptance, or delivery.
+
+   Create a source-material requirement matrix whenever the user provides files or source content. For each artifact, record artifact type, useful evidence, confirmed facts, inferred assumptions, gaps, affected requirement areas, downstream owner, and whether the artifact explicitly controls output format. Mark HTML/MD/source materials as requirement evidence by default.
 
    If the input is a requirement document that already contains a design idea, page structure, component plan, chart choice, or layout sketch, first classify it as an existing design proposal and run a reasonableness check before downstream prototype work. Do not treat existing design prose as automatically accepted implementation guidance when it conflicts with the business story, user path, `1920x1080` / `12 * N` layout rules, chart sizing, or metric-display boundaries.
 

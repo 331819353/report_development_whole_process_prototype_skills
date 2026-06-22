@@ -51,6 +51,8 @@ This stage prevents overlap, truncation, low contrast, and component sizing fail
 
 Use this stage only when the user asks for runnable files, page implementation, or a prototype.
 
+Before implementation, declare `outputArtifact`. Default to `vueTemplatePrototype` and the bundled Vue stack even when the user provided HTML/MD/source files as requirement material. Use `htmlPrototype` only when the user explicitly requests HTML/static/single-file HTML output or exact static HTML preservation.
+
 Default technical architecture:
 
 - Language and framework: TypeScript + Vue 3 single-file components with Composition API.
@@ -60,6 +62,7 @@ Default technical architecture:
 - Analytical tables: install and use AntV S2 through `@antv/s2` and `@antv/s2-vue` only for pivot tables, cross tables, wide metric matrices, frozen headers, dense comparison grids, and analysis-style tables.
 - Icons and controls: use the template's existing icon/control system; keep business widgets typed and scoped.
 - Data: keep mock/static data in data files or data-source resolvers, not inside visual components.
+- API/client layer: keep axios available and use the template/project data-source adapter when real or mock API calls are represented.
 - Interactions: emit typed dashboard actions from widgets and keep navigation, drilldown, modal, filter mutation, fullscreen, and URL navigation in the framework layer.
 - Linkage accuracy: implement explicit data-source, filter-map, component-binding, and update-trigger contracts even when not using a bundled template.
 
@@ -101,7 +104,8 @@ Implementation must:
 - Keep business data out of config when the template expects data files or data sources.
 - Declare `brandMode`, `visualMode`, and pass brand asset discovery before changing files.
 - Declare `pageShellPath`; if custom, declare `customDesignPath`.
-- Declare `pageStyleSource`; if no page style and no HTML/source/sample styling is provided, use a bundled template by default.
+- Declare `pageStyleSource`; if no page style is specified, use a bundled template by default. If HTML/MD/source/sample styling is provided, use it as hierarchy/tone evidence unless the user explicitly requests custom restoration or HTML/static output.
+- Keep a source-material requirement matrix for provided HTML/MD/source files and show how each useful element maps into requirements, bindings, template slots, or acceptance checks.
 - Preserve the selected `displayTheme` and `sourcePatternIds` in component IDs, widget comments/spec rows, or handoff notes so QA can trace why a component exists.
 - If using a template with `nav[]`, declare the nav-page information architecture before implementation and populate every nav page with distinct widgets, data scope, and relevant interactions. If only a homepage can be populated, switch to a non-nav template.
 - If choosing a bundled template, adapt requirement-document title, filter, navigation, and toolbar requirements into the selected template's existing config and shell slots. Do not implement duplicate shell layers from the original requirement document when they conflict with the template.
