@@ -23,16 +23,17 @@ Use this structure:
 3. 用户与核心问题.
 4. 业务设计思路.
 5. 好报表决策路径: 3秒主判断、唯一主结论、What/Why/So what、对比参照、指标关系网络、下钻/action 路径.
-6. 结果内容边界: 保留有业务价值的结论/证据/行动，移出下钻链路清单、指标清单、组件映射、绑定矩阵等过程产物.
-7. 信息区块、模式卡片与组件映射.
-8. 分块标题/背景样式矩阵: `blockChromePattern`, selection reason, title/body geometry, density, fallback, and proof hook.
-9. 数据策略.
-10. 筛选策略.
-11. 数据交互策略.
-12. 视觉布局策略.
-13. 组件风格策略.
-14. 质量验收清单.
-15. 假设与缺口.
+6. 总分结论链: `overallConclusion -> supportingSections -> sectionConclusion -> evidenceComponents`, including each section's reason role and each component's evidence role.
+7. 结果内容边界: 保留有业务价值的结论/证据/行动，移出下钻链路清单、指标清单、组件映射、绑定矩阵等过程产物.
+8. 信息区块、模式卡片与组件映射.
+9. 分块标题/背景样式矩阵: `blockChromePattern`, selection reason, title/body geometry, density, fallback, and proof hook.
+10. 数据策略.
+11. 筛选策略.
+12. 数据交互策略.
+13. 视觉布局策略.
+14. 组件风格策略.
+15. 质量验收清单.
+16. 假设与缺口.
 
 ### Implementation Plan Output
 
@@ -59,7 +60,7 @@ Use this structure:
 2. Root design causes.
 3. Affected components/blocks.
 4. Affected display-theme and pattern-card decisions.
-5. Good-report path findings: primary question, comparison, metric network, What/Why/So what, drilldown/action, and `RPT-*` gaps.
+5. Good-report path findings: primary question, comparison, metric network, What/Why/So what, drilldown/action, conclusion-chain gaps, and `RPT-*` gaps.
 6. Fix strategy by workflow stage.
 7. Concrete implementation changes if requested.
 8. Verification checks.
@@ -95,8 +96,10 @@ Before final delivery, verify:
 - Secondary report types only appear where they change a block or flow.
 - The core user question is answered in the first meaningful viewport.
 - The first meaningful viewport exposes one primary judgment, not only a metric catalogue or chart collection.
+- Non-detail-only reports expose one overall conclusion and arrange supporting sections/components to explain it.
 - Primary metrics have comparison baselines and connect to a result -> driver -> dimension/object -> detail -> action/source network.
 - What happened, why it happened, and what the reader should check or do next are either visible in the page path or recorded as explicit `RPT-*` gaps.
+- Each primary section has a section conclusion, and each primary component names the section conclusion it proves, explains, locates, quantifies, contradicts, traces, recommends, or verifies.
 - Visible result content passes the business-value test: it helps the reader judge, understand evidence/reason, verify trust/source, or take action.
 - Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are absent from visible report results unless the user explicitly requested visible documentation or they were rewritten as conclusion/evidence/trust/action content.
 - `pageShellPath` is declared as `template` or `custom`.

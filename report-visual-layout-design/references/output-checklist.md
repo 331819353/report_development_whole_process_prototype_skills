@@ -8,7 +8,7 @@ When asked to design a report visual layout, use this structure:
 2. 页面路径、样式来源、品牌模式与视觉模式: declare `pageShellPath`, `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`; when custom, declare `customDesignPath` and exactly one `customLayoutPattern`.
 3. 页面外壳: unified page identity/navigation/filter control surface for custom pages, or the selected template's native shell/navigation/filter slots for template-based pages; include logo placement, actions, and template mapping if applicable.
 4. 品牌风格: Haier logo asset discovery result, logo variant or placeholder, Haier blue/white palette, typography, spacing, density, surfaces.
-5. 内容结构: summary, breakdown, evidence, detail, action, or another report-appropriate flow.
+5. 内容结构: conclusion-chain layout with `overallConclusion`, supporting sections, section conclusions, evidence components, detail, action, and trust/source flow.
 6. 栅格方案: `1920x1080` content grid, menu/sidebar occupied width, menu/header occupied height, 12-column split, 8 visible row-unit sizing basis, columnWidth/rowHeight calculation, N-row scroll behavior, parent spans, internal sub-block plan when used, chart/table/container/complex-diagram safety.
 7. 防挤压重排: `layoutFitContract` coverage for dense blocks, row-group expansion decision, full-row vacancy reflow, sibling fill/stretch rationale, typography/component floors, and unresolved `VIS-*` findings.
 8. 分块标题/背景样式: parent block `blockChromePattern` matrix, selection reason, title-stage geometry, body background relation, density, fallback, and proof hook.
@@ -41,6 +41,7 @@ Before finalizing, verify:
 - If a template is used, the chosen template is justified: topbar dark scroll, topbar light scroll, left-nav workbench, or frozen-title sci-fi cockpit.
 - Template adjustment points are named: `dashboard.config.ts`, `dashboard.dataset.json`, `dashboard.loader.ts`, `dataSources/registry.ts`, `demo/config-templates.ts`, widget files, registry/types, actions, styles, and assets as relevant.
 - The first viewport reaches the report's core question.
+- The first viewport exposes the overall conclusion or primary judgment, and downstream sections are ordered by how they explain that conclusion.
 - Logo asset discovery has been completed before implementation.
 - The Haier logo is present in the custom-page title/control area or the template logo slot.
 - Logo variant is correct: original color on light backgrounds, white on dark backgrounds.
@@ -65,6 +66,7 @@ Before finalizing, verify:
 - Peer component groups inside one large block use the internal exact `M * N` distribution only when `actualTotal > 4`; for `actualTotal <= 4`, they use a small-group layout. When the algorithm applies, prime `actualTotal` first becomes `layoutTotal = actualTotal + 1`, `layoutTotal = M * N`, `M` is columns, `N` is internal rows, `M >= N`, and `M - N` is minimal among valid factor pairs.
 - Blocks with repeated internal sub-blocks/components obey the `actualTotal > 4` threshold, expand the parent block with `heightExpansionRows = ceil(N * 2 / 3)` when more height is needed, and are split, tabbed, paginated, or moved to drawers when the valid factor pair is too dense.
 - Dense blocks carry `layoutFitContract` before layout acceptance. If one core block expands vertically, the same semantic row group expands/reflows together; sibling blocks must use added space for decision-relevant content or trigger a split/repack.
+- Every primary parent block has a conclusion-chain role: it is the overall conclusion, a supporting section with a partial conclusion, evidence for a section conclusion, a detail/action route, or a trust/source section. Orphan blocks fail layout acceptance.
 - If a crowded block moves to a wider or full-row span, the old vacancy is explicitly resolved through related-content fill, value-adding sibling expansion, row-group repack, or a named blocker. Empty stretching, masonry fragments, fake placeholders, and low-priority filler fail.
 - Typography and interaction floors are preserved: body/table text `>=12px`, weak metadata `>=11px`, card titles `>=14px`, KPI primary values `>=24px`, line-height `>=16px` for normal body rows, click/tap targets `>=28px`, card padding `>=12px`, and internal gaps `>=8px` except fixed `5px` sub-block inset/gap rules.
 - Components are not narrow, tiny, crowded, or forced into cramped spans. Increase span/height, split content, add scroll/zoom/fullscreen, or reduce visible labels before accepting the layout.

@@ -8,7 +8,7 @@ Load only the segment needed for the current mapping. For a full binding matrix,
 
 | Need | Read |
 | --- | --- |
-| Shared control, action, schema-impact, lineage, style, conclusion/action/definition contracts | `06a-binding-foundation-and-insight-types.md` |
+| Shared control, action, schema-impact, lineage, style, conclusion-chain, conclusion/action/definition contracts | `06a-binding-foundation-and-insight-types.md` |
 | Data-quality, review-impact, analysis-insight, numeric display contracts | `06b-binding-trust-review-analysis-types.md` |
 | KPI, target/actual, table, detail-evidence pattern types | `06c-binding-kpi-pattern-types.md` |
 | Ranking, Pareto, composition, decomposition/driver contracts | `06d-binding-ranking-composition-types.md` |
@@ -34,6 +34,8 @@ Use these values unless an existing project explicitly defines a different local
 - `componentType`: `card`, `chart`, `table`, `text-summary`, `drawer`, `task`, `action`, `custom`.
 - `visualType`: `line`, `bar`, `combo`, `candlestick`, `heatmap`, `pie`, `radar`, `path`, `sunburst`, `gauge`, `scatter`, `boxplot`, `parallel`, `map`, `graph`, `tree`, `treemap`, `sankey`, `funnel`, `metric-card`, `text-summary`, `table`, `pivot`, `ranking-list`, `composition-card`, `decomposition-card`, `distribution-card`, `anomaly-card`, `data-quality-card`, `matrix-decision-card`, `market-analysis-card`, `spatial-map-card`, `action-recommendation-card`, `operational-list`, `overlay-panel`, `composite-panel`, `micro-dashboard`, `state-feedback`, `other`.
 - `analysisPerspective`: `currentStatus`, `targetProgress`, `trendMovement`, `comparisonDifference`, `rankingContribution`, `compositionShare`, `decompositionDriver`, `distributionSpread`, `anomalyRisk`, `relationshipInfluence`, `flowTransfer`, `processBottleneck`, `conversionRetention`, `spatialDistribution`, `timePattern`, `multiDimensionalProfile`, `populationObject`, `matrixDecision`, `marketMovement`, `definitionHelp`, `conclusionInsight`, `causeDiagnosis`, `actionRecommendation`, `reviewImpact`, `dataQualityTrust`, `detailEvidence`, `filterExploration`.
+- `conclusionChain.role`: `overall-conclusion`, `section-conclusion`, `evidence`, `cause`, `detail`, `action`, `trust`, `context`.
+- `conclusionChain.evidenceVerb`: `proves`, `explains`, `locates`, `quantifies`, `contradicts`, `traces`, `recommends`, `verifies`.
 - `conclusionCardPattern`: `metric-evidence-conclusion`, `finding-action-conclusion`, `compact-conclusion-summary`.
 - `conclusionEvidenceBodyMode`: `kpi-strip-sparkline`, `trend-compare-chart`, `composition-structure`, `formula-driver-chain`, `segment-action-table`, `findings-action-list`. Use with `analysisPerspective: conclusionInsight`, `visualType: text-summary`, `analysisInsightContract.subtype: conclusion-card`, and `conclusionEvidenceBinding`.
 - `definitionHelpCardPattern`: `basic-metric-definition-card`, `comparison-caliber-card`, `formula-breakdown-help-card`, `scope-caliber-list-card`, `trend-meaning-card`, `share-denominator-help-card`, `condition-filter-help-card`, `calculation-example-card`. Use with `analysisPerspective: definitionHelp`, `visualType: text-summary`, and `definitionHelpEvidenceBinding`.
@@ -113,7 +115,7 @@ Minimum columns:
 - Component type, `visualType`, planned parent `columns * rows` span, and sub-block layout when present.
 - `layoutFitContract` for dense or metric-bearing components: family, priority, planned span, min outer/content size, metric-cell minimums, text row budget, required slots, density limits, overflow/reflow strategy, and squeeze failure code.
 - Sub-block spacing: `subBlockInset:5px` and `subBlockGap:5px` when the component lives inside a composed parent block.
-- Business question, answer atom, and semantic role.
+- Business question, answer atom, semantic role, and `conclusionChain` link: `overallConclusionId`, `supportingSectionId`, `sectionConclusionId`, role, evidence verb, and unresolved `RPT-*` gap when the chain cannot be completed.
 - Data source or dataset.
 - API ID/path and frontend compute policy when an API/backend handoff is in scope.
 - Row grain, primary key, and required fields.
@@ -151,6 +153,7 @@ Minimum columns:
 
 - A component without a data source is decorative unless explicitly static narrative.
 - A selected pattern card without a component/control/data/API/interaction/export/operations/validation impact is decorative. Mark it as backlog or remove it from completed scope.
+- A primary report component without a `conclusionChain` link is an orphan component. Add `overallConclusionId`, `supportingSectionId`, `sectionConclusionId`, role, and evidence verb, or move the component to detail/interaction/handoff.
 - A data-bearing component should have a matching API or provider contract when implementation or handoff is in scope. Do not make a complex page-level API the hidden source for multiple unrelated components.
 - KPI cards, conclusion cards, status cards, warning cards, and text-summary cards must have a source dataset or explicit static policy.
 - Visible sample/source modules are not automatically `must-have`. A module becomes `businessRequired` only when it directly answers the stated report question; otherwise it remains `sampleStructure` or `optionalEnhancement`.

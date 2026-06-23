@@ -49,12 +49,45 @@ Conclusion / judgment
 
 This does not require every layer to be a separate card. Use section rhythm, grouping, typography, and linked components to make the reading path visible.
 
+## Overall Conclusion Explanation Chain
+
+Every non-detail-only report must be organized as a conclusion chain:
+
+```text
+overallConclusion
+  -> supportingSection[]
+       -> sectionConclusion
+       -> evidenceComponent[]
+```
+
+The `overallConclusion` is the report's total judgment: it answers the primary decision question in one concrete sentence, with the current scope and period. It appears before explanatory sections and is the anchor for the first meaningful viewport.
+
+Each `supportingSection` explains why the overall conclusion is true, incomplete, risky, or actionable. A section is not just a visual region; it has a reason role such as driver, trend, comparison, structure, anomaly, trust, detail, or action.
+
+Each `sectionConclusion` is the partial judgment for that section. It must state what the section proves, weakens, contradicts, or leaves unknown about the `overallConclusion`.
+
+Each `evidenceComponent` exists to explain the `sectionConclusion`. Charts, KPI cards, tables, insights, and action blocks are valid only when their evidence role is clear:
+
+```text
+proves | explains | locates | quantifies | contradicts | traces | recommends | verifies
+```
+
+Rules:
+
+- Do not design a row of independent blocks and hope the reader infers the story.
+- Do not create a section without a section conclusion.
+- Do not place a component that cannot name which section conclusion it explains.
+- If evidence contradicts or weakens the overall conclusion, show that as a section conclusion or record an insufficient-data/risk state.
+- If the primary report is a detail-query, reconciliation, or source-record lookup page, the chain may start with "lookup result / reconciliation status" instead of an executive summary, but it still needs section purposes and component evidence roles.
+
 Failure patterns:
 
 - Detail table appears before the conclusion or status.
 - KPI cards are scattered without a lead question.
 - The first viewport shows many charts but no judgment.
 - Every block has equal weight and the reader must find the key point alone.
+- Sections have headings but no partial conclusions.
+- Components are grouped by chart type, source table, or visual balance instead of the conclusion they explain.
 - Source/freshness/trust is hidden even though the report supports decisions or reconciliation.
 
 ## Metric Explainability
@@ -152,17 +185,23 @@ Use this before accepting a report prototype:
 
 1. Can the reader know the main point within 3 seconds?
 2. Is there one visible primary conclusion or judgment?
-3. Does every primary metric have a comparison baseline?
-4. Can the reader locate why the result happened?
-5. Can the reader trace exact records or source evidence?
-6. Can the reader take or assign a next action when action is expected?
-7. Does the first viewport reduce thinking steps instead of adding interpretation work?
+3. Does the report declare `overallConclusion -> supportingSections -> sectionConclusion -> evidenceComponents`?
+4. Does every section explain the overall conclusion instead of becoming a same-weight module?
+5. Does every primary component explain one section conclusion with a named evidence role?
+6. Does every primary metric have a comparison baseline?
+7. Can the reader locate why the result happened?
+8. Can the reader trace exact records or source evidence?
+9. Can the reader take or assign a next action when action is expected?
+10. Does the first viewport reduce thinking steps instead of adding interpretation work?
 
 ## Failure IDs
 
 | ID | Fails when | Repair |
 | --- | --- | --- |
 | `RPT-NO-PRIMARY-QUESTION` | The report has no single primary decision question. | Define one lead question; split unrelated questions. |
+| `RPT-NO-OVERALL-CONCLUSION` | The report has no concrete total judgment for the current scope and period. | Write the overall conclusion before creating sections or components. |
+| `RPT-ORPHAN-SECTION` | A section/block does not explain the overall conclusion or has no section conclusion. | Add a section conclusion and reason role, merge it into a related section, or remove it. |
+| `RPT-ORPHAN-COMPONENT` | A chart/card/table/list cannot name the section conclusion it explains. | Bind it to a section conclusion with an evidence role, move it to detail/interaction, or remove it. |
 | `RPT-DETAIL-FIRST` | Detail tables/source rows appear before conclusion/status for a decision report. | Move judgment/evidence first; keep detail for traceability. |
 | `RPT-FLAT-METRIC-LIST` | Metrics are listed without cause/driver/detail/action relationships. | Build a metric relationship network and component sequence. |
 | `RPT-MISSING-COMPARISON` | A primary metric has no target, baseline, benchmark, denominator, or threshold. | Add a reference or downgrade the metric to context. |

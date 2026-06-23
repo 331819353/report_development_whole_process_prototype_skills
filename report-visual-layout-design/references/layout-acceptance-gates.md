@@ -12,6 +12,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Do not KPI-ize every module. KPI/metric-card blocks are allowed only for primary decision metrics with formula, baseline/target, status dictionary, and action/detail path. Explanations, evidence, rankings, tables, trust notes, anomalies, and actions keep task-matched component forms.
 - Do not make red/green status color the default layout grammar. Brand/product palette and neutral hierarchy own identity, primary emphasis, selection, and reading order; green/red/orange are reserved for documented success/warning/error/risk/finance/business-direction states and must be paired with text, sign, icon, or threshold labels.
 - Do not treat "dashboard" as the default layout mode. For analysis, review, detail, evidence, or decision-support pages, use an information-flow report structure: conclusion/status -> evidence -> driver/breakdown -> detail/action -> trust/source. Dashboard grids are valid only when current-state monitoring is the central decision.
+- Non-detail-only report layouts must carry the conclusion explanation chain: `overallConclusion -> supportingSection -> sectionConclusion -> evidenceComponent`. The first viewport must reveal the overall conclusion, and each downstream parent block must explain, qualify, trace, or act on that conclusion.
 - Report layout must encode a diagnostic sequence: current state -> target/baseline gap -> movement -> driver/dimension contribution -> abnormality/trust signal -> detail records -> owner/action. Overview-only first screens must still expose a route to diagnosis or detail.
 - Reserve visible or discoverable space for data updated time, source, statistical period/snapshot/batch/version, metric口径, permission scope, export scope, anomaly notes, and owner/action when the report is implementation-ready.
 - Do not spend primary layout real estate on decorative charts, equal-weight chart variety, or visual atmosphere while detail tables, drilldowns, owner/action blocks, or trust details are missing.
@@ -77,6 +78,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Page shell choice and layout rationale.
 - Anti-AI layout gate result: `antiAiRisk`, product-context proof, forbidden-default scan, first-screen-only risk, and brand/product memory-point decision.
 - Report decision layout gate when applicable: `reportDecisionRisk`, `RPT-*` findings, five decision-question answers, metric tree/diagnostic path, first-viewport decision answer, detail/action route, and trust-detail placement.
+- Conclusion-chain layout proof: overall conclusion placement, supporting section order, each section conclusion, component evidence roles, and unresolved `RPT-NO-OVERALL-CONCLUSION` / `RPT-ORPHAN-SECTION` / `RPT-ORPHAN-COMPONENT` findings.
 - Brand mode and logo placement.
 - Header/navigation/filter/toolbar structure.
 - Perspective navigation density and DOM no-clipping check plan for `1920x1080`.
@@ -98,6 +100,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - The first meaningful viewport answers the page's main question or exposes the main action.
 - The layout passes the anti-AI gate: it is task-specific, content-specific, state-aware, responsive, and not a generic polished template.
 - The layout passes the report decision gate for report surfaces: it is not a generic dashboard shell, the metric tree/diagnostic path is visible, and detail/action/trust areas are present or explicitly scoped out.
+- The layout passes the conclusion-chain gate for report surfaces: one overall conclusion is visible or intentionally discoverable first, every primary section has a section conclusion, and every primary component names the section conclusion it explains.
 - Unresolved `RPT-TEMPLATE-LAYOUT`, `RPT-NO-DATA-STORY`, `RPT-NO-ACTION`, or `RPT-DESIGNER-SHELL` findings block implementation-ready layout acceptance.
 - Any gradient, glow, glass, oversized radius, abstract imagery, or decorative atmosphere has an approved brand/template/sample rationale and does not replace information hierarchy.
 - Light gray-white SaaS/BI styling is accepted only when it is tokenized and task-specific. Equal-weight bordered boxes, generic KPI/chart grids, nested cards, or chart variety without decision roles fail as `VIS-GENERIC-SAAS-SHELL`, `VIS-HIERARCHY-FLAT`, or `VIS-COMPONENT-PILEUP`.

@@ -107,6 +107,38 @@ type StyleGeneralizationContract = {
   textOnlyReproduction: true;
 };
 
+type ConclusionChainRole =
+  | 'overall-conclusion'
+  | 'section-conclusion'
+  | 'evidence'
+  | 'cause'
+  | 'detail'
+  | 'action'
+  | 'trust'
+  | 'context';
+
+type ConclusionEvidenceVerb =
+  | 'proves'
+  | 'explains'
+  | 'locates'
+  | 'quantifies'
+  | 'contradicts'
+  | 'traces'
+  | 'recommends'
+  | 'verifies';
+
+type ConclusionChainLink = {
+  overallConclusionId: string;
+  overallConclusion: string;
+  supportingSectionId: string;
+  supportingSectionTitle: string;
+  sectionConclusionId: string;
+  sectionConclusion: string;
+  role: ConclusionChainRole;
+  evidenceVerb: ConclusionEvidenceVerb;
+  unresolvedGapCode?: 'RPT-NO-OVERALL-CONCLUSION' | 'RPT-ORPHAN-SECTION' | 'RPT-ORPHAN-COMPONENT';
+};
+
 type ConclusionCardPattern =
   | 'metric-evidence-conclusion'
   | 'finding-action-conclusion'

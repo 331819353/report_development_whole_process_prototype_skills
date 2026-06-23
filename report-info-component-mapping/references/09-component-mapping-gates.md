@@ -7,6 +7,9 @@ Detailed mapping constraints moved out of `SKILL.md`. Load this for implementati
 - A component is valid only when it answers a named business question.
 - A report component is valid only when it participates in a decision path: state, target/baseline, trend, driver, abnormality, detail, trust, or action. Generic KPI cards and decorative charts without this role are rejected.
 - A report mapping must declare one primary decision question. A bundle that only lists metrics, charts, or fields without the lead question is `RPT-NO-PRIMARY-QUESTION` and stays `partial`.
+- A report mapping must declare one overall conclusion before primary sections/components are finalized. Missing total judgment is `RPT-NO-OVERALL-CONCLUSION` and stays `partial`.
+- Every primary section must declare a section conclusion and its role in explaining the overall conclusion. Missing or unrelated section logic is `RPT-ORPHAN-SECTION` and stays `partial`.
+- Every primary component must declare `conclusionChain` with `overallConclusionId`, `supportingSectionId`, `sectionConclusionId`, role, and evidence verb. A component that cannot explain a section conclusion is `RPT-ORPHAN-COMPONENT` and must be moved to detail/interaction/handoff or removed.
 - Primary metrics must form a relationship network, not a flat list: result metric -> driver metric -> dimension/object -> detail record -> action/source. A flat KPI wall is `RPT-FLAT-METRIC-LIST` unless the page is explicitly a narrow status-monitoring cockpit with a documented scan task.
 - Every primary metric needs a comparison basis: target, prior period, same period last year, benchmark, historical range, threshold, or denominator/total for shares/rates. Missing comparison is `RPT-MISSING-COMPARISON` and the metric cannot be the primary judgment anchor.
 - Decision reports place judgment/evidence before dense detail. Detail-first layout is `RPT-DETAIL-FIRST` unless the report is explicitly detail-query, reconciliation-first, audit-first, or source-record lookup.
@@ -126,22 +129,23 @@ When this skill is used, produce at least:
 2. Display theme and selected pattern-card set when available.
 3. Style generalization status and selected pattern fields when screenshots, samples, or reusable visual pattern libraries are used.
 4. Report decision gate result when applicable: `reportDecisionRisk`, five decision-question answers, metric tree/data story path, trust/action details, and `RPT-*` gaps.
-5. Analysis perspective classification and answer atom decomposition.
-6. Parent block, sub-block, and component bundle mapping with priority.
+5. Conclusion explanation chain: `overallConclusion`, supporting sections, each section conclusion, component evidence roles, and any `RPT-NO-OVERALL-CONCLUSION` / `RPT-ORPHAN-SECTION` / `RPT-ORPHAN-COMPONENT` gaps.
+6. Analysis perspective classification and answer atom decomposition.
+7. Parent block, sub-block, and component bundle mapping with priority.
    Include `layoutFitContract` for dense or metric-bearing bundles before layout handoff.
    For sample/source restoration, include `sampleModuleRole`: `businessRequired`, `sampleStructure`, or `optionalEnhancement`.
-7. Result-content boundary: visible business-value content, interaction/contract-only items, supplemental handoff items, removed process artifacts, and any `RPT-PROCESS-ARTIFACT-VISIBLE` / `RPT-NO-BUSINESS-VALUE` gaps.
-8. Mock/data model: datasets, grain, fields, formulas, numeric display contracts, signals, realistic messy cases, edge cases.
-9. Filter/query model: filter surface, filters, option sources, defaults, cascades, permissions, query params.
-10. Control semantics model: perspective switches, global filters, local filters, and drilldown params, including schema impact.
-11. Navigation metric lineage: source dataset, field/formula, grain, affected filters, and period behavior for navigation percentages, rankings, and status lights.
-12. Interaction model: clickable objects, interaction type, parameters, state preservation, failure states.
-13. Unified parent-block/sub-block/data/filter/control/component/interaction binding matrix, including `analysisPerspective`, `sourcePatternIds`, and `styleGeneralization` when pattern cards or sample-derived styles are used.
-14. Report type routing.
-15. Layout and style constraints.
-16. Missing information, assumptions, and removed decorative components.
+8. Result-content boundary: visible business-value content, interaction/contract-only items, supplemental handoff items, removed process artifacts, and any `RPT-PROCESS-ARTIFACT-VISIBLE` / `RPT-NO-BUSINESS-VALUE` gaps.
+9. Mock/data model: datasets, grain, fields, formulas, numeric display contracts, signals, realistic messy cases, edge cases.
+10. Filter/query model: filter surface, filters, option sources, defaults, cascades, permissions, query params.
+11. Control semantics model: perspective switches, global filters, local filters, and drilldown params, including schema impact.
+12. Navigation metric lineage: source dataset, field/formula, grain, affected filters, and period behavior for navigation percentages, rankings, and status lights.
+13. Interaction model: clickable objects, interaction type, parameters, state preservation, failure states.
+14. Unified parent-block/sub-block/data/filter/control/component/interaction binding matrix, including `conclusionChain`, `analysisPerspective`, `sourcePatternIds`, and `styleGeneralization` when pattern cards or sample-derived styles are used.
+15. Report type routing.
+16. Layout and style constraints.
+17. Missing information, assumptions, and removed decorative components.
 
-For implementation tasks, items 6-11 are mandatory. Item 2 is also mandatory when the upstream workflow selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
+For implementation tasks, items 5-12 are mandatory. Item 2 is also mandatory when the upstream workflow selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
 
 ## Quick Quality Gate
 
@@ -150,6 +154,7 @@ Before finalizing, verify:
 - Every key business concern maps to at least one visible block or interaction.
 - The five report decision questions can be answered or have named gaps.
 - The good-report decision path can be answered or has named `RPT-*` gaps: primary question, first judgment, What/Why/So what, comparison baseline, metric relationship network, detail evidence, and next action/drilldown.
+- The conclusion explanation chain can be answered or has named `RPT-*` gaps: one overall conclusion, each supporting section has a section conclusion, and every primary component names the section conclusion it explains.
 - The component bundle includes a data story path appropriate to the report type: state -> target/baseline -> driver -> abnormality -> detail -> action.
 - Generic dashboard KPI/chart shells are removed or converted into metric-tree-backed components.
 - Visible content has passed the business-value screen; process artifacts are either removed or moved to contract, interaction, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence.

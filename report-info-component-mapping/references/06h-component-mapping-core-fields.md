@@ -1,6 +1,6 @@
 # 06h Component Mapping Core Fields
 
-Load this file for the first segment of `ComponentMapping`. Compose it with `06i` and `06j` when the full mapping schema is required.
+Load this file for the first segment of `ComponentMapping`. It depends on shared types from `06a-binding-foundation-and-insight-types.md`, including `ConclusionChainLink`. Compose it with `06i` and `06j` when the full mapping schema is required.
 
 ```ts
 type LayoutFitContract = {
@@ -64,6 +64,7 @@ type ComponentMappingCoreFields = {
   secondaryAnalysisPerspectives?: AnalysisPerspective[];
   answerAtom: string;
   semanticRole: string;
+  conclusionChain?: ConclusionChainLink;
   block: string;
   // Top-level page-grid occupant. Uses the report page `12 * N` grid.
   parentBlockId?: string;

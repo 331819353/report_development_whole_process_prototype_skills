@@ -11,6 +11,7 @@ The same business input should produce the same:
 - `styleGeneralization` status, canonical pattern reference, and adaptive variables when the style comes from screenshots, visual samples, or reusable pattern libraries.
 - `analysisPerspective` and `secondaryAnalysisPerspectives` before answer atoms when the business request is phrased as "看现状/看目标/看趋势/看排名/看原因/看行动" or equivalent.
 - Answer atoms and component priorities.
+- Conclusion explanation chain IDs and order: `overallConclusionId`, `supportingSectionId`, `sectionConclusionId`, `conclusionChain.role`, and `conclusionChain.evidenceVerb`.
 - Sample/source module roles when restoration input exists.
 - Component IDs, parent block IDs, sub-block IDs, dataset IDs, filter IDs, and action names.
 - `visualType`, control semantics, component schema impact, layout span category, row grain, and required fields.
@@ -76,6 +77,8 @@ Use these values unless the target project explicitly defines a different vocabu
 - `answerAtom`: `status`, `targetGap`, `variance`, `trend`, `structure`, `ranking`, `process`, `cause`, `anomaly`, `detail`, `action`, `evidence`, `dataTrust`, `narrative`.
 - `analysisPerspective`: `currentStatus`, `targetProgress`, `trendMovement`, `comparisonDifference`, `rankingContribution`, `compositionShare`, `decompositionDriver`, `distributionSpread`, `anomalyRisk`, `relationshipInfluence`, `flowTransfer`, `processBottleneck`, `conversionRetention`, `spatialDistribution`, `timePattern`, `multiDimensionalProfile`, `populationObject`, `matrixDecision`, `marketMovement`, `definitionHelp`, `conclusionInsight`, `causeDiagnosis`, `actionRecommendation`, `reviewImpact`, `dataQualityTrust`, `detailEvidence`, `filterExploration`. Use this before `answerAtom` when selecting card families from a business intent.
 - `semanticRole`: `judgment`, `comparison`, `movement`, `location`, `rank`, `conversion`, `driver`, `risk`, `record`, `operation`, `proof`, `trust`, `story`.
+- `conclusionChain.role`: `overall-conclusion`, `section-conclusion`, `evidence`, `cause`, `detail`, `action`, `trust`, `context`.
+- `conclusionChain.evidenceVerb`: `proves`, `explains`, `locates`, `quantifies`, `contradicts`, `traces`, `recommends`, `verifies`.
 - `block`: `header`, `filter`, `summary`, `kpi`, `targetVariance`, `trend`, `structure`, `ranking`, `process`, `decomposition`, `alert`, `detail`, `taskAction`, `evidence`, `dataTrust`, `footer`.
 - `priority`: `must-have`, `should-have`, `optional`.
 - `componentType`: `card`, `chart`, `table`, `text-summary`, `drawer`, `task`, `action`, `custom`.
@@ -158,6 +161,9 @@ Do not create near-synonyms such as `trendLine`, `line-chart`, `metricCard`, or 
 - Component IDs: lowerCamelCase, semantic and stable, such as `attritionTrend`, `riskEmployeeTable`, `revenueGapWaterfall`.
 - Parent block IDs: lowerCamelCase ending with `Block`, such as `attritionOverviewBlock` or `riskEvidenceBlock`.
 - Sub-block IDs: lowerCamelCase ending with `SubBlock`, such as `trendChartSubBlock` or `topRiskListSubBlock`.
+- Overall conclusion IDs: lowerCamelCase ending with `Conclusion`, such as `currentRiskConclusion`.
+- Supporting section IDs: lowerCamelCase ending with `Section`, such as `driverReasonSection` or `trustEvidenceSection`.
+- Section conclusion IDs: lowerCamelCase ending with `SectionConclusion`, such as `trendRiskSectionConclusion`.
 - Dataset IDs: lower_snake_case with prefixes: `dim_`, `fact_`, `agg_`, `ref_`, `log_`.
 - Filter IDs: lowerCamelCase and scope-oriented, such as `period`, `orgId`, `jobFamily`, `severity`, `ownerId`.
 - Perspective IDs: lowerCamelCase and view-oriented, such as `businessDomain`, `reportTheme`, `managementObject`, or `analysisPerspective`. Do not reuse ordinary filter IDs for first-level perspective switching.

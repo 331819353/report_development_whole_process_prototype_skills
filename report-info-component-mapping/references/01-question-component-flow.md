@@ -31,6 +31,44 @@ Use this chain to decide block priority:
 
 If a proposed component cannot be assigned to one of these layers, mark it as supplemental, detail-only, or remove it.
 
+## Conclusion Chain Mapping
+
+Before selecting blocks or component families, map the report as:
+
+```text
+overallConclusion
+  -> supportingSection
+       -> sectionConclusion
+       -> evidenceComponent
+```
+
+Use this chain to prevent flat dashboards:
+
+| Chain layer | Mapping requirement | Common component role |
+| --- | --- | --- |
+| `overallConclusion` | One total judgment for the current scope/period and the primary decision question | executive summary, conclusion strip, primary judgment KPI, status summary |
+| `supportingSection` | One reason, driver, risk, trust, detail, or action area that explains the total judgment | parent block or composite panel topic |
+| `sectionConclusion` | The partial judgment that the section proves, weakens, contradicts, or leaves unresolved | section summary, insight sentence, chart annotation, KPI subtitle |
+| `evidenceComponent` | The chart/card/table/list/action that explains the section conclusion | KPI, trend, decomposition, ranking, table, action, trust card |
+
+Each component mapping should carry:
+
+```text
+conclusionChain: {
+  overallConclusionId,
+  supportingSectionId,
+  sectionConclusionId,
+  role,
+  evidenceVerb
+}
+```
+
+Valid `role` values describe the component's job in the chain: `overall-conclusion`, `section-conclusion`, `evidence`, `cause`, `detail`, `action`, `trust`, or `context`.
+
+Valid `evidenceVerb` values describe how the component supports the section conclusion: `proves`, `explains`, `locates`, `quantifies`, `contradicts`, `traces`, `recommends`, or `verifies`.
+
+Components that cannot name a `supportingSectionId` and `sectionConclusionId` are not primary report components. Move them to a detail route, tooltip, dictionary, export, appendix/handoff, or remove them.
+
 ## Result Content Boundary
 
 Map the business answer, not the design process. Before creating blocks, classify every candidate item:
@@ -137,6 +175,7 @@ Rules:
 ## Component Selection Constraints
 
 - A component is valid only when it answers a named business question.
+- A primary report component is valid only when it declares its conclusion-chain role and the section conclusion it explains.
 - A primary metric component is valid only when it helps answer What, Why, or So what. Metrics that only show existence are context/detail fields.
 - A visible text, list, table, or control is invalid when it only exposes the design process. Use `RPT-PROCESS-ARTIFACT-VISIBLE` for visible 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, or implementation note that has not passed the business-value test.
 - A primary metric without target/baseline/benchmark/historical range/threshold/denominator is not a judgment component; downgrade it or add a comparison source.

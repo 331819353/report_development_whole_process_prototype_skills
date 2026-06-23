@@ -48,6 +48,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Preflight understanding gate: `$quality-gate-validation` `references/preflight-understanding-gate.md`
 - Default prototype design thinking: `$report-prototype-design-thinking` before display theme, report type, layout, or template decisions.
 - Good-report decision path: `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when report/dashboard/BI pages are designed, mapped, accepted, or repaired.
+- Conclusion explanation chain: `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` and `$report-info-component-mapping` `references/01-question-component-flow.md` when report sections/components are planned.
 - Startup/deployment self-check: `references/02-self-check-startup-deployment.md`
 - Output quality and avoid list: `references/03-output-quality-and-avoid.md`
 - Display themes and pattern chain: `references/04-common-display-theme-pattern-chain.md`
@@ -73,6 +74,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 9. Run anti-AI and report-decision gates before layout, styling, or code.
    Carry the visual constraints from the design-system gates: reduce uniform card borders, do not KPI-ize every module, inherit brand/product color before status colors, lower default green/red dependence, and choose information flow instead of generic dashboard collage unless current-state monitoring justifies it.
 10. Use `$report-info-component-mapping` to produce analysis perspectives, answer atoms, component bundles, datasets, filters, interactions, binding matrix, and a filter/value semantics table.
+    The binding matrix must carry the conclusion explanation chain: overall conclusion, supporting sections, section conclusions, and component evidence roles.
     Dense or metric-bearing bundles must carry `layoutFitContract` before layout handoff.
 11. Run the result-content boundary check before layout or implementation: visible report content must pass a business-value test, while design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes stay in contracts, interactions, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence by default.
 12. Decide `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly requests HTML/static/single-file HTML output or exact static HTML preservation.
@@ -93,6 +95,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Source-material requirement matrix: every user-provided message/file/source artifact, extracted facts, inferred assumptions, gaps, affected requirement areas, and whether it is output-format authority.
 - Output artifact decision: `vueTemplatePrototype` by default, or `htmlPrototype` with the user's explicit HTML/static-output wording.
 - Good-report decision-path output: primary decision question, 3-second main point, conclusion/evidence/cause/detail/action sequence, comparison baseline, metric relationship network, drilldown/action path, and `RPT-*` findings.
+- Conclusion explanation chain output: `overallConclusion`, supporting sections, each `sectionConclusion`, component evidence roles, and `RPT-NO-OVERALL-CONCLUSION` / `RPT-ORPHAN-SECTION` / `RPT-ORPHAN-COMPONENT` findings.
 - Result-content boundary: visible business-value conclusions/evidence/actions versus internal process artifacts; record any removed 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate, dataset-field, or implementation-note content and where it moved.
 - Style baseline decision when applicable: inherited source hierarchy, modern SaaS / BI Dashboard / UI Kit contract mapping, and unresolved `VIS-*` design-language findings.
 - Visual constraint decision: information-flow vs dashboard rhythm, KPI scope boundary, card-border reduction strategy, and brand-vs-status color rule.
@@ -123,6 +126,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Do not implement a prototype as a same-weight bordered-card grid, KPI wall, or red/green semantic-color page unless the report-decision gate records an explicit business reason and proof obligations.
 - Do not fill styled parent blocks with final business content before selecting or explicitly inheriting the block title/body chrome pattern. User-provided HTML/CSS block samples must become `blockChromePattern` evidence and controlled pattern contracts, not hidden one-off markup or output-format authority.
 - Do not implement a report prototype that is only an information collection. The page must help the reader make one primary judgment, then expose evidence, cause, detail, and action paths according to the report type.
+- Do not implement a report prototype as peer modules without a conclusion explanation chain. A non-detail-only report must start with one overall conclusion, then use sections with partial conclusions and components that explain those partial conclusions.
 - Do not render design-process artifacts as report results. 下钻链路 may appear as an actionable control, breadcrumb, drawer/jump route, or detail entry tied to current context; it must not appear as a standalone design-chain list. 指标清单, component mappings, binding matrices, workflow/gate outputs, dataset field catalogues, and implementation notes stay out of the visible page unless the user explicitly asks for visible documentation or the item passes the business-value test as conclusion, evidence, trust, or action content.
 - Do not reuse one sentinel value such as `all` for detail rows, aggregate rows, and empty/no-filter state. "All detail rows", "aggregate row", and "empty filter value" must be declared as separate semantics before implementation.
 - Do not choose custom development when a bundled template can satisfy the request.

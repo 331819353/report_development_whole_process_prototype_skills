@@ -53,7 +53,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 5. Run anti-AI and report-decision layout checks when the page is a report surface.
 6. Choose shell structure: topbar, left-nav, unified header/control area, fixed cockpit, existing shell, or custom shell.
 7. Place navigation, page/global filters, toolbar actions, brand/logo, refresh/export/fullscreen/status controls, and template-native filter entry when applicable.
-8. Plan the first meaningful viewport and downstream reading path.
+8. Plan the first meaningful viewport and downstream reading path from the conclusion explanation chain: overall conclusion first, supporting sections next, each section conclusion before its evidence components.
 9. Declare the page rhythm: `information-flow report`, `KPI dashboard`, `detail/query report`, `analysis narrative`, or `cockpit/status monitor`. Default to information flow unless the central question is current-state monitoring. Use typography, spacing, section rhythm, and subtle dividers before uniform card borders; reserve KPI/card grids for justified status-overview needs.
 10. Lay out top-level parent blocks in legal spans on the content-area grid: 12 equal columns after menu/sidebar width is deducted, and rowHeight from 8 visible row units after menu/header height is deducted. Row count is `N` and is not capped by the grid rule. Then decide whether each block contains one component or composed internal sub-blocks.
 11. Before filling detailed body content, choose or explicitly inherit one `blockChromePattern` for each top-level parent block through `references/block-chrome-style-patterns.md`. The block title/body chrome is chosen from business role, density, evidence type, and template family, then the internal content is placed inside the reserved body viewport.
@@ -65,6 +65,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Preflight understanding result when the work is implementation/repair/acceptance, plus surface classification, baseline inheritance references, and shell choice.
 - First-viewport hierarchy and reading path.
+- Conclusion-chain layout proof: placement of `overallConclusion`, supporting sections, each `sectionConclusion`, evidence components, and any unresolved `RPT-NO-OVERALL-CONCLUSION` / `RPT-ORPHAN-SECTION` / `RPT-ORPHAN-COMPONENT` gaps.
 - Page rhythm decision: information-flow report vs KPI/dashboard grid, KPI scope boundary, and card-border reduction strategy.
 - Header/navigation/filter/toolbar/brand structure.
 - Block chrome style matrix: `blockChromePattern`, selection reason, title-stage geometry, body background relation, density, decoration budget, overflow/fallback, and implementation proof hook for every styled parent block.
@@ -78,6 +79,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - The first meaningful viewport must answer the page's main question or expose the main action.
+- Non-detail-only report layouts must expose one overall conclusion and then arrange supporting sections that explain it. Each section needs a partial conclusion before the evidence components; chart/card/table placement without a conclusion-chain role is not layout-ready.
 - Do not repair or accept page layout before affected component families and their chart/table/filter/placement owners are identified.
 - Do not accept Haier/enterprise report layout that applies report grid rules but omits Haier application typography, color, spacing, base surface, and brand/logo constraints.
 - Layout must be driven by task, data density, business priority, state coverage, and next action, not decorative polish.
