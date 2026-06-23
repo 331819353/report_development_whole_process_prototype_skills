@@ -112,6 +112,7 @@ Detailed mapping constraints moved out of `SKILL.md`. Load this for implementati
 - Every implementation mapping selected from a viewing intent must declare `analysisPerspective`; when the same component supports multiple perspectives, declare one primary value plus `secondaryAnalysisPerspectives`.
 - Every binding matrix row must include `controlSemantics` and `componentSchemaImpact`. `componentSchemaImpact` must state whether the control changes metric names, component collection, table headers, dimensions, formulas/口径, domain vocabulary, or only narrows rows.
 - Every layout must fit the local `12 * N` rectangular grid and legal span rules documented in `references/07-routing-layout-quality.md`.
+- Dense or metric-bearing component mappings must declare `layoutFitContract` before layout handoff. This is mandatory for KPI overview cards, KPI groups, Composite Panels, Micro Dashboard Cards, chart + table/list cards, dense rankings, detail tables, and any component that has previously shown crowding. The contract must include minimum outer/content size, metric-cell minimums when applicable, text row budgets, required slots, density limits, and an overflow/reflow strategy. Missing contract is `VIS-BLOCK-SQUEEZED` risk and keeps readiness `partial`.
 - The top-level `12 * N` grid maps to parent blocks. A parent block may define internal sub-blocks, and components are placed in those sub-blocks when the components answer one shared business question. Sub-block composition always preserves `5px` parent inset and `5px` sibling gap. Do not flatten every component into its own top-level block when a composed parent block is clearer and passes fit checks.
 - Metric口径, calculation notes, and 指标清单 from requirement documents are supplemental unless page display is explicit. Do not create visible definition/help,口径卡, or指标清单 blocks by default.
 - Generated IDs, dataset names, filter IDs, `visualType`, action types, and matrix columns must follow the controlled vocabulary and naming rules in `08-generation-stability.md`.
@@ -127,6 +128,7 @@ When this skill is used, produce at least:
 4. Report decision gate result when applicable: `reportDecisionRisk`, five decision-question answers, metric tree/data story path, trust/action details, and `RPT-*` gaps.
 5. Analysis perspective classification and answer atom decomposition.
 6. Parent block, sub-block, and component bundle mapping with priority.
+   Include `layoutFitContract` for dense or metric-bearing bundles before layout handoff.
    For sample/source restoration, include `sampleModuleRole`: `businessRequired`, `sampleStructure`, or `optionalEnhancement`.
 7. Result-content boundary: visible business-value content, interaction/contract-only items, supplemental handoff items, removed process artifacts, and any `RPT-PROCESS-ARTIFACT-VISIBLE` / `RPT-NO-BUSINESS-VALUE` gaps.
 8. Mock/data model: datasets, grain, fields, formulas, numeric display contracts, signals, realistic messy cases, edge cases.

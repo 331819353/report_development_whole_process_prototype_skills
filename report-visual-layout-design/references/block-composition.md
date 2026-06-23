@@ -10,6 +10,8 @@ Do not treat internal sub-blocks as separate page-grid blocks. They live inside 
 
 Before deciding to create sub-blocks, choose the parent span from the default distribution in `grid-containers.md`, then check the usable pixel size in `block-size-constraints.md`. Parent blocks must have enough space for the dominant sub-block plus internal labels, controls, dividers, legends, gaps, and states.
 
+When sub-blocks are dense, metric-bearing, or part of a first-viewport answer row, also apply `block-size-constraints-05-anti-squeeze-reflow.md`. Internal composition must preserve the component's `layoutFitContract`; a parent block that cannot provide the child minimums must expand, split, tab, drawer/fullscreen, or downgrade before acceptance.
+
 Hierarchy:
 
 ```text
@@ -116,6 +118,7 @@ When one parent block or internal section contains repeated peer sub-blocks/card
 - After choosing the matrix, check whether the parent block needs more page-grid rows with `heightExpansionRows = ceil(N * 2 / 3)` without crowding.
 - Do not add arbitrary empty placeholders to force a nicer shape. The only allowed spare cell is the single prime-balancing cell created when the algorithm applies to a prime count, and it must not create fake metrics or mock data.
 - If the factor pair creates a narrow column or awkward long strip, split the peers by business meaning, tabs, pagination, drawer, or another parent block unless the pattern is explicitly a timeline, KPI strip, or navigation and passes pixel-fit checks.
+- If increasing a parent block's height makes sibling blocks in the same semantic row group sparse, run row-group expansion and vacancy reflow instead of stretching empty surfaces.
 
 ## Internal Sub-Block Patterns
 
@@ -215,6 +218,7 @@ Use when the summary explains how to read the table.
 - Use internal CSS grid/flex inside the block body.
 - Reserve explicit width, height, or grid track for each internal sub-block.
 - Each sub-block must declare its component owner, minimum useful width/height, `subBlockInset: 5px`, `subBlockGap: 5px`, state behavior, and overflow rule.
+- Each dense or metric-bearing sub-block must declare or inherit a `layoutFitContract` with minimum size, text rows, required slots, density limits, and fallback. Hidden overflow and font shrinkage cannot make a failed sub-block pass.
 - A sub-block may contain only one primary component unless it is a micro-group such as value+unit+trend, icon+label+value, or label+badge.
 - For 1280-wide pages, promote mixed chart/table/text composites to the next larger span tier unless the internal components are KPI/status-only.
 - Every chart/table subcontainer needs `min-width: 0`, `min-height: 0`, and a deterministic resize behavior.

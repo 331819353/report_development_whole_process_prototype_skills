@@ -24,6 +24,7 @@ Use `$report-visual-layout-design` for full page layout decisions; use this skil
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Size source map | `references/01-size-reference-map.md` |
 | Parent layout references | `$report-visual-layout-design` references: `block-size-constraints.md`, `grid-containers.md`, `block-composition.md`, `layout-acceptance-gates.md` |
+| Anti-squeeze row expansion, full-row vacancy reflow, and minimum typography/component floors | `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` |
 | Modern SaaS / BI Dashboard / UI Kit pileup and hierarchy constraints | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
 | KPI time-series card minimums for trend/change/YoY-MoM/cycle/volatility/forecast cards | `$report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
 | Component minimums for KPI overview cards, single-indicator KPI cards, KPI judgment cards, KPI goal execution / target attainment / gap / progress / milestone cards, KPI comparison analysis / comparison / group comparison / competitor / benchmark / variance cards, ranking / leaderboard / Top N / Pareto cards, composition / share / structure / market-share cards, decomposition / attribution / contribution / hierarchy cards, distribution / interval / density / quantile / boxplot cards, horizontal KPI cards, axis-line diagnostic KPI cards, axis-bar diagnostic KPI cards, axis-scatter diagnostic KPI cards, spatial-map diagnostic KPI cards, paired comparison diagnostic KPI cards, Composite Panel, Micro Dashboard Card, state feedback, dense tables/charts | `$report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
@@ -37,15 +38,16 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 1. Run the Preflight understanding gate for implementation, repair, or acceptance work; name affected blocks, child component families, viewport targets, hard constraints, missing evidence, and start decision.
 2. Identify the `1920x1080` viewport target, menu/sidebar occupied width, menu/header occupied height, content-area `12 * 8` sizing grid, `N`-row scroll behavior, parent blocks, child components, fixed-height surfaces, and density.
 3. Calculate usable width/height from the block units before deciding chart/table/KPI composition: `colWidth = (visibleWidth - menuOrSidebarWidth) / 12`; `rowHeight = (visibleHeight - menuOrHeaderHeight) / 8`.
-4. Check row count, header/filter/toolbar/legend/footer/state masks, child-component minimums, gaps, padding, line-height, and scroll areas.
-5. Decide whether to enlarge, split, move to drawer/fullscreen, paginate, scroll, or reduce component density.
+4. Check row count, header/filter/toolbar/legend/footer/state masks, child-component minimums, metric-cell minimums, typography floors, gaps, padding, line-height, and scroll areas.
+5. Decide whether to enlarge, row-group-expand, move to full row, split, move to drawer/fullscreen, paginate, scroll, or reduce component density. When one block grows taller, evaluate the same-row semantic group; when a block moves to a wider/full row, evaluate the old vacancy and sibling stretch/fill options.
 6. Require DOM overflow checks when code or URL exists: fixed-height cards, summary/ranking blocks, KPI tiles, nav items, Composite Panels, table bodies, and compact controls must pass `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`, or declare an intentional visible scroll, expand/collapse, drawer/fullscreen, pagination, or split strategy.
 7. Inspect `overflow: hidden` on parent/root containers. It is allowed for decorative masks or known non-content regions, but fails acceptance when it hides decision-critical text, ranking rows, controls, legends, values, or table content without a declared disclosure path.
 
 ## Required Output
 
 - Preflight understanding result when the work is implementation/repair/acceptance, plus target viewport and block/container size budget.
-- Fit decision for each dense block: fit, enlarge, split, scroll, drawer/fullscreen, or blocked.
+- Fit decision for each dense block: fit, enlarge, row-group-expand, full-row, split, scroll, drawer/fullscreen, or blocked.
+- Reflow decision when expansion changes neighboring blocks: semantic row group, sibling bottom alignment, old vacancy handling, allowed business-value fill, sibling stretch rationale, or blocked reason.
 - Overflow/cropping risks and required DOM/runtime checks, including selectors, target viewports, `scrollHeight/clientHeight`, `scrollWidth/clientWidth`, overflow CSS, and pass/fail result when code or URL exists.
 - Handoff to component/table/chart skills when internal fit rules are needed.
 
@@ -54,6 +56,9 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not approve a block only because it roughly looks acceptable; it must pass the `1920x1080` content-area grid, density, and DOM overflow checks that match this prototype stage.
 - Do not approve or edit a layout before identifying affected child component families and their owning chart/table/filter/placement skills.
 - Fixed-height KPI/card/navigation/table areas need explicit padding, line-height, gap, and overflow checks.
+- Do not use font shrinkage, hidden overflow, or arbitrary sibling stretching to make a failed block pass. Typography and interaction floors from `block-size-constraints-05-anti-squeeze-reflow.md` are hard gates unless a baseline-only exception is documented.
+- When a core block in a semantic row group needs additional height, siblings must expand with the row group, be enriched with decision-relevant content, or trigger a split/repack. Sparse empty shells and decorative stretching fail as `VIS-FILLER-STRETCH`.
+- When a crowded block moves to a wider or full row, the old vacancy must be resolved through related-content fill, value-adding sibling expansion, row-group repack, or a named blocker. Fake placeholders or low-priority filler fail as `VIS-PLACEHOLDER-FILL`.
 - Fixed-height summary/ranking/composite cards cannot pass with hidden overflow. They must prove content budget, pass DOM overflow checks within the `+2px` tolerance, or expose usable visible scroll, expand/collapse, pagination, drawer/fullscreen, or split behavior.
 - Dense charts, tables, KPI Overview Cards, Micro Dashboard Cards, Composite Panels, and state feedback surfaces need enough reserved area for labels, axes, legends, pagination, child minimums, metric-cell minimums, and states.
 - Do not solve a modern SaaS/BI visual request by shrinking more components into the same viewport. If the page needs extra cards or charts beyond the hierarchy budget, split, tab, drawer, fullscreen, or route to detail instead of accepting `VIS-COMPONENT-PILEUP` or `VIS-CHART-OVERWEIGHT`.

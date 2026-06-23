@@ -264,12 +264,20 @@ Recommended values:
 Text rules:
 
 - Metric title: `13-14px`, `18-22px` line-height.
-- Value: `24-36px` by default, up to `40px` only for wide/top-priority primary metric cards, `1.1-1.2` line-height, tabular numerals.
+- Value: `24-36px` by default, never below `24px`, up to `40px` only for wide/top-priority primary metric cards, `1.1-1.2` line-height, tabular numerals.
 - Unit: `12-16px`, `16-20px` line-height.
 - Comparison label/value: `12-13px`, `16-18px` line-height.
 - Target and attainment: `12-13px`, `16-18px` line-height.
 - Summary: `12-13px`, `18-20px` line-height, usually one line.
 - Description/freshness: `11-12px`, `16-18px` line-height.
+
+Shared hard floors:
+
+- Do not reduce metric title below `13px` inside KPI cards unless a block-owned title already replaces it; standalone visible card title floor is `14px`.
+- Do not reduce comparison, target, attainment, control, or unit text below `12px`.
+- Use `11px` only for weak freshness/source metadata with `16px` line-height and disclosure when the full text matters.
+- Keep card padding `>=12px`, internal KPI gaps `>=8px`, and click/tap targets `>=28px`.
+- KPI overview metric cells require `>=128px` width; the lead metric zone requires `>=180px`. If a row cannot provide those widths, reduce visible metrics to Top3, move secondary metrics to tooltip/drawer, split the card, or request a wider/full-row layout.
 
 Long value fallback:
 

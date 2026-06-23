@@ -30,6 +30,7 @@ Use `04a-kpi-card-patterns.md` after this file when the task needs reusable KPI 
 - Implementation-ready metric cards must also follow `12-internal-placement-algorithms.md`: declare `W`, `H`, `P`, `CW`, `CH`, the card content origin, the main visual center, and every slot's x/y, width, height, alignment, and responsive fallback.
 - Cards in the same group share height, padding, value baseline, unit placement, and status position.
 - Fixed-height KPI cards must declare a height budget before style acceptance: padding + label line-height + value line-height + comparison/status/footer line-heights + gaps must be `<=` card body height. The value, label, unit, trend, and footer rows all need explicit `line-height`.
+- KPI cards must preserve hard typography and slot floors: title `>=14px`, primary value `>=24px`, secondary comparison/value text `>=12px`, metadata `>=11px` only when weak, card padding `>=12px`, and tap target `>=28px`. Metric cells inside KPI overview cards must be `>=128px` wide, with a lead metric zone `>=180px` when present.
 - Centering must be proven with the actual rendered value group, not only with the allocated grid row. For default centered KPI cards, `abs(valueGroupRect.centerX - valueAnchorViewport.centerX) <= 8px` and `abs(valueGroupRect.centerY - valueAnchorViewport.centerY) <= 8px`; otherwise record `VIS-KPI-VALUE-OFFCENTER`. `valueAnchorViewport` is the card body after removing the reserved title/filter/footer bands, or the declared primary value zone for wide/split cards.
 - Implementation-ready KPI cards should expose stable semantic selectors such as `data-ui-role="kpi-card"`, `data-ui-role="kpi-value-anchor"`, `data-ui-role="kpi-value"`, and `data-ui-role="kpi-unit"`, or documented project equivalents. If only generic classes such as `.metric-number` exist, QA must inspect computed styles and cascade sources before passing alignment.
 - Template/global CSS cannot silently override the KPI value anchor. Rules such as `.metric-number { text-align: right; }`, `justify-content: flex-end`, `align-items: flex-end`, `margin-left: auto`, or absolute right anchoring fail centered KPI QA unless a component-local value-anchor rule overrides them and the measured X/Y center checks pass.
@@ -136,7 +137,7 @@ requiredContentHeight =
 requiredContentHeight <= H
 ```
 
-When the fit fails, remove or move optional content in this order: description, summary, sparkline, second comparison, target progress bar. Do not shrink the primary value below readable size or detach the unit from the centered value group.
+When the fit fails, remove or move optional content in this order: description, summary, sparkline, second comparison, target progress bar. Do not shrink the primary value below `24px`, reduce secondary text below `12px`, detach the unit from the centered value group, or hide the full metric meaning without tooltip/detail.
 
 Value anchor DOM contract:
 

@@ -111,6 +111,7 @@ Minimum columns:
 - Style generalization status, canonical pattern reference, pattern fields, adaptive variables, renderer owner, and text-only reproduction flag when the component style is sample-derived or reusable.
 - Priority.
 - Component type, `visualType`, planned parent `columns * rows` span, and sub-block layout when present.
+- `layoutFitContract` for dense or metric-bearing components: family, priority, planned span, min outer/content size, metric-cell minimums, text row budget, required slots, density limits, overflow/reflow strategy, and squeeze failure code.
 - Sub-block spacing: `subBlockInset:5px` and `subBlockGap:5px` when the component lives inside a composed parent block.
 - Business question, answer atom, and semantic role.
 - Data source or dataset.

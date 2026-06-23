@@ -10,12 +10,13 @@ When asked to design a report visual layout, use this structure:
 4. 品牌风格: Haier logo asset discovery result, logo variant or placeholder, Haier blue/white palette, typography, spacing, density, surfaces.
 5. 内容结构: summary, breakdown, evidence, detail, action, or another report-appropriate flow.
 6. 栅格方案: `1920x1080` content grid, menu/sidebar occupied width, menu/header occupied height, 12-column split, 8 visible row-unit sizing basis, columnWidth/rowHeight calculation, N-row scroll behavior, parent spans, internal sub-block plan when used, chart/table/container/complex-diagram safety.
-7. 分块标题/背景样式: parent block `blockChromePattern` matrix, selection reason, title-stage geometry, body background relation, density, fallback, and proof hook.
-8. 关键组件: parent block -> sub-block -> component placement for KPI cards, charts, tables, Analysis & Insight components, text summaries, drawers/popovers, toolbar actions.
-9. 模板路由: chosen template and config files to adjust.
-10. 交互与状态: filters, drilldown, drawer/modal, refresh/export/fullscreen, empty/loading/error/no-permission, responsive behavior.
-11. 视角导航验收: domain navigation, Tabs, Segments, or other first-level perspective controls; include `1920x1080` DOM no-clipping results.
-12. 设计校验: first-viewport value, sample fidelity when applicable, brand correctness, grid correctness, visual restraint, no clipping/overlap.
+7. 防挤压重排: `layoutFitContract` coverage for dense blocks, row-group expansion decision, full-row vacancy reflow, sibling fill/stretch rationale, typography/component floors, and unresolved `VIS-*` findings.
+8. 分块标题/背景样式: parent block `blockChromePattern` matrix, selection reason, title-stage geometry, body background relation, density, fallback, and proof hook.
+9. 关键组件: parent block -> sub-block -> component placement for KPI cards, charts, tables, Analysis & Insight components, text summaries, drawers/popovers, toolbar actions.
+10. 模板路由: chosen template and config files to adjust.
+11. 交互与状态: filters, drilldown, drawer/modal, refresh/export/fullscreen, empty/loading/error/no-permission, responsive behavior.
+12. 视角导航验收: domain navigation, Tabs, Segments, or other first-level perspective controls; include `1920x1080` DOM no-clipping results.
+13. 设计校验: first-viewport value, sample fidelity when applicable, brand correctness, grid correctness, visual restraint, no clipping/overlap.
 
 ## 2. Quality Checklist
 
@@ -63,6 +64,9 @@ Before finalizing, verify:
 - Composite Panel blocks declare one shared topic, one primary child, child roles/priorities/min sizes, default `2-3` children and normal max `4`, primary child visual weight `50-70%`, `contentH >= CH * 0.60`, shared local filter/legend/unit, linked interaction, detail-preview limit, responsive fallback, and parent/child state scope before layout acceptance.
 - Peer component groups inside one large block use the internal exact `M * N` distribution only when `actualTotal > 4`; for `actualTotal <= 4`, they use a small-group layout. When the algorithm applies, prime `actualTotal` first becomes `layoutTotal = actualTotal + 1`, `layoutTotal = M * N`, `M` is columns, `N` is internal rows, `M >= N`, and `M - N` is minimal among valid factor pairs.
 - Blocks with repeated internal sub-blocks/components obey the `actualTotal > 4` threshold, expand the parent block with `heightExpansionRows = ceil(N * 2 / 3)` when more height is needed, and are split, tabbed, paginated, or moved to drawers when the valid factor pair is too dense.
+- Dense blocks carry `layoutFitContract` before layout acceptance. If one core block expands vertically, the same semantic row group expands/reflows together; sibling blocks must use added space for decision-relevant content or trigger a split/repack.
+- If a crowded block moves to a wider or full-row span, the old vacancy is explicitly resolved through related-content fill, value-adding sibling expansion, row-group repack, or a named blocker. Empty stretching, masonry fragments, fake placeholders, and low-priority filler fail.
+- Typography and interaction floors are preserved: body/table text `>=12px`, weak metadata `>=11px`, card titles `>=14px`, KPI primary values `>=24px`, line-height `>=16px` for normal body rows, click/tap targets `>=28px`, card padding `>=12px`, and internal gaps `>=8px` except fixed `5px` sub-block inset/gap rules.
 - Components are not narrow, tiny, crowded, or forced into cramped spans. Increase span/height, split content, add scroll/zoom/fullscreen, or reduce visible labels before accepting the layout.
 - Shape- or density-sensitive visuals such as gauges, radar, maps, pies, Combo charts, funnel charts, sunburst charts, treemap/rectangular tree maps, parallel-coordinate charts, path/user/process paths, tree/hierarchical trees, relation/network graphs, SVG/canvas diagrams, flow paths, and custom ECharts graphics use aspect-compatible or axis-density-compatible blocks or centered uniform fit boxes. A warped curve, stretched map, oval radar/circle, squeezed gauge, false/compressed dual axis, clipped/overcrowded Combo, clipped/overcrowded funnel, clipped/overcrowded sunburst, clipped/overcrowded treemap, clipped/overcrowded parallel-axis plot, clipped/overcrowded path, all-expanded/clipped tree, or clipped/hairball relation graph fails layout QA.
 - Parallel-coordinate blocks reserve plot height, axis-title and bottom-label bands, legend/filter zones, `axisGap >= 56px`, `plotH >= CH * 0.48`, and fallback to dimension filtering, horizontal scroll, sampling/aggregation, fullscreen, or table/scatter/bar when dimensions or sample lines exceed readability.

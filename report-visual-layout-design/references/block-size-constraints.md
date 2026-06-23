@@ -10,6 +10,7 @@ This file is now a routing index. Load the smallest matching split file instead 
 | Component size requirements | `block-size-constraints-02-component-requirements.md` |
 | Complexity-based size expansion | `block-size-constraints-03-complexity-expansion.md` |
 | Practical presets, composite block checks, layout rules, selection steps | `block-size-constraints-04-presets-composite-selection.md` |
+| Anti-squeeze design gate, row-group expansion, vacancy reflow, typography floors | `block-size-constraints-05-anti-squeeze-reflow.md` |
 
 ## Loading Guidance
 

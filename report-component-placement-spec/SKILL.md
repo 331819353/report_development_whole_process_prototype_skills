@@ -25,6 +25,7 @@ Use `$report-layout-size-constraint-spec` for parent block size; use this skill 
 | Placement source map | `references/01-placement-reference-map.md` |
 | Placement routing index | `$report-component-style-design` `references/12-internal-placement-algorithms.md` |
 | Coordinate variables and local-filter geometry | `$report-component-style-design` `references/12a-placement-foundation-controls.md` |
+| Anti-squeeze fit contract and minimum typography/component floors | `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when slot geometry is crowded or a parent span is smaller than the component floor |
 | Component acceptance gates | `$report-component-style-design` `references/12-component-acceptance-gates.md` |
 
 ## Anti-Laziness Gate
@@ -34,9 +35,9 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Workflow
 
 1. Run the Preflight understanding gate for implementation, repair, or acceptance work; name parent container, component family, local controls, density, state set, hard constraints, missing evidence, and start decision.
-2. Confirm parent container width/height, padding, component family, data density, local controls, and state set.
+2. Confirm parent container width/height, padding, component family, data density, local controls, state set, and any upstream `layoutFitContract`.
 3. Load `references/01-placement-reference-map.md`, then load only the exact placement file for that component family.
-4. Define container variables, slot rectangles, title/filter/legend/metric/plot/table/body/footer coordinates, alignment, responsive degradation, and state geometry.
+4. Define container variables, slot rectangles, title/filter/legend/metric/plot/table/body/footer coordinates, alignment, typography and slot floors, responsive degradation, and state geometry.
 5. Pair placement with the visual/content skill for the component family, such as `$report-chart-design-spec`, `$report-table-design-spec`, or `$report-filter-control-design-spec`.
 6. Convert coordinates into proof obligations when implementation or URL exists: selectors/semantic roles, slot rectangles, measured bounding boxes, overlap/overflow assertions, responsive tier evidence, and state-mask geometry.
 7. Run acceptance gates before marking implementation-ready placement as ready.
@@ -45,6 +46,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Preflight understanding result when the work is implementation/repair/acceptance, plus component family, parent container, and selected placement reference.
 - Slot and coordinate rules with size tiers and fallback order.
+- Typography, line-height, metric-cell, tap-target, padding/gap, and component-family minimum floors, plus `layoutFitContract` pass/fail when present.
 - Local-filter/control placement when present.
 - State geometry for loading, empty, error, no-permission, stale, and dense data.
 - Proof obligations: selectors or semantic roles, slot rectangles, bounding-box assertions, overflow/overlap checks, responsive tier checks, and exception conditions for advisory placement defaults.
@@ -54,6 +56,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Do not output implementation-ready component specs without measurable slot geometry.
 - Do not define slot coordinates before parent container dimensions, component family, density, local controls, and state set are known.
+- Do not accept placement that relies on shrinking below minimum typography/component floors or auto-shrinking flex/grid tracks. If the upstream parent span is too small, return the defect to layout with the relevant `VIS-*` squeeze code.
 - Do not place local controls where they collide with title, legend, unit, metric strip, or action areas.
 - Do not accept geometry that only fits the happy path and fails state masks, long labels, or dense data.
 - Implementation-ready placement rules are `MUST/fail` when they affect alignment, overlap, overflow, state masks, local controls, chart/table/KPI evidence, or responsive fallback. Advisory defaults need explicit exception criteria and measured proof.

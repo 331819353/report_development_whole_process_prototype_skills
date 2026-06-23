@@ -81,6 +81,8 @@ The prototype-stage bundled templates use one fixed review preset. If a downstre
 
 When one parent block contains internal sub-blocks, check the parent block against the most demanding sub-block plus the required `5px` parent-to-sub-block inset, `5px` sibling sub-block gaps, headers, dividers, controls, legends, and state surfaces. Then check every sub-block against the component it owns.
 
+For crowded parent rows or dense sub-block groups, also load `block-size-constraints-05-anti-squeeze-reflow.md` and prove `layoutFitContract`, row-group expansion, vacancy reflow, typography floors, and component floors before accepting the layout.
+
 For composed parent blocks:
 
 ```text
@@ -137,6 +139,7 @@ If the current parent body height is smaller, expand the parent block's row span
 - Do not accept fixed-height navigation/cards whose measured DOM has `scrollHeight > clientHeight + 2` or `scrollWidth > clientWidth + 2`, even if the screenshot looks acceptable.
 - Do not duplicate block titles inside chart/table/KPI bodies.
 - Do not make peer components too narrow, tiny, crowded, or unreadable; when `actualTotal > 4`, use internal exact `M * N` layouts, expand the parent block, split sections, or move details to drawer/fullscreen.
+- Do not solve a failed internal matrix by shrinking fonts, letting cells flex below their minimum, or stretching sparse sibling blocks. Use row-group expansion, full-row move with vacancy reflow, split, tab, drawer/fullscreen, pagination, or density reduction.
 - Do not treat a dense Micro Dashboard Card as a normal Composite Panel. Use `micro_dashboard_card` sizing rules, child minimums, and lower-priority collapse; otherwise split, tab, drawer, or fullscreen.
 - Do not use a generic `chart`, `table`, `map`, or `other` label when a precise component type exists.
 - Do not use more than one internal scroll area in one block.
@@ -154,12 +157,14 @@ If the current parent body height is smaller, expand the parent block's row span
 5. Classify the dominant component with the detailed size table and validate every sub-block component against its own minimum.
 6. Apply base minimum size and complexity expansion.
 7. Compute actual parent outer/body pixel size and sub-block viewport sizes.
-8. For fixed-height navigation/cards, declare padding, explicit line-height, row count, gaps, and footer/status heights; verify `requiredContentHeight <= cardHeight`.
-9. For domain navigation, Tabs, and Segments, run DOM no-clipping checks at `1920x1080`: `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`.
-10. Keep the default span if it passes; otherwise try the next larger candidate span or redesign the block.
-11. If total report height exceeds the first viewport, keep block sizes and enable vertical scrolling.
-12. If the block still fails any constraint, either:
+8. If a dense component has `layoutFitContract`, verify the selected parent/sub-block viewport against its minimums, slot budget, text rows, metric-cell minimums, and density limits.
+9. For fixed-height navigation/cards, declare padding, explicit line-height, row count, gaps, and footer/status heights; verify `requiredContentHeight <= cardHeight`.
+10. For domain navigation, Tabs, and Segments, run DOM no-clipping checks at `1920x1080`: `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`.
+11. Keep the default span if it passes; otherwise try row-group expansion, the next larger candidate span, full-row move with vacancy reflow, or redesign the block.
+12. If total report height exceeds the first viewport, keep block sizes and enable vertical scrolling.
+13. If the block still fails any constraint, either:
    - increase the span,
+   - expand and repack the semantic row group,
    - switch simultaneous sub-blocks/components to tabs/segmented views,
    - move details to a drawer/modal,
    - or split into separate `12 * N` blocks.

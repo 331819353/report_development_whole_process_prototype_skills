@@ -3,6 +3,52 @@
 Load this file for the first segment of `ComponentMapping`. Compose it with `06i` and `06j` when the full mapping schema is required.
 
 ```ts
+type LayoutFitContract = {
+  componentFamily: string;
+  priority: 'P1' | 'P2' | 'P3' | 'P4';
+  plannedSpan?: { columns: number; rows: number };
+  minOuterW: number;
+  minOuterH: number;
+  minContentW?: number;
+  minContentH?: number;
+  metricCellMinW?: number;
+  requiredTextRows?: Array<{ slot: string; lines: number; fontSizePx: number; lineHeightPx: number }>;
+  requiredSlots?: Array<
+    | 'title'
+    | 'value'
+    | 'evidence'
+    | 'action'
+    | 'source'
+    | 'state'
+    | 'legend'
+    | 'axis'
+    | 'tableBody'
+    | 'footer'
+  >;
+  densityLimits?: {
+    visibleMetrics?: number;
+    visibleRows?: number;
+    visibleColumns?: number;
+    visibleCategories?: number;
+    visibleSeries?: number;
+    visibleLabels?: number;
+  };
+  overflowStrategy:
+    | 'enlarge'
+    | 'row-group-expand'
+    | 'full-row'
+    | 'split'
+    | 'tab'
+    | 'drawer'
+    | 'fullscreen'
+    | 'paginate'
+    | 'scroll'
+    | 'downgrade'
+    | 'blocked';
+  reflowNotes?: string[];
+  squeezeFailureCode?: string;
+};
+
 type ComponentMappingCoreFields = {
   id: string;
   // Metadata for the layout/block title. Do not render this again inside the component body.
@@ -26,6 +72,7 @@ type ComponentMappingCoreFields = {
   subBlockRole?: SubBlockRole;
   componentType: 'card' | 'chart' | 'table' | 'text-summary' | 'drawer' | 'task' | 'action' | 'custom';
   visualType: string;
+  layoutFitContract?: LayoutFitContract;
   kpiCardPattern?: KpiCardPattern;
   kpiCardOrientation?: KpiCardOrientation;
   kpiAxisLineEvidenceMode?: KpiAxisLineEvidenceMode;

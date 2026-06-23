@@ -52,6 +52,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Output quality and avoid list: `references/03-output-quality-and-avoid.md`
 - Display themes and pattern chain: `references/04-common-display-theme-pattern-chain.md`
 - Block title/body chrome style selection: `$report-visual-layout-design` `references/block-chrome-style-patterns.md` when source samples define parent-block title/background style or when styled report blocks are needed.
+- Anti-squeeze row-group expansion and vacancy reflow: `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when dense KPI/chart/table/composite blocks are mapped, laid out, repaired, or accepted.
 - Modern SaaS / BI Dashboard / UI Kit positive style contract: `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when that design language is requested.
 - Detailed prototype implementation gates: `references/05-prototype-implementation-gates.md`
 - Code-file ledger: `$code-change-ledger-management` before code edits.
@@ -72,6 +73,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 9. Run anti-AI and report-decision gates before layout, styling, or code.
    Carry the visual constraints from the design-system gates: reduce uniform card borders, do not KPI-ize every module, inherit brand/product color before status colors, lower default green/red dependence, and choose information flow instead of generic dashboard collage unless current-state monitoring justifies it.
 10. Use `$report-info-component-mapping` to produce analysis perspectives, answer atoms, component bundles, datasets, filters, interactions, binding matrix, and a filter/value semantics table.
+    Dense or metric-bearing bundles must carry `layoutFitContract` before layout handoff.
 11. Run the result-content boundary check before layout or implementation: visible report content must pass a business-value test, while design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes stay in contracts, interactions, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence by default.
 12. Decide `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly requests HTML/static/single-file HTML output or exact static HTML preservation.
 13. Decide `pageShellPath`: default `template`; use `custom` only for explicit custom/free design, exact restoration, existing shell preservation, HTML/static output, or documented template limitation.
@@ -101,7 +103,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Anti-AI and report-decision gate result.
 - Analysis perspective and component/data/filter/control/interaction binding matrix.
 - Filter/value semantics table with `detailValue`, `aggregateValue`, `emptyFilterValue`, display label, data-row role, query behavior, and primary-key eligibility.
-- Layout plan, selected template/custom reason, filter surface mapping, perspective-layer mapping, baseline inheritance decision, and implementation target path.
+- Layout plan, selected template/custom reason, filter surface mapping, perspective-layer mapping, baseline inheritance decision, anti-squeeze row-group/vacancy reflow decisions when triggered, and implementation target path.
 - Files changed, code-ledger proof, verification commands, URL or blocker.
 - Quality-gate findings and readiness: `ready`, `partial`, or `blocked`.
 
@@ -114,6 +116,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Do not treat Haier UI and report design-system baselines as alternatives for Haier/enterprise report pages; inherit Haier application tokens/base controls and then apply report-specific rules.
 - Do not rely only on this top-level workflow when a chart, table, filter, component-placement, or reusable component standard is affected; route to the specific front-door skill before implementation or acceptance.
 - Do not implement before display theme, report type, binding matrix, layout, and template/custom shell decision exist.
+- Do not implement a dense KPI/chart/table/composite layout before `layoutFitContract` and anti-squeeze reflow decisions exist. Crowding must be resolved by row-group expansion, wider/full-row move with vacancy handling, split/tab/drawer/fullscreen/pagination, or density reduction, not by font shrinkage, hidden overflow, or empty sibling stretching.
 - Do not start implementation from raw HTML, Markdown/MD, copied source, screenshots, or docs before converting them into requirement facts, assumptions, gaps, bindings, and acceptance checks.
 - Do not output HTML or static single-file prototypes merely because the user provided HTML/MD/source files; HTML output requires an explicit user request for HTML/static/single-file HTML or exact static preservation.
 - Do not implement a requested modern SaaS / BI Dashboard / UI Kit page before the positive style contract is mapped to tokens, hierarchy, component count, and chart-lightness proof obligations.

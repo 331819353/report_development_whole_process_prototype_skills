@@ -5,6 +5,7 @@ Start with `$report-component-style-design` `references/12-internal-placement-al
 | Component family | Placement reference |
 | --- | --- |
 | Shared coordinate variables, local-filter geometry, required placement chapter | `$report-component-style-design` `references/12a-placement-foundation-controls.md` |
+| Anti-squeeze fit contract, row reflow handoff, typography/component floors | `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` |
 | Analysis & Insight, text summary, KPI cards, metric cards | `$report-component-style-design` `references/12b-placement-insight-kpi.md` |
 | Target/actual bar | `$report-component-style-design` `references/12c1-placement-target-actual-bars.md` |
 | Line trend | `$report-component-style-design` `references/12c2-placement-line-trends.md` |

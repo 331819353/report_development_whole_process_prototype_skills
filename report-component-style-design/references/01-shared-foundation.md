@@ -35,6 +35,18 @@ Apply these rules to every component before applying component-specific rules.
 - Use tabular numerals for values that need comparison.
 - Fixed-height component text must declare explicit `line-height`, especially domain names, metric names, KPI values, percentage values, badges, helper text, and footer labels. Do not rely on browser default line boxes for large numbers or compact card rows.
 
+Hard floors:
+
+- Body, explanation, table, and list text must not go below `12px`.
+- Weak metadata such as long source/freshness may use `11px` only when it is not decision-critical and has enough line height; otherwise use at least `12px`.
+- Card and block titles must not go below `14px`; implementation-ready report blocks should use `16px` when the title is the visible section anchor.
+- KPI primary values must not go below `24px`; top-priority KPI values should start at `28px` and may use `36-40px` only after fit proof.
+- Normal body line boxes must be at least `16px`; dense metadata line boxes must be at least `15px`.
+- Click/tap targets must be at least `28px` high, preferably `32px+`.
+- Card padding must be at least `12px`, and component internal gaps must be at least `8px` unless the rule is the fixed `5px` parent sub-block inset/gap.
+
+If these floors do not fit, increase span/height, split, tab, paginate, use drawer/fullscreen/detail, reduce visible density, or downgrade the component. Do not shrink typography below the floor to make a block pass.
+
 ## Global UI And Metric Semantics
 
 - Components inherit the page/global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and control styles. HTML/source/custom layouts may control structure, but they must not introduce one-off local colors or surfaces that conflict with the global UI.
@@ -88,6 +100,7 @@ requiredContentHeight <= componentHeight
 - If a component is too narrow, too small, or crowded for readable labels/values/legends/axes, increase its span or height, split it, use scroll/zoom/fullscreen/drawer/table fallback, or reduce visible label density. Do not solve crowding by overlap, unreadable font sizes, or hidden critical data.
 - Repeated peer tiles inside one large parent block or sub-block group should use internal exact `M * N` distribution only when `actualTotal > 4`; for `actualTotal <= 4`, use a small-group layout based on content and block shape. When the algorithm applies, normally `layoutTotal = actualTotal`; when `actualTotal` is prime, use `layoutTotal = actualTotal + 1`; then choose `layoutTotal = M * N`, columns `M >= N`, and minimal `M - N` among valid factor pairs. Then check whether the parent block must grow vertically with `heightExpansionRows = ceil(N * 2 / 3)`. Do not add arbitrary empty placeholders; the only allowed spare cell is the single prime-balancing cell created when the algorithm applies to a prime count, and it must not create fake metrics or mock data. Split the peer group when the factor pair creates an unreadable strip.
 - Composite widgets and parent blocks with internal sub-blocks need an internal fit pass after the parent block grid passes. Summary columns, nested KPI grids, comparison tiles, inline metric cells, and chart/table sub-blocks must be measured against their real sub-container width/height; widen, wrap, stack, scroll, or split before accepting clipped text.
+- Component fit must honor the upstream `layoutFitContract` when present. If the rendered component cannot meet its min outer/content size, metric-cell width, text rows, required slots, or density limit, return the failure to layout as `VIS-BLOCK-SQUEEZED`, `VIS-KPI-CELL-SQUEEZED`, or the declared squeeze failure code instead of solving locally with font shrinkage or hidden overflow.
 - Internal fit measurement must subtract `5px` parent inset on each edge and `5px` sibling gaps before deciding whether labels, values, legends, charts, or tables fit.
 - A fixed two-column internal grid is allowed only when each cell can hold its longest expected label/value/unit/helper text at readable size. Otherwise use responsive columns, minmax tracks, wrapping, larger min-height, or fewer visible cells.
 - When values or labels overlap, keep only key labels visible: latest/current, max, min, Top N, target gap, anomaly, selected item, first/last, or evenly sampled ticks.
