@@ -40,42 +40,42 @@ export const cockpitConfig: DashboardConfig = {
       titleBackgroundHeight: 164,
       // 标题背景从图片 y=多少开始显示。当前非透明内容从顶部开始，所以为 0。
       titleVisibleTop: 0,
-      // 标题/菜单区实际占用高度。内容区从 160px 之后按 8 个可视行单元计算行高。
-      titleVisibleHeight: 160,
+      // 标题/菜单区实际占用高度。当前顶部菜单栏视觉高度为 94px。
+      titleVisibleHeight: 94,
       // 主标题文字的垂直微调。负数向上，正数向下。
-      titleOffsetY: -8,
+      titleOffsetY: 8,
       // 顶部普通图标按钮尺寸，包括刷新、导航、筛选、下载等按钮高度。
       controlSize: 20,
       // 左侧 logo 的视觉宽度。
       controlLogoWidth: 48,
       // logo 横向微调。以左侧导航标题区域的左边界为基准，正数向右。
       controlLogoOffsetX: 0,
-      // logo 和全屏按钮相对普通顶部工具行的上移距离。
-      controlLogoLift: 50,
+      // logo 相对下线工具行的上移距离；用于形成 logo 上线、导航/按钮下线的双基准。
+      controlLogoLift: 59,
       // 普通图标按钮宽度。刷新、导航、筛选、下载保持这个宽度。
       controlIconWidth: 30,
       // 顶部工具按钮之间的间距。
       controlGroupGap: 10,
       // 顶部普通工具行距离标题区底部的距离。数值越大，按钮越向上。
-      controlBottom: 30,
+      controlBottom: 1,
       // 左右两侧顶部控件距离画布边缘的距离。
       controlInset: 20,
       // 背景图平铺单元宽度，通常和设计稿宽度一致。
       backgroundTileWidth: 1920,
       // 背景图平铺单元高度，通常和设计稿高度一致。
       backgroundTileHeight: 1080,
-      // 数学分块不设 gap，保证 1920/12=160、(1080-160)/8=115；视觉间距由 cellPadding 和卡片 padding 承担。
+      // 数学分块不设 gap，保证 1920/12=160、(1080-94)/8=123.25；视觉间距由 cellPadding 和卡片 padding 承担。
       contentGap: 0,
     },
 
     // 内容网格的公共样式配置。每个页面具体怎么分块，在 nav[].layoutRows 里配置。
     grid: {
-      // 内容区起始 y 坐标。标题/菜单区冻结后，内容从 160px 位置开始。
-      contentStartY: 160,
+      // 内容区起始 y 坐标。标题/菜单区冻结后，内容从 94px 位置开始。
+      contentStartY: 94,
       // 内容区结束 y 坐标。默认铺到 1080px 底部。
       contentEndY: 1080,
-      // 内容区 920px 按 8 行等分，得到单个分块行高 115px。
-      rowHeight: 115,
+      // 内容区 986px 按 8 行等分，得到单个分块行高 123.25px。
+      rowHeight: 123.25,
       // 每个分块外层留白，控制透明块和块内背景之间的距离。
       cellPadding: 5,
       // 标题背景中占比最高的亮色，用于分块边框和高亮混色。

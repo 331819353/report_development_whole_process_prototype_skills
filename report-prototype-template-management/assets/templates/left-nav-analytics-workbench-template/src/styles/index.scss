@@ -94,11 +94,11 @@ button {
   display: grid;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   width: var(--design-width);
-  height: var(--design-height);
+  height: auto;
   min-width: var(--design-width);
   min-height: var(--design-height);
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
   color: var(--text);
   background:
     radial-gradient(circle at 78% 10%, rgba(0, 83, 219, 0.08), transparent 28%),
@@ -133,9 +133,11 @@ button {
   display: flex;
   align-items: center;
   min-width: 0;
-  height: 36px;
+  height: 60px;
   gap: 12px;
-  margin-bottom: 48px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
 }
 
 .brand-mark {
@@ -444,9 +446,9 @@ button {
 .analytics-main {
   display: block;
   min-width: 0;
-  height: var(--design-height);
+  min-height: var(--design-height);
   padding: 0;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .canvas-shell {

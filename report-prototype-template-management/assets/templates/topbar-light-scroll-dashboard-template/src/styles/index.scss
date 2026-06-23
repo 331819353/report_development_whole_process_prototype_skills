@@ -135,7 +135,7 @@ button {
   align-items: center;
   width: var(--design-width);
   height: var(--topbar-height);
-  padding: 0 32px;
+  padding: 0 28px;
   transform: translateX(calc(var(--page-scroll-x) * -1));
   border-bottom: 1px solid var(--line);
   background: var(--topbar-background);
@@ -166,16 +166,16 @@ button {
 .topbar-logo {
   display: grid;
   place-items: center;
-  width: 72px;
-  height: 40px;
-  padding-right: 16px;
+  width: 66px;
+  height: 36px;
+  padding-right: 14px;
   border-right: 1px solid var(--line);
 }
 
 .topbar-logo img {
   display: block;
-  width: 52px;
-  max-height: 28px;
+  width: 48px;
+  max-height: 26px;
   object-fit: contain;
 }
 
@@ -205,7 +205,7 @@ button {
   justify-self: center;
   gap: 48px;
   min-width: 0;
-  height: var(--topbar-height);
+  height: 44px;
   padding: 0 8px;
   background: transparent;
 }
@@ -215,7 +215,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: var(--topbar-height);
+  height: 44px;
   flex: 0 0 auto;
   min-width: 88px;
   padding: 0 0 3px;
@@ -237,7 +237,7 @@ button {
 .topbar-nav-item::after {
   position: absolute;
   left: 50%;
-  bottom: 8px;
+  bottom: 2px;
   width: 0;
   height: 3px;
   border-radius: 999px;

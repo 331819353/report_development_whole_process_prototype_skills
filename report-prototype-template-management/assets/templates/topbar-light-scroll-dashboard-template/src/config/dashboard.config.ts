@@ -32,19 +32,19 @@ export const cockpitConfig: DashboardConfig = {
       designWidth: 1920,
       // 最小设计稿高度。单页报表内容超过 1080px 时允许页面继续向下增长并滚动，不压缩组件。
       designHeight: 1080,
-      // 顶部菜单栏高度。内容区从 grid.contentStartY 开始；行高按剩余高度的 8 个可视行单元计算。
-      topbarHeight: 160,
-      // 数学分块不设 gap，保证 1920/12=160、(1080-160)/8=115；视觉间距由 cellPadding 和卡片 padding 承担。
+      // 顶部菜单栏高度。保持紧凑工作台顶栏；内容区从 grid.contentStartY 开始。
+      topbarHeight: 88,
+      // 数学分块不设 gap，保证 1920/12=160、(1080-88)/8=124；视觉间距由 cellPadding 和卡片 padding 承担。
       contentGap: 0,
     },
 
     grid: {
-      // 内容区起始 y 坐标。默认等于 160px 顶部菜单栏高度。
-      contentStartY: 160,
+      // 内容区起始 y 坐标。默认等于 88px 顶部菜单栏高度。
+      contentStartY: 88,
       // 内容区结束 y 坐标。默认铺到 1080px 底部。
       contentEndY: 1080,
-      // 内容区 920px 按 8 行等分，得到单个分块行高 115px；页面可继续向下增加行并滚动。
-      rowHeight: 115,
+      // 内容区 992px 按 8 行等分，得到单个分块行高 124px；页面可继续向下增加行并滚动。
+      rowHeight: 124,
       cellPadding: 6,
       dominantTitleColor: '#0073E5',
       innerBackgroundColor: '#ffffff',

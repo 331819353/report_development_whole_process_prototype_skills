@@ -5,13 +5,13 @@ import {
   BarChart3,
   Download,
   Factory,
+  Funnel,
   Gauge,
   Maximize2,
   Menu,
   Network,
   RefreshCw,
   Settings,
-  SlidersHorizontal,
 } from '@lucide/vue';
 import { customActionRegistry } from '../actions/registry';
 import { resolveDataSource } from '../dataSources/registry';
@@ -858,7 +858,7 @@ watch(
 
         <div class="header-actions header-actions-right" @click.stop>
           <button
-            class="title-tool title-tool-icon"
+            class="title-tool title-tool-icon title-refresh-floating"
             type="button"
             :aria-label="config.screen.controls.refresh"
             :title="config.screen.controls.refresh"
@@ -867,7 +867,16 @@ watch(
             <RefreshCw :size="14" />
           </button>
           <button
-            class="title-tool title-tool-icon"
+            class="title-tool title-tool-icon title-lower-shift-right"
+            type="button"
+            :aria-label="config.screen.controls.filters"
+            :title="config.screen.controls.filters"
+            @click.stop="toggleFiltersPanel"
+          >
+            <Funnel :size="16" />
+          </button>
+          <button
+            class="title-tool title-tool-icon title-lower-shift-right"
             type="button"
             :aria-label="config.screen.controls.navigation"
             :title="config.screen.controls.navigation"
@@ -876,16 +885,7 @@ watch(
             <Menu :size="16" />
           </button>
           <button
-            class="title-tool title-tool-icon"
-            type="button"
-            :aria-label="config.screen.controls.filters"
-            :title="config.screen.controls.filters"
-            @click.stop="toggleFiltersPanel"
-          >
-            <SlidersHorizontal :size="16" />
-          </button>
-          <button
-            class="title-tool title-tool-icon"
+            class="title-tool title-tool-icon title-download-floating"
             type="button"
             :aria-label="config.screen.controls.download"
             :title="config.screen.controls.download"

@@ -141,7 +141,7 @@ button {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 20;
+  z-index: 120;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   justify-items: center;
@@ -209,7 +209,13 @@ button {
 }
 
 .header-actions-right {
+  --right-actions-bottom-lift: 8px;
+  --right-row-shift: calc(
+    var(--control-icon-width) + var(--control-gap) + var(--control-icon-width) + var(--control-gap)
+  );
+
   right: var(--control-inset);
+  bottom: calc(var(--control-bottom) + var(--right-actions-bottom-lift));
   justify-content: flex-end;
 }
 
@@ -257,10 +263,24 @@ button {
 }
 
 .title-fullscreen-floating {
-  position: absolute;
-  top: calc(var(--control-logo-lift) * -1);
-  right: 0;
+  position: relative;
   width: var(--control-icon-width);
+}
+
+.title-download-floating,
+.title-fullscreen-floating {
+  transform: translateY(calc(var(--right-actions-bottom-lift) - var(--control-logo-lift)));
+}
+
+.title-refresh-floating {
+  transform: translate(
+    var(--right-row-shift),
+    calc(var(--right-actions-bottom-lift) - var(--control-logo-lift))
+  );
+}
+
+.title-lower-shift-right {
+  transform: translateX(var(--right-row-shift));
 }
 
 .title-tool-icon {
@@ -278,6 +298,7 @@ button {
   font-weight: 700;
   line-height: var(--control-height);
   text-shadow: 0 0 8px rgba(32, 168, 255, 0.66);
+  transform: translateY(calc(var(--control-bottom) - 12px));
 }
 
 .title-nav-current svg {
@@ -356,7 +377,7 @@ button {
   color: var(--card-title);
   font-size: 51px;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.16;
   text-shadow: 0 4px 24px rgba(0, 14, 26, 0.64);
   transform: translateY(var(--title-offset-y));
 }
