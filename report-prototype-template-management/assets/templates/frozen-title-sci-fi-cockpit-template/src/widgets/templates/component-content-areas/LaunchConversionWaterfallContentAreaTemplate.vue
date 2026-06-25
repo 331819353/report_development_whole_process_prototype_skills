@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   border: 0;
   border-radius: var(--component-content-area-radius, 8px);
-  background: var(--component-content-area-background, var(--card-background, transparent));
+  background: var(--component-content-area-background, transparent);
 }
 
 .component-content-area-template.has-content-title {

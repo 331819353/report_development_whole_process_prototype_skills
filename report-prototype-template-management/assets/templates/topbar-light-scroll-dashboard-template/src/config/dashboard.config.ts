@@ -12,6 +12,7 @@ export const cockpitConfig: DashboardConfig = {
     topbarNav: [
       { id: 'dashboard', label: '经营总览' },
       { id: 'launch-scenario', label: '新品上市' },
+      { id: 'risk-closure', label: '经营预警闭环' },
       { id: 'component-library', label: '组件内容区' },
       { id: 'analytics', label: '指标分析' },
       { id: 'overview', label: '管理摘要' },

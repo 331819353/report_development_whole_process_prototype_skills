@@ -32,6 +32,14 @@
   --cell-top-height: 33px;
   --cell-inner-gap: 2px;
   --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --block-raised-shadow:
+    0 18px 34px rgba(15, 23, 42, 0.1),
+    0 3px 10px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78);
+  --block-raised-shadow-hover:
+    0 22px 42px rgba(15, 23, 42, 0.14),
+    0 5px 14px rgba(0, 115, 229, 0.11),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
   --body-bg: #f5f7fb;
   --dashboard-bg: #f5f7fb;
   --dashboard-grid-background:
@@ -616,11 +624,13 @@ button {
   border: 1px solid #e7edf3;
   border-radius: var(--card-radius);
   background: var(--cell-frame-background);
-  box-shadow: var(--shadow);
+  box-shadow: var(--block-raised-shadow, var(--shadow));
+  transform: translateZ(0);
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease,
-    background-color 0.18s ease;
+    background-color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .placeholder-cell-title {
@@ -1036,7 +1046,7 @@ button {
   align-items: center;
   padding: 3px 6px;
   border: 1px solid rgba(0, 115, 229, 0.14);
-  border-radius: 5px;
+  border-radius: var(--card-radius);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(223, 234, 249, 0.12)),
     rgba(248, 251, 255, 0.12);
@@ -1128,96 +1138,6 @@ button {
   font-size: 11px;
 }
 
-.placeholder-cell-inner.is-layout-template-block {
-  box-shadow: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title {
-  gap: 3px;
-  padding: 0;
-  line-height: 1;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-main,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-group,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-1,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-3 {
-  border: 1px dashed rgba(0, 115, 229, 0.38);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.18);
-  color: var(--primary);
-  box-shadow: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-main {
-  justify-content: center;
-  height: 100%;
-  padding: 0 6px;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-text,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-label,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-summary-text {
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0;
-  text-align: center;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-text {
-  max-width: 100%;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-meteor {
-  display: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-group {
-  height: 100%;
-  padding: 0;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button {
-  height: 100%;
-  padding: 0 4px;
-  border-radius: 0;
-  pointer-events: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button:hover,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button.active {
-  background: transparent;
-  box-shadow: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-1 {
-  gap: 3px;
-  border: 0;
-  background: transparent;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-metric {
-  border: 1px dashed rgba(0, 115, 229, 0.32);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-metric::before {
-  display: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-value {
-  display: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-3 {
-  justify-content: center;
-  padding: 3px 6px;
-  backdrop-filter: none;
-}
-
 .placeholder-cell-inner.is-block-masked .placeholder-cell-body {
   opacity: 0.18;
 }
@@ -1278,7 +1198,8 @@ button {
 .placeholder-cell:hover .placeholder-cell-inner {
   border-color: color-mix(in srgb, var(--block-accent) 28%, #d8e7f7);
   background-color: #ffffff;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--block-raised-shadow-hover, var(--block-raised-shadow, var(--shadow)));
+  transform: translateY(-1px);
 }
 
 :root[data-theme='light'] .placeholder-cell-title {
@@ -1325,7 +1246,7 @@ button {
 
 :root[data-theme='light'] .placeholder-cell-inner {
   background: #ffffff;
-  box-shadow: var(--shadow);
+  box-shadow: var(--block-raised-shadow, var(--shadow));
 }
 
 :root[data-theme='light'] .placeholder-cell:hover .placeholder-cell-inner {

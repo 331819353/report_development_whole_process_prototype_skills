@@ -54,7 +54,7 @@ const shouldShowContentAreaTitle = computed(() => props.showContentTitle !== fal
   font-variant-numeric: tabular-nums;
   border: 0;
   border-radius: var(--component-content-area-radius, 8px);
-  background: var(--component-content-area-background, var(--card-background, transparent));
+  background: var(--component-content-area-background, transparent);
 }
 
 .template-carried-kpi.has-content-title {

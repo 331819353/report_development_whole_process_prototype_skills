@@ -41,6 +41,18 @@ export const launchScenarioLayoutRows = [
   'FFFFFFGGGGGG',
 ];
 
+export const riskClosureLayoutRows = [
+  'AAAABBBBCCCC',
+  'AAAABBBBCCCC',
+  'AAAABBBBCCCC',
+  'DDDDDDEEEEEE',
+  'DDDDDDEEEEEE',
+  'DDDDDDEEEEEE',
+  'FFFFFFGGGGGG',
+  'FFFFFFGGGGGG',
+  'FFFFFFGGGGGG',
+];
+
 const businessReportWidgets: WidgetMap = {
   A: {
     type: 'MetricValueWidget',
@@ -882,6 +894,153 @@ const launchScenarioWidgets: WidgetMap = {
   }),
 };
 
+const riskClosureWidgets: WidgetMap = {
+  A: createScenarioBlockTemplateWidget({
+    type: 'Span04x03Layout',
+    title: '预警总览',
+    pattern: 'AAAA',
+    rows: 3,
+    titlePills: [
+      { id: 'risk', label: '风险' },
+      { id: 'rule', label: '规则' },
+      { id: 'owner', label: '责任' },
+    ],
+    auxMetrics: [
+      { label: '高风险', value: '1' },
+      { label: '触发规则', value: '3' },
+      { label: '单位', value: '项' },
+    ],
+    summary: '结论：回款逾期和库存周转是本轮预警主因，需要在本周形成责任闭环。',
+    note: '流程 3：选择 4*3 A 单槽分块布局模板；流程 8：复用异常预警组件内容区模板，单槽隐藏组件内容区标题。',
+    slots: [
+      { id: 'A', label: '异常预警', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'J' },
+    ],
+  }),
+  B: createScenarioBlockTemplateWidget({
+    type: 'Span04x03Layout',
+    title: '行动闭环',
+    pattern: 'AAAA',
+    rows: 3,
+    titlePills: [
+      { id: 'today', label: '今日' },
+      { id: 'week', label: '本周' },
+      { id: 'owner', label: '责任人' },
+    ],
+    auxMetrics: [
+      { label: '动作', value: '5' },
+      { label: '逾期', value: '1' },
+      { label: '单位', value: '项' },
+    ],
+    summary: '结论：五项动作已拆到责任人，逾期客户复核必须今日完成。',
+    note: '流程 4-7：标题、胶囊、附加信息和单位均配置在分块布局模板；流程 8：槽位只挂行动清单内容区。',
+    slots: [
+      { id: 'A', label: '行动清单', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'K' },
+    ],
+  }),
+  C: createScenarioBlockTemplateWidget({
+    type: 'Span04x03Layout',
+    title: '健康短板',
+    pattern: 'AAAA',
+    rows: 3,
+    titlePills: [
+      { id: 'health', label: '健康' },
+      { id: 'weakness', label: '短板' },
+      { id: 'trend', label: '趋势' },
+    ],
+    auxMetrics: [
+      { label: '最低项', value: '库存' },
+      { label: '健康分', value: '72' },
+      { label: '单位', value: '分' },
+    ],
+    summary: '结论：库存周转拖累整体健康度，需和新品补货、滞销清理联动处理。',
+    note: '流程 8：复用经营健康雷达组件内容区模板；辅助信息不下发到组件槽位。',
+    slots: [
+      { id: 'A', label: '健康雷达', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'I' },
+    ],
+  }),
+  D: createScenarioBlockTemplateWidget({
+    type: 'Span06x03Layout',
+    title: '收入利润联动',
+    pattern: 'AAABBB',
+    rows: 3,
+    titlePills: [
+      { id: 'trend', label: '趋势' },
+      { id: 'mix', label: '结构' },
+      { id: 'gap', label: '缺口' },
+    ],
+    auxMetrics: [
+      { label: '收入峰值', value: '12806' },
+      { label: '渠道数', value: '4' },
+      { label: '单位', value: '万元/%' },
+    ],
+    summary: '结论：收入保持上行，但结构侧仍依赖线上直营，利润改善需要继续压费用。',
+    note: '流程 3：选择 6*3 AB 双槽分块布局模板；流程 8：A 槽复用趋势图，B 槽复用渠道结构图。',
+    slots: [
+      { id: 'A', label: '收入利润趋势', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'E' },
+      { id: 'B', label: '渠道结构', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'F' },
+    ],
+  }),
+  E: createScenarioBlockTemplateWidget({
+    type: 'Span06x03Layout',
+    title: '区域客户定位',
+    pattern: 'AAABBB',
+    rows: 3,
+    titlePills: [
+      { id: 'region', label: '区域' },
+      { id: 'customer', label: '客户' },
+      { id: 'priority', label: '优先级' },
+    ],
+    auxMetrics: [
+      { label: 'Top区域', value: '华东' },
+      { label: '重点客群', value: '3' },
+      { label: '单位', value: '个' },
+    ],
+    summary: '结论：华东贡献稳定，高价值客户集中在右上象限，需优先保障服务和供给。',
+    note: '流程 8：A/B 两个槽位分别选择区域排名和客户价值散点组件内容区模板。',
+    slots: [
+      { id: 'A', label: '区域排名', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'D' },
+      { id: 'B', label: '客户象限', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'G' },
+    ],
+  }),
+  F: createScenarioBlockTemplateWidget({
+    type: 'Span06x03Layout',
+    title: '转化漏斗复核',
+    pattern: 'AAAAAA',
+    rows: 3,
+    titlePills: [
+      { id: 'lead', label: '线索' },
+      { id: 'deal', label: '成交' },
+      { id: 'loss', label: '流失' },
+    ],
+    auxMetrics: [
+      { label: '转化', value: '33%' },
+      { label: '流失', value: '440' },
+      { label: '单位', value: '个' },
+    ],
+    summary: '结论：成交转化仍有约 8 个百分点提升空间，需把商机跟进动作绑定到责任人。',
+    note: '流程 8：现有漏斗组件内容区模板适配，无需新增 ECharts 自开发模板。',
+    slots: [
+      { id: 'A', label: '商机漏斗', regionKey: 'A', widthUnits: 6, role: 'primary', componentTemplateBlockId: 'L' },
+    ],
+  }),
+  G: createScenarioBlockTemplateWidget({
+    type: 'Span06x03Layout',
+    title: '闭环结论',
+    pattern: 'AAAAAA',
+    rows: 3,
+    titlePills: [],
+    auxMetrics: [
+      { label: '流程字段', value: '9/9' },
+      { label: '组件槽位', value: '仅3区' },
+    ],
+    summary: '结论：本页完成框架、页面布局、分块模板、支撑区域、组件槽位和说明区的全链路配置。',
+    note: '流程 5/7/9：本块不配置胶囊和单位区；说明留在 4 summaryArea，组件槽位只挂经营结论内容区。',
+    slots: [
+      { id: 'A', label: '经营结论', regionKey: 'A', widthUnits: 6, role: 'primary', componentTemplateBlockId: 'M' },
+    ],
+  }),
+};
+
 const multiSlotTemplateWidgets: WidgetMap = {
   A: {
     type: 'UniversalCardWidget',
@@ -1011,6 +1170,11 @@ export const launchScenarioPage: DashboardPageConfig = {
   widgets: launchScenarioWidgets,
 };
 
+export const riskClosurePage: DashboardPageConfig = {
+  layoutRows: riskClosureLayoutRows,
+  widgets: riskClosureWidgets,
+};
+
 export const componentContentAreaTemplatePage: DashboardPageConfig = {
   layoutRows: componentContentAreaTemplateLayoutRows,
   widgets: componentContentAreaTemplateWidgets,
@@ -1024,6 +1188,7 @@ export const multiSlotTemplatePage: DashboardPageConfig = {
 export const businessReportPages: Record<string, DashboardPageConfig> = {
   dashboard: businessReportPage,
   'launch-scenario': launchScenarioPage,
+  'risk-closure': riskClosurePage,
   [componentContentAreaTemplateLibraryNavId]: componentContentAreaTemplatePage,
   analytics: businessReportPage,
   overview: businessReportPage,

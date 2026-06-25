@@ -28,6 +28,14 @@
     radial-gradient(circle at 78% 10%, rgba(0, 83, 219, 0.08), transparent 28%),
     linear-gradient(180deg, var(--surface), #eef3f8);
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --block-raised-shadow:
+    0 18px 34px rgba(15, 23, 42, 0.1),
+    0 3px 10px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  --block-raised-shadow-hover:
+    0 22px 42px rgba(15, 23, 42, 0.14),
+    0 5px 14px rgba(0, 74, 198, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
   --cell-block-background:
     radial-gradient(circle at 18% 10%, rgba(0, 74, 198, 0.12), transparent 48%),
     radial-gradient(circle at 82% 88%, rgba(92, 120, 156, 0.09), transparent 54%),
@@ -56,6 +64,14 @@
     radial-gradient(circle at 78% 10%, rgba(126, 162, 255, 0.16), transparent 28%),
     linear-gradient(180deg, var(--surface), #141d27);
   --shadow: 0 2px 12px rgba(0, 0, 0, 0.28);
+  --block-raised-shadow:
+    0 20px 42px rgba(0, 0, 0, 0.42),
+    0 2px 12px rgba(126, 162, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --block-raised-shadow-hover:
+    0 24px 48px rgba(0, 0, 0, 0.5),
+    0 4px 16px rgba(126, 162, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --cell-block-background:
     radial-gradient(circle at 18% 10%, rgba(180, 197, 255, 0.24), transparent 46%),
     radial-gradient(circle at 82% 88%, rgba(68, 103, 148, 0.22), transparent 52%),
@@ -603,7 +619,16 @@ button {
   border-radius: var(--card-radius);
   background: var(--cell-block-background);
   background-clip: padding-box;
-  box-shadow: var(--shadow);
+  box-shadow: var(--block-raised-shadow, var(--shadow));
+  transform: translateZ(0);
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.placeholder-cell:hover .placeholder-cell-inner {
+  box-shadow: var(--block-raised-shadow-hover, var(--block-raised-shadow, var(--shadow)));
+  transform: translateY(-1px);
 }
 
 .placeholder-cell-title {
@@ -980,7 +1005,7 @@ button {
   align-items: center;
   padding: 3px 6px;
   border: 1px solid rgba(0, 74, 198, 0.14);
-  border-radius: 5px;
+  border-radius: var(--card-radius);
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.34), rgba(223, 234, 249, 0.12)),
     rgba(248, 251, 255, 0.12);
@@ -1077,96 +1102,6 @@ button {
 .placeholder-cell-aux-value {
   color: var(--text-strong);
   font-size: 11px;
-}
-
-.placeholder-cell-inner.is-layout-template-block {
-  box-shadow: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title {
-  gap: 3px;
-  padding: 0;
-  line-height: 1;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-main,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-group,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-1,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-3 {
-  border: 1px dashed rgba(0, 74, 198, 0.38);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.18);
-  color: var(--primary);
-  box-shadow: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-main {
-  justify-content: center;
-  height: 100%;
-  padding: 0 6px;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-text,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-label,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-summary-text {
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0;
-  text-align: center;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-text {
-  max-width: 100%;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-title-meteor {
-  display: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-group {
-  height: 100%;
-  padding: 0;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button {
-  height: 100%;
-  padding: 0 4px;
-  border-radius: 0;
-  pointer-events: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button:hover,
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-pill-button.active {
-  background: transparent;
-  box-shadow: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-1 {
-  gap: 3px;
-  border: 0;
-  background: transparent;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-metric {
-  border: 1px dashed rgba(0, 74, 198, 0.32);
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-metric::before {
-  display: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-aux-value {
-  display: none;
-}
-
-.placeholder-cell-inner.is-layout-template-block .placeholder-cell-body-section-3 {
-  justify-content: center;
-  padding: 3px 6px;
-  backdrop-filter: none;
 }
 
 .placeholder-cell-inner.is-block-masked .placeholder-cell-body {
