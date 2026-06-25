@@ -58,8 +58,11 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 11. Use `$report-info-component-mapping` for field panel, config zones, result widgets, dataset contracts, invalid-combination states, and binding matrix.
 12. Route chart, table/pivot, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-14. Use layout/template/component skills to implement the workbench without hiding the analysis model behind decorative charts.
-15. Verify data completeness, permission states, empty/error/timeout/invalid-combination states, and runnable URL when requested.
+14. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, field-panel/config/result/detail block spans, first-viewport workbench path, and nav/page wiring.
+15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select 分块布局模板 for every workbench/result block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
+16. For every `3 componentArea` slot, choose an existing 组件内容区模板 first. If no suitable field-panel, chart/table/pivot result, or state template fits, create a standalone component content area template and register/copy it before slot fill. Use ECharts for standard chart fallbacks and S2/project-equivalent behavior for pivot/cross-table fallbacks when needed.
+17. Use the owning layout, template, and component skills only in this order: finalize `pageLayoutConfig`, finalize `blockLayoutTemplateMap`, then finalize each component content area template so the workbench does not hide the analysis model behind decorative charts.
+18. Verify data completeness, permission states, empty/error/timeout/invalid-combination states, and runnable URL when requested.
 
 ## Required Output
 
@@ -69,6 +72,7 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 - Data scope, analysis model, operation model, and output/result reuse model.
 - Field catalog: dimensions, metrics, time fields, statuses, custom fields, and each field's allowed operations.
 - Workbench layout: field panel, configuration area, chart/table/pivot result area, detail drawer, save/share/export controls.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and self-developed component content area fallback list.
 - Result-content boundary: visible exploration/result/trust/reuse content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - Filter, grouping, sorting, chart switching, drilldown, save/share/export, permission, masking, and performance rules.
 - Component/data/filter/control/interaction binding matrix.
@@ -79,11 +83,13 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 
 - Do not design a BI-looking page unless the data model can support the promised field combinations.
 - Do not start layout or workbench controls until the exploration story, user path, starting question, result/reuse outcome, and trust/permission boundary are explicit or safely inferred.
+- Do not start runnable implementation until the nine-step template operation chain has no missing block configs or slots. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone component content area template.
 - Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not start implementation or repair from this workflow alone when chart/table/filter/placement surfaces require their specific front-door skills.
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
 - Do not hide field metadata, invalid combinations, permissions, or performance limits.
 - Do not treat save/share/export as optional polish; they decide whether self-service analysis can be reused.
 - Do not overload ordinary users with expert controls without templates, presets, or guided defaults.
+- Do not put field-panel title bands, filter summary copy, additional information, units, or explanation text inside result component content slots. Those stay on 分块布局模板 supporting areas or explicit workbench shell/config blocks.
 - Do not claim runnable readiness until non-default field/filter/chart changes visibly alter the result.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or only default field/filter/chart states were checked.

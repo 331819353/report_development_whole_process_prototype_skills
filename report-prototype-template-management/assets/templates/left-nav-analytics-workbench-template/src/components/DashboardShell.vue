@@ -1236,7 +1236,7 @@ watch(
                   v-if="hasWidgetAuxMetrics(block)"
                   class="placeholder-cell-body-section placeholder-cell-body-section-1"
                   :style="getAuxMetricSectionStyle(block)"
-                  aria-label="辅助指标"
+                  aria-label="2-1 附加信息区与 2-2 单位区"
                 >
                   <span
                     v-for="metric in getWidgetAuxMetrics(block.label, getBlockColumnSpan(block))"
@@ -1247,7 +1247,7 @@ watch(
                     <strong v-if="metric.value" class="placeholder-cell-aux-value">{{ metric.value }}</strong>
                   </span>
                 </section>
-                <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="组件区域">
+                <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="3 组件区">
                   <WidgetRenderer
                     :context="getWidgetContext(block.label)"
                     :data="getWidgetDataForBlock(block.label)"
@@ -1258,7 +1258,7 @@ watch(
                 <section
                   v-if="hasWidgetBodySummary(block.label)"
                   class="placeholder-cell-body-section placeholder-cell-body-section-3"
-                  aria-label="说明与结论"
+                  aria-label="4 说明区"
                 >
                   <p class="placeholder-cell-summary-text">
                     {{ getWidgetBodySummary(block.label) }}

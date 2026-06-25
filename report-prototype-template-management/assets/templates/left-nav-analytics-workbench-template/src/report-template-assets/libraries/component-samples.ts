@@ -1,24 +1,41 @@
 import type { DashboardConfig } from '../../types/dashboard';
+import type { ReportTemplateBlockAsset } from '../types';
 import { extractBlockAssets } from '../utils/block-assets';
 import { buildAssetGallerySections } from '../utils/gallery-sections';
 import { getNavById, getReportTemplateNavs } from '../utils/nav';
 
-export const componentSampleLibraryNavId = 'component-library';
+export const componentContentAreaTemplateLibraryNavId = 'component-library';
+/** @deprecated Use componentContentAreaTemplateLibraryNavId. */
+export const componentSampleLibraryNavId = componentContentAreaTemplateLibraryNavId;
 
 const excludedRuntimeNavIds = new Set(['component-library', 'template-library']);
 
-const getRuntimeComponentSampleAssets = (config: DashboardConfig) =>
+const hasComponentContentAreaWidget = (asset: ReportTemplateBlockAsset) => Boolean(asset.widget);
+
+const getRuntimeComponentContentAreaTemplateAssets = (config: DashboardConfig) =>
   getReportTemplateNavs(config)
     .filter((nav) => !excludedRuntimeNavIds.has(nav.id))
-    .flatMap((nav) => extractBlockAssets(nav, 'component-sample'))
-    .filter((asset) => asset.widget);
+    .flatMap((nav) => extractBlockAssets(nav, 'component-content-area-template'))
+    .filter(hasComponentContentAreaWidget);
 
-export const getComponentSampleAssets = (config: DashboardConfig) => {
-  const explicitAssets = extractBlockAssets(getNavById(config, componentSampleLibraryNavId), 'component-sample')
-    .filter((asset) => asset.widget);
+export const getComponentContentAreaTemplateAssets = (config: DashboardConfig) => {
+  const explicitAssets = extractBlockAssets(
+    getNavById(config, componentContentAreaTemplateLibraryNavId),
+    'component-content-area-template',
+  )
+    .filter(hasComponentContentAreaWidget);
 
-  return explicitAssets.length ? explicitAssets : getRuntimeComponentSampleAssets(config);
+  return explicitAssets.length ? explicitAssets : getRuntimeComponentContentAreaTemplateAssets(config);
 };
 
-export const getComponentSampleGallerySections = (config: DashboardConfig) =>
-  buildAssetGallerySections(getNavById(config, componentSampleLibraryNavId), 'component-sample');
+/** @deprecated Use getComponentContentAreaTemplateAssets. */
+export const getComponentSampleAssets = getComponentContentAreaTemplateAssets;
+
+export const getComponentContentAreaTemplateGallerySections = (config: DashboardConfig) =>
+  buildAssetGallerySections(
+    getNavById(config, componentContentAreaTemplateLibraryNavId),
+    'component-content-area-template',
+  );
+
+/** @deprecated Use getComponentContentAreaTemplateGallerySections. */
+export const getComponentSampleGallerySections = getComponentContentAreaTemplateGallerySections;

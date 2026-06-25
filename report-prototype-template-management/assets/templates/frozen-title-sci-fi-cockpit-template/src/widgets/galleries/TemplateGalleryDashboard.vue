@@ -172,6 +172,9 @@ const isLayoutTemplateWidget = (widget?: RegisteredWidgetConfig) => Boolean(widg
 const isLayoutTemplateBlock = (section: TemplateGallerySection, blockId: string) =>
   isLayoutTemplateWidget(getWidgetForBlock(section, blockId));
 
+const isComponentContentAreaSection = (section: TemplateGallerySection) =>
+  section.title === '组件内容区模板' || section.id.includes('component-content-area-template');
+
 const getWidgetBlockTitle = (section: TemplateGallerySection, blockId: string) => {
   const widget = getWidgetForBlock(section, blockId);
 
@@ -321,7 +324,7 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
 </script>
 
 <template>
-  <section class="template-gallery-dashboard" aria-label="2*2 和 3*2 组件模板总览">
+  <section class="template-gallery-dashboard" aria-label="报表模板资产总览">
     <section v-for="section in renderSections" :key="section.id" class="template-gallery-section">
       <header class="template-gallery-section-header">
         <div>
@@ -348,9 +351,13 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
         >
           <div
             class="placeholder-cell-inner"
-            :class="{ 'is-layout-template-block': isLayoutTemplateBlock(section, block.label) }"
+            :class="{
+              'is-layout-template-block': isLayoutTemplateBlock(section, block.label),
+              'is-component-content-area-template': isComponentContentAreaSection(section),
+            }"
           >
             <div
+              v-if="!isComponentContentAreaSection(section)"
               class="placeholder-cell-top placeholder-cell-title"
               :class="{ 'has-title-pills': hasWidgetTitlePills(section, block.label) }"
             >
@@ -383,6 +390,7 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
             <div
               class="placeholder-cell-body"
               :class="{
+                'is-component-content-area-body': isComponentContentAreaSection(section),
                 'has-aux-metrics': hasWidgetAuxMetrics(section, block),
                 'has-body-summary': hasWidgetBodySummary(section, block.label),
               }"
@@ -391,7 +399,7 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
                 v-if="hasWidgetAuxMetrics(section, block)"
                 class="placeholder-cell-body-section placeholder-cell-body-section-1"
                 :style="getAuxMetricSectionStyle(section, block)"
-                aria-label="辅助指标"
+                aria-label="2-1 附加信息区与 2-2 单位区"
               >
                 <span
                   v-for="metric in getWidgetAuxMetrics(section, block.label, getBlockColumnSpan(block))"
@@ -403,7 +411,7 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
                 </span>
               </section>
 
-              <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="组件区域">
+              <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="3 组件区">
                 <WidgetRenderer
                   :context="getWidgetContext(section, block.label, getWidgetForBlock(section, block.label))"
                   :data="[]"
@@ -415,7 +423,7 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
               <section
                 v-if="hasWidgetBodySummary(section, block.label)"
                 class="placeholder-cell-body-section placeholder-cell-body-section-3"
-                aria-label="说明与结论"
+                aria-label="4 说明区"
               >
                 <p class="placeholder-cell-summary-text">
                   {{ getWidgetBodySummary(section, block.label) }}
@@ -441,8 +449,8 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
   overflow-y: hidden;
   padding: 0 3px 12px;
   background:
-    radial-gradient(circle at 82% 8%, rgba(0, 74, 198, 0.08), transparent 28%),
-    linear-gradient(180deg, rgba(247, 250, 255, 0.82), rgba(238, 244, 251, 0.54));
+    radial-gradient(circle at 82% 8%, rgba(37, 201, 255, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(5, 18, 30, 0.72), rgba(2, 10, 18, 0.5));
 }
 
 .template-gallery-section {
@@ -465,10 +473,10 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
   height: 42px;
   gap: 16px;
   padding: 0 12px;
-  border-bottom: 1px solid rgba(0, 74, 198, 0.12);
+  border-bottom: 1px solid var(--line);
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.92), rgba(240, 246, 253, 0.78)),
-    rgba(247, 250, 255, 0.82);
+    linear-gradient(90deg, rgba(7, 27, 43, 0.94), rgba(5, 18, 30, 0.78)),
+    rgba(2, 10, 18, 0.74);
   backdrop-filter: blur(16px) saturate(160%);
 }
 
@@ -485,10 +493,10 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
   justify-content: center;
   height: 22px;
   padding: 0 9px;
-  border: 1px solid rgba(0, 74, 198, 0.16);
+  border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--primary);
-  background: rgba(0, 74, 198, 0.08);
+  background: var(--accent-soft);
   font-size: 12px;
   font-weight: 800;
   line-height: 1;
@@ -523,5 +531,25 @@ const handleWidgetAction = (section: TemplateGallerySection, blockId: string, ev
   grid-template-columns: repeat(12, minmax(0, 1fr));
   width: 100%;
   min-width: 0;
+}
+
+.placeholder-cell-inner.is-component-content-area-template {
+  grid-template-rows: minmax(0, 1fr);
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.placeholder-cell-inner.is-component-content-area-template .placeholder-cell-body {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.placeholder-cell-inner.is-component-content-area-template .placeholder-cell-body-section-1,
+.placeholder-cell-inner.is-component-content-area-template .placeholder-cell-body-section-3 {
+  display: none;
+}
+
+.placeholder-cell-inner.is-component-content-area-template .placeholder-cell-body-section-2 {
+  padding: 0;
 }
 </style>

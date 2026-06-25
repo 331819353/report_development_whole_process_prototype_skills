@@ -1,7 +1,25 @@
-import type { WidgetContext } from '../../types';
+import type { RegisteredWidgetConfig, WidgetContext } from '../../types';
 import type { LayoutDensityBand, LayoutSpanSpec } from './catalog';
 
 export type ComponentRegionPattern = string;
+
+export interface LayoutSpanSlotContentRow {
+  label?: string;
+  value?: string;
+  tone?: string;
+  percent?: number;
+}
+
+export interface LayoutSpanSlotContent {
+  type?: 'kpi' | 'metric' | 'trend' | 'funnel' | 'summary';
+  label?: string;
+  eyebrow?: string;
+  title?: string;
+  value?: string;
+  unit?: string;
+  delta?: string;
+  rows?: LayoutSpanSlotContentRow[];
+}
 
 export interface LayoutSpanTemplateProps {
   context?: WidgetContext;
@@ -21,6 +39,11 @@ export interface LayoutSpanTemplateProps {
     label?: string;
     regionKey?: string;
     role?: string;
+    // Component slots carry only the selected component's internal content area.
+    // Block-level additional information, unit, pills, and summaries belong to the block layout template.
+    componentContentAreaTemplateId?: string;
+    widget?: RegisteredWidgetConfig;
+    content?: LayoutSpanSlotContent;
   }>;
   componentSlotContracts?: Array<{
     id: string;
@@ -30,6 +53,7 @@ export interface LayoutSpanTemplateProps {
     order?: number;
     widthUnits?: number;
     heightUnits?: number;
+    minSize?: string;
     required?: boolean;
   }>;
 }

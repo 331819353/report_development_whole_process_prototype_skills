@@ -11,6 +11,7 @@ import RankingCardWidget from './components/RankingCardWidget.vue';
 import S2ReportTableWidget from './components/S2ReportTableWidget.vue';
 import SignalMatrixWidget from './components/SignalMatrixWidget.vue';
 import StatusRowsWidget from './components/StatusRowsWidget.vue';
+import * as ComponentContentAreaTemplates from './templates/component-content-areas';
 import * as SpanLayouts from './templates/block-spans';
 import TemplateEChartWidget from './components/TemplateEChartWidget.vue';
 import UniversalCardWidget from './components/UniversalCardWidget.vue';
@@ -32,6 +33,65 @@ const spanLayoutRegistry = Object.fromEntries(
       },
     ]),
 ) as Record<string, WidgetRegistration>;
+
+const componentContentAreaTemplateRegistry: Record<string, WidgetRegistration> = {
+  OperatingRevenueMetricContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.OperatingRevenueMetricContentAreaTemplate,
+    description: 'Standalone component content area template for operating revenue metric value.',
+  },
+  OperatingProfitMetricContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.OperatingProfitMetricContentAreaTemplate,
+    description: 'Standalone component content area template for operating profit metric value.',
+  },
+  TargetAchievementContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.TargetAchievementContentAreaTemplate,
+    description: 'Standalone component content area template for target achievement card content.',
+  },
+  RegionalRevenueRankingContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.RegionalRevenueRankingContentAreaTemplate,
+    description: 'Standalone component content area template for regional revenue ranking content.',
+  },
+  RevenueProfitTrendContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.RevenueProfitTrendContentAreaTemplate,
+    description: 'Standalone component content area template for revenue and profit trend chart content.',
+  },
+  ChannelRevenueStructureContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.ChannelRevenueStructureContentAreaTemplate,
+    description: 'Standalone component content area template for channel revenue structure chart content.',
+  },
+  CustomerValueScatterContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.CustomerValueScatterContentAreaTemplate,
+    description: 'Standalone component content area template for customer value scatter chart content.',
+  },
+  CostProfitHeatmapContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.CostProfitHeatmapContentAreaTemplate,
+    description: 'Standalone component content area template for cost and profit heatmap content.',
+  },
+  OperatingHealthRadarContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.OperatingHealthRadarContentAreaTemplate,
+    description: 'Standalone component content area template for operating health radar content.',
+  },
+  ExceptionWarningContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.ExceptionWarningContentAreaTemplate,
+    description: 'Standalone component content area template for exception warning card content.',
+  },
+  KeyActionListContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.KeyActionListContentAreaTemplate,
+    description: 'Standalone component content area template for key action list content.',
+  },
+  OpportunityFunnelContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.OpportunityFunnelContentAreaTemplate,
+    description: 'Standalone component content area template for opportunity funnel content.',
+  },
+  OperatingConclusionContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.OperatingConclusionContentAreaTemplate,
+    description: 'Standalone component content area template for operating conclusion card content.',
+  },
+  LaunchConversionWaterfallContentAreaTemplate: {
+    component: ComponentContentAreaTemplates.LaunchConversionWaterfallContentAreaTemplate,
+    description: 'Standalone ECharts component content area template for new-launch store conversion path.',
+  },
+};
 
 // 模板默认不内置业务组件，保持干净。
 // 复制 WidgetTemplate.vue 开发组件后，在这里 import 并注册。
@@ -89,5 +149,6 @@ export const widgetRegistry: Partial<Record<RegisteredWidgetType, WidgetRegistra
     component: UniversalCardWidget,
     description: 'Template-carried 2x2 universal business card component for target, comparison, warning, contribution, grid, funnel, progress, and summary templates.',
   },
+  ...componentContentAreaTemplateRegistry,
   ...spanLayoutRegistry,
 };

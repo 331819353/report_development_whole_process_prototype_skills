@@ -6,19 +6,21 @@ import { buildAssetGallerySections } from '../utils/gallery-sections';
 import { getNavSizedBlocks, getSizeLabel } from '../utils/layout-grid';
 import { getNavById, getReportTemplateNavs } from '../utils/nav';
 
-export const genericTemplateLibraryNavId = 'template-library';
+export const blockLayoutTemplateLibraryNavId = 'template-library';
+/** @deprecated Use blockLayoutTemplateLibraryNavId. */
+export const genericTemplateLibraryNavId = blockLayoutTemplateLibraryNavId;
 
 const excludedRuntimeNavIds = new Set(['component-library', 'template-library']);
 
-const getRuntimeGenericTemplateAssets = (config: DashboardConfig): ReportTemplateBlockAsset[] =>
+const getRuntimeBlockLayoutTemplateAssets = (config: DashboardConfig): ReportTemplateBlockAsset[] =>
   getReportTemplateNavs(config)
     .filter((nav) => !excludedRuntimeNavIds.has(nav.id))
     .flatMap((nav) =>
       getNavSizedBlocks(nav).flatMap((block) =>
         getComponentRegionPatternOptionsForSize(block.cols, block.rows).map((pattern) => ({
           id: `${nav.id}:${block.label}:${pattern.pattern}`,
-          kind: 'generic-template' as const,
-          label: `${getSizeLabel(block.cols, block.rows)} ${pattern.pattern} 通用布局`,
+          kind: 'block-layout-template' as const,
+          label: `${getSizeLabel(block.cols, block.rows)} ${pattern.pattern} 分块布局模板`,
           size: getSizeLabel(block.cols, block.rows),
           cols: block.cols,
           rows: block.rows,
@@ -30,8 +32,8 @@ const getRuntimeGenericTemplateAssets = (config: DashboardConfig): ReportTemplat
       ),
     );
 
-export const getGenericTemplateAssets = (config: DashboardConfig) => {
-  const explicitAssets = extractBlockAssets(getNavById(config, genericTemplateLibraryNavId), 'generic-template');
+export const getBlockLayoutTemplateAssets = (config: DashboardConfig) => {
+  const explicitAssets = extractBlockAssets(getNavById(config, blockLayoutTemplateLibraryNavId), 'block-layout-template');
 
   return explicitAssets.length
     ? explicitAssets.map((asset) => {
@@ -47,8 +49,14 @@ export const getGenericTemplateAssets = (config: DashboardConfig) => {
           componentSlotContracts: fallbackPattern?.slotContracts,
         };
       })
-    : getRuntimeGenericTemplateAssets(config);
+    : getRuntimeBlockLayoutTemplateAssets(config);
 };
 
-export const getGenericTemplateGallerySections = (config: DashboardConfig) =>
-  buildAssetGallerySections(getNavById(config, genericTemplateLibraryNavId), 'generic-template');
+/** @deprecated Use getBlockLayoutTemplateAssets. */
+export const getGenericTemplateAssets = getBlockLayoutTemplateAssets;
+
+export const getBlockLayoutTemplateGallerySections = (config: DashboardConfig) =>
+  buildAssetGallerySections(getNavById(config, blockLayoutTemplateLibraryNavId), 'block-layout-template');
+
+/** @deprecated Use getBlockLayoutTemplateGallerySections. */
+export const getGenericTemplateGallerySections = getBlockLayoutTemplateGallerySections;

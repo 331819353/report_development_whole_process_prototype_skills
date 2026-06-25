@@ -36,7 +36,7 @@ Recommended card ranges:
 | Small card | `160-220px` | `96-120px` | value plus one comparison |
 | Standard card | `220-320px` | `120-160px` | value, comparison, target |
 | Enhanced card | `320-480px` | `160-220px` | value, comparison, target, sparkline or summary |
-| Wide card | `480px+` | `160-240px` | split primary and auxiliary information |
+| Wide card | `480px+` | `160-240px` | split primary and additional information |
 | Landscape KPI card | `420-560px` | `180-240px` | value, comparison/status, one auxiliary evidence visual |
 | KPI overview card | `720-960px` | `220-320px` | one domain/topic, `2-5` metrics, comparison/target cells, and optional compact evidence |
 | Single-indicator KPI grid card | `360-460px` | `220-320px` | one metric, one comparison, one mini evidence visual, target/progress footer |

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, type Component } from 'vue';
 import { getLayoutSpanSpec, type LayoutSpanId } from './catalog';
+import * as ComponentContentAreaTemplates from '../component-content-areas';
 import type { ComponentRegionPattern, LayoutSpanTemplateProps } from './types';
 
 interface Props extends LayoutSpanTemplateProps {
@@ -14,11 +15,14 @@ const props = withDefaults(defineProps<Props>(), {
   showFooter: true,
   secondary: 'auto',
   density: 'auto',
-  placeholder: '组件区域',
+  placeholder: '3 组件区',
   zonePatternLabel: '',
   componentRegionPattern: 'AA',
 });
 
+const slotComponentRegistry: Record<string, Component> = {
+  ...ComponentContentAreaTemplates,
+};
 const spec = computed(() => getLayoutSpanSpec(props.spanId));
 const isFourByThreeScaffold = computed(() => spec.value.id === '04x03');
 const normalizeComponentRegionPattern = (pattern: ComponentRegionPattern) =>
@@ -55,7 +59,7 @@ const hasSecondary = computed(() => {
 const title = computed(() => props.title || spec.value.id + ' layout');
 const note = computed(() => props.note || spec.value.fitRule);
 const zonePatternLabel = computed(() => props.zonePatternLabel ?? spec.value.zonePattern);
-const componentAreaLabel = computed(() => props.placeholder || '组件区域');
+const componentAreaLabel = computed(() => props.placeholder || '3 组件区');
 const sizeText = computed(() => spec.value.widthPx + 'px x ' + spec.value.heightPx + 'px');
 const componentSlotByRegion = computed(() => new Map(
   (props.componentSlots ?? []).map((slot, index) => [
@@ -86,12 +90,67 @@ const componentRegionSegments = computed(() => {
 
   return segments;
 });
+const componentSlotCount = computed(() => componentRegionSegments.value.length);
 const getRegionLabel = (kind: string) => {
   const slot = componentSlotByRegion.value.get(kind);
   const contract = componentContractByRegion.value.get(kind);
 
   return slot?.label ?? contract?.label ?? `${componentAreaLabel.value} ${kind.toUpperCase()}`;
 };
+const getRegionSlot = (kind: string) => componentSlotByRegion.value.get(kind);
+const getSlotWidget = (kind: string) => getRegionSlot(kind)?.widget;
+const getSlotContent = (kind: string) => getRegionSlot(kind)?.content;
+const getSlotContentLabel = (kind: string) => {
+  const content = getSlotContent(kind);
+
+  return content?.label ?? content?.title ?? getRegionLabel(kind);
+};
+const getSlotComponent = (kind: string) => {
+  const widget = getSlotWidget(kind);
+
+  return widget ? slotComponentRegistry[widget.type] ?? null : null;
+};
+const getSlotWidgetRawProps = (kind: string) => (getSlotWidget(kind)?.props ?? {}) as Record<string, unknown>;
+const getSlotContentAreaTitle = (kind: string) => {
+  const widget = getSlotWidget(kind);
+  const widgetProps = getSlotWidgetRawProps(kind);
+
+  for (const value of [
+    widgetProps.contentAreaTitle,
+    widgetProps.title,
+    widget?.displayTitle,
+    widget?.title,
+    widget?.metricName,
+    getRegionSlot(kind)?.label,
+    getRegionLabel(kind),
+  ]) {
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return '';
+};
+const getSlotWidgetProps = (kind: string) => {
+  const widgetProps = getSlotWidgetRawProps(kind);
+
+  return {
+    ...widgetProps,
+    contentAreaTitle: getSlotContentAreaTitle(kind),
+    slotCount: componentSlotCount.value,
+    showContentTitle: componentSlotCount.value > 1 && widgetProps.showContentTitle !== false,
+  };
+};
+const hasSlotComponentContent = (kind: string) => Boolean(getSlotComponent(kind));
+const shouldShowInlineContentTitle = (kind: string) => componentSlotCount.value > 1 && Boolean(getSlotContent(kind));
+const getSlotContentType = (kind: string) => {
+  const type = getSlotContent(kind)?.type;
+
+  return type === 'kpi' ? 'metric' : type ?? 'summary';
+};
+const getPercentStyle = (percent?: number) => ({
+  '--slot-bar-percent': `${Math.max(0, Math.min(100, Number(percent ?? 0)))}%`,
+});
 </script>
 
 <template>
@@ -139,10 +198,83 @@ const getRegionLabel = (kind: string) => {
               v-for="segment in componentRegionSegments"
               :key="segment.key"
               class="layout-zone-cell"
-              :class="`layout-zone-${segment.kind}`"
+              :class="[`layout-zone-${segment.kind}`, { 'has-slot-content': hasSlotComponentContent(segment.kind) || getSlotContent(segment.kind) }]"
               :style="{ gridColumn: `span ${segment.span}` }"
             >
-              <span class="layout-zone-label">{{ getRegionLabel(segment.kind) }}</span>
+              <component
+                :is="getSlotComponent(segment.kind)"
+                v-if="hasSlotComponentContent(segment.kind)"
+                v-bind="getSlotWidgetProps(segment.kind)"
+                class="layout-slot-content-widget"
+                :context="context"
+                :data="[]"
+              />
+              <div
+                v-else-if="getSlotContent(segment.kind)"
+                class="layout-slot-content"
+                :class="[
+                  `layout-slot-content-${getSlotContentType(segment.kind)}`,
+                  { 'has-content-title': shouldShowInlineContentTitle(segment.kind) },
+                ]"
+              >
+                <header
+                  v-if="shouldShowInlineContentTitle(segment.kind)"
+                  class="layout-slot-content-title"
+                >
+                  {{ getSlotContentLabel(segment.kind) }}
+                </header>
+                <header v-else class="layout-slot-content-header">
+                  <span>{{ getSlotContent(segment.kind)?.eyebrow ?? getRegionLabel(segment.kind) }}</span>
+                  <strong>{{ getSlotContent(segment.kind)?.title ?? getRegionLabel(segment.kind) }}</strong>
+                </header>
+
+                <section v-if="getSlotContentType(segment.kind) === 'metric'" class="layout-slot-metric">
+                  <strong>
+                    {{ getSlotContent(segment.kind)?.value }}
+                    <em v-if="getSlotContent(segment.kind)?.unit">{{ getSlotContent(segment.kind)?.unit }}</em>
+                  </strong>
+                  <span v-if="getSlotContent(segment.kind)?.delta">{{ getSlotContent(segment.kind)?.delta }}</span>
+                </section>
+
+                <section v-else-if="getSlotContentType(segment.kind) === 'trend'" class="layout-slot-bars">
+                  <div
+                    v-for="row in getSlotContent(segment.kind)?.rows ?? []"
+                    :key="row.label"
+                    class="layout-slot-bar-row"
+                  >
+                    <span>{{ row.label }}</span>
+                    <div class="layout-slot-bar-track">
+                      <i :style="getPercentStyle(row.percent)"></i>
+                    </div>
+                    <strong>{{ row.value }}</strong>
+                  </div>
+                </section>
+
+                <section v-else-if="getSlotContentType(segment.kind) === 'funnel'" class="layout-slot-funnel">
+                  <div
+                    v-for="row in getSlotContent(segment.kind)?.rows ?? []"
+                    :key="row.label"
+                    class="layout-slot-funnel-row"
+                    :style="getPercentStyle(row.percent)"
+                  >
+                    <span>{{ row.label }}</span>
+                    <strong>{{ row.value }}</strong>
+                  </div>
+                </section>
+
+                <section v-else class="layout-slot-summary">
+                  <div
+                    v-for="row in getSlotContent(segment.kind)?.rows ?? []"
+                    :key="row.label"
+                    class="layout-slot-summary-row"
+                    :class="row.tone ? `tone-${row.tone}` : ''"
+                  >
+                    <span>{{ row.label }}</span>
+                    <strong>{{ row.value }}</strong>
+                  </div>
+                </section>
+              </div>
+              <span v-else class="layout-zone-label">{{ getRegionLabel(segment.kind) }}</span>
             </span>
           </div>
           <div v-else class="layout-placeholder">
@@ -344,6 +476,14 @@ const getRegionLabel = (kind: string) => {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.layout-zone-cell.has-slot-content {
+  place-items: stretch;
+  padding: 0;
+  border: 0;
+  border-radius: var(--component-content-area-radius, 8px);
+  background: transparent;
+}
+
 .layout-zone-label {
   min-width: 0;
   max-width: 100%;
@@ -355,6 +495,219 @@ const getRegionLabel = (kind: string) => {
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.layout-slot-content-widget {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.layout-slot-content {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--component-content-area-radius, 8px);
+  background: var(--component-content-area-background, var(--card-background, transparent));
+}
+
+.layout-slot-content.has-content-title {
+  grid-template-rows: 20px minmax(0, 1fr);
+}
+
+.layout-slot-content-title {
+  display: block;
+  height: 20px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 3px 8px 0;
+  color: var(--text-strong, #101828);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 14px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-content-header {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.layout-slot-content-header span {
+  overflow: hidden;
+  color: var(--muted, #667085);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-content-header strong {
+  overflow: hidden;
+  color: var(--text-strong, #101828);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-metric {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.layout-slot-metric strong {
+  overflow: hidden;
+  color: var(--primary, #004ac6);
+  font-size: 40px;
+  font-weight: 850;
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-metric em {
+  margin-left: 4px;
+  color: var(--muted, #667085);
+  font-size: 0.42em;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.layout-slot-metric span {
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 3px 8px;
+  border: 1px solid rgba(0, 87, 217, 0.14);
+  border-radius: 999px;
+  background: rgba(0, 87, 217, 0.08);
+  color: var(--primary, #004ac6);
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-bars,
+.layout-slot-summary {
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.layout-slot-bar-row,
+.layout-slot-summary-row {
+  display: grid;
+  grid-template-columns: minmax(42px, 0.8fr) minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  color: var(--muted, #667085);
+  font-size: 11px;
+}
+
+.layout-slot-summary-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.layout-slot-bar-row span,
+.layout-slot-summary-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-bar-row strong,
+.layout-slot-summary-row strong {
+  color: var(--text-strong, #101828);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.layout-slot-bar-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(0, 87, 217, 0.1);
+}
+
+.layout-slot-bar-track i {
+  display: block;
+  width: var(--slot-bar-percent, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #76b7ff, #0067df);
+}
+
+.layout-slot-funnel {
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+}
+
+.layout-slot-funnel-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  justify-self: center;
+  width: max(42%, var(--slot-bar-percent, 70%));
+  max-width: 100%;
+  min-height: 24px;
+  padding: 0 10px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(0, 103, 223, 0.94), rgba(99, 181, 255, 0.82));
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.layout-slot-funnel-row span,
+.layout-slot-funnel-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-summary-row.tone-warning strong {
+  color: #d97706;
+}
+
+.layout-slot-summary-row.tone-danger strong {
+  color: #dc2626;
+}
+
+.layout-slot-summary-row.tone-primary strong {
+  color: var(--primary, #004ac6);
 }
 
 .density-compact {

@@ -62,9 +62,12 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 11. Use `$report-info-component-mapping` to bind KPIs, thresholds, trend datasets, anomaly rules, drilldowns, filters, and states.
 12. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-14. Use layout/template/component skills to keep the dashboard sparse, layered, and actionable, with reduced uniform card borders, limited KPI-card scope, inherited brand/product color hierarchy, and task-matched non-KPI components.
-15. Run a visual density and first-viewport closure check before readiness: identify the primary status block, the first diagnostic evidence block, the action/detail block, and the trust/freshness cue; reject layouts where a block's allocated height is not justified by its content, where a chart has fewer than 5 meaningful marks but consumes a dominant half-screen without labels/target/average/explanation, or where lower modules appear as awkward clipped fragments instead of intentional section hints.
-16. Verify first-viewport answer, filter linkage, drilldown, abnormal states, refresh/freshness, runtime screenshot/DOM geometry, and runnable URL when requested.
+14. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport plan, and nav/page wiring. Keep the dashboard sparse, layered, and actionable, with reduced uniform card borders, limited KPI-card scope, inherited brand/product color hierarchy, and task-matched non-KPI components.
+15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select 分块布局模板 for every block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
+16. For every `3 componentArea` slot, choose an existing 组件内容区模板 first. If no suitable template fits, create a standalone ECharts-backed component content area template and register/copy it before slot fill. Do not put KPI additional information, units, title pills, or summary copy inside the component slot.
+17. Use component/chart/table/filter specialty skills for any newly selected or self-developed component content area template before implementation-ready decisions.
+18. Run a visual density and first-viewport closure check before readiness: identify the primary status block, the first diagnostic evidence block, the action/detail block, and the trust/freshness cue; reject layouts where a block's allocated height is not justified by its content, where a chart has fewer than 5 meaningful marks but consumes a dominant half-screen without labels/target/average/explanation, or where lower modules appear as awkward clipped fragments instead of intentional section hints.
+19. Verify first-viewport answer, filter linkage, drilldown, abnormal states, refresh/freshness, runtime screenshot/DOM geometry, and runnable URL when requested.
 
 ## Required Output
 
@@ -75,6 +78,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - KPI scope boundary: which metrics are KPI cards, which metrics stay in charts/tables/text/lists, and why.
 - Result-content boundary: visible status/conclusion/evidence/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - First-viewport plan, trend/comparison/ranking plan, anomaly/detail/action plan.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and ECharts self-developed component content area fallback list.
 - Drilldown chain: state -> split -> object -> detail/action.
 - Visual density and first-viewport closure result: oversized/empty block scan, chart mark-to-area fit, text contrast/readability, next-section exposure, and evidence-backed repair decisions.
 - Filter, refresh, permission, export/share, abnormal, empty/error/no-permission state requirements.
@@ -86,6 +90,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 
 - Do not turn a dashboard into a dense detail report.
 - Do not start layout or component selection until the current-state story, user path, protagonist metric/object/risk, and next drilldown/action are explicit or safely inferred.
+- Do not start runnable implementation until the nine-step template operation chain has no missing block configs or slots. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone ECharts component content area template.
 - Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not turn a KPI dashboard into a wall of KPI cards. The first viewport may have a bounded KPI summary, but trend, driver, anomaly, detail, action, and trust content must use task-matched component forms.
 - Do not rely on uniform card borders to separate every module; use typography, spacing, section rhythm, dividers, and hierarchy before adding more card frames.
@@ -94,6 +99,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
 - Do not mark ready when the first viewport is legal but visually empty, fragmented, or template-like. Large panels must carry a proportional amount of decision content or be resized/split; sparse charts must add labels, target/average lines, explanatory context, or share space with a relevant list/table.
 - Do not accept component internals that stretch title, evidence, metric, and action to the far edges of a tall card when the business content is naturally compact. Re-group the content, reduce the block span, or add supporting evidence/action content.
+- Do not put block template supporting areas inside KPI component content slots. KPI 卡附加信息区、单位区、说明区 stay on the 分块布局模板; the component content area carries only the KPI/card/chart internal component body.
 - Do not accept a lower section that is accidentally clipped into the first viewport in a way that looks like miscalculated layout. Either complete the first viewport group, create an intentional section transition, or adjust row height/spans.
 - Do not treat screenshot-free browser QA as enough for visual quality. Runtime evidence must include at least one screenshot plus DOM checks for text overflow, chart/canvas presence, and fixed-height clipping/overflow for the repaired viewport.
 - Do not use unbounded gauges or decorative charts for variety.

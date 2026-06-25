@@ -38,15 +38,15 @@ const getAssetById = <T extends { id: string; sourceBlockId?: string }>(assets: 
 };
 
 const getBlockGenericTemplate = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
-  getAssetById(context.genericTemplates, block.genericTemplateId);
+  getAssetById(context.blockLayoutTemplates, block.blockLayoutTemplateId ?? block.genericTemplateId);
 
 const getBlockWidget = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
   block.widget ??
-  getAssetById(context.componentSamples, block.componentSampleId)?.widget ??
+  getAssetById(context.componentContentAreaTemplates, block.componentContentAreaTemplateId ?? block.componentSampleId)?.widget ??
   getBlockGenericTemplate(block, context)?.widget;
 
 const getComponentSlotWidget = (slot: ReportBlueprintComponentSlot, context: ReportAssetResolutionContext) =>
-  slot.widget ?? getAssetById(context.componentSamples, slot.componentSampleId)?.widget;
+  slot.widget ?? getAssetById(context.componentContentAreaTemplates, slot.componentContentAreaTemplateId ?? slot.componentSampleId)?.widget;
 
 const getUnitMetric = (slotFill: ReportTemplateSlotFill): WidgetAuxMetric | undefined => {
   if (!slotFill.unit) {
@@ -105,6 +105,11 @@ const applySlotFills = (widget: RegisteredWidgetConfig, slotFills: ReportTemplat
   return nextWidget;
 };
 
+const applyComponentContentAreaSlotFills = (
+  widget: RegisteredWidgetConfig,
+  slotFills: ReportTemplateSlotFill[] = [],
+) => applySlotFills(widget, slotFills.filter((slotFill) => slotFill.slotId === 'componentArea'));
+
 const padSpanPart = (value: number) => String(value).padStart(2, '0');
 
 const getBlockComponentPattern = (
@@ -148,7 +153,7 @@ const createLayoutHostWidget = (
   displayTitle: block.id,
   props: {
     title: block.id,
-    placeholder: '组件区域',
+    placeholder: '3 组件区',
     showChrome: false,
     showFooter: false,
     componentRegionPattern: getBlockComponentPattern(block, genericTemplate),
@@ -174,7 +179,7 @@ const materializeComponentSlots = (
       role: slot.role ?? contract?.role,
       size: slot.size,
       dataBinding: slot.dataBinding,
-      widget: widget ? applySlotFills(widget, slot.slotFills) : undefined,
+      widget: widget ? applyComponentContentAreaSlotFills(widget, slot.slotFills) : undefined,
     };
   });
 

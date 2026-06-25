@@ -24,10 +24,14 @@ export type ReportTemplateSlotId =
   | 'summaryArea';
 
 export type ReportTemplateSlotRole = 'block-chrome' | 'component-content' | 'supporting-content';
+export type ReportTemplateSlotRegionCode = '1-1' | '1-2' | '2-1' | '2-2' | '3' | '4';
+export type ReportTemplateSlotAlignment = 'left' | 'right' | 'fill';
 
 export interface ReportTemplateSlotContract {
   id: ReportTemplateSlotId;
+  regionCode: ReportTemplateSlotRegionCode;
   label: string;
+  alignment: ReportTemplateSlotAlignment;
   role: ReportTemplateSlotRole;
   required: boolean;
   accepts: string[];
@@ -92,6 +96,8 @@ export interface ReportBlueprintComponentSlot {
   regionKey?: string;
   role?: ReportComponentSlotRole;
   size?: string;
+  componentContentAreaTemplateId?: string;
+  /** @deprecated Use componentContentAreaTemplateId. */
   componentSampleId?: string;
   widget?: RegisteredWidgetConfig;
   slotFills?: ReportTemplateSlotFill[];
@@ -112,8 +118,12 @@ export interface ReportComponentRegionPatternOption {
 
 export interface ReportBlueprintBlock {
   id: string;
+  blockLayoutTemplateId?: string;
+  /** @deprecated Use blockLayoutTemplateId. */
   genericTemplateId?: string;
   componentRegionPattern?: string;
+  componentContentAreaTemplateId?: string;
+  /** @deprecated Use componentContentAreaTemplateId. */
   componentSampleId?: string;
   widget?: RegisteredWidgetConfig;
   componentSlots?: ReportBlueprintComponentSlot[];
@@ -144,7 +154,11 @@ export interface ReportBlueprint {
 export interface ReportAssetResolutionContext {
   frameworks: ReportFrameworkAsset[];
   pageLayouts: ReportPageLayoutAsset[];
+  componentContentAreaTemplates: ReportTemplateBlockAsset[];
+  blockLayoutTemplates: ReportTemplateBlockAsset[];
+  /** @deprecated Use componentContentAreaTemplates. */
   componentSamples: ReportTemplateBlockAsset[];
+  /** @deprecated Use blockLayoutTemplates. */
   genericTemplates: ReportTemplateBlockAsset[];
 }
 

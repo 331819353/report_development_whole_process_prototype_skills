@@ -41,17 +41,19 @@ export const reportCompatibilityRules: ReportCompatibilityRule[] = [
     id: 'asset-size-match',
     label: 'Asset size match',
     severity: 'error',
-    description: 'Generic templates and component samples must fit the target block span or declare an allowed visualType fallback.',
+    description: 'Block layout templates and component content area templates must fit the target block span or declare an allowed visualType fallback.',
   },
   {
     id: 'slot-contract',
     label: 'Slot contract',
     severity: 'error',
-    description: 'Slot fills must target known slots and respect title pill and auxiliary metric limits.',
+    description: 'Block slot fills must target the standard block-layout areas; component slot fills may only target 3 componentArea with component content area templates.',
   },
 ];
 
 const knownSlotIds = new Set(['titleArea', 'pillArea', 'auxMetricArea', 'unitArea', 'componentArea', 'summaryArea']);
+const componentContentAreaSlotFillIds = new Set(['componentArea']);
+const standardSlotAreaList = '1-1 titleArea, 1-2 pillArea, 2-1 auxMetricArea, 2-2 unitArea, 3 componentArea, 4 summaryArea';
 
 const pushFinding = (
   findings: ReportCompatibilityFinding[],
@@ -72,15 +74,15 @@ const getAssetById = <T extends { id: string; sourceBlockId?: string }>(assets: 
 };
 
 const getBlockGenericTemplate = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
-  getAssetById(context.genericTemplates, block.genericTemplateId);
+  getAssetById(context.blockLayoutTemplates, block.blockLayoutTemplateId ?? block.genericTemplateId);
 
 const getBlockWidget = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
   block.widget ??
-  getAssetById(context.componentSamples, block.componentSampleId)?.widget ??
+  getAssetById(context.componentContentAreaTemplates, block.componentContentAreaTemplateId ?? block.componentSampleId)?.widget ??
   getBlockGenericTemplate(block, context)?.widget;
 
 const getComponentSlotWidget = (slot: ReportBlueprintComponentSlot, context: ReportAssetResolutionContext) =>
-  slot.widget ?? getAssetById(context.componentSamples, slot.componentSampleId)?.widget;
+  slot.widget ?? getAssetById(context.componentContentAreaTemplates, slot.componentContentAreaTemplateId ?? slot.componentSampleId)?.widget;
 
 const getWidgetVisualType = (widget?: RegisteredWidgetConfig): WidgetVisualType | undefined => widget?.visualType;
 
@@ -93,15 +95,15 @@ const validateSlotFills = (
     const slotPath = `${path}.slotFills[${index}]`;
 
     if (!knownSlotIds.has(slotFill.slotId)) {
-      pushFinding(findings, 'error', 'RPT-SLOT-UNKNOWN', `Unknown slot "${slotFill.slotId}".`, slotPath);
+      pushFinding(findings, 'error', 'RPT-SLOT-UNKNOWN', `Unknown slot "${slotFill.slotId}". Use one of: ${standardSlotAreaList}.`, slotPath);
     }
 
     if (slotFill.slotId === 'pillArea' && (slotFill.pills?.length ?? 0) > 3) {
-      pushFinding(findings, 'error', 'RPT-SLOT-PILL-LIMIT', 'pillArea supports at most 3 values.', slotPath);
+      pushFinding(findings, 'error', 'RPT-SLOT-PILL-LIMIT', '1-2 pillArea supports at most 3 values.', slotPath);
     }
 
     if (slotFill.slotId === 'auxMetricArea' && (slotFill.metrics?.length ?? 0) > 5) {
-      pushFinding(findings, 'warning', 'RPT-SLOT-AUX-DENSE', 'auxMetricArea has more than 5 metrics; the materializer will keep the first supported metrics plus unit.', slotPath);
+      pushFinding(findings, 'warning', 'RPT-SLOT-AUX-DENSE', '2-1 auxMetricArea has more than 5 metrics; the materializer will keep the first supported metrics plus the 2-2 unit.', slotPath);
     }
   });
 };
@@ -188,7 +190,7 @@ const validateComponentSlots = (
             findings,
             'warning',
             'RPT-COMPONENT-SLOT-CONTRACT-UNFILLED',
-            `Template slot "${contract.label}" is not filled yet.`,
+            `Block layout template slot "${contract.label}" is not filled yet.`,
             `${path}.componentSlots`,
           );
         }
@@ -201,21 +203,28 @@ const validateComponentSlots = (
 
     regionKeys.forEach((key) => {
       if (!configuredKeys.has(key)) {
-        pushFinding(findings, 'warning', 'RPT-COMPONENT-SLOT-UNFILLED', `Region "${key}" is declared in componentRegionPattern but has no component slot.`, `${path}.componentSlots`);
+        pushFinding(findings, 'warning', 'RPT-COMPONENT-SLOT-UNFILLED', `Region "${key}" is declared in the block layout template pattern but has no component slot.`, `${path}.componentSlots`);
       }
     });
   }
 
   slots.forEach((slot, slotIndex) => {
     const slotPath = `${path}.componentSlots[${slotIndex}]`;
-    const componentSample = getAssetById(context.componentSamples, slot.componentSampleId);
+    const componentContentAreaTemplateId = slot.componentContentAreaTemplateId ?? slot.componentSampleId;
+    const componentSample = getAssetById(context.componentContentAreaTemplates, componentContentAreaTemplateId);
     const widget = getComponentSlotWidget(slot, context);
     const visualType = getWidgetVisualType(widget);
     const slotContract = findSlotContract(slot, slotContracts, slotIndex);
     const effectiveSize = slot.size ?? slotContract?.minSize;
 
-    if (slot.componentSampleId && !componentSample) {
-      pushFinding(findings, 'error', 'RPT-COMPONENT-SLOT-SAMPLE-MISSING', `Unknown component slot sample "${slot.componentSampleId}".`, `${slotPath}.componentSampleId`);
+    if (componentContentAreaTemplateId && !componentSample) {
+      pushFinding(
+        findings,
+        'error',
+        'RPT-COMPONENT-SLOT-SAMPLE-MISSING',
+        `Unknown component content area template "${componentContentAreaTemplateId}".`,
+        `${slotPath}.componentContentAreaTemplateId`,
+      );
     }
 
     if (slotContracts.length && !slotContract) {
@@ -223,7 +232,7 @@ const validateComponentSlots = (
         findings,
         'warning',
         'RPT-COMPONENT-SLOT-CONTRACT',
-        `Component slot "${getComponentSlotIdentity(slot, slotIndex)}" does not match the selected generic template contract.`,
+        `Component slot "${getComponentSlotIdentity(slot, slotIndex)}" does not match the selected block layout template contract.`,
         slotPath,
       );
     }
@@ -239,7 +248,7 @@ const validateComponentSlots = (
     }
 
     if (!widget) {
-      pushFinding(findings, 'warning', 'RPT-COMPONENT-SLOT-NO-WIDGET', `Component slot "${slot.id}" has no widget or component sample.`, slotPath);
+      pushFinding(findings, 'warning', 'RPT-COMPONENT-SLOT-NO-WIDGET', `Component slot "${slot.id}" has no component content area template or inline widget.`, slotPath);
     }
 
     if (countEnabledPills(widget?.titlePills) > 3) {
@@ -250,7 +259,17 @@ const validateComponentSlots = (
       const slotFillPath = `${slotPath}.slotFills[${index}]`;
 
       if (!knownSlotIds.has(slotFill.slotId)) {
-        pushFinding(findings, 'error', 'RPT-COMPONENT-SLOT-FILL-UNKNOWN', `Unknown slot "${slotFill.slotId}".`, slotFillPath);
+        pushFinding(findings, 'error', 'RPT-COMPONENT-SLOT-FILL-UNKNOWN', `Unknown slot "${slotFill.slotId}". Use one of: ${standardSlotAreaList}.`, slotFillPath);
+      }
+
+      if (knownSlotIds.has(slotFill.slotId) && !componentContentAreaSlotFillIds.has(slotFill.slotId)) {
+        pushFinding(
+          findings,
+          'error',
+          'RPT-COMPONENT-SLOT-FILL-SUPPORTING-AREA',
+          'Component slot fills may only target 3 componentArea. Move 1-1 title, 1-2 pill, 2-1 additional information, 2-2 unit, and 4 summary fills to the block layout template slotFills.',
+          slotFillPath,
+        );
       }
     });
   });
@@ -339,13 +358,15 @@ export const validateReportBlueprint = (
       const cols = Math.max(span.columnEnd - span.columnStart, 1);
       const rowsCount = Math.max(span.rowEnd - span.rowStart, 1);
       const size = getSizeLabel(cols, rowsCount).replace('*', 'x');
-      const genericTemplate = getAssetById(context.genericTemplates, block.genericTemplateId);
-      const componentSample = getAssetById(context.componentSamples, block.componentSampleId);
+      const blockLayoutTemplateId = block.blockLayoutTemplateId ?? block.genericTemplateId;
+      const componentContentAreaTemplateId = block.componentContentAreaTemplateId ?? block.componentSampleId;
+      const genericTemplate = getAssetById(context.blockLayoutTemplates, blockLayoutTemplateId);
+      const componentSample = getAssetById(context.componentContentAreaTemplates, componentContentAreaTemplateId);
       const widget = getBlockWidget(block, context);
       const visualType = getWidgetVisualType(widget);
 
-      if (block.genericTemplateId && !genericTemplate) {
-        pushFinding(findings, 'error', 'RPT-GENERIC-TEMPLATE-MISSING', `Unknown genericTemplateId "${block.genericTemplateId}".`, `${blockPath}.genericTemplateId`);
+      if (blockLayoutTemplateId && !genericTemplate) {
+        pushFinding(findings, 'error', 'RPT-GENERIC-TEMPLATE-MISSING', `Unknown blockLayoutTemplateId "${blockLayoutTemplateId}".`, `${blockPath}.blockLayoutTemplateId`);
       }
 
       if (genericTemplate && (genericTemplate.cols !== cols || genericTemplate.rows !== rowsCount)) {
@@ -353,13 +374,13 @@ export const validateReportBlueprint = (
           findings,
           'error',
           'RPT-GENERIC-TEMPLATE-SIZE',
-          `Generic template "${genericTemplate.id}" is ${genericTemplate.cols}x${genericTemplate.rows}, but block "${block.id}" is ${cols}x${rowsCount}.`,
-          `${blockPath}.genericTemplateId`,
+          `Block layout template "${genericTemplate.id}" is ${genericTemplate.cols}x${genericTemplate.rows}, but block "${block.id}" is ${cols}x${rowsCount}.`,
+          `${blockPath}.blockLayoutTemplateId`,
         );
       }
 
-      if (block.componentSampleId && !componentSample) {
-        pushFinding(findings, 'error', 'RPT-COMPONENT-SAMPLE-MISSING', `Unknown componentSampleId "${block.componentSampleId}".`, `${blockPath}.componentSampleId`);
+      if (componentContentAreaTemplateId && !componentSample) {
+        pushFinding(findings, 'error', 'RPT-COMPONENT-SAMPLE-MISSING', `Unknown componentContentAreaTemplateId "${componentContentAreaTemplateId}".`, `${blockPath}.componentContentAreaTemplateId`);
       }
 
       if (visualType && !isWidgetSizeAllowed(visualType, size)) {
@@ -374,7 +395,7 @@ export const validateReportBlueprint = (
 
       if (!widget) {
         if (!block.componentSlots?.length) {
-          pushFinding(findings, 'warning', 'RPT-BLOCK-NO-WIDGET', `Block "${block.id}" has no widget or component sample.`, blockPath);
+          pushFinding(findings, 'warning', 'RPT-BLOCK-NO-WIDGET', `Block "${block.id}" has no widget, block layout template, or component slots.`, blockPath);
         }
       }
 

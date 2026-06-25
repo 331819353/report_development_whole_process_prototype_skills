@@ -42,6 +42,7 @@ Copy templates with their full project structure, including package/config files
 | Need | Read |
 | --- | --- |
 | Template choice | `references/template-routing.md` |
+| Template operation flow | `references/template-operation-flow.md` |
 | Template routing and implementation gates | `references/template-routing-and-implementation-gates.md` |
 | Shared extension points | `references/template-shared-contract.md` |
 | Layout tokens and template design system | `references/template-layout-design-system.md` |
@@ -61,25 +62,32 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 ## Workflow
 
-1. Decide bundled template, existing project shell, or custom development; default to bundled template unless a hard exception exists.
-2. Select exactly one template using display theme, selected pattern cards, content volume, navigation depth, interaction density, and display environment.
-3. Carry the layout-provided `blockChromePattern` matrix or explicitly inherit `template-default`/`plain-enterprise` for every styled parent block before widget body content is configured. Block chrome is widget/composite-owned and must not create a duplicate shell title band.
-4. Verify report-decision compatibility: metric tree/data story, detail/action/trust capacity, realistic data states, and report-designer needs when applicable.
-5. For templates with `nav[]`, define substantial nav-page content before copying or editing.
-6. Copy or merge the full template into the target.
-7. Keep shell-owned behavior in template config/data/action registries and widget registries.
-8. Preserve native template filter surfaces; configure `filters[]`, data sources, empty-filter values, resolvers, and widget bindings instead of adding a duplicate filter bar.
-9. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar; widgets own only current-component local filters, drill/detail links, and component-scoped micro actions. If a business component must own a normally shell-owned control, set `controlOwnership: "component"` or an equivalent explicit decision and disable/hide the matching template control.
-10. Preserve the stack contract before source edits: keep `vue`, `@vitejs/plugin-vue`, `vite`, `typescript`, `vue-tsc`, `element-plus`, `echarts`, and `axios` in package dependencies; keep `src/main.ts` bootstrapping Vue 3 and registering Element Plus; use ECharts for standard chart widgets instead of manual SVG/HTML/CSS/canvas marks.
-11. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
-12. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
-13. Run template validation, build, and dev/preview startup when a local URL is required.
-14. When widgets are configured, `npm run validate:dashboard` must check list and chart geometry contracts: list-like widgets declare `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`; `3x2` action lists show at most `2` rows and use detail/tooltip/drawer/view-all/table fallback; full line/bar/combo axis charts first estimate post-layout `contentW/contentH` from grid span, `contentWidth`, `rowHeight`, and `cellPadding`, then require `contentW >=300px`, `contentH >=200px`, and `chartBodyH >=180px` unless they explicitly use `compact-sparkline` with legend, Y-axis unit/name, and permanent labels hidden. Blocks under `400px` wide or `250px` high, and blocks under `500px` with dense/long x-axis labels, must declare squeeze/dataZoom/axis-label/fallback strategy. ECharts Cartesian widgets also keep compact `grid.top/right/bottom/left`, side-placed Y-axis titles, bottom X-axis titles, `insideEndTop` target labels, dynamic NPS/score/rate Y-axis ranges, and no legend for single-series charts unless an exception is documented. Pie/donut/rose widgets declare `minAngle` or tiny-slice aggregation/fallback.
-15. When a runnable URL exists, run `npm run visual:geometry -- --url <url>` and include `visual-check/geometry-report.json` so clipped content, text overflow, sibling overlap, squeezed rows/cards, list rows where `scrollHeight > clientHeight + 1`, hidden list overflow, narrow/short chart containers, chart body/plot squeeze, chart/table crowding, and SVG label overlap are discovered automatically before readiness.
+1. Select exactly one 框架模板 using display theme, selected pattern cards, content volume, navigation depth, interaction density, and display environment.
+2. Design 页面布局配置 through `layoutRows`, stable block ids, and page/nav widget wiring; for templates with `nav[]`, define substantial nav-page content before copying or editing.
+3. Based on 页面布局配置, select 分块布局模板 for each page block. A block layout template is size plus slots, and every block uses the standard areas: `1-1 titleArea` 标题区, `1-2 pillArea` 胶囊按钮区, `2-1 auxMetricArea` 附加信息区, `2-2 unitArea` 单位区, `3 componentArea` 组件区, and `4 summaryArea` 说明区.
+4. Configure the 分块布局模板 `1-1 titleArea`: implement the title and title style.
+5. Decide whether `1-2 pillArea` is needed. Configure pill buttons when needed; otherwise record `pillAreaConfig: null`.
+6. Configure `2-1 auxMetricArea`: add suitable additional information and keep the items evenly distributed.
+7. Decide whether `2-2 unitArea` is needed. Configure unit text/style when needed; otherwise record `unitAreaConfig: null`.
+8. Based on the selected 分块布局模板 slots, choose suitable 组件内容区模板 for `3 componentArea` / `componentSlots`; if no suitable template exists, self-develop a new standalone Vue component content area template with ECharts for chart needs. Do not attach title/pills, additional information, unit, or summary copy to the component slot. Component content area templates render as rounded rectangles without border lines, and may expose a removable `20px` top title strip with centered text and `3px` top padding; hide that strip when the parent block layout has only one component slot.
+9. Configure `4 summaryArea`: add suitable conclusion, note, or explanation when needed; otherwise record `summaryAreaConfig: null`.
+10. Carry the layout-provided `blockChromePattern` matrix or explicitly inherit `template-default`/`plain-enterprise` for every styled parent block before widget body content is configured. Block chrome is widget/composite-owned and must not create a duplicate shell title band.
+11. Verify report-decision compatibility: metric tree/data story, detail/action/trust capacity, realistic data states, and report-designer needs when applicable.
+12. Copy or merge the full template into the target.
+13. Keep shell-owned behavior in template config/data/action registries and widget registries.
+14. Preserve native template filter surfaces; configure `filters[]`, data sources, empty-filter values, resolvers, and widget bindings instead of adding a duplicate filter bar.
+15. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar; widgets own only current-component local filters, drill/detail links, and component-scoped micro actions. If a business component must own a normally shell-owned control, set `controlOwnership: "component"` or an equivalent explicit decision and disable/hide the matching template control.
+16. Preserve the stack contract before source edits: keep `vue`, `@vitejs/plugin-vue`, `vite`, `typescript`, `vue-tsc`, `element-plus`, `echarts`, and `axios` in package dependencies; keep `src/main.ts` bootstrapping Vue 3 and registering Element Plus; use ECharts for standard chart widgets instead of manual SVG/HTML/CSS/canvas marks.
+17. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
+18. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
+19. Run template validation, build, and dev/preview startup when a local URL is required.
+20. When widgets are configured, `npm run validate:dashboard` must check list and chart geometry contracts: list-like widgets declare `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`; `3x2` action lists show at most `2` rows and use detail/tooltip/drawer/view-all/table fallback; full line/bar/combo axis charts first estimate post-layout `contentW/contentH` from grid span, `contentWidth`, `rowHeight`, and `cellPadding`, then require `contentW >=300px`, `contentH >=200px`, and `chartBodyH >=180px` unless they explicitly use `compact-sparkline` with legend, Y-axis unit/name, and permanent labels hidden. Blocks under `400px` wide or `250px` high, and blocks under `500px` with dense/long x-axis labels, must declare squeeze/dataZoom/axis-label/fallback strategy. ECharts Cartesian widgets also keep compact `grid.top/right/bottom/left`, side-placed Y-axis titles, bottom X-axis titles, `insideEndTop` target labels, dynamic NPS/score/rate Y-axis ranges, and no legend for single-series charts unless an exception is documented. Pie/donut/rose widgets declare `minAngle` or tiny-slice aggregation/fallback.
+21. When a runnable URL exists, run `npm run visual:geometry -- --url <url>` and include `visual-check/geometry-report.json` so clipped content, text overflow, sibling overlap, squeezed rows/cards, list rows where `scrollHeight > clientHeight + 1`, hidden list overflow, narrow/short chart containers, chart body/plot squeeze, chart/table crowding, and SVG label overlap are discovered automatically before readiness.
 
 ## Required Output
 
 - Selected template ID and reason.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
 - Compatibility notes for display theme, pattern cards, report decision path, and navigation depth.
 - Shell decisions: title, logo, navigation, native filters, toolbar, controls.
 - Control ownership matrix: refresh, download/export, copy/share, global filters, local filters, period/date controls, toolbar actions, and any disabled template controls.
@@ -95,10 +103,13 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not choose custom development when a bundled template can satisfy the requirement.
+- Do not mark the template implementation ready until the nine-step operation chain is complete: framework template selected, page layout configured, block layout templates mapped, title configured, pill/unit/summary decisions recorded, additional information configured and evenly distributed, and every `3 componentArea` slot filled by a component content area template or a newly registered standalone ECharts component content area template.
 - Do not choose a nav template unless multiple substantial nav pages are implemented.
 - Do not accept a generated/copied project that keeps Vue 3 but drops ECharts or Element Plus. Missing `echarts`, `element-plus`, Vue 3 bootstrap, Element Plus global registration/style import, or actual ECharts runtime ownership for chart widgets is a template readiness failure.
 - Do not replace Element Plus controls with ad hoc HTML controls for ordinary buttons, selects, popovers, drawers, dialogs, tables, messages, or form-like controls unless the user names an existing project design system or an explicit custom-shell exception.
 - Do not add duplicate shell, filter bar, toolbar, or navigation layers over existing template slots without an explicit redesign decision.
+- Do not fill component slots with block-layout additional information, unit fields, title pills, or summary/explanation copy. Component slots carry only the selected component content area's Vue file / mounted component; `1-1`, `1-2`, `2-1`, `2-2`, and `4` supporting areas stay on the 分块布局模板.
+- Do not accept component content area templates that introduce their own bordered card shell. The component content area root is a rounded rectangle with no border line; its optional top title strip is `20px` high, centered, `3px` top-padded, removable through configuration, and hidden when the parent block layout has only one component slot.
 - Do not render duplicate refresh, download/export, copy/share, period/date, global-filter, or toolbar controls in business widgets when the selected template already owns those controls. Duplicate visible controls are `VIS-DUPLICATE-CONTROL` or `RPT-SHELL-DUPLICATE` unless component ownership is explicitly declared and the corresponding template control is disabled/hidden.
 - Do not implement parent-block title/body chrome as a shell-level title band, raw copied HTML wrapper, or uninspectable one-off CSS. Styled parent blocks must declare `blockChromePattern` or an inherited default through widget/composite-owned config, props, scoped styles, or DOM attributes, and must preserve chart/table/list body floors.
 - Template `filters[]` is for horizontal constraints; schema-changing perspectives belong in nav/page/route/tab/segment/perspective state.

@@ -11,6 +11,8 @@ export const cockpitConfig: DashboardConfig = {
     title: '经营分析报表',
     topbarNav: [
       { id: 'dashboard', label: '经营总览' },
+      { id: 'launch-scenario', label: '新品上市' },
+      { id: 'component-library', label: '组件内容区' },
       { id: 'analytics', label: '指标分析' },
       { id: 'overview', label: '管理摘要' },
       { id: 'sales', label: '收入分析' },
@@ -18,6 +20,7 @@ export const cockpitConfig: DashboardConfig = {
       { id: 'products', label: '产品分析' },
       { id: 'channels', label: '渠道分析' },
       { id: 'regions', label: '区域分析' },
+      { id: 'multi-slot-12x4', label: '分块模板' },
     ],
     defaultTopbarNavId: 'dashboard',
     filterTitle: '筛选项',

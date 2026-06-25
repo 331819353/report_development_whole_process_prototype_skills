@@ -551,7 +551,6 @@ const heatmapOption = (): Record<string, unknown> => {
   const valueRows = heatmapCells.value.filter((item) => item.value !== null && item.value !== undefined);
   const max = Math.max(...valueRows.map((item) => Number(item.value)), 1);
   const data = valueRows.map((item) => [heatmapCols.value.indexOf(item.col), heatmapRows.value.indexOf(item.row), item.value]);
-  const missingCellMode = 'missing/null/undefined cells stay blank; zero is rendered as real zero';
 
   return {
     backgroundColor: 'transparent',
@@ -560,10 +559,11 @@ const heatmapOption = (): Record<string, unknown> => {
       ...baseTooltip,
       trigger: 'item',
       formatter: (params: unknown) => {
-        const item = params as { value?: [number, number, number] };
-        const value = item.value ?? [0, 0, 0];
+        const item = params as { value?: [number, number, number | null | undefined] };
+        const value = item.value ?? [0, 0, undefined];
+        const displayValue = value[2] === null || value[2] === undefined ? '暂无数据' : `${value[2]} ${unit.value}`.trim();
 
-        return `${heatmapRows.value[value[1]] ?? ''} / ${heatmapCols.value[value[0]] ?? ''}<br/>${seriesName.value}: ${value[2]} ${unit.value}<br/>${missingCellMode}`;
+        return `${heatmapRows.value[value[1]] ?? ''} / ${heatmapCols.value[value[0]] ?? ''}<br/>${seriesName.value}: ${displayValue}`;
       },
     },
     grid: { ...gridBase.value, top: 16, left: 36, bottom: 22 },

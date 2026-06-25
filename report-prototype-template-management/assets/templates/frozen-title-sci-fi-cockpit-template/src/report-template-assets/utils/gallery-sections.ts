@@ -17,7 +17,7 @@ const getGalleryText = (kind: ReportTemplateAssetKind): GalleryTextConfig => {
 
   return {
     title: '通用模板',
-    getSubtitle: (count) => `共 ${count} 个通用布局，按标题区、辅助信息区、组件区域、说明区进行占位设计。`,
+    getSubtitle: (count) => `共 ${count} 个通用布局，按标题区、附加信息区、组件区、说明区进行占位设计。`,
   };
 };
 

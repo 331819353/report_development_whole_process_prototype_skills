@@ -54,6 +54,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Display themes and pattern chain: `references/04-common-display-theme-pattern-chain.md`
 - Block title/body chrome style selection: `$report-visual-layout-design` `references/block-chrome-style-patterns.md` when source samples define parent-block title/background style or when styled report blocks are needed.
 - Anti-squeeze row-group expansion and vacancy reflow: `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when dense KPI/chart/table/composite blocks are mapped, laid out, repaired, or accepted.
+- Template operation flow: `$report-prototype-template-management` `references/template-operation-flow.md` before copying, editing, or accepting bundled template implementations.
 - Modern SaaS / BI Dashboard / UI Kit positive style contract: `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when that design language is requested.
 - Detailed prototype implementation gates: `references/05-prototype-implementation-gates.md`
 - Code-file ledger: `$code-change-ledger-management` before code edits.
@@ -80,10 +81,10 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 12. Decide `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly requests HTML/static/single-file HTML output or exact static HTML preservation.
 13. Decide `pageShellPath`: default `template`; use `custom` only for explicit custom/free design, exact restoration, existing shell preservation, HTML/static output, or documented template limitation.
 14. If HTML/source is provided, classify any SVG/canvas/DOM chart marks as sample evidence, not standard-chart implementation. Standard charts must be rebuilt with ECharts/data-driven options unless an explicit custom-diagram exception is documented.
-15. Use `$report-visual-layout-design` for shell, navigation, filter surface, grid, block sizing, responsive plan, page规范, and per-parent-block `blockChromePattern` selection. Select or explicitly inherit the block title/body chrome before filling the block body with charts, tables, lists, KPI strips, or text.
-16. Use `$report-prototype-template-management` for template selection/copy/validation and bundled assets.
-17. Route chart, table, filter, component-placement, and reusable component work to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, `$report-component-placement-spec`, or `$report-component-design-spec` whenever those surfaces are affected.
-18. Use `$report-component-style-design` and `$report-component-design-spec` for component fit, chart/table/KPI readability, and reusable component rules.
+15. Use `$report-visual-layout-design` for shell, navigation, filter surface, `12 * N` grid, block sizing, page规范, and per-parent-block `blockChromePattern` selection. Its handoff must include `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport plan, and nav/page wiring.
+16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select 分块布局模板 for every page block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill only `3 componentArea` slots with 组件内容区模板 and configure summary/explanation on `4 summaryArea`.
+17. Route chart, table, filter, component-placement, and reusable component work to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, `$report-component-placement-spec`, or `$report-component-design-spec` whenever those surfaces are affected. If no suitable 组件内容区模板 exists for a slot, define the ECharts/table/list contract here before creating the standalone component content area template.
+18. Use `$report-component-style-design` and `$report-component-design-spec` for component fit, chart/table/KPI readability, reusable component rules, and the internal geometry of each selected or newly created 组件内容区模板. Component content area templates must not include block title, pill, additional information, unit, or summary areas.
 19. Apply Haier UI as the company-level application baseline for Haier/enterprise report pages, then apply report design-system rules as report-specific extensions. Skip Haier baseline only for explicit non-Haier/native sample/neutral brand decisions.
 20. Before implementation or repair touches source, read/create code ledgers for every changed file through `$code-change-ledger-management`; append version entries after edits.
 21. Start/verify the prototype when a runnable URL is requested and route runtime findings through `$frontend-runtime-qa-validation`.
@@ -107,6 +108,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Analysis perspective and component/data/filter/control/interaction binding matrix.
 - Filter/value semantics table with `detailValue`, `aggregateValue`, `emptyFilterValue`, display label, data-row role, query behavior, and primary-key eligibility.
 - Layout plan, selected template/custom reason, filter surface mapping, perspective-layer mapping, baseline inheritance decision, anti-squeeze row-group/vacancy reflow decisions when triggered, and implementation target path.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, ECharts self-developed component content area fallbacks, and validation evidence for every filled slot.
 - Files changed, code-ledger proof, verification commands, URL or blocker.
 - Quality-gate findings and readiness: `ready`, `partial`, or `blocked`.
 
@@ -119,6 +121,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Do not treat Haier UI and report design-system baselines as alternatives for Haier/enterprise report pages; inherit Haier application tokens/base controls and then apply report-specific rules.
 - Do not rely only on this top-level workflow when a chart, table, filter, component-placement, or reusable component standard is affected; route to the specific front-door skill before implementation or acceptance.
 - Do not implement before display theme, report type, binding matrix, layout, and template/custom shell decision exist.
+- Do not implement or accept a bundled-template prototype before the nine-step template operation chain exists: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. Every `3 componentArea` slot must be filled by an existing 组件内容区模板 or a newly registered standalone ECharts component content area template.
 - Do not implement a dense KPI/chart/table/composite layout before `layoutFitContract` and anti-squeeze reflow decisions exist. Crowding must be resolved by row-group expansion, wider/full-row move with vacancy handling, split/tab/drawer/fullscreen/pagination, or density reduction, not by font shrinkage, hidden overflow, or empty sibling stretching.
 - Do not start implementation from raw HTML, Markdown/MD, copied source, screenshots, or docs before converting them into requirement facts, assumptions, gaps, bindings, and acceptance checks.
 - Do not output HTML or static single-file prototypes merely because the user provided HTML/MD/source files; HTML output requires an explicit user request for HTML/static/single-file HTML or exact static preservation.
@@ -131,6 +134,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Do not reuse one sentinel value such as `all` for detail rows, aggregate rows, and empty/no-filter state. "All detail rows", "aggregate row", and "empty filter value" must be declared as separate semantics before implementation.
 - Do not choose custom development when a bundled template can satisfy the request.
 - Template-native filters and shell slots must be reused unless template-level redesign is explicitly requested.
+- Component slots must not carry block-layout supporting areas. Title, pill buttons, additional information, units, and summary/explanation copy stay on the 分块布局模板 areas `1-1`, `1-2`, `2-1`, `2-2`, and `4`.
 - Do not silently degrade the default runnable stack to Vue 3 only, Vue 3 + ECharts without Element Plus, or Vue 3 + Element Plus with hand-drawn charts. Stack exceptions require a named source authority and readiness impact.
 - Standard charts must be real ECharts option/series/runtime components; S2-class analytical tables must use S2/project-equivalent behavior.
 - HTML-provided SVG/canvas/DOM chart marks are visual/source evidence only. Do not copy or keep them as standard chart implementation; rebuild standard charts as ECharts data-driven components unless a named custom-diagram exception is approved.

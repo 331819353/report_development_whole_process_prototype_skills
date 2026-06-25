@@ -7,7 +7,7 @@
 - viewport: in-app browser default desktop viewport, `http://localhost:5176/#/`
 - state: dashboard first navigation tab, block `S` / `结论摘要卡模板`
 - full-view comparison evidence: reference image and rendered `S` card both show a core conclusion block with `客户满意度 92 分` and three explanatory rows.
-- focused region comparison evidence: focused on block `S`; external auxiliary metrics and external conclusion area are removed, component content is split into equal upper and lower regions.
+- focused region comparison evidence: focused on block `S`; external additional information and external conclusion area are removed, component content is split into equal upper and lower regions.
 
 **Required Fidelity Surfaces**
 - Fonts and typography: the core metric uses bold display text with adaptive sizing; `客户满意度` no longer truncates at the current 2*2 block width.
@@ -20,7 +20,7 @@
 - None.
 
 **Implementation Checklist**
-- Removed the `S` block auxiliary metrics configuration.
+- Removed the `S` block additional information configuration.
 - Removed the `S` block external body summary configuration.
 - Rebuilt the summary component area as a two-part card.
 - Rechecked rendered layout for missing text, overflow, and row count.

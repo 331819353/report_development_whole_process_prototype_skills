@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, type Component } from 'vue';
+import KpiMetricWidget from '../../components/KpiMetricWidget.vue';
+import type { KpiMetricWidgetProps, WidgetContext } from '../../types';
+import * as ComponentContentAreaTemplates from '../component-content-areas';
 import { getLayoutSpanSpec, type LayoutSpanId } from './catalog';
 import type { ComponentRegionPattern, LayoutSpanTemplateProps } from './types';
 
@@ -14,11 +17,22 @@ const props = withDefaults(defineProps<Props>(), {
   showFooter: true,
   secondary: 'auto',
   density: 'auto',
-  placeholder: '组件区域',
+  placeholder: '3 组件区',
   zonePatternLabel: '',
   componentRegionPattern: 'AA',
 });
 
+const fallbackWidgetContext: WidgetContext = {
+  area: 'page',
+  navId: 'block-template',
+  navLabel: 'block-template',
+  blockId: 'component-area',
+  filters: {},
+};
+const slotComponentRegistry: Record<string, Component> = {
+  KpiMetricWidget,
+  ...ComponentContentAreaTemplates,
+};
 const spec = computed(() => getLayoutSpanSpec(props.spanId));
 const isFourByThreeScaffold = computed(() => spec.value.id === '04x03');
 const normalizeComponentRegionPattern = (pattern: ComponentRegionPattern) =>
@@ -55,7 +69,7 @@ const hasSecondary = computed(() => {
 const title = computed(() => props.title || spec.value.id + ' layout');
 const note = computed(() => props.note || spec.value.fitRule);
 const zonePatternLabel = computed(() => props.zonePatternLabel ?? spec.value.zonePattern);
-const componentAreaLabel = computed(() => props.placeholder || '组件区域');
+const componentAreaLabel = computed(() => props.placeholder || '3 组件区');
 const sizeText = computed(() => spec.value.widthPx + 'px x ' + spec.value.heightPx + 'px');
 const componentSlotByRegion = computed(() => new Map(
   (props.componentSlots ?? []).map((slot, index) => [
@@ -86,11 +100,84 @@ const componentRegionSegments = computed(() => {
 
   return segments;
 });
+const componentSlotCount = computed(() => componentRegionSegments.value.length);
 const getRegionLabel = (kind: string) => {
   const slot = componentSlotByRegion.value.get(kind);
   const contract = componentContractByRegion.value.get(kind);
 
   return slot?.label ?? contract?.label ?? `${componentAreaLabel.value} ${kind.toUpperCase()}`;
+};
+const slotWidgetContext = computed(() => props.context ?? fallbackWidgetContext);
+const getRegionSlot = (kind: string) => componentSlotByRegion.value.get(kind);
+const getSlotWidget = (kind: string) => getRegionSlot(kind)?.widget;
+const getSlotContent = (kind: string) => getRegionSlot(kind)?.content;
+const getSlotComponent = (kind: string) => {
+  const widget = getSlotWidget(kind);
+
+  return widget ? slotComponentRegistry[widget.type] ?? null : null;
+};
+const getSlotWidgetRawProps = (kind: string) => (getSlotWidget(kind)?.props ?? {}) as Record<string, unknown>;
+const getSlotContentAreaTitle = (kind: string) => {
+  const widget = getSlotWidget(kind);
+  const widgetProps = getSlotWidgetRawProps(kind);
+
+  for (const value of [
+    widgetProps.contentAreaTitle,
+    widgetProps.title,
+    widget?.displayTitle,
+    widget?.title,
+    widget?.metricName,
+    getRegionSlot(kind)?.label,
+    getRegionLabel(kind),
+  ]) {
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return '';
+};
+const getSlotTitleProps = (kind: string) => {
+  const widgetProps = getSlotWidgetRawProps(kind);
+
+  return {
+    contentAreaTitle: getSlotContentAreaTitle(kind),
+    slotCount: componentSlotCount.value,
+    showContentTitle: componentSlotCount.value > 1 && widgetProps.showContentTitle !== false,
+  };
+};
+const getSlotWidgetProps = (kind: string) => ({
+  ...getSlotWidgetRawProps(kind),
+  ...getSlotTitleProps(kind),
+});
+const getSlotContentLabel = (kind: string) => {
+  const content = getSlotContent(kind);
+
+  return content?.label ?? content?.title ?? getRegionLabel(kind);
+};
+const hasSlotComponentContent = (kind: string) => Boolean(getSlotComponent(kind));
+const hasInlineKpiComponentContent = (kind: string) => Boolean(getSlotContent(kind));
+const hasComponentContent = (kind: string) => hasSlotComponentContent(kind) || hasInlineKpiComponentContent(kind);
+const getKpiComponentContentProps = (kind: string): KpiMetricWidgetProps => {
+  const widget = getSlotWidget(kind);
+
+  if (widget?.type === 'KpiMetricWidget') {
+    return {
+      ...(widget.props as KpiMetricWidgetProps),
+      ...getSlotTitleProps(kind),
+    };
+  }
+
+  const content = getSlotContent(kind);
+
+  return {
+    ...getSlotTitleProps(kind),
+    label: getSlotContentLabel(kind),
+    value: content?.value,
+    unit: content?.unit,
+    delta: content?.delta,
+    tone: content?.tone,
+  };
 };
 </script>
 
@@ -139,10 +226,25 @@ const getRegionLabel = (kind: string) => {
               v-for="segment in componentRegionSegments"
               :key="segment.key"
               class="layout-zone-cell"
-              :class="`layout-zone-${segment.kind}`"
+              :class="[`layout-zone-${segment.kind}`, { 'has-slot-content': hasComponentContent(segment.kind) }]"
               :style="{ gridColumn: `span ${segment.span}` }"
             >
-              <span class="layout-zone-label">{{ getRegionLabel(segment.kind) }}</span>
+              <component
+                :is="getSlotComponent(segment.kind)"
+                v-if="hasSlotComponentContent(segment.kind)"
+                v-bind="getSlotWidgetProps(segment.kind)"
+                class="layout-slot-content-widget"
+                :context="slotWidgetContext"
+                :data="[]"
+              />
+              <KpiMetricWidget
+                v-else-if="hasInlineKpiComponentContent(segment.kind)"
+                v-bind="getKpiComponentContentProps(segment.kind)"
+                class="layout-slot-kpi-widget"
+                :context="slotWidgetContext"
+                :data="[]"
+              />
+              <span v-else class="layout-zone-label">{{ getRegionLabel(segment.kind) }}</span>
             </span>
           </div>
           <div v-else class="layout-placeholder">
@@ -335,6 +437,7 @@ const getRegionLabel = (kind: string) => {
 }
 
 .layout-zone-cell {
+  container-type: inline-size;
   display: grid;
   place-items: center;
   min-width: 0;
@@ -342,6 +445,14 @@ const getRegionLabel = (kind: string) => {
   border: 1px dashed rgba(0, 74, 198, 0.38);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.12);
+}
+
+.layout-zone-cell.has-slot-content {
+  place-items: stretch;
+  padding: 0;
+  border: 0;
+  border-radius: var(--component-content-area-radius, 8px);
+  background: transparent;
 }
 
 .layout-zone-label {
@@ -355,6 +466,92 @@ const getRegionLabel = (kind: string) => {
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.layout-slot-content-widget,
+.layout-slot-kpi-widget {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.layout-slot-content {
+  --slot-tone: var(--primary, #004ac6);
+  --slot-tone-soft: rgba(0, 87, 217, 0.1);
+  display: grid;
+  align-content: center;
+  gap: 9px;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+}
+
+.layout-slot-content.tone-success {
+  --slot-tone: #0f8f5f;
+  --slot-tone-soft: rgba(15, 143, 95, 0.12);
+}
+
+.layout-slot-content.tone-warning {
+  --slot-tone: #b76b00;
+  --slot-tone-soft: rgba(183, 107, 0, 0.14);
+}
+
+.layout-slot-content.tone-danger {
+  --slot-tone: #ba1a1a;
+  --slot-tone-soft: rgba(186, 26, 26, 0.14);
+}
+
+.layout-slot-content.tone-neutral {
+  --slot-tone: var(--text-strong, #101828);
+  --slot-tone-soft: rgba(16, 24, 40, 0.08);
+}
+
+.layout-slot-kpi-label,
+.layout-slot-kpi-value,
+.layout-slot-kpi-delta {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-slot-kpi-label {
+  color: var(--muted, #667085);
+  font-size: clamp(10px, 7cqi, 12px);
+  font-weight: 700;
+}
+
+.layout-slot-kpi-value {
+  color: var(--slot-tone);
+  font-size: clamp(18px, 18cqi, 40px);
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.layout-slot-kpi-value em {
+  margin-left: 4px;
+  color: var(--muted, #667085);
+  font-size: 0.38em;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.layout-slot-kpi-delta {
+  justify-self: start;
+  max-width: 100%;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--slot-tone-soft);
+  color: var(--slot-tone);
+  font-size: clamp(9px, 6cqi, 12px);
+  font-weight: 750;
+  line-height: 1;
 }
 
 .density-compact {

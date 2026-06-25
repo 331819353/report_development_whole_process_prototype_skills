@@ -58,7 +58,10 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 12. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, export, detail drawer, source links, permissions, and states.
 13. Route table, filter, and component-internal placement surfaces to `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 14. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-15. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
+15. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, table/search/filter/detail block spans, first-viewport query path, and nav/page wiring.
+16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select 分块布局模板 for every query/table/detail/action block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
+17. For every `3 componentArea` slot, choose an existing 组件内容区模板 first. If no suitable table/list/detail template fits, create a standalone component content area template and register/copy it before slot fill. Do not put title, pills, additional information, units, trust copy, or summary text inside the component slot.
+18. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
 
 ## Required Output
 
@@ -68,6 +71,7 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 - Filter plan: high-frequency filters, more filters, defaults, reset, saved schemes, query constraints.
 - Table field plan: visible columns, hidden/optional columns, field source, format, width/alignment, status tags, sensitive handling.
 - Table interaction plan: sorting, pagination, fixed/frozen behavior, column settings, detail drawer, source jumps, return-state preservation.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and self-developed component content area fallback list.
 - Result-content boundary: visible query/verification/trust/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - Export plan: scope, fields, limits, async behavior, watermark, audit, approval, masking, failure state.
 - Component/data/filter/control/interaction binding matrix.
@@ -78,6 +82,7 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 
 - Do not design only a field list; query efficiency and traceability are part of the prototype.
 - Do not start layout or table design until the lookup/verification story, user path, row identity, trace/export/action outcome, and trust signal are explicit or safely inferred.
+- Do not start runnable implementation until the nine-step template operation chain has no missing block configs or slots. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone component content area template.
 - Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not start implementation or repair from this workflow alone when table/filter/placement surfaces require their specific front-door skills.
 - Do not mark ready without a Preflight understanding start decision and evidence that required specialty skills were loaded or explicitly not needed.
@@ -85,4 +90,5 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 - Do not miss export scope, row limit, permission, masking, or audit rules.
 - Do not claim readiness without row grain, primary key, default sort, pagination, and exact filter binding.
 - Do not ignore empty, timeout, no-permission, over-limit, and export-failure states.
+- Do not put block template title, pills, additional information, units, trust copy, or summary/explanation content inside table/detail component content slots.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or table/filter/export claims lack field-level evidence and non-default-state checks.

@@ -225,7 +225,7 @@ Description is left-aligned by default. Freshness metadata may align bottom-righ
 
 ### Wide Metric Card Split
 
-For `W >= 480px`, use a two-zone layout only when the right side has meaningful auxiliary information.
+For `W >= 480px`, use a two-zone layout only when the right side has meaningful additional information.
 
 ```text
 leftWidth = CW * 0.45-0.55

@@ -79,16 +79,16 @@ export const buildComponentSlotContractsFromPattern = (
 ): ReportTemplateComponentSlotContract[] =>
   getComponentRegionSegments(pattern).map((segment, index) => ({
     id: segment.key,
-    label: `组件区域${segment.key}`,
+    label: `槽位${segment.key}`,
     regionKey: segment.key,
     role: getSlotRole(index),
     order: index + 1,
     widthUnits: segment.widthUnits,
     heightUnits: rows,
     minSize: `${segment.widthUnits}x${rows ?? 2}`,
-    accepts: ['component-sample', 'registered-widget', 'inline-widget-config'],
+    accepts: ['component-content-area-template', 'inline-component-content'],
     required: true,
-    description: `Fill component region ${segment.key} in the selected generic template.`,
+    description: `Fill slot ${segment.key} inside 3 componentArea with component content area template only.`,
   }));
 
 export const createComponentRegionPatternOptions = (
@@ -119,7 +119,7 @@ export const createComponentRegionPatternOptions = (
           slotCount,
           widths: patternWidths,
           slotContracts: buildComponentSlotContractsFromPattern(pattern, rows),
-          description: `${cols}x${rows} block component regions: ${describePattern(patternWidths)}.`,
+          description: `${cols}x${rows} block layout template 3 componentArea slots: ${describePattern(patternWidths)}.`,
         });
       });
     });

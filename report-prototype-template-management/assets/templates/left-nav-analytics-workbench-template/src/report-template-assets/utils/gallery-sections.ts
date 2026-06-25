@@ -1,5 +1,10 @@
 import type { WidgetMap } from '../../widgets/types';
-import type { ReportTemplateAssetKind, ReportTemplateGallerySection, ReportTemplateNav } from '../types';
+import {
+  normalizeReportTemplateAssetKind,
+  type ReportTemplateAssetKind,
+  type ReportTemplateGallerySection,
+  type ReportTemplateNav,
+} from '../types';
 import { buildSectionRows, getNavSizedBlocks, getSizeId, getSizeLabel, groupBlocksBySize } from './layout-grid';
 
 interface GalleryTextConfig {
@@ -8,16 +13,16 @@ interface GalleryTextConfig {
 }
 
 const getGalleryText = (kind: ReportTemplateAssetKind): GalleryTextConfig => {
-  if (kind === 'component-sample') {
+  if (normalizeReportTemplateAssetKind(kind) === 'component-content-area-template') {
     return {
-      title: '组件实现样板',
-      getSubtitle: (count) => `共 ${count} 个样板，用于填充通用模板中的标题、胶囊、组件区域、说明区等内容物。`,
+      title: '组件内容区模板',
+      getSubtitle: (count) => `共 ${count} 个组件内容区模板，只用于填充 3 组件区槽位内的组件内部内容。`,
     };
   }
 
   return {
-    title: '通用模板',
-    getSubtitle: (count) => `共 ${count} 个通用布局，按标题区、辅助信息区、组件区域、说明区进行占位设计。`,
+    title: '分块布局模板',
+    getSubtitle: (count) => `共 ${count} 个带槽位的分块布局模板，统一声明 1-1 标题区、1-2 胶囊按钮区、2-1 附加信息区、2-2 单位区、3 组件区、4 说明区。`,
   };
 };
 

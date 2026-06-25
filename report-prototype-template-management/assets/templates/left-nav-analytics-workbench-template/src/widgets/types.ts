@@ -69,6 +69,9 @@ export interface KpiMetricWidgetProps extends Record<string, unknown> {
   unit?: string;
   delta?: string;
   tone?: TemplateCarriedWidgetTone;
+  contentAreaTitle?: string;
+  showContentTitle?: boolean;
+  slotCount?: number;
 }
 
 export interface MetricValueWidgetProps extends Record<string, unknown> {
@@ -141,6 +144,14 @@ export interface FollowupActionWidgetProps extends Record<string, unknown> {
   actionLabel?: string;
   tone?: TemplateCarriedWidgetTone;
   displayBudget?: TemplateWidgetDisplayBudget;
+}
+
+export interface ComponentContentAreaTemplateProps extends Record<string, unknown> {
+  title?: string;
+  contentAreaTitle?: string;
+  showContentTitle?: boolean;
+  slotCount?: number;
+  templateFile?: string;
 }
 
 export interface ElementPivotTableMeta {
@@ -530,11 +541,11 @@ export interface BaseWidgetConfig<TType extends string, TProps extends Record<st
   title?: string;
   // Reader-facing title for a business block/card. Metric widgets may mirror this from title.
   displayTitle?: string;
-  // Optional shell-level segmented pill options rendered on the right side of the block title. Max 3.
+  // Optional 1-2 block-layout-template segmented pill options rendered on the right side of the block title. Max 3.
   titlePills?: WidgetTitlePillOption[];
-  // Optional shell-level text rendered in the top part of the block body.
+  // Optional 4 block-layout-template explanation/conclusion text.
   bodySummary?: string;
-  // Optional shell-level auxiliary metrics rendered in the bottom part of the block body. Max 5.
+  // Optional 2-1 block-layout-template additional information plus 2-2 unit. These do not belong inside componentSlots. Max 5.
   auxMetrics?: WidgetAuxMetric[];
   // Semantic metric identity for tooltip, export, drilldown, and口径 disclosure; not always rendered visibly.
   metricName?: string;
@@ -584,6 +595,20 @@ export interface WidgetPropsRegistry {
   S2ReportTableWidget: S2ReportTableWidgetProps;
   TemplateEChartWidget: TemplateEChartWidgetProps;
   UniversalCardWidget: UniversalCardWidgetProps;
+  OperatingRevenueMetricContentAreaTemplate: ComponentContentAreaTemplateProps;
+  OperatingProfitMetricContentAreaTemplate: ComponentContentAreaTemplateProps;
+  TargetAchievementContentAreaTemplate: ComponentContentAreaTemplateProps;
+  RegionalRevenueRankingContentAreaTemplate: ComponentContentAreaTemplateProps;
+  RevenueProfitTrendContentAreaTemplate: ComponentContentAreaTemplateProps;
+  ChannelRevenueStructureContentAreaTemplate: ComponentContentAreaTemplateProps;
+  CustomerValueScatterContentAreaTemplate: ComponentContentAreaTemplateProps;
+  CostProfitHeatmapContentAreaTemplate: ComponentContentAreaTemplateProps;
+  OperatingHealthRadarContentAreaTemplate: ComponentContentAreaTemplateProps;
+  ExceptionWarningContentAreaTemplate: ComponentContentAreaTemplateProps;
+  KeyActionListContentAreaTemplate: ComponentContentAreaTemplateProps;
+  OpportunityFunnelContentAreaTemplate: ComponentContentAreaTemplateProps;
+  OperatingConclusionContentAreaTemplate: ComponentContentAreaTemplateProps;
+  LaunchConversionWaterfallContentAreaTemplate: ComponentContentAreaTemplateProps;
   [layoutSpanType: `Span${string}Layout`]: LayoutSpanTemplateWidgetProps;
   Span02x02Layout: LayoutSpanTemplateWidgetProps;
   Span03x02Layout: LayoutSpanTemplateWidgetProps;

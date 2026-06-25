@@ -294,7 +294,7 @@ Suggested CSS tokens:
 - The value, unit, and status must remain visible together.
 - Main values, percentages, and large numerals use explicit line-height sized to the intended visual box; do not rely on browser default line-height or `normal`.
 - Fit proof for `40-44px` values: `valueGroupRect.width <= CW`, `valueGlyphRect.height <= valueSlotRect.height * 0.72`, `centerDeltaY <= 8px`, and no overlap with comparison, target, source, or footer rows.
-- Top auxiliary information cannot compress or displace the value anchor. Title, status badge, source/freshness, target text, and helper copy are secondary; when the value center or glyph scale fails, first collapse/move auxiliary content to tooltip/footer/drawer before reducing the primary value or allowing it to sit high in the slot.
+- Top additional information cannot compress or displace the value anchor. Title, status badge, source/freshness, target text, and helper copy are secondary; when the value center or glyph scale fails, first collapse/move additional content to tooltip/footer/drawer before reducing the primary value or allowing it to sit high in the slot.
 
 ## Overflow Rules
 

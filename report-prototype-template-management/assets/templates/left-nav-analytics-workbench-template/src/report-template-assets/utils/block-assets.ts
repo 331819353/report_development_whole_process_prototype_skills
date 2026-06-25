@@ -9,6 +9,7 @@ import { getNavSizedBlocks, getSizeLabel } from './layout-grid';
 type WidgetTemplateProps = {
   componentRegionPattern?: string;
   componentSlotContracts?: ReportTemplateComponentSlotContract[];
+  templateFile?: string;
 };
 
 const getWidgetTemplateProps = (widget?: ReportTemplateBlockAsset['widget']) =>
@@ -32,6 +33,7 @@ export const extractBlockAssets = (sourceNav: ReportTemplateNav | undefined, kin
       rows: block.rows,
       sourceNavId: sourceNav.id,
       sourceBlockId: block.label,
+      templateFile: typeof templateProps.templateFile === 'string' ? templateProps.templateFile : undefined,
       widget,
       componentRegionPattern: templateProps.componentRegionPattern,
       componentSlotContracts: templateProps.componentSlotContracts,

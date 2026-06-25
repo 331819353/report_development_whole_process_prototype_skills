@@ -4,7 +4,7 @@ Use this file when copying a template, locating extension points, or deciding wh
 
 ## Common Project Shape
 
-All four template assets share these extension points:
+All bundled template assets share these extension points:
 
 - `src/config/dashboard.config.ts`: title, logo, nav/page definitions, `layoutRows`, widgets, filters, actions, and theme.
 - `src/data/dashboard.dataset.json`: default JSON dataset with `filterData` and `businessData`.
@@ -12,6 +12,8 @@ All four template assets share these extension points:
 - `src/dataSources/registry.ts`: built-in JSON resolvers, built-in `apiData` / `httpData` resolver, response adapters, custom provider resolvers, and JSON/API switching points.
 - `demo/config-templates.ts`: copyable configuration examples for JSON data binding, API data binding, filters, local filters, viewport, and action hooks.
 - `src/widgets/templates/WidgetTemplate.vue`: starter file for every business widget.
+- `src/widgets/templates/block-spans/`: 分块布局模板 files, catalog, type contracts, and block-slot README.
+- `src/widgets/templates/component-content-areas/`: standalone 组件内容区模板 Vue files and component-content-area README.
 - `src/widgets/components/`: business widget components.
 - `src/widgets/chartDataUtils.ts`: optional chart row sorting/series helper; this is not a mock data file.
 - `src/widgets/types.ts`: widget prop contracts and registry types.
@@ -38,12 +40,38 @@ All four template assets share these extension points:
 11. Run `npm run build`.
 12. Start with `npm run dev:auto -- --port <port>` or `npm run preview:auto -- --port <port>` when a preview is needed.
 
+## Report Development Terms
+
+- 框架模板: the copied template shell and runtime stack.
+- 页面布局配置: `layoutRows` plus page/nav widget wiring.
+- 分块布局模板: the block-level template with size and slots. It owns `componentRegionPattern`, `componentSlotContracts`, and the standard areas `1-1 titleArea` 标题区, `1-2 pillArea` 胶囊按钮区, `2-1 auxMetricArea` 附加信息区, `2-2 unitArea` 单位区, `3 componentArea` 组件区, and `4 summaryArea` 说明区.
+- 组件内容区模板: the implemented component's internal content area only, packaged as an independently reusable Vue file when available. It may fill a component slot inside `3 componentArea`, but it must not carry additional information, unit slot, title pills, or summary copy. It renders as a rounded rectangle without border lines and may expose a removable `20px` centered top title strip; hide that strip when the parent 分块布局模板 has only one component slot.
+
+## Report Implementation Flow
+
+Use `template-operation-flow.md` as the authoritative no-break handoff contract.
+
+1. Select the 框架模板.
+2. Design the 页面布局配置.
+3. Based on the 页面布局配置, select 分块布局模板.
+4. Configure the 分块布局模板 `1-1 titleArea`: title and title style.
+5. Decide whether `1-2 pillArea` is needed; configure it when needed, otherwise record `pillAreaConfig: null`.
+6. Configure `2-1 auxMetricArea`: add suitable additional information and distribute items evenly.
+7. Decide whether `2-2 unitArea` is needed; configure it when needed, otherwise record `unitAreaConfig: null`.
+8. Based on the selected 分块布局模板 slot configuration, choose suitable 组件内容区模板 for `3 componentArea`; if no suitable component content area template exists, self-develop a new standalone Vue component content area template with ECharts for chart needs.
+9. Configure `4 summaryArea`: add suitable conclusion, note, or explanation when needed, otherwise record `summaryAreaConfig: null`.
+
+Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. When a component slot needs custom chart work, create `echartsSelfDevelopedTemplateMap` entries and register/copy those standalone Vue files before treating the slots as filled.
+
 ## Edit Boundaries
 
 Prefer config/data/widget layers:
 
 - Requirements -> `dashboard.config.ts`.
 - Shell navigation/filter changes -> existing `nav`/`page`, `filters`, `screen.controls`, and theme fields in `dashboard.config.ts`; patch or extend them instead of generating a separate nav/filter shell.
+- Block slot structure -> 分块布局模板 config (`componentRegionPattern`, `componentSlotContracts`, parent block `displayTitle`/title style, `titlePills`, `auxMetrics`, unit, `bodySummary`) using the standard areas `1-1`, `1-2`, `2-1`, `2-2`, `3`, and `4`. Do not put supporting areas inside `componentSlots`.
+- Component slot fill -> 组件内容区模板 only, inside `3 componentArea`. Mount or copy the selected component content area Vue file, or use `componentContentAreaTemplateId`; do not attach title/pills/additional information/unit/summary to the slot. Pass slot count/title props so multi-slot blocks may show the optional `20px` component-content title strip, and single-slot blocks hide it.
+- ECharts fallback component content -> standalone 组件内容区模板 Vue file first, then slot fill. Do not implement fallback chart markup directly inside a 分块布局模板 or parent block.
 - First-level perspective changes -> existing `nav`/`page`, route, tabs, segment controls, or explicit perspective state in `dashboard.config.ts`; do not bury schema-changing domain/theme/management-object choices in `filters[]`.
 - Requirement-document title/header/filter/navigation/toolbar sketches -> existing template title/logo, `nav`/`page`, `filters`, `screen.controls`, `actions`, and theme slots. Preserve business labels, defaults, options, and behaviors, but adapt the structure to the selected template.
 - Static/mock data -> `dashboard.dataset.json`.

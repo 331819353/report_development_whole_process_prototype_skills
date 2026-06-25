@@ -12,6 +12,9 @@ interface Props {
   unit?: string;
   delta?: string;
   tone?: Tone;
+  contentAreaTitle?: string;
+  showContentTitle?: boolean;
+  slotCount?: number;
 }
 
 const props = defineProps<Props>();
@@ -21,13 +24,18 @@ const value = computed(() => props.value ?? '86.4');
 const unit = computed(() => props.unit ?? '%');
 const delta = computed(() => props.delta ?? '+4.8%');
 const tone = computed(() => props.tone ?? 'primary');
+const resolvedContentAreaTitle = computed(() => props.contentAreaTitle ?? props.label ?? '');
+const shouldShowContentAreaTitle = computed(() => props.showContentTitle !== false && props.slotCount !== 1 && Boolean(resolvedContentAreaTitle.value));
 </script>
 
 <template>
-  <section class="template-carried-kpi" :class="`tone-${tone}`">
+  <section class="template-carried-kpi" :class="[`tone-${tone}`, { 'has-content-title': shouldShowContentAreaTitle }]">
+    <header v-if="shouldShowContentAreaTitle" class="template-carried-kpi-title">{{ resolvedContentAreaTitle }}</header>
+    <div class="template-carried-kpi-body">
     <p>{{ label }}</p>
     <strong>{{ value }}<span>{{ unit }}</span></strong>
     <em>{{ delta }}</em>
+    </div>
   </section>
 </template>
 
@@ -36,8 +44,7 @@ const tone = computed(() => props.tone ?? 'primary');
   --tone-color: #004ac6;
   --tone-soft: rgba(0, 74, 198, 0.12);
   display: grid;
-  align-content: center;
-  gap: 7px;
+  grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -45,6 +52,41 @@ const tone = computed(() => props.tone ?? 'primary');
   overflow: hidden;
   color: var(--text-strong, #101828);
   font-variant-numeric: tabular-nums;
+  border: 0;
+  border-radius: var(--component-content-area-radius, 8px);
+  background: var(--component-content-area-background, var(--card-background, transparent));
+}
+
+.template-carried-kpi.has-content-title {
+  grid-template-rows: 20px minmax(0, 1fr);
+}
+
+.template-carried-kpi-title {
+  display: block;
+  height: 20px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 3px 8px 0;
+  color: var(--text-strong, #101828);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 14px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.template-carried-kpi-body {
+  display: grid;
+  align-content: center;
+  gap: 7px;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: inherit;
 }
 
 .tone-success {

@@ -4,15 +4,16 @@ Use this file when building a new business report from a copied template or heav
 
 ## Sequence
 
-1. Convert business content into page structure:
+Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. If a slot uses custom ECharts work, add `echartsSelfDevelopedTemplateMap` and create/register the standalone Vue component content area template before filling the slot.
+
+1. Select 框架模板:
+   - Choose the shell first: topbar scroll dashboard, left-nav analytics workbench, frozen-title cockpit, an existing project shell, or an explicit custom exception.
+   - Let display theme, content volume, navigation depth, interaction density, and delivery environment drive the choice.
+   - Output `frameworkTemplateId`.
+2. Design the `12 * N` 页面布局配置:
    - Single-page: one `page.layoutRows` and one `page.widgets`.
    - Left-nav / sci-fi: one `nav[]` item per page/chapter.
-2. Define filters:
-   - Use `options` for stable enum filters.
-   - Use `source` for time, organization, product, customer, project, owner, source system, and data version.
-   - Default templates keep only a global parameter entry; add business filters only when the requirement needs them.
-3. Design the `12 * N` grid:
-   - Use 8 characters per row.
+   - Use 12 characters per row.
    - Use repeated characters for rectangular merged blocks.
    - Keep block ids stable.
    - Use `template-layout-design-system.md` before changing shared template layout tokens such as `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, content range, or hover/focus surfaces.
@@ -20,10 +21,41 @@ Use this file when building a new business report from a copied template or heav
    - Before finalizing `layoutRows`, calculate each block's actual size with `$report-visual-layout-design`.
    - Check whether the block can safely hold its component count and component mix at the `1920 * 1080` viewport baseline.
    - Let `layoutRows` grow when the report needs more content; do not cap the report at one viewport.
-4. Define widgets:
+   - Output `pageLayoutConfig` with block ids, spans, nav/page wiring, and first-viewport plan.
+3. Based on 页面布局配置, choose 分块布局模板 for each page block:
+   - A 分块布局模板 includes the block size plus its `componentRegionPattern` / `componentSlotContracts`.
+   - Output `blockLayoutTemplateMap` with one entry per block id.
+4. Configure the 分块布局模板 `1-1 titleArea`:
+   - Set the title and title style on the parent block/widget config.
+   - Output `titleAreaConfig`.
+5. Decide and configure `1-2 pillArea`:
+   - Configure pill buttons when needed.
+   - If not needed, record `pillAreaConfig: null`.
+6. Configure `2-1 auxMetricArea`:
+   - Add suitable additional information and distribute items evenly.
+   - Keep additional information on the parent block/widget config.
+   - Output `auxMetricAreaConfig`.
+7. Decide and configure `2-2 unitArea`:
+   - Configure the unit when needed.
+   - If not needed, record `unitAreaConfig: null`.
+8. Based on 分块布局模板槽位配置, choose 组件内容区模板:
+   - `componentSlots` under `3 componentArea` carries only the selected component's internal content area.
+   - Mount or copy the selected component content area Vue file, or point to `componentContentAreaTemplateId`.
+   - If no existing component content area template fits the slot and business intent, self-develop a new standalone Vue component content area template with ECharts for chart needs.
+   - Do not attach additional information, unit slot, title pills, or summary copy to a component slot.
+   - Output `componentContentAreaTemplateMap`; output `echartsSelfDevelopedTemplateMap` for newly created fallback templates.
+9. Configure `4 summaryArea`:
+   - Add suitable conclusion, note, or explanation when needed.
+   - If not needed, record `summaryAreaConfig: null`.
+   - Do not put summary/explanation copy inside `componentSlots`.
+10. Define filters:
+   - Use `options` for stable enum filters.
+   - Use `source` for time, organization, product, customer, project, owner, source system, and data version.
+   - Default templates keep only a global parameter entry; add business filters only when the requirement needs them.
+11. Define widgets:
    - Every widget needs `type`, `visualType`, `title`, and either `data` or `dataPolicy`.
    - Data-bound widgets declare row/prop shape in `src/widgets/types.ts`.
-5. Add data:
+12. Add data:
    - Put static/mock rows in `src/data/dashboard.dataset.json`.
    - Keep `filterData` for filter option rows and `businessData` for business rows.
    - Use built-in JSON resolvers (`filterData`, `businessData`, `staticData`) for offline data.
@@ -34,18 +66,18 @@ Use this file when building a new business report from a copied template or heav
    - Use `requiredFilters` when a widget must respond to a filter.
    - Use `ignoredFilters` when a widget intentionally ignores a global filter.
    - For line, area, and category-axis charts, keep each category label and value in the same row tuple. Sort rows first, then derive `xAxis.data`, every `series.data`, tooltip payloads, and click payloads from that same ordered row list.
-6. Implement widgets:
+13. Implement widgets:
    - Copy `WidgetTemplate.vue`.
    - Render only inside the body viewport.
    - Use `width: 100%; height: 100%; min-width: 0; min-height: 0;`.
    - Mount ECharts/S2 against the widget body, not the card frame.
    - If one parent block needs multiple components, implement one composite widget with internal sub-blocks, keep `5px` parent inset and `5px` sibling gap, and keep sub-block labels subordinate to the block title.
    - If the composite needs 2/4/6/8 visible sub-blocks/components, follow the count limits from `$report-visual-layout-design`.
-7. Add interactions:
+14. Add interactions:
    - Emit `dashboard-action` from widgets.
    - Configure `actions` in widget config.
    - Keep popup, navigation, drilldown, and detail behavior inside the component unless the host product intentionally observes events through `actions/registry.ts`.
-8. Validate:
+15. Validate:
    - Run `npm run validate:dashboard`.
    - Run `npm run build`.
    - Preview and check clipping, filter effects, modal stale state, export/fullscreen/refresh.
