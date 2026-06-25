@@ -172,6 +172,7 @@ const gridConfigs = collectGridConfigs();
 const requiredGridColumns = 12;
 const visibleGridRows = 8;
 const minimumSpanColumns = 2;
+const minimumSpanRows = 2;
 const rowHeightTolerance = 1;
 const minimumAxisChartContainerWidth = 300;
 const warningAxisChartContainerWidth = 400;
@@ -225,11 +226,17 @@ const hiddenOverflowPattern = /^(?:hidden|clip|overflow-hidden|truncate|none)$/i
 const actionDisclosureOverflowPattern = /(?:detail|drawer|tooltip|popover|collapse|view-all|table|详情|抽屉|提示|查看全部|明细)/i;
 const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
 
+const genericLayoutSpans = Array.from({ length: visibleGridRows - minimumSpanRows + 1 }, (_, rowIndex) => {
+  const rows = rowIndex + minimumSpanRows;
+
+  return Array.from({ length: requiredGridColumns - rows + 1 }, (_, columnIndex) => `${columnIndex + rows}x${rows}`);
+}).flat();
+
 const allowedSpansByVisualType = {
   line: ['3x2', '4x2', '3x3', '4x3'],
   bar: ['3x2', '4x2', '3x3', '4x3'],
   combo: ['3x2', '4x2', '3x3', '4x3'],
-  'compact-sparkline': ['2x1', '3x1', '4x1', '3x2', '4x2'],
+  'compact-sparkline': ['3x2', '4x2'],
   candlestick: ['3x2', '4x2', '3x3', '4x3'],
   heatmap: ['3x2', '4x2', '3x3', '4x3'],
   pie: ['3x2', '3x3', '4x3'],
@@ -246,14 +253,14 @@ const allowedSpansByVisualType = {
   treemap: ['3x2', '3x3', '4x3'],
   sankey: ['3x2', '3x3', '4x3'],
   funnel: ['3x2', '3x3', '4x3'],
-  'metric-card': ['2x1', '3x2'],
-  'text-summary': ['3x2', '4x1', '4x2', '6x1', '6x2', '8x1', '8x2', '12x1', '12x2'],
+  'metric-card': ['2x2', '3x2'],
+  'text-summary': ['2x2', '3x2', '4x2', '6x2', '8x2', '12x2'],
   'operational-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   'action-recommendation-card': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   'ranking-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   table: ['3x2', '4x2', '6x2', '8x2', '12x2', '4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
   pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
-  other: ['2x1', '3x2', '4x2', '3x3', '4x3'],
+  other: genericLayoutSpans,
 };
 
 const emptyGridMarks = new Set(['.', ' ']);
@@ -419,8 +426,17 @@ const buildLayoutBlockSpans = (rowsToBuild, location) => {
       rows: maxRow - minRow + 1,
     };
 
-    if (span.columns < minimumSpanColumns) {
-      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x1.`);
+    if (span.columns < minimumSpanColumns || span.rows < minimumSpanRows) {
+      errors.push(
+        `${location}: layout block "${label}" spans ${span.columns}x${span.rows}; minimum block span is ${minimumSpanColumns}x${minimumSpanRows}.`,
+      );
+      return;
+    }
+
+    if (span.columns < span.rows) {
+      errors.push(
+        `${location}: layout block "${label}" spans ${span.columns}x${span.rows}; MxN layouts must satisfy M >= N.`,
+      );
       return;
     }
 
@@ -697,6 +713,84 @@ const validateAxisChartGeometryContract = (widgetNode, location, span, visualTyp
   }
 };
 
+const validateTitlePills = (widgetNode, location) => {
+  const titlePillsNode = getProperty(widgetNode, 'titlePills');
+
+  if (!titlePillsNode) {
+    return;
+  }
+
+  if (!isArray(titlePillsNode)) {
+    errors.push(`${location}: titlePills must be an array.`);
+    return;
+  }
+
+  if (titlePillsNode.elements.length > 3) {
+    errors.push(`${location}: titlePills supports at most 3 values.`);
+  }
+
+  titlePillsNode.elements.forEach((pillNode, index) => {
+    if (!isObject(pillNode)) {
+      errors.push(`${location}: titlePills[${index}] must be an object.`);
+      return;
+    }
+
+    if (!getStringValue(getProperty(pillNode, 'id'))) {
+      errors.push(`${location}: titlePills[${index}] is missing id.`);
+    }
+
+    if (!getStringValue(getProperty(pillNode, 'label'))) {
+      errors.push(`${location}: titlePills[${index}] is missing label.`);
+    }
+  });
+};
+
+const validateAuxMetrics = (widgetNode, location, span) => {
+  const auxMetricsNode = getProperty(widgetNode, 'auxMetrics');
+
+  if (!auxMetricsNode) {
+    return;
+  }
+
+  if (!isArray(auxMetricsNode)) {
+    errors.push(`${location}: auxMetrics must be an array.`);
+    return;
+  }
+
+  let unitMetricCount = 0;
+  let nonUnitMetricCount = 0;
+  auxMetricsNode.elements.forEach((metricNode, index) => {
+    if (!isObject(metricNode)) {
+      errors.push(`${location}: auxMetrics[${index}] must be an object.`);
+      return;
+    }
+
+    const label = getStringValue(getProperty(metricNode, 'label'));
+
+    if (!label) {
+      errors.push(`${location}: auxMetrics[${index}] is missing label.`);
+    } else if (label.trim() === '单位') {
+      unitMetricCount += 1;
+    } else {
+      nonUnitMetricCount += 1;
+    }
+  });
+
+  if (unitMetricCount > 1) {
+    errors.push(`${location}: auxMetrics can include at most one "单位" metric.`);
+  }
+
+  if (span) {
+    const nonUnitLimit = span.columns < 2 ? 0 : 2 + Math.max(span.columns - 2, 0) * 3;
+
+    if (nonUnitMetricCount > nonUnitLimit) {
+      errors.push(
+        `${location}: auxMetrics has ${nonUnitMetricCount} non-unit metrics; span ${span.columns}x${span.rows} allows at most ${nonUnitLimit}.`,
+      );
+    }
+  }
+};
+
 const validateWidget = (widgetNode, location, span) => {
   if (!isObject(widgetNode)) {
     errors.push(`${location}: widget config must be an object.`);
@@ -802,6 +896,8 @@ const validateWidget = (widgetNode, location, span) => {
     }
   }
 
+  validateTitlePills(widgetNode, location);
+  validateAuxMetrics(widgetNode, location, span);
   validateActions(getProperty(widgetNode, 'actions'), location);
 };
 
@@ -1301,8 +1397,8 @@ const validateWidgetSource = (filePath) => {
   }
 
   if (hasPivotTable) {
-    if (!/(?:@antv\/s2|@antv\/s2-vue|SheetComponent|PivotSheet|S2DataConfig|s2Options|s2DataConfig|S2)/.test(text)) {
-      errors.push(`${label}: Pivot Tables must use AntV S2 or a declared project S2-equivalent analytical table renderer.`);
+    if (!/(?:@antv\/s2|@antv\/s2-vue|SheetComponent|PivotSheet|S2DataConfig|s2Options|s2DataConfig|S2|ElementPivotTableWidget|ElTable|<ElTable\b|element-pivot-table|Element Plus)/.test(text)) {
+      errors.push(`${label}: Pivot Tables must use AntV S2, Element Plus ElTable, or a declared project analytical table renderer.`);
     }
 
     if (!/(?:rowDimensions?|rowFields?|rowHierarchy|rows\s*:|行维度)/.test(text)) {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { Download, RefreshCw, SlidersHorizontal } from '@lucide/vue';
+import { Download, Maximize2, RefreshCw, SlidersHorizontal } from '@lucide/vue';
 import { customActionRegistry } from '../actions/registry';
 import { resolveDataSource } from '../dataSources/registry';
+import { getTemplateGallerySections, isTemplateAssetGalleryNav } from '../report-template-assets';
 import type { DashboardActionConfig, DashboardExpressionValue, DashboardWidgetActionEvent } from '../types/actions';
 import type { DashboardFilterScope } from '../types/data-source';
 import type {
@@ -13,6 +14,8 @@ import type {
   ThemeMode,
 } from '../types/dashboard';
 import { resolveDashboardParams, resolveDashboardValue } from '../utils/dashboardExpressions';
+import TemplateGalleryDashboard from '../widgets/galleries/TemplateGalleryDashboard.vue';
+import type { TemplateGallerySection } from '../widgets/galleries/TemplateGalleryDashboard.vue';
 import WidgetRenderer from '../widgets/WidgetRenderer.vue';
 import {
   applyWidgetLocalFilters,
@@ -20,7 +23,13 @@ import {
   getWidgetLocalFilterConfigs,
   resolveWidgetLocalFilterValues,
 } from '../widgets/localFilters';
-import type { RegisteredWidgetConfig, WidgetContext, WidgetLocalFilterConfig } from '../widgets/types';
+import type {
+  RegisteredWidgetConfig,
+  WidgetAuxMetric,
+  WidgetContext,
+  WidgetLocalFilterConfig,
+  WidgetTitlePillOption,
+} from '../widgets/types';
 
 const props = defineProps<{
   config: DashboardConfig;
@@ -203,11 +212,18 @@ const activeTopbarNavId = ref(getInitialTopbarNavId());
 const activeFilters = ref<Record<string, string>>(getInitialFilters());
 const filterOptionMap = ref<Record<string, DashboardFilterOption[]>>({});
 const widgetDataMap = ref<Record<string, unknown[]>>({});
+const titlePillSelections = ref<Record<string, string>>({});
 const localWidgetFilters = ref<Record<string, Record<string, string>>>({});
 const isFiltersOpen = ref(props.config.screen.defaultFiltersOpen);
 const theme = ref<ThemeMode>(getInitialTheme());
+const viewportScale = ref(1);
+const viewportOffsetX = ref(0);
+const viewportOffsetY = ref(0);
+const scrollViewportRef = ref<HTMLElement | null>(null);
+const isScrollbarsActive = ref(false);
 const pageScrollX = ref(0);
 const scrollTargets: EventTarget[] = [];
+let scrollbarsHideTimer: number | undefined;
 
 const activeTopbarNavItem = computed(() => topbarNavItems.value.find((item) => item.id === activeTopbarNavId.value));
 const activePageId = computed(() => (props.config.pages?.[activeTopbarNavId.value] ? activeTopbarNavId.value : fallbackPageId));
@@ -218,20 +234,22 @@ const layoutColumnCount = computed(() => Math.max(...layoutRows.value.map((row) 
 const layoutRowCount = computed(() => Math.max(layoutRows.value.length, 1));
 const layoutBlocks = computed<LayoutBlock[]>(() => buildLayoutBlocks(layoutRows.value));
 const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 1, 1));
+const contentWidth = computed(() => Math.max(props.config.screen.layout.designWidth, 1));
 const contentAreaHeight = computed(() => props.config.screen.grid.contentEndY - props.config.screen.grid.contentStartY);
 const contentGridHeight = computed(
   () => layoutRowCount.value * contentRowHeight.value + Math.max(layoutRowCount.value - 1, 0) * props.config.screen.layout.contentGap,
 );
-const canvasHeight = computed(() => Math.max(contentAreaHeight.value, contentGridHeight.value));
-const resolvedDesignHeight = computed(() =>
-  Math.max(props.config.screen.layout.designHeight, props.config.screen.grid.contentStartY + canvasHeight.value),
+const canvasHeight = computed(() => contentAreaHeight.value);
+const isTemplateGalleryDashboard = computed(() => isTemplateAssetGalleryNav(activeTopbarNavId.value));
+const templateGallerySections = computed<TemplateGallerySection[]>(() =>
+  getTemplateGallerySections(props.config, activeTopbarNavId.value),
 );
 const appStyle = computed(() => ({
   '--page-background-image': props.config.assets.backgroundSrc
     ? `url("${props.config.assets.backgroundSrc}")`
     : 'none',
   '--design-width': `${props.config.screen.layout.designWidth}px`,
-  '--design-height': `${resolvedDesignHeight.value}px`,
+  '--design-height': `${props.config.screen.layout.designHeight}px`,
   '--topbar-height': `${props.config.screen.layout.topbarHeight}px`,
   '--content-gap': `${props.config.screen.layout.contentGap}px`,
   '--grid-columns': String(layoutColumnCount.value),
@@ -245,6 +263,9 @@ const appStyle = computed(() => ({
   '--cell-inner-background': props.config.screen.grid.innerBackgroundColor,
   '--title-dominant-color': props.config.screen.grid.dominantTitleColor,
   '--page-scroll-x': `${pageScrollX.value}px`,
+  '--viewport-scale': String(viewportScale.value),
+  '--viewport-offset-x': `${viewportOffsetX.value}px`,
+  '--viewport-offset-y': `${viewportOffsetY.value}px`,
 }));
 
 let filterLoadToken = 0;
@@ -252,6 +273,122 @@ let widgetDataLoadToken = 0;
 let hasInitializedFilters = false;
 
 const getWidgetForBlock = (blockId: string): RegisteredWidgetConfig | undefined => activePage.value.widgets?.[blockId];
+
+const hasWidgetForBlock = (blockId: string) => Boolean(getWidgetForBlock(blockId));
+
+const isLayoutTemplateWidget = (widget?: RegisteredWidgetConfig) => Boolean(widget?.type.match(/^Span\d{2}x\d{2}Layout$/));
+
+const isLayoutTemplateBlock = (blockId: string) => isLayoutTemplateWidget(getWidgetForBlock(blockId));
+
+const getWidgetBlockTitle = (blockId: string) => {
+  const widget = getWidgetForBlock(blockId);
+  if (!widget) {
+    return '';
+  }
+
+  const propTitle = widget?.props && 'title' in widget.props ? widget.props.title : '';
+
+  for (const value of [widget.displayTitle, widget.title, propTitle, blockId]) {
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+
+  return blockId;
+};
+
+const getWidgetTitlePills = (blockId: string): WidgetTitlePillOption[] =>
+  (getWidgetForBlock(blockId)?.titlePills ?? [])
+    .filter((pill) => pill.id.trim() && pill.label.trim())
+    .slice(0, 3);
+
+const hasWidgetTitlePills = (blockId: string) => getWidgetTitlePills(blockId).length > 0;
+
+const clampNumber = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
+const getWeightedTextLength = (value: string) =>
+  Array.from(value.trim()).reduce((total, char) => total + (/[\u4e00-\u9fff]/.test(char) ? 1 : 0.58), 0);
+
+const getBlockColumnSpan = (block: LayoutBlock) => Math.max(block.columnEnd - block.columnStart, 1);
+
+const getBlockContentWidth = (block: LayoutBlock) => {
+  const columnWidth = Math.max(props.config.screen.layout.designWidth, 1) / Math.max(layoutColumnCount.value, 1);
+
+  return columnWidth * getBlockColumnSpan(block) - props.config.screen.grid.cellPadding * 2;
+};
+
+const getTitlePillFontSize = (block: LayoutBlock, pill: WidgetTitlePillOption) => {
+  const pillCount = Math.max(getWidgetTitlePills(block.label).length, 1);
+  const titlePadding = 12;
+  const titleColumnGap = 8;
+  const pillGroupPadding = 4;
+  const rightColumnWidth = Math.max((getBlockContentWidth(block) - titlePadding - titleColumnGap) / 3, 1);
+  const buttonWidth = Math.max((rightColumnWidth - pillGroupPadding) / pillCount, 1);
+  const labelLength = Math.max(getWeightedTextLength(pill.label), 1);
+  const computedSize = (buttonWidth - 4) / (labelLength * 1.04);
+
+  return Math.round(clampNumber(computedSize, 9, 12) * 10) / 10;
+};
+
+const getWidgetBodySummary = (blockId: string) => getWidgetForBlock(blockId)?.bodySummary?.trim() ?? '';
+
+const hasWidgetBodySummary = (blockId: string) => Boolean(getWidgetBodySummary(blockId));
+
+const isUnitAuxMetric = (metric: WidgetAuxMetric) => metric.label.trim() === '单位';
+
+const getAuxMetricLimit = (columnSpan: number) => (columnSpan < 2 ? 0 : 2 + Math.max(columnSpan - 2, 0) * 3);
+
+const getWidgetAuxMetrics = (blockId: string, columnSpan: number): WidgetAuxMetric[] => {
+  const metrics = getWidgetForBlock(blockId)?.auxMetrics?.filter((metric) => metric.label.trim()) ?? [];
+  const unitMetrics = metrics.filter(isUnitAuxMetric);
+  const unitMetric = unitMetrics[unitMetrics.length - 1];
+  const nonUnitMetrics = metrics.filter((metric) => !isUnitAuxMetric(metric)).slice(0, getAuxMetricLimit(columnSpan));
+
+  return unitMetric ? [...nonUnitMetrics, unitMetric] : nonUnitMetrics;
+};
+
+const hasWidgetAuxMetrics = (block: LayoutBlock) => getWidgetAuxMetrics(block.label, getBlockColumnSpan(block)).length > 0;
+
+const getAuxMetricSectionStyle = (block: LayoutBlock): Record<string, string> => {
+  const columnSpan = getBlockColumnSpan(block);
+  const metrics = getWidgetAuxMetrics(block.label, columnSpan);
+  const style: Record<string, string> = {
+    '--aux-metric-count': String(metrics.length),
+  };
+
+  if (isLayoutTemplateBlock(block.label) && metrics.length === 2) {
+    style['--aux-metric-columns'] = `minmax(0, ${Math.max(columnSpan - 1, 1)}fr) minmax(0, 1fr)`;
+  }
+
+  return style;
+};
+
+const getActiveTitlePillId = (blockId: string) => {
+  const pills = getWidgetTitlePills(blockId);
+
+  if (pills.length === 0) {
+    return '';
+  }
+
+  const activeId = titlePillSelections.value[getWidgetInstanceKey(blockId)];
+
+  if (pills.some((pill) => pill.id === activeId && !pill.disabled)) {
+    return activeId;
+  }
+
+  return pills.find((pill) => !pill.disabled)?.id ?? pills[0].id;
+};
+
+const setActiveTitlePill = (blockId: string, pill: WidgetTitlePillOption) => {
+  if (pill.disabled) {
+    return;
+  }
+
+  titlePillSelections.value = {
+    ...titlePillSelections.value,
+    [getWidgetInstanceKey(blockId)]: pill.id,
+  };
+};
 
 const isFilterVisibleForWidget = (group: DashboardFilterGroup, widget?: RegisteredWidgetConfig) => {
   const filterScopes = normalizeScope(group.scope);
@@ -595,13 +732,29 @@ const printDashboard = () => {
   window.print();
 };
 
+const updateViewportLayout = () => {
+  viewportScale.value = 1;
+  viewportOffsetX.value = 0;
+  viewportOffsetY.value = 0;
+  pageScrollX.value = 0;
+};
+
+const scheduleViewportLayoutUpdate = () => {
+  window.requestAnimationFrame(updateViewportLayout);
+};
+
 const toggleFullscreen = async () => {
   if (document.fullscreenElement) {
     await document.exitFullscreen();
+    scheduleViewportLayoutUpdate();
     return;
   }
 
-  await document.documentElement.requestFullscreen();
+  try {
+    await document.documentElement.requestFullscreen();
+  } finally {
+    scheduleViewportLayoutUpdate();
+  }
 };
 
 const closePanels = () => {
@@ -632,8 +785,8 @@ const persistDashboardState = () => {
       JSON.stringify({
         filters: activeFilters.value,
         topbarNavId: activeTopbarNavId.value,
-        scrollX: window.scrollX,
-        scrollY: window.scrollY,
+        scrollX: scrollViewportRef.value?.scrollLeft ?? window.scrollX,
+        scrollY: scrollViewportRef.value?.scrollTop ?? window.scrollY,
       } satisfies PersistedDashboardState),
     );
   } catch {
@@ -647,7 +800,15 @@ const restorePersistedScroll = () => {
   }
 
   window.requestAnimationFrame(() => {
-    window.scrollTo(persistedDashboardState.scrollX ?? 0, persistedDashboardState.scrollY ?? 0);
+    const scrollLeft = persistedDashboardState.scrollX ?? 0;
+    const scrollTop = persistedDashboardState.scrollY ?? 0;
+
+    if (scrollViewportRef.value) {
+      scrollViewportRef.value.scrollTo({ left: scrollLeft, top: scrollTop, behavior: 'auto' });
+    } else {
+      window.scrollTo(scrollLeft, scrollTop);
+    }
+
     syncPageScroll();
   });
 };
@@ -714,27 +875,82 @@ const handleWidgetAction = async (blockId: string, event: DashboardWidgetActionE
   }
 };
 
+const handleTemplateGalleryAction = async (event: DashboardWidgetActionEvent) => {
+  const customHandler = customActionRegistry[event.name] ?? customActionRegistry.dashboardAction;
+
+  if (!customHandler) {
+    return;
+  }
+
+  await customHandler({
+    action: { type: event.name },
+    event,
+    context: getWidgetContext(''),
+    filters: activeFilters.value,
+    controls: {
+      print: printDashboard,
+      fullscreen: toggleFullscreen,
+      refresh: refreshDashboard,
+    },
+  });
+};
+
+const hideScrollbars = () => {
+  window.clearTimeout(scrollbarsHideTimer);
+  isScrollbarsActive.value = false;
+};
+
+const showScrollbarsTemporarily = () => {
+  window.clearTimeout(scrollbarsHideTimer);
+  isScrollbarsActive.value = true;
+  scrollbarsHideTimer = window.setTimeout(() => {
+    isScrollbarsActive.value = false;
+  }, 1600);
+};
+
+const handleScrollViewportPointerMove = (event: PointerEvent) => {
+  const viewport = scrollViewportRef.value;
+
+  if (!viewport) {
+    return;
+  }
+
+  const rect = viewport.getBoundingClientRect();
+  const edgeSize = 42;
+  const canScrollX = viewport.scrollWidth > viewport.clientWidth + 1;
+  const canScrollY = viewport.scrollHeight > viewport.clientHeight + 1;
+  const nearHorizontalEdge = event.clientX - rect.left <= edgeSize || rect.right - event.clientX <= edgeSize;
+  const nearVerticalEdge = event.clientY - rect.top <= edgeSize || rect.bottom - event.clientY <= edgeSize;
+
+  if ((canScrollX && nearHorizontalEdge) || (canScrollY && nearVerticalEdge)) {
+    showScrollbarsTemporarily();
+  }
+};
+
 const syncPageScroll = () => {
-  pageScrollX.value =
-    window.scrollX ||
-    document.documentElement.scrollLeft ||
-    document.body.scrollLeft ||
-    document.scrollingElement?.scrollLeft ||
-    0;
+  pageScrollX.value = scrollViewportRef.value?.scrollLeft ?? 0;
 };
 
 onMounted(() => {
+  updateViewportLayout();
   syncPageScroll();
   restorePersistedScroll();
   scrollTargets.push(window, document, document.documentElement, document.body);
   scrollTargets.forEach((target) => target.addEventListener('scroll', syncPageScroll, { passive: true }));
   window.addEventListener('resize', syncPageScroll);
+  window.addEventListener('resize', updateViewportLayout);
+  window.visualViewport?.addEventListener('resize', updateViewportLayout);
+  document.addEventListener('fullscreenchange', updateViewportLayout);
 });
 
 onBeforeUnmount(() => {
   scrollTargets.forEach((target) => target.removeEventListener('scroll', syncPageScroll));
   scrollTargets.length = 0;
   window.removeEventListener('resize', syncPageScroll);
+  window.removeEventListener('resize', updateViewportLayout);
+  window.visualViewport?.removeEventListener('resize', updateViewportLayout);
+  document.removeEventListener('fullscreenchange', updateViewportLayout);
+  window.clearTimeout(scrollbarsHideTimer);
 });
 
 watch(
@@ -790,6 +1006,14 @@ watch(
 </script>
 
 <template>
+  <div
+    ref="scrollViewportRef"
+    class="dashboard-scroll-viewport"
+    :class="{ 'show-scrollbars': isScrollbarsActive }"
+    @pointermove="handleScrollViewportPointerMove"
+    @pointerleave="hideScrollbars"
+    @scroll="syncPageScroll"
+  >
   <main
     class="dashboard-app"
     :class="[`theme-${theme}`, { 'filters-open': isFiltersOpen }]"
@@ -850,6 +1074,15 @@ watch(
           >
             <Download :size="18" />
           </button>
+          <button
+            class="topbar-button"
+            type="button"
+            :aria-label="config.screen.controls.fullscreen"
+            :title="config.screen.controls.fullscreen"
+            @click.stop="toggleFullscreen"
+          >
+            <Maximize2 :size="18" />
+          </button>
         </div>
       </header>
 
@@ -904,7 +1137,15 @@ watch(
       </aside>
 
       <section class="canvas-shell">
-        <section class="placeholder-grid" :aria-label="`${activePageLabel} ${layoutColumnCount}乘${layoutRowCount}内容占位区`">
+        <TemplateGalleryDashboard
+          v-if="isTemplateGalleryDashboard"
+          :sections="templateGallerySections"
+          :row-height="contentRowHeight"
+          :content-width="contentWidth"
+          :active-filters="activeFilters"
+          @dashboard-action="handleTemplateGalleryAction"
+        />
+        <section v-else class="placeholder-grid" :aria-label="`${activePageLabel} ${layoutColumnCount}乘${layoutRowCount}内容占位区`">
           <div
             v-for="block in layoutBlocks"
             :key="`${activePageId}:${block.id}`"
@@ -915,14 +1156,76 @@ watch(
             }"
             :aria-label="block.label"
           >
-            <div class="placeholder-cell-inner" :class="{ 'is-block-masked': getBlockState(block.label) }">
-              <div class="placeholder-cell-body">
-                <WidgetRenderer
-                  :context="getWidgetContext(block.label)"
-                  :data="getWidgetDataForBlock(block.label)"
-                  :widget="getWidgetForBlock(block.label)"
-                  @dashboard-action="handleWidgetAction(block.label, $event)"
-                />
+            <div
+              class="placeholder-cell-inner"
+              :class="{
+                'is-block-masked': getBlockState(block.label),
+                'is-layout-template-block': isLayoutTemplateBlock(block.label),
+              }"
+            >
+              <div class="placeholder-cell-top placeholder-cell-title" :class="{ 'has-title-pills': hasWidgetTitlePills(block.label) }">
+                <span v-if="hasWidgetForBlock(block.label)" class="placeholder-cell-title-main">
+                  <span class="placeholder-cell-title-text">{{ getWidgetBlockTitle(block.label) }}</span>
+                  <span class="placeholder-cell-title-meteor" aria-hidden="true"></span>
+                </span>
+                <div
+                  v-if="hasWidgetTitlePills(block.label)"
+                  class="placeholder-cell-pill-group"
+                  role="group"
+                  :aria-label="`${getWidgetBlockTitle(block.label)}切换`"
+                >
+                  <button
+                    v-for="pill in getWidgetTitlePills(block.label)"
+                    :key="pill.id"
+                    type="button"
+                    class="placeholder-cell-pill-button"
+                    :class="{ active: getActiveTitlePillId(block.label) === pill.id }"
+                    :style="{ '--pill-font-size': `${getTitlePillFontSize(block, pill)}px` }"
+                    :disabled="pill.disabled"
+                    :aria-pressed="getActiveTitlePillId(block.label) === pill.id"
+                    @click="setActiveTitlePill(block.label, pill)"
+                  >
+                    {{ pill.label }}
+                  </button>
+                </div>
+              </div>
+              <div
+                class="placeholder-cell-body"
+                :class="{
+                  'has-aux-metrics': hasWidgetAuxMetrics(block),
+                  'has-body-summary': hasWidgetBodySummary(block.label),
+                }"
+              >
+                <section
+                  v-if="hasWidgetAuxMetrics(block)"
+                  class="placeholder-cell-body-section placeholder-cell-body-section-1"
+                  :style="getAuxMetricSectionStyle(block)"
+                  aria-label="辅助指标"
+                >
+                  <span
+                    v-for="metric in getWidgetAuxMetrics(block.label, getBlockColumnSpan(block))"
+                    :key="metric.label"
+                    class="placeholder-cell-aux-metric"
+                  >
+                    <span class="placeholder-cell-aux-label">{{ metric.label }}</span>
+                    <strong v-if="metric.value" class="placeholder-cell-aux-value">{{ metric.value }}</strong>
+                  </span>
+                </section>
+                <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="组件区域">
+                  <WidgetRenderer
+                    :context="getWidgetContext(block.label)"
+                    :data="getWidgetDataForBlock(block.label)"
+                    :widget="getWidgetForBlock(block.label)"
+                    @dashboard-action="handleWidgetAction(block.label, $event)"
+                  />
+                </section>
+                <section
+                  v-if="hasWidgetBodySummary(block.label)"
+                  class="placeholder-cell-body-section placeholder-cell-body-section-3"
+                  aria-label="说明区"
+                >
+                  <p class="placeholder-cell-summary-text">{{ getWidgetBodySummary(block.label) }}</p>
+                </section>
               </div>
               <div
                 v-if="getBlockState(block.label)"
@@ -942,4 +1245,5 @@ watch(
       </section>
     </section>
   </main>
+  </div>
 </template>

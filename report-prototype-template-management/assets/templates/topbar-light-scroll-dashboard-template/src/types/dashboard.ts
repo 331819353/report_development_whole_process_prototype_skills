@@ -35,6 +35,7 @@ export interface DashboardControlLabels {
   filters: string;
   download: string;
   refresh: string;
+  fullscreen: string;
 }
 
 export interface DashboardTopbarNavItem {

@@ -75,9 +75,11 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
         @dashboard-action="handleDashboardAction"
       />
 
-      <div v-else class="widget-empty">
+      <div v-else-if="widget" class="widget-empty">
         <span class="widget-empty-pill">建设中</span>
       </div>
+
+      <div v-else class="widget-blank" aria-hidden="true"></div>
     </div>
   </div>
 </template>
@@ -99,7 +101,8 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
 }
 
 .widget-renderer-content,
-.widget-empty {
+.widget-empty,
+.widget-blank {
   position: relative;
   width: 100%;
   height: 100%;
@@ -108,6 +111,10 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   overflow: hidden;
   box-sizing: border-box;
   contain: layout paint;
+}
+
+.widget-blank {
+  background: transparent;
 }
 
 .widget-renderer-content {
@@ -125,8 +132,8 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
 .widget-renderer-content :deep(.echarts),
 .widget-renderer-content :deep(.chart),
 .widget-renderer-content :deep(.chart-container),
-.widget-renderer-content :deep(.s2-container),
-.widget-renderer-content :deep(.antv-s2-container) {
+.widget-renderer-content :deep(.antv-s2-container),
+.widget-renderer-content :deep(.s2-container) {
   max-width: 100%;
   max-height: 100%;
 }
@@ -143,6 +150,19 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   height: 100%;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
+}
+
+.widget-renderer-visual-pivot .widget-renderer-content {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.widget-renderer-visual-table .widget-renderer-content :deep(.s2-report-table-widget),
+.widget-renderer-visual-pivot .widget-renderer-content :deep(.s2-report-table-widget) {
+  width: 100%;
+  height: 100%;
 }
 
 .widget-renderer-visual-table .widget-renderer-content :deep(table) {
@@ -169,6 +189,11 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.widget-renderer-visual-table .widget-renderer-content :deep(th) {
+  text-align: center;
+  vertical-align: middle;
 }
 
 .widget-renderer-content :deep(.numeric),
@@ -218,14 +243,6 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   max-width: 100%;
   font-size: 12px;
   color: var(--muted);
-}
-
-.widget-renderer-visual-table .widget-renderer-content :deep(.antv-s2-container),
-.widget-renderer-visual-table .widget-renderer-content :deep(.s2-container),
-.widget-renderer-visual-table .widget-renderer-content :deep(.s2-table) {
-  max-width: 100%;
-  max-height: 100%;
-  overflow: auto;
 }
 
 .widget-renderer-has-content::before {

@@ -2,5 +2,13 @@
   "filterData": {
     "globalParameters": []
   },
-  "businessData": {}
+  "businessData": {
+    "compactBarDemo": [
+      { "period": "Jan", "actual": 68, "target": 72 },
+      { "period": "Feb", "actual": 84, "target": 76 },
+      { "period": "Mar", "actual": 73, "target": 78 },
+      { "period": "Apr", "actual": 96, "target": 82 },
+      { "period": "May", "actual": 88, "target": 86 }
+    ]
+  }
 }
