@@ -4,7 +4,7 @@ Use this file when building a new business report from a copied template or heav
 
 ## Sequence
 
-Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. If a slot uses custom ECharts work, add `echartsSelfDevelopedTemplateMap` and create/register the standalone Vue component content area template before filling the slot.
+Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` names the selected independent block layout Vue file for every block. If a slot uses custom ECharts work, add `echartsSelfDevelopedTemplateMap` and create/register the standalone Vue component content area template before filling the slot.
 
 1. Select 框架模板:
    - Choose the shell first: topbar scroll dashboard, left-nav analytics workbench, frozen-title cockpit, an existing project shell, or an explicit custom exception.
@@ -24,6 +24,7 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
    - Output `pageLayoutConfig` with block ids, spans, nav/page wiring, and first-viewport plan.
 3. Based on 页面布局配置, choose 分块布局模板 for each page block:
    - A 分块布局模板 includes the block size plus its `componentRegionPattern` / `componentSlotContracts`.
+   - Choose an independent block layout Vue entry file such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
    - Output `blockLayoutTemplateMap` with one entry per block id.
 4. Configure the 分块布局模板 `1-1 titleArea`:
    - Set the title and title style on the parent block/widget config.

@@ -27,7 +27,7 @@ export interface WidgetRegistration {
 
 const spanLayoutRegistry = Object.fromEntries(
   Object.entries(SpanLayouts)
-    .filter(([name]) => /^Span\d{2}x\d{2}Layout$/.test(name))
+    .filter(([name]) => /^Span\d{2}x\d{2}[A-Za-z0-9]*Layout$/.test(name))
     .map(([name, component]) => [
       name,
       {

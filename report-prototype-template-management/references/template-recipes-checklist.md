@@ -28,13 +28,13 @@ Use this file for common adjustments and final verification after changing a tem
 6. Verify each span can hold its chart/table/KPI/composite content at the target viewport size.
 7. Keep or add vertical scrolling when the report needs more rows than the first viewport can show.
 8. Rename widget keys to match changed block ids.
-9. Update the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and any `echartsSelfDevelopedTemplateMap` fallback.
+9. Update the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and any `echartsSelfDevelopedTemplateMap` fallback.
 10. Append the config ledger entry with changed layout ranges and affected widget/filter contracts.
 11. Run `npm run validate:dashboard`.
 
 ### Fill Block Template Slots
 
-1. Confirm the 分块布局模板 for the block and its standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
+1. Confirm the independent 分块布局模板 Vue file for the block and its standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
 2. Configure `1-1 titleArea`: title and title style.
 3. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured.
 4. Configure `2-1 auxMetricArea`: add suitable additional information and keep the items evenly distributed.
@@ -87,7 +87,7 @@ Use this file for common adjustments and final verification after changing a tem
 ## Verification Checklist
 
 - Template choice matches report scope and usage scenario.
-- Nine-step template operation chain is complete: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and fallback map when custom component content area templates were created.
+- Nine-step template operation chain is complete: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and fallback map when custom component content area templates were created.
 - Component slots under `3 componentArea` contain only 组件内容区模板 content. Title, pills, additional information, units, and summaries stay in 分块布局模板 supporting areas.
 - Component content area templates are rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
 - Stack contract is intact: `package.json` keeps Vue 3, TypeScript, Vite, Element Plus, ECharts, axios, and build/typecheck scripts; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus with locale, imports Element Plus base and dark CSS variables, and preserves project Element token styles.

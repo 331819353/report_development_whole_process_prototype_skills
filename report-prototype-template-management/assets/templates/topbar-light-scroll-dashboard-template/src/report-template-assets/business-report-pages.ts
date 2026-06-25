@@ -570,6 +570,24 @@ interface ScenarioBlockTemplateOptions {
   note: string;
 }
 
+const blockLayoutTemplateTypeByPattern: Record<string, RegisteredWidgetConfig['type']> = {
+  '04x03:AAAA': 'Span04x03SingleSlotLayout',
+  '04x03:AABB': 'Span04x03DoubleSlotLayout',
+  '04x03:AABC': 'Span04x03CompactTripleSlotLayout',
+  '06x03:AAAAAA': 'Span06x03SingleSlotLayout',
+  '06x03:AAABBB': 'Span06x03DoubleSlotLayout',
+  '06x03:AABBCC': 'Span06x03TripleSlotLayout',
+};
+
+const getBlockLayoutTemplateType = (
+  type: RegisteredWidgetConfig['type'],
+  pattern: string,
+): RegisteredWidgetConfig['type'] => {
+  const match = /^Span(\d{2}x\d{2})Layout$/.exec(type);
+
+  return match ? blockLayoutTemplateTypeByPattern[`${match[1]}:${pattern}`] ?? type : type;
+};
+
 interface TemplateKpiSlot {
   id: string;
   label: string;
@@ -680,7 +698,7 @@ const createBlockTemplateWidget = ({
   auxMode,
   note,
 }: BlockTemplateWidgetOptions): RegisteredWidgetConfig => ({
-  type,
+  type: getBlockLayoutTemplateType(type, pattern),
   visualType: 'other',
   dataPolicy: 'static',
   displayTitle: title,
@@ -720,7 +738,7 @@ const createScenarioBlockTemplateWidget = ({
   summary,
   note,
 }: ScenarioBlockTemplateOptions): RegisteredWidgetConfig => ({
-  type,
+  type: getBlockLayoutTemplateType(type, pattern),
   visualType: 'other',
   dataPolicy: 'static',
   displayTitle: title,
@@ -743,7 +761,7 @@ const createScenarioBlockTemplateWidget = ({
 
 const launchScenarioWidgets: WidgetMap = {
   A: createScenarioBlockTemplateWidget({
-    type: 'Span04x03Layout',
+    type: 'Span04x03SingleSlotLayout',
     title: '新品首月达成',
     pattern: 'AAAA',
     rows: 3,
@@ -764,7 +782,7 @@ const launchScenarioWidgets: WidgetMap = {
     ],
   }),
   B: createScenarioBlockTemplateWidget({
-    type: 'Span04x03Layout',
+    type: 'Span04x03SingleSlotLayout',
     title: '首月GMV',
     pattern: 'AAAA',
     rows: 3,
@@ -785,7 +803,7 @@ const launchScenarioWidgets: WidgetMap = {
     ],
   }),
   C: createScenarioBlockTemplateWidget({
-    type: 'Span04x03Layout',
+    type: 'Span04x03SingleSlotLayout',
     title: '毛利贡献',
     pattern: 'AAAA',
     rows: 3,
@@ -806,7 +824,7 @@ const launchScenarioWidgets: WidgetMap = {
     ],
   }),
   D: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03DoubleSlotLayout',
     title: '渠道铺货结构',
     pattern: 'AAABBB',
     rows: 3,
@@ -828,7 +846,7 @@ const launchScenarioWidgets: WidgetMap = {
     ],
   }),
   E: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03SingleSlotLayout',
     title: '铺货到成交转化',
     pattern: 'AAAAAA',
     rows: 3,
@@ -849,7 +867,7 @@ const launchScenarioWidgets: WidgetMap = {
     ],
   }),
   F: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03DoubleSlotLayout',
     title: '客群与经营健康',
     pattern: 'AAABBB',
     rows: 3,
@@ -871,7 +889,7 @@ const launchScenarioWidgets: WidgetMap = {
     ],
   }),
   G: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03DoubleSlotLayout',
     title: '风险与行动闭环',
     pattern: 'AAABBB',
     rows: 3,
@@ -896,7 +914,7 @@ const launchScenarioWidgets: WidgetMap = {
 
 const riskClosureWidgets: WidgetMap = {
   A: createScenarioBlockTemplateWidget({
-    type: 'Span04x03Layout',
+    type: 'Span04x03SingleSlotLayout',
     title: '预警总览',
     pattern: 'AAAA',
     rows: 3,
@@ -917,7 +935,7 @@ const riskClosureWidgets: WidgetMap = {
     ],
   }),
   B: createScenarioBlockTemplateWidget({
-    type: 'Span04x03Layout',
+    type: 'Span04x03SingleSlotLayout',
     title: '行动闭环',
     pattern: 'AAAA',
     rows: 3,
@@ -938,7 +956,7 @@ const riskClosureWidgets: WidgetMap = {
     ],
   }),
   C: createScenarioBlockTemplateWidget({
-    type: 'Span04x03Layout',
+    type: 'Span04x03SingleSlotLayout',
     title: '健康短板',
     pattern: 'AAAA',
     rows: 3,
@@ -959,7 +977,7 @@ const riskClosureWidgets: WidgetMap = {
     ],
   }),
   D: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03DoubleSlotLayout',
     title: '收入利润联动',
     pattern: 'AAABBB',
     rows: 3,
@@ -981,7 +999,7 @@ const riskClosureWidgets: WidgetMap = {
     ],
   }),
   E: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03DoubleSlotLayout',
     title: '区域客户定位',
     pattern: 'AAABBB',
     rows: 3,
@@ -1003,7 +1021,7 @@ const riskClosureWidgets: WidgetMap = {
     ],
   }),
   F: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03SingleSlotLayout',
     title: '转化漏斗复核',
     pattern: 'AAAAAA',
     rows: 3,
@@ -1024,7 +1042,7 @@ const riskClosureWidgets: WidgetMap = {
     ],
   }),
   G: createScenarioBlockTemplateWidget({
-    type: 'Span06x03Layout',
+    type: 'Span06x03SingleSlotLayout',
     title: '闭环结论',
     pattern: 'AAAAAA',
     rows: 3,
@@ -1079,7 +1097,7 @@ const multiSlotTemplateWidgets: WidgetMap = {
   },
   B: {
     ...createBlockTemplateWidget({
-      type: 'Span06x03Layout',
+      type: 'Span06x03DoubleSlotLayout',
       title: '6*3 AB 双槽分块模板',
       pattern: 'AAABBB',
       cols: 6,
@@ -1095,7 +1113,7 @@ const multiSlotTemplateWidgets: WidgetMap = {
   },
   C: {
     ...createBlockTemplateWidget({
-      type: 'Span06x03Layout',
+      type: 'Span06x03TripleSlotLayout',
       title: '6*3 ABC 三槽分块模板',
       pattern: 'AABBCC',
       cols: 6,
@@ -1112,7 +1130,7 @@ const multiSlotTemplateWidgets: WidgetMap = {
   },
   D: {
     ...createBlockTemplateWidget({
-      type: 'Span04x03Layout',
+      type: 'Span04x03SingleSlotLayout',
       title: '4*3 A 单槽分块模板',
       pattern: 'AAAA',
       cols: 4,
@@ -1127,7 +1145,7 @@ const multiSlotTemplateWidgets: WidgetMap = {
   },
   E: {
     ...createBlockTemplateWidget({
-      type: 'Span04x03Layout',
+      type: 'Span04x03DoubleSlotLayout',
       title: '4*3 AB 双槽分块模板',
       pattern: 'AABB',
       cols: 4,
@@ -1143,7 +1161,7 @@ const multiSlotTemplateWidgets: WidgetMap = {
   },
   F: {
     ...createBlockTemplateWidget({
-      type: 'Span04x03Layout',
+      type: 'Span04x03CompactTripleSlotLayout',
       title: '4*3 ABC 紧凑分块模板',
       pattern: 'AABC',
       cols: 4,

@@ -8,7 +8,7 @@ Use this file when a report prototype is implemented with bundled template asset
 | --- | --- | --- |
 | 框架模板 | Page shell, runtime stack, navigation, global filters, toolbar, theme, and template project structure. | `frameworkTemplateId`, template reason, preserved shell slots, stack contract. |
 | 页面布局配置 | Page-level `12 * N` grid, `layoutRows`, stable block ids, nav/page widget wiring, first-viewport and scroll behavior. | `pageLayoutConfig`, `layoutRows`, block id map, block span map, nav/page content plan. |
-| 分块布局模板 | One parent block's size plus standard areas and component slots. | `blockLayoutTemplateMap`, `componentRegionPattern`, `componentSlotContracts`, supporting-area config. |
+| 分块布局模板 | One parent block's size plus standard areas and component slots. Every selectable template resolves to an independent Vue entry file that may reuse a shared base renderer. | `blockLayoutTemplateMap`, selected block layout Vue file, `componentRegionPattern`, `componentSlotContracts`, supporting-area config. |
 | 组件内容区模板 | The implemented component internal content area only, preferably an independent Vue file that can be copied or mounted. | `componentContentAreaTemplateMap`, selected Vue file or `componentContentAreaTemplateId`, slot props/data contract. |
 
 ## Nine-Step Implementation Sequence
@@ -19,8 +19,9 @@ Use this file when a report prototype is implemented with bundled template asset
 2. Design 页面布局配置.
    - Create `layoutRows`, stable block ids, widget ids, nav/page wiring, and the first-viewport reading path.
    - Output `pageLayoutConfig`.
-3. Select 分块布局模板 based on 页面布局配置.
-   - For every block id, choose a size-compatible block template and record its standard areas.
+3. Select the independent 分块布局模板 Vue file based on 页面布局配置.
+   - For every block id, choose a size-compatible independent block layout Vue file, such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`, and record its standard areas.
+   - Use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable block layout template.
    - Output `blockLayoutTemplateMap`.
 4. Configure `1-1 titleArea`.
    - Implement the block title and title style on the 分块布局模板.
@@ -42,7 +43,7 @@ Use this file when a report prototype is implemented with bundled template asset
    - If a conclusion, note, or explanation is needed, configure it on the 分块布局模板.
    - If not needed, record `summaryAreaConfig: null`.
 
-Do not skip from page layout directly to ad hoc chart/table markup. Do not fill component slots before the block supporting areas in steps 4-7 have been configured or explicitly marked not needed. If a slot needs custom work, create or register a component content area template first, then mount or copy it into the slot.
+Do not skip from page layout directly to ad hoc chart/table markup. Do not treat `componentRegionPattern` as a replacement for selecting a block layout template Vue file. Do not fill component slots before the block supporting areas in steps 4-7 have been configured or explicitly marked not needed. If a slot needs custom work, create or register a component content area template first, then mount or copy it into the slot.
 
 ## Standard 分块布局模板 Areas
 
@@ -69,7 +70,7 @@ Do not skip from page layout directly to ad hoc chart/table markup. Do not fill 
 
 - `frameworkTemplateId` and shell preservation proof.
 - `pageLayoutConfig` with `layoutRows`, block ids, block spans, nav/page wiring, and first-viewport plan.
-- `blockLayoutTemplateMap` with one entry per block id, including selected standard areas and supporting-area config.
+- `blockLayoutTemplateMap` with one entry per block id, including selected independent block layout Vue file, selected standard areas, and supporting-area config.
 - `titleAreaConfig` for every block.
 - `pillAreaConfig` for every block, or explicit `null` when pill buttons are not needed.
 - `auxMetricAreaConfig` with evenly distributed additional information.
@@ -86,6 +87,7 @@ The prototype is not ready when any of these are true:
 
 - `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `auxMetricAreaConfig`, or `componentContentAreaTemplateMap` is missing.
 - Optional `pillAreaConfig`, `unitAreaConfig`, or `summaryAreaConfig` is neither configured nor explicitly marked `null`.
+- A selectable block layout is encoded only as generic `SpanCCxRRLayout.vue` plus `componentRegionPattern`, without a named independent block layout Vue file.
 - A component slot contains block title, pill, additional information, unit, summary, or explanation content.
 - A custom ECharts chart is implemented directly inside a block without first becoming a standalone component content area template.
 - A 分块布局模板 component slot is filled before steps 4-7 are configured or explicitly marked not needed.

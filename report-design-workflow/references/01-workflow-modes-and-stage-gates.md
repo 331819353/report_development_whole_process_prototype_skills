@@ -6,7 +6,7 @@ Choose the mode before starting.
 
 Before choosing a mode, enforce the trigger gate. Do not let adjacent words such as `报表`, `页面`, `模板`, `部署`, `筛选联动`, `mock 数据`, `自检`, or `返回URL` activate this workflow by themselves; they must appear in a request that also includes `原型`.
 
-Before implementation, also choose exactly one `pageShellPath`, exactly one `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`: `haierEnterprise`, `sampleRestore`, or `sciFiCockpit`. When `pageShellPath: template`, also declare the nine-step template chain from `$report-prototype-template-management` `references/template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. These are blocking decisions, not later polish choices.
+Before implementation, also choose exactly one `pageShellPath`, exactly one `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`: `haierEnterprise`, `sampleRestore`, or `sciFiCockpit`. When `pageShellPath: template`, also declare the nine-step template chain from `$report-prototype-template-management` `references/template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. These are blocking decisions, not later polish choices.
 
 Source-material intake gate:
 
@@ -190,7 +190,7 @@ Blocking behavior:
 - Stop before implementation if `brandMode` is not declared.
 - Stop before implementation if `pageShellPath` is not declared.
 - Stop before implementation if `pageStyleSource` is not declared.
-- Stop before implementation if `pageShellPath: template` and any part of `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig` is missing or optional areas are not explicitly marked as unnecessary.
+- Stop before implementation if `pageShellPath: template` and any part of `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig` is missing, if `blockLayoutTemplateMap` does not name selected independent block layout Vue files, or if optional areas are not explicitly marked as unnecessary.
 - Stop before implementation if `pageShellPath: custom` and `customDesignPath` is not declared.
 - Stop before implementation if `pageShellPath: custom`, `brandMode: haierBranded`, and the page has no real Haier logo asset configured.
 - Stop before implementation if a required logo slot has neither asset nor placeholder.

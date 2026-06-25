@@ -6,7 +6,7 @@ Terminology used by the report development flow:
 
 - 框架模板: the page shell, such as left navigation, filter entry, toolbar, theme, and runtime stack.
 - 页面布局配置: the page-level `layoutRows` and `widgets` wiring.
-- 分块布局模板: one reusable block template with size plus slots, such as `4*3 AA`, `4*3 AB`, or `12*4 AAABBBCCCDDD`. Every template uses `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
+- 分块布局模板: one reusable block template with size plus slots, packaged as an independent Vue entry file when it is selectable, such as `Span04x03SingleSlotLayout.vue`, `Span04x03DoubleSlotLayout.vue`, or `Span06x03TripleSlotLayout.vue`. Every template uses `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
 - 组件内容区模板: the implemented component's internal content area only. It fills slots inside `3 componentArea` by copying or mounting an independent Vue file, not additional information or explanatory copy.
 
 This library covers every legal rectangle span under the current layout contract:
@@ -15,9 +15,10 @@ This library covers every legal rectangle span under the current layout contract
 - Rule: for any `M x N` span, `M >= N`
 - Columns: 2 through 12
 - Rows: 2 through 8
-- Files: 56 wrappers named `SpanCCxRRLayout.vue`, from `Span02x02Layout.vue` to `Span12x08Layout.vue`
+- Size files: 56 base wrappers named `SpanCCxRRLayout.vue`, from `Span02x02Layout.vue` to `Span12x08Layout.vue`
+- Selectable slot-template files: independent wrappers named by size plus slot mode, such as `Span04x03SingleSlotLayout.vue`, `Span04x03DoubleSlotLayout.vue`, `Span04x03CompactTripleSlotLayout.vue`, `Span06x03SingleSlotLayout.vue`, `Span06x03DoubleSlotLayout.vue`, and `Span06x03TripleSlotLayout.vue`
 
-These files are block layout templates, not component-category templates. Each file declares a layout size and delegates to `BaseLayoutSpan.vue`. The report-development block areas are:
+These files are block layout templates, not component-category templates. Size files declare only a layout size; selectable slot-template files declare both layout size and `componentRegionPattern`. Both delegate to `BaseLayoutSpan.vue` for the shared block rendering. The report-development block areas are:
 
 - `1-1 titleArea`: 标题区, left aligned
 - `1-2 pillArea`: 胶囊按钮区, right aligned
@@ -56,7 +57,7 @@ Usage flow:
 
 1. Select the framework template.
 2. Configure the page layout with `layoutRows`.
-3. Pick the block layout template that matches each page block and satisfies `M >= N`.
+3. Pick the independent block layout template Vue file that matches each page block, slot mode, and `M >= N`. Use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
 4. Configure `1-1 titleArea` with title text and title style.
 5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise leave it unconfigured.
 6. Configure `2-1 auxMetricArea` with suitable additional information and even distribution.

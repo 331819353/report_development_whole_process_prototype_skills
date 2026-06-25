@@ -64,7 +64,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 1. Select exactly one 框架模板 using display theme, selected pattern cards, content volume, navigation depth, interaction density, and display environment.
 2. Design 页面布局配置 through `layoutRows`, stable block ids, and page/nav widget wiring; for templates with `nav[]`, define substantial nav-page content before copying or editing.
-3. Based on 页面布局配置, select 分块布局模板 for each page block. A block layout template is size plus slots, and every block uses the standard areas: `1-1 titleArea` 标题区, `1-2 pillArea` 胶囊按钮区, `2-1 auxMetricArea` 附加信息区, `2-2 unitArea` 单位区, `3 componentArea` 组件区, and `4 summaryArea` 说明区.
+3. Based on 页面布局配置, select 分块布局模板 for each page block. Each selectable block layout template must resolve to an independent Vue entry file, such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; the generic `SpanCCxRRLayout.vue` size wrappers are only bases for creating new selectable templates. A block layout template is size plus slots, and every block uses the standard areas: `1-1 titleArea` 标题区, `1-2 pillArea` 胶囊按钮区, `2-1 auxMetricArea` 附加信息区, `2-2 unitArea` 单位区, `3 componentArea` 组件区, and `4 summaryArea` 说明区.
 4. Configure the 分块布局模板 `1-1 titleArea`: implement the title and title style.
 5. Decide whether `1-2 pillArea` is needed. Configure pill buttons when needed; otherwise record `pillAreaConfig: null`.
 6. Configure `2-1 auxMetricArea`: add suitable additional information and keep the items evenly distributed.
@@ -87,7 +87,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Required Output
 
 - Selected template ID and reason.
-- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with each block's selected independent block layout Vue file, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
 - Compatibility notes for display theme, pattern cards, report decision path, and navigation depth.
 - Shell decisions: title, logo, navigation, native filters, toolbar, controls.
 - Control ownership matrix: refresh, download/export, copy/share, global filters, local filters, period/date controls, toolbar actions, and any disabled template controls.
@@ -104,6 +104,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Do not choose custom development when a bundled template can satisfy the requirement.
 - Do not mark the template implementation ready until the nine-step operation chain is complete: framework template selected, page layout configured, block layout templates mapped, title configured, pill/unit/summary decisions recorded, additional information configured and evenly distributed, and every `3 componentArea` slot filled by a component content area template or a newly registered standalone ECharts component content area template.
+- Do not accept a selectable 分块布局模板 that exists only as `SpanCCxRRLayout.vue` plus `componentRegionPattern` config. The selected block must name/export/register an independent Vue entry file; generic size wrappers are allowed only as bases for creating new selectable templates.
 - Do not choose a nav template unless multiple substantial nav pages are implemented.
 - Do not accept a generated/copied project that keeps Vue 3 but drops ECharts or Element Plus. Missing `echarts`, `element-plus`, Vue 3 bootstrap, Element Plus global registration/style import, or actual ECharts runtime ownership for chart widgets is a template readiness failure.
 - Do not replace Element Plus controls with ad hoc HTML controls for ordinary buttons, selects, popovers, drawers, dialogs, tables, messages, or form-like controls unless the user names an existing project design system or an explicit custom-shell exception.

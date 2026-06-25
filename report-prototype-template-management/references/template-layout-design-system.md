@@ -18,7 +18,7 @@ Use these generic names consistently in report development:
 | --- | --- | --- |
 | 框架模板 | `assets/templates/<template-id>/`, `screen`, shell components | The report page shell: navigation, global filters, toolbar, theme, logo, and runtime stack. |
 | 页面布局配置 | `nav[].layoutRows`, `page.layoutRows`, `widgets` | The page-level grid configuration that places rectangular blocks on the 12-column canvas. |
-| 分块布局模板 | `SpanCCxRRLayout`, `componentRegionPattern`, `componentSlotContracts`, block `slotFills` | A reusable block template with size plus standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`. |
+| 分块布局模板 | Independent Vue entries such as `Span04x03SingleSlotLayout`, plus `componentRegionPattern`, `componentSlotContracts`, block `slotFills` | A reusable block template with size plus standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`. Generic `SpanCCxRRLayout` files are size bases for creating selectable entries. |
 | 组件内容区模板 | `componentSlots[].content`, `componentContentAreaTemplateId`, or standalone Vue file | The implemented component's internal content area only. It can fill slots inside `3 componentArea`; do not include additional information, units, title pills, or summary copy. It renders as a rounded rectangle without border lines, and may reserve a removable `20px` centered title strip with `3px` top padding; parent single-slot block layouts hide that strip. |
 
 ### Report Implementation Flow
@@ -29,7 +29,7 @@ Use this order for report implementation:
 
 1. Select the 框架模板.
 2. Design the 页面布局配置.
-3. Based on the 页面布局配置, select 分块布局模板 for each block.
+3. Based on the 页面布局配置, select the independent 分块布局模板 Vue file for each block.
 4. Configure `1-1 titleArea`: title and title style.
 5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise record it as not configured.
 6. Configure `2-1 auxMetricArea`: add suitable additional information and distribute items evenly.
@@ -37,7 +37,7 @@ Use this order for report implementation:
 8. Based on the selected 分块布局模板 slot configuration, choose suitable 组件内容区模板 for `3 componentArea`; when no suitable template exists, self-develop a new ECharts-backed standalone Vue component content area template.
 9. Configure `4 summaryArea`: add suitable conclusion, note, or explanation when needed, otherwise record it as not configured.
 
-Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`.
+Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name the independent block layout Vue file for every selectable block.
 
 ### Standard Block Layout Template Areas
 
