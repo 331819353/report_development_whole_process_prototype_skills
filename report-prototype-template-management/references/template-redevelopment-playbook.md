@@ -25,6 +25,8 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
 3. Based on 页面布局配置, choose 分块布局模板 for each page block:
    - A 分块布局模板 includes the block size plus its standard areas and `componentSlotContracts`; `componentRegionPattern` is only a derived compatibility descriptor.
    - Choose an independent block layout Vue entry file such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
+   - Decide SingleSlot vs MultiSlot from the user's analytical need. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups.
+   - In MultiSlot templates, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed. Use later slots for evidence, drivers, details, actions, or trust/source support.
    - Output `blockLayoutTemplateMap` with one entry per block id.
 4. Configure the 分块布局模板 `1-1 titleArea`:
    - Set the title and title style on the parent block/widget config.
@@ -32,10 +34,10 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
 5. Decide and configure `1-2 pillArea`:
    - Configure pill buttons when needed.
    - If not needed, record `pillAreaConfig: null`.
-6. Configure `2-1 auxMetricArea`:
-   - Add suitable additional information and distribute items evenly.
+6. Decide and configure `2-1 auxMetricArea`:
+   - Configure additional information and distribute items evenly when needed.
+   - If not needed, record `auxMetricAreaConfig: null`.
    - Keep additional information on the parent block/widget config.
-   - Output `auxMetricAreaConfig`.
 7. Decide and configure `2-2 unitArea`:
    - Configure the unit when needed.
    - If not needed, record `unitAreaConfig: null`.
@@ -46,8 +48,9 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
    - Do not attach filters, controls, additional information, unit slot, title pills, description/help text, or summary copy to a component slot. The component content area may have only the optional removable title strip plus body content.
    - Output `componentContentAreaTemplateMap`; output `echartsSelfDevelopedTemplateMap` for newly created fallback templates.
 9. Configure `4 summaryArea`:
-   - Add suitable conclusion, note, or explanation when needed.
-   - If not needed, record `summaryAreaConfig: null`.
+   - If the block has no conclusion card/component, add a text-only/narrative conclusion, note, caveat, or explanation when needed.
+   - If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
+   - Do not put conclusion-card content or duplicate conclusion text in `summaryArea` when a MultiSlot first component slot carries that card.
    - Do not put summary/explanation copy inside `componentSlots`.
 10. Define filters:
    - Use `options` for stable enum filters.

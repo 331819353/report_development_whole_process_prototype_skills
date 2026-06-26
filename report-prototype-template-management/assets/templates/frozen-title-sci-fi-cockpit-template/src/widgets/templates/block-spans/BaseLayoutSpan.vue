@@ -479,9 +479,10 @@ const getPercentStyle = (percent?: number) => ({
 .layout-zone-cell.has-slot-content {
   place-items: stretch;
   padding: 0;
-  border: 0;
-  border-radius: var(--component-content-area-radius, 8px);
+  border: 1px solid color-mix(in srgb, var(--accent) 11%, transparent);
+  border-radius: 5px;
   background: transparent;
+  box-shadow: none;
 }
 
 .layout-zone-label {

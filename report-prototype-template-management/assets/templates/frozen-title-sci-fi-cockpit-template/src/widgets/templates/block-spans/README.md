@@ -6,7 +6,7 @@ Terminology used by the report development flow:
 
 - 框架模板: the page shell, such as frozen title, floating panels, filter entry, toolbar, theme, and runtime stack.
 - 页面布局配置: the page-level `layoutRows` and `widgets` wiring.
-- 分块布局模板: one reusable block template with size plus slots, packaged as an independent Vue entry file when it is selectable, such as `Span04x03SingleSlotLayout.vue`, `Span04x03DoubleSlotLayout.vue`, or `Span06x03TripleSlotLayout.vue`. Every template uses `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
+- 分块布局模板: one reusable block template with size plus slots, packaged as an independent Vue entry file when it is selectable, such as `Span04x03SingleSlotLayout.vue`, `Span04x03DoubleSlotLayout.vue`, or `Span06x03TripleSlotLayout.vue`. Every template supports `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`; only `1-1 titleArea` and `3 componentArea` are always required.
 - 组件内容区模板: the implemented component's internal content area only. It fills slots inside `3 componentArea` by copying or mounting an independent Vue file, not filters, controls, additional information, units, title pills, descriptions, explanations, or summary copy.
 
 This library covers every legal rectangle span under the current layout contract:
@@ -45,7 +45,7 @@ Shared container shell:
 - Top/body gap: `2px`
 - Body zone height: `container content height - 33px - 2px`
 - Block background: one shared cockpit surface, covering the full block including the top zone and body zone
-- Body zone split, top to bottom: `2-1` additional information plus `2-2` unit `1/9`, `3` component area `6/9`, `4` explanation/conclusion text `2/9`
+- Body zone split, top to bottom: optional `2-1` additional information plus `2-2` unit `1/9`, `3` component area `6/9`, optional `4` text-only/narrative conclusion only when no conclusion card exists, or non-conclusion note/explanation text `2/9`
 - Filled component content areas are rounded rectangles and do not draw border lines.
 - Component content area templates may reserve a `20px` top title strip with centered text and `3px` top padding; hide this strip when the parent block layout has only one component slot.
 - Body section gap: `2px`
@@ -57,12 +57,12 @@ Usage flow:
 
 1. Select the framework template.
 2. Configure the page layout with `layoutRows`.
-3. Pick the independent block layout template Vue file that matches each page block, slot mode, and `M >= N`. Use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
+3. Pick the independent block layout template Vue file that matches each page block, slot mode, and `M >= N`. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups. In MultiSlot blocks, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed. Use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
 4. Configure `1-1 titleArea` with title text and title style.
 5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise leave it unconfigured.
-6. Configure `2-1 auxMetricArea` with suitable additional information and even distribution.
+6. Decide whether `2-1 auxMetricArea` is needed; configure it with suitable additional information and even distribution when needed, otherwise leave it unconfigured.
 7. Decide whether `2-2 unitArea` is needed; configure unit text when needed, otherwise leave it unconfigured.
 8. Fill `componentSlots` inside `3 componentArea` only with standalone component content area templates. Do not place filters, controls, additional information, units, title pills, descriptions, explanations, or summaries inside `componentSlots`. If there is only one component slot, the component content area title strip must be hidden.
-9. Configure `4 summaryArea` with conclusion, note, or explanation when needed, otherwise leave it unconfigured.
+9. Configure `4 summaryArea`: if the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block has a conclusion card/component, leave it unconfigured or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
 10. Register any new widget in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 11. Mount it in `src/config/dashboard.config.ts`.

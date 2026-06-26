@@ -7,10 +7,15 @@ import { getNavSizedBlocks, getSizeLabel } from '../utils/layout-grid';
 import { getNavById, getReportTemplateNavs } from '../utils/nav';
 
 export const blockLayoutTemplateLibraryNavId = 'template-library';
+export const legacyBlockLayoutTemplateLibraryNavId = 'multi-slot-12x4';
 /** @deprecated Use blockLayoutTemplateLibraryNavId. */
 export const genericTemplateLibraryNavId = blockLayoutTemplateLibraryNavId;
 
-const excludedRuntimeNavIds = new Set(['component-library', 'template-library']);
+const excludedRuntimeNavIds = new Set([
+  'component-library',
+  blockLayoutTemplateLibraryNavId,
+  legacyBlockLayoutTemplateLibraryNavId,
+]);
 
 const getRuntimeBlockLayoutTemplateAssets = (config: DashboardConfig): ReportTemplateBlockAsset[] =>
   getReportTemplateNavs(config)

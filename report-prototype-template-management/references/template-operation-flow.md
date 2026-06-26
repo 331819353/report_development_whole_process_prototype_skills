@@ -22,6 +22,8 @@ Use this file when a report prototype is implemented with bundled template asset
 3. Select the independent 分块布局模板 Vue file based on 页面布局配置.
    - For every block id, choose a size-compatible independent block layout Vue file, such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`, and record its standard areas.
    - Use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable block layout template.
+   - Decide SingleSlot vs MultiSlot from requirement analysis, not template availability. Use SingleSlot for one dominant conclusion card/component. Use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups.
+   - In MultiSlot templates, place the conclusion card or primary conclusion component in the first component position when the requirement uses componentized conclusions; use later slots for evidence, drivers, details, actions, or trust/source support. Text-only or narrative conclusions belong to `4 summaryArea` only when the same block has no conclusion card/component.
    - Output `blockLayoutTemplateMap`.
 4. Configure `1-1 titleArea`.
    - Implement the block title and title style on the 分块布局模板.
@@ -29,9 +31,9 @@ Use this file when a report prototype is implemented with bundled template asset
 5. Decide and configure `1-2 pillArea`.
    - If pill buttons are needed, configure pill labels, active state, and style on the 分块布局模板.
    - If not needed, record `pillAreaConfig: null`.
-6. Configure `2-1 auxMetricArea`.
-   - Add suitable additional information and keep items evenly distributed.
-   - Output `auxMetricAreaConfig`.
+6. Decide and configure `2-1 auxMetricArea`.
+   - If auxiliary information is needed, add suitable additional information and keep items evenly distributed.
+   - If not needed, record `auxMetricAreaConfig: null`.
 7. Decide and configure `2-2 unitArea`.
    - If a unit is needed, configure unit text/style on the 分块布局模板.
    - If not needed, record `unitAreaConfig: null`.
@@ -41,7 +43,8 @@ Use this file when a report prototype is implemented with bundled template asset
    - The component content area may render only the optional removable title strip and the component body. Do not add local filters, extra controls, additional information, unit labels, summary, explanation, or description bands.
    - Output `componentContentAreaTemplateMap` and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
 9. Decide and configure `4 summaryArea`.
-   - If a conclusion, note, or explanation is needed, configure it on the 分块布局模板.
+   - If the block has no conclusion card/component, `4 summaryArea` may carry a text-only/narrative conclusion, note, caveat, or explanation.
+   - If the block has a conclusion card/component, `4 summaryArea` must be `null` or carry only non-conclusion content such as scope, source, caveat, definition, or action note.
    - If not needed, record `summaryAreaConfig: null`.
 
 Do not skip from page layout directly to ad hoc chart/table markup. Do not treat `componentRegionPattern` as a replacement for selecting a block layout template Vue file. Do not fill component slots before the block supporting areas in steps 4-7 have been configured or explicitly marked not needed. If a slot needs custom work, create or register a component content area template first, then mount or copy it into the slot.
@@ -55,7 +58,9 @@ Do not skip from page layout directly to ad hoc chart/table markup. Do not treat
 | `2-1` | `auxMetricArea` | 附加信息区 | Left aligned | Supporting metrics, comparison values, or context labels. |
 | `2-2` | `unitArea` | 单位区 | Right aligned | Unit label/value. |
 | `3` | `componentArea` | 组件区 | Fill | Component slots only. Each slot receives one component content area template or a registered component content area component. |
-| `4` | `summaryArea` | 说明区 | Left aligned | Conclusion, explanation, or summary copy owned by the block template. |
+| `4` | `summaryArea` | 说明区 | Left aligned | Optional text-only/narrative conclusion only when no conclusion card/component exists; otherwise `null` or non-conclusion scope/source/caveat/definition/action note. |
+
+Required-area policy: only `1-1 titleArea` and `3 componentArea` are always required. `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, and `4 summaryArea` are optional; omit them or record their configs as `null` when the user need/data story does not require them.
 
 ## Slot-Fill Rules
 
@@ -75,7 +80,7 @@ Do not skip from page layout directly to ad hoc chart/table markup. Do not treat
 - `blockLayoutTemplateMap` with one entry per block id, including selected independent block layout Vue file, selected standard areas, component slot contracts, and supporting-area config. `componentRegionPattern` may be recorded only as a derived compatibility descriptor.
 - `titleAreaConfig` for every block.
 - `pillAreaConfig` for every block, or explicit `null` when pill buttons are not needed.
-- `auxMetricAreaConfig` with evenly distributed additional information.
+- `auxMetricAreaConfig` with evenly distributed additional information, or explicit `null` when auxiliary information is not needed.
 - `unitAreaConfig` for every block, or explicit `null` when no unit is needed.
 - `componentContentAreaTemplateMap` with one entry per `componentArea` slot, including selected standalone Vue template file/id, copied or mounted path, props, data source, and state coverage.
 - Component content area title-strip decision for every slot: title text or hidden, removable flag, single-slot hide proof, rounded root, and no border line.
@@ -87,8 +92,8 @@ Do not skip from page layout directly to ad hoc chart/table markup. Do not treat
 
 The prototype is not ready when any of these are true:
 
-- `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `auxMetricAreaConfig`, or `componentContentAreaTemplateMap` is missing.
-- Optional `pillAreaConfig`, `unitAreaConfig`, or `summaryAreaConfig` is neither configured nor explicitly marked `null`.
+- `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, or `componentContentAreaTemplateMap` is missing.
+- Optional `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, or `summaryAreaConfig` is neither configured nor explicitly marked `null`.
 - A selectable block layout is encoded only as generic `SpanCCxRRLayout.vue` plus `componentRegionPattern`, without a named independent block layout Vue file.
 - A component slot contains block title, pill, additional information, unit, summary, explanation, description/help content, or any local filter/control surface beyond the optional removable title strip.
 - A custom ECharts chart is implemented directly inside a block without first becoming a standalone component content area template.

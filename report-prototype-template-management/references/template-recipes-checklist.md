@@ -35,15 +35,16 @@ Use this file for common adjustments and final verification after changing a tem
 ### Fill Block Template Slots
 
 1. Confirm the independent 分块布局模板 Vue file for the block and its standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
+   - Choose SingleSlot or MultiSlot from the requirement. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups. In MultiSlot blocks, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed.
 2. Configure `1-1 titleArea`: title and title style.
 3. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured.
-4. Configure `2-1 auxMetricArea`: add suitable additional information and keep the items evenly distributed.
+4. Decide whether `2-1 auxMetricArea` is needed. Configure it when needed and keep the items evenly distributed; otherwise record it as not configured.
 5. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
 6. For every `3 componentArea` slot, select an existing 组件内容区模板 first.
 7. If no suitable component content area template exists, create a standalone Vue component content area template, use ECharts for standard chart needs, register/copy it, and record it in `echartsSelfDevelopedTemplateMap` or the equivalent fallback map.
 8. For every selected 组件内容区模板, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块布局模板 has one slot or when `showContentTitle: false`.
 9. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件内容区模板 slots. Those belong to 分块布局模板 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
-10. Configure `4 summaryArea` with suitable conclusion, note, or explanation when needed; otherwise record it as not configured.
+10. Configure `4 summaryArea`: if the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
 11. Do not treat a slot as filled until it points to a standalone component content area Vue file/component id plus props/data/state contract.
 
 ### Add A Data-Bound Widget

@@ -13,14 +13,14 @@ export const businessReportLayoutRows = [
 ];
 
 export const multiSlotTemplateLayoutRows = [
-  'AAAAAAAAAAAA',
-  'AAAAAAAAAAAA',
-  'BBBBBBCCCCCC',
-  'BBBBBBCCCCCC',
-  'BBBBBBCCCCCC',
-  'DDDDEEEEFFFF',
-  'DDDDEEEEFFFF',
-  'DDDDEEEEFFFF',
+  'AAAABBBBBBBB',
+  'AAAABBBBBBBB',
+  'AAAABBBBBBBB',
+  'CCCCCDDDDDDD',
+  'CCCCCDDDDDDD',
+  'CCCCCDDDDDDD',
+  'EEEFFFFGGGGG',
+  'EEEFFFFGGGGG',
 ];
 
 export const componentContentAreaTemplateLayoutRows = [
@@ -1178,6 +1178,230 @@ const multiSlotTemplateWidgets: WidgetMap = {
   },
 };
 
+const singleSlotTemplateWidgets: WidgetMap = {
+  A: {
+    ...createBlockTemplateWidget({
+      type: 'Span04x03SingleSlotLayout',
+      title: '4*3 单槽位模板',
+      pattern: 'AAAA',
+      cols: 4,
+      rows: 3,
+      auxMode: '单槽',
+      summary: '导航一：4*3 分块只保留 A 槽，一个组件内容区占满整个组件区域。',
+      note: '3 组件区：A 槽占满 4 列，适合单指标、单图表或单列表。',
+      slots: [
+        { id: 'A', label: '核心指标', widthUnits: 4, role: 'primary', value: '4*3', unit: '', delta: '单槽', tone: 'primary' },
+      ],
+    }),
+  },
+  B: {
+    ...createBlockTemplateWidget({
+      type: 'Span08x03Layout',
+      title: '8*3 单槽位模板',
+      pattern: 'AAAAAAAA',
+      cols: 8,
+      rows: 3,
+      auxMode: '宽幅单槽',
+      summary: '导航一：8*3 分块保留一个横向大槽位，用于承载宽幅趋势、宽表或组合图。',
+      note: '3 组件区：A 槽横向占满 8 列，分块层保留标题、胶囊、附加信息和说明区。',
+      slots: [
+        { id: 'A', label: '宽幅组件', widthUnits: 8, role: 'primary', value: '8*3', unit: '', delta: '单槽', tone: 'primary' },
+      ],
+    }),
+  },
+  C: {
+    ...createBlockTemplateWidget({
+      type: 'Span05x03Layout',
+      title: '5*3 单槽位模板',
+      pattern: 'AAAAA',
+      cols: 5,
+      rows: 3,
+      auxMode: '中宽单槽',
+      summary: '导航一：5*3 分块使用一个完整 A 槽，适合中等密度的核心组件。',
+      note: '3 组件区：A 槽占满 5 列，避免把说明或单位下发到组件槽内。',
+      slots: [
+        { id: 'A', label: '中宽组件', widthUnits: 5, role: 'primary', value: '5*3', unit: '', delta: '单槽', tone: 'success' },
+      ],
+    }),
+  },
+  D: {
+    ...createBlockTemplateWidget({
+      type: 'Span07x03Layout',
+      title: '7*3 单槽位模板',
+      pattern: 'AAAAAAA',
+      cols: 7,
+      rows: 3,
+      auxMode: '大单槽',
+      summary: '导航一：7*3 分块用一个大槽位承载主要分析内容。',
+      note: '3 组件区：A 槽占满 7 列，适合需要更多横向阅读空间的组件。',
+      slots: [
+        { id: 'A', label: '大组件', widthUnits: 7, role: 'primary', value: '7*3', unit: '', delta: '单槽', tone: 'warning' },
+      ],
+    }),
+  },
+  E: {
+    ...createBlockTemplateWidget({
+      type: 'Span03x02Layout',
+      title: '3*2 单槽位模板',
+      pattern: 'AAA',
+      cols: 3,
+      rows: 2,
+      auxMode: '紧凑单槽',
+      summary: '导航一：3*2 分块以最小可读块展示一个单槽位组件。',
+      note: '3 组件区：A 槽占满 3 列，适合轻量 KPI 或状态提示。',
+      slots: [
+        { id: 'A', label: '轻量组件', widthUnits: 3, role: 'primary', value: '3*2', unit: '', delta: '单槽', tone: 'neutral' },
+      ],
+    }),
+  },
+  F: {
+    ...createBlockTemplateWidget({
+      type: 'Span04x02Layout',
+      title: '4*2 单槽位模板',
+      pattern: 'AAAA',
+      cols: 4,
+      rows: 2,
+      auxMode: '标准单槽',
+      summary: '导航一：4*2 分块提供一个标准宽度的单槽位组件区。',
+      note: '3 组件区：A 槽占满 4 列，用于常规指标卡或小型图表。',
+      slots: [
+        { id: 'A', label: '标准组件', widthUnits: 4, role: 'primary', value: '4*2', unit: '', delta: '单槽', tone: 'primary' },
+      ],
+    }),
+  },
+  G: {
+    ...createBlockTemplateWidget({
+      type: 'Span05x02Layout',
+      title: '5*2 单槽位模板',
+      pattern: 'AAAAA',
+      cols: 5,
+      rows: 2,
+      auxMode: '横向单槽',
+      summary: '导航一：5*2 分块用一个横向槽位承载摘要型组件。',
+      note: '3 组件区：A 槽占满 5 列，保持组件内容区和分块说明区分离。',
+      slots: [
+        { id: 'A', label: '摘要组件', widthUnits: 5, role: 'primary', value: '5*2', unit: '', delta: '单槽', tone: 'success' },
+      ],
+    }),
+  },
+};
+
+const multiSlotSizeTemplateWidgets: WidgetMap = {
+  A: {
+    ...createBlockTemplateWidget({
+      type: 'Span04x03DoubleSlotLayout',
+      title: '4*3 AB 多槽位模板',
+      pattern: 'AABB',
+      cols: 4,
+      rows: 3,
+      auxMode: '2/2',
+      summary: '导航二：4*3 分块拆成 A/B 两个等宽组件槽位。',
+      note: '3 组件区：A/B 槽只承载组件内容区，标题、单位和说明仍归分块层。',
+      slots: [
+        { id: 'A', label: '主槽', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
+        { id: 'B', label: '副槽', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'warning' },
+      ],
+    }),
+  },
+  B: {
+    ...createBlockTemplateWidget({
+      type: 'Span08x03Layout',
+      title: '8*3 AB 多槽位模板',
+      pattern: 'AAAABBBB',
+      cols: 8,
+      rows: 3,
+      auxMode: '4/4',
+      summary: '导航二：8*3 分块拆成两个宽槽，用于主分析与对比分析并排。',
+      note: '3 组件区：A/B 两个槽位各占 4 列，适合双图或图表加列表。',
+      slots: [
+        { id: 'A', label: '主分析', widthUnits: 4, role: 'primary', value: 'A', unit: '', delta: '4列', tone: 'primary' },
+        { id: 'B', label: '对比分析', widthUnits: 4, role: 'secondary', value: 'B', unit: '', delta: '4列', tone: 'success' },
+      ],
+    }),
+  },
+  C: {
+    ...createBlockTemplateWidget({
+      type: 'Span05x03Layout',
+      title: '5*3 AB 多槽位模板',
+      pattern: 'AAABB',
+      cols: 5,
+      rows: 3,
+      auxMode: '3/2',
+      summary: '导航二：5*3 分块按 3/2 拆成主槽和辅助槽。',
+      note: '3 组件区：A 槽放核心内容，B 槽放辅助判断或状态组件。',
+      slots: [
+        { id: 'A', label: '主内容', widthUnits: 3, role: 'primary', value: 'A', unit: '', delta: '3列', tone: 'primary' },
+        { id: 'B', label: '辅助', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'warning' },
+      ],
+    }),
+  },
+  D: {
+    ...createBlockTemplateWidget({
+      type: 'Span07x03Layout',
+      title: '7*3 AB 多槽位模板',
+      pattern: 'AAABBBB',
+      cols: 7,
+      rows: 3,
+      auxMode: '3/4',
+      summary: '导航二：7*3 分块拆成 3 列摘要槽和 4 列分析槽。',
+      note: '3 组件区：A/B 不等宽，适合摘要加主图的组合。',
+      slots: [
+        { id: 'A', label: '摘要', widthUnits: 3, role: 'primary', value: 'A', unit: '', delta: '3列', tone: 'neutral' },
+        { id: 'B', label: '主图', widthUnits: 4, role: 'secondary', value: 'B', unit: '', delta: '4列', tone: 'primary' },
+      ],
+    }),
+  },
+  E: {
+    ...createBlockTemplateWidget({
+      type: 'Span03x02Layout',
+      title: '3*2 AB 多槽位模板',
+      pattern: 'AAB',
+      cols: 3,
+      rows: 2,
+      auxMode: '2/1',
+      summary: '导航二：3*2 紧凑块拆成一个主槽和一个窄辅助槽。',
+      note: '3 组件区：A 槽显示主要值，B 槽显示状态或趋势。',
+      slots: [
+        { id: 'A', label: '主值', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
+        { id: 'B', label: '状态', widthUnits: 1, role: 'secondary', value: 'B', unit: '', delta: '1列', tone: 'danger' },
+      ],
+    }),
+  },
+  F: {
+    ...createBlockTemplateWidget({
+      type: 'Span04x02Layout',
+      title: '4*2 AB 多槽位模板',
+      pattern: 'AABB',
+      cols: 4,
+      rows: 2,
+      auxMode: '2/2',
+      summary: '导航二：4*2 分块拆成两个等宽槽位，用于小型对比组件。',
+      note: '3 组件区：A/B 等宽并列，保持最小可读宽度。',
+      slots: [
+        { id: 'A', label: '当前', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
+        { id: 'B', label: '目标', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'warning' },
+      ],
+    }),
+  },
+  G: {
+    ...createBlockTemplateWidget({
+      type: 'Span05x02Layout',
+      title: '5*2 ABC 多槽位模板',
+      pattern: 'AABBC',
+      cols: 5,
+      rows: 2,
+      auxMode: '2/2/1',
+      summary: '导航二：5*2 分块拆成 A/B/C 三个槽位，适合小指标组。',
+      note: '3 组件区：A/B 为主对比槽，C 为状态槽。',
+      slots: [
+        { id: 'A', label: '指标A', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
+        { id: 'B', label: '指标B', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'success' },
+        { id: 'C', label: '状态', widthUnits: 1, role: 'supporting', value: 'C', unit: '', delta: '1列', tone: 'danger' },
+      ],
+    }),
+  },
+};
+
 const buildNavItem = (id: string, label: string, icon: NavItem['icon']): NavItem => ({
   id,
   label,
@@ -1219,13 +1443,18 @@ const buildRiskClosureNavItem = (label: string, icon: NavItem['icon']): NavItem 
 });
 
 export const businessReportNav: NavItem[] = [
-  buildNavItem('dashboard', '经营总览', 'Gauge'),
-  buildLaunchScenarioNavItem('新品上市', 'BarChart3'),
-  buildRiskClosureNavItem('经营预警闭环', 'Settings'),
-  buildComponentContentAreaNavItem('组件内容区', 'Gauge'),
-  buildNavItem('revenue', '收入分析', 'BarChart3'),
-  buildNavItem('profit', '利润分析', 'Factory'),
-  buildNavItem('channel', '渠道客户', 'Network'),
-  buildNavItem('risk', '风险预警', 'Settings'),
-  buildMultiSlotNavItem('multi-slot-12x4', '分块模板', 'Gauge'),
+  {
+    id: 'nav-one',
+    label: '导航一',
+    icon: 'Gauge',
+    layoutRows: multiSlotTemplateLayoutRows,
+    widgets: singleSlotTemplateWidgets,
+  },
+  {
+    id: 'nav-two',
+    label: '导航二',
+    icon: 'Network',
+    layoutRows: multiSlotTemplateLayoutRows,
+    widgets: multiSlotSizeTemplateWidgets,
+  },
 ];

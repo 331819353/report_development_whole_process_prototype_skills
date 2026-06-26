@@ -32,12 +32,12 @@ Use this order for report implementation:
 3. Based on the 页面布局配置, select the independent 分块布局模板 Vue file for each block.
 4. Configure `1-1 titleArea`: title and title style.
 5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise record it as not configured.
-6. Configure `2-1 auxMetricArea`: add suitable additional information and distribute items evenly.
+6. Decide whether `2-1 auxMetricArea` is needed; configure additional information and distribute items evenly when needed, otherwise record it as not configured.
 7. Decide whether `2-2 unitArea` is needed; configure unit text when needed, otherwise record it as not configured.
 8. Based on the selected 分块布局模板 slot configuration, choose suitable 组件内容区模板 for `3 componentArea`; when no suitable template exists, self-develop a new ECharts-backed standalone Vue component content area template.
-9. Configure `4 summaryArea`: add suitable conclusion, note, or explanation when needed, otherwise record it as not configured.
+9. Configure `4 summaryArea`: when no conclusion card/component exists, add text-only/narrative conclusion, note, caveat, or explanation when needed. When a conclusion card/component exists, record `summaryAreaConfig: null` or use `4 summaryArea` only for non-conclusion content such as scope, source, caveat, definition, or action note.
 
-Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name the independent block layout Vue file for every selectable block.
+Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name the independent block layout Vue file for every selectable block and record SingleSlot/MultiSlot rationale. Only `1-1 titleArea` and `3 componentArea` are always required; optional supporting areas can be omitted or marked not configured when not needed.
 
 ### Standard Block Layout Template Areas
 
@@ -50,7 +50,9 @@ All future 分块布局模板填充 must use these areas:
 | `2-1` | `auxMetricArea` | 附加信息区 | Left aligned | Supporting metrics, excluding the unit slot. |
 | `2-2` | `unitArea` | 单位区 | Right aligned | Unit label/value rendered after supporting metrics. |
 | `3` | `componentArea` | 组件区 | Fill | Component slots declared by the selected 分块布局模板; each slot may receive only a 组件内容区模板. |
-| `4` | `summaryArea` | 说明区 | Left aligned | Explanation, conclusion, or summary copy owned by the block template. |
+| `4` | `summaryArea` | 说明区 | Left aligned | Optional text-only/narrative conclusion only when no conclusion card/component exists; otherwise `null` or non-conclusion scope/source/caveat/definition/action note. |
+
+Before choosing SingleSlot or MultiSlot, analyze the requirement's conclusion count, evidence relationship, comparison needs, and density. Use SingleSlot for one dominant conclusion card/component. Use MultiSlot only when multiple simultaneous component slots are necessary; when used, the first slot should carry the conclusion card or primary conclusion component whenever componentized conclusions are needed. Text-only/narrative conclusions remain in `4 summaryArea` only when no conclusion card/component exists in the same block.
 
 All template families use the same conceptual layers:
 

@@ -56,12 +56,12 @@ Use `template-operation-flow.md` as the authoritative no-break handoff contract.
 3. Based on the 页面布局配置, select the independent 分块布局模板 Vue file for each block.
 4. Configure the 分块布局模板 `1-1 titleArea`: title and title style.
 5. Decide whether `1-2 pillArea` is needed; configure it when needed, otherwise record `pillAreaConfig: null`.
-6. Configure `2-1 auxMetricArea`: add suitable additional information and distribute items evenly.
+6. Decide whether `2-1 auxMetricArea` is needed; configure additional information and distribute items evenly when needed, otherwise record `auxMetricAreaConfig: null`.
 7. Decide whether `2-2 unitArea` is needed; configure it when needed, otherwise record `unitAreaConfig: null`.
 8. Based on the selected 分块布局模板 slot configuration, choose suitable 组件内容区模板 for `3 componentArea`; if no suitable component content area template exists, self-develop a new standalone Vue component content area template with ECharts for chart needs.
-9. Configure `4 summaryArea`: add suitable conclusion, note, or explanation when needed, otherwise record `summaryAreaConfig: null`.
+9. Configure `4 summaryArea`: when no conclusion card/component exists, add text-only/narrative conclusion, note, caveat, or explanation when needed. When a conclusion card/component exists, record `summaryAreaConfig: null` or use `4 summaryArea` only for non-conclusion content such as scope, source, caveat, definition, or action note. For MultiSlot blocks, place conclusion cards or primary conclusion components in the first component slot when componentized conclusions are needed.
 
-Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` records the selected independent block layout Vue file for every block. When a component slot needs custom chart work, create `echartsSelfDevelopedTemplateMap` entries and register/copy those standalone Vue files before treating the slots as filled.
+Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` records the selected independent block layout Vue file and SingleSlot/MultiSlot rationale for every block. Only `1-1 titleArea` and `3 componentArea` are always required; `1-2`, `2-1`, `2-2`, and `4` are optional and can be `null`. When a component slot needs custom chart work, create `echartsSelfDevelopedTemplateMap` entries and register/copy those standalone Vue files before treating the slots as filled.
 
 ## Edit Boundaries
 

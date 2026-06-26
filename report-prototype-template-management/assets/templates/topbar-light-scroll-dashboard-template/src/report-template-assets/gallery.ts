@@ -7,9 +7,14 @@ import {
 import {
   blockLayoutTemplateLibraryNavId,
   getBlockLayoutTemplateGallerySections,
+  legacyBlockLayoutTemplateLibraryNavId,
 } from './libraries/generic-templates';
 
-const templateGalleryNavIds = new Set([componentContentAreaTemplateLibraryNavId, blockLayoutTemplateLibraryNavId]);
+const templateGalleryNavIds = new Set([
+  componentContentAreaTemplateLibraryNavId,
+  blockLayoutTemplateLibraryNavId,
+  legacyBlockLayoutTemplateLibraryNavId,
+]);
 
 export const isTemplateAssetGalleryNav = (navId: string) => templateGalleryNavIds.has(navId);
 
@@ -18,7 +23,7 @@ export const getTemplateGallerySections = (config: DashboardConfig, navId: strin
     return getComponentContentAreaTemplateGallerySections(config);
   }
 
-  if (navId === blockLayoutTemplateLibraryNavId) {
+  if (navId === blockLayoutTemplateLibraryNavId || navId === legacyBlockLayoutTemplateLibraryNavId) {
     return getBlockLayoutTemplateGallerySections(config);
   }
 
