@@ -8,8 +8,8 @@ Use this file when a report prototype is implemented with bundled template asset
 | --- | --- | --- |
 | 框架模板 | Page shell, runtime stack, navigation, global filters, toolbar, theme, and template project structure. | `frameworkTemplateId`, template reason, preserved shell slots, stack contract. |
 | 页面布局配置 | Page-level `12 * N` grid, `layoutRows`, stable block ids, nav/page widget wiring, first-viewport and scroll behavior. | `pageLayoutConfig`, `layoutRows`, block id map, block span map, nav/page content plan. |
-| 分块布局模板 | One parent block's size plus standard areas and component slots. Every selectable template resolves to an independent Vue entry file that may reuse a shared base renderer. | `blockLayoutTemplateMap`, selected block layout Vue file, `componentRegionPattern`, `componentSlotContracts`, supporting-area config. |
-| 组件内容区模板 | The implemented component internal content area only, preferably an independent Vue file that can be copied or mounted. | `componentContentAreaTemplateMap`, selected Vue file or `componentContentAreaTemplateId`, slot props/data contract. |
+| 分块布局模板 | One parent block's size plus standard areas and component slots. Every selectable template resolves to an independent Vue entry file that may reuse a shared base renderer. `componentRegionPattern` is only an internal/compatibility descriptor derived from the selected template, not the selectable template itself. | `blockLayoutTemplateMap`, selected block layout Vue file, `componentSlotContracts`, supporting-area config, optional derived `componentRegionPattern`. |
+| 组件内容区模板 | The implemented component internal content area only. Every reusable template must resolve to a standalone Vue file that can be copied or mounted; registered ids must map back to that file. | `componentContentAreaTemplateMap`, selected standalone Vue file and `componentContentAreaTemplateId`, slot props/data contract. |
 
 ## Nine-Step Implementation Sequence
 
@@ -36,8 +36,9 @@ Use this file when a report prototype is implemented with bundled template asset
    - If a unit is needed, configure unit text/style on the 分块布局模板.
    - If not needed, record `unitAreaConfig: null`.
 8. Fill `3 componentArea` slots from 组件内容区模板.
-   - Prefer an existing standalone Vue component content area template.
+   - Select an existing standalone Vue component content area template first.
    - If no suitable template fits, self-develop a new standalone Vue component content area template. Use ECharts for standard chart needs.
+   - The component content area may render only the optional removable title strip and the component body. Do not add local filters, extra controls, additional information, unit labels, summary, explanation, or description bands.
    - Output `componentContentAreaTemplateMap` and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
 9. Decide and configure `4 summaryArea`.
    - If a conclusion, note, or explanation is needed, configure it on the 分块布局模板.
@@ -58,24 +59,25 @@ Do not skip from page layout directly to ad hoc chart/table markup. Do not treat
 
 ## Slot-Fill Rules
 
-- `componentSlots` under `3 componentArea` may carry only the selected component content area's Vue file, component id, props, data binding, renderer contract, and interaction contract.
+- `componentSlots` under `3 componentArea` may carry only the selected component content area's standalone Vue file, mapped component id, props, data binding, renderer contract, and interaction contract.
 - Do not put `titleArea`, `pillArea`, `auxMetricArea`, `unitArea`, or `summaryArea` content inside a component slot.
 - KPI 卡内部的组件内容区模板 only covers the KPI card internal component area. KPI additional information and explanation areas stay on the 分块布局模板.
 - Component content area templates render as rounded rectangles without border lines.
 - A component content area template may reserve a removable `20px` top title strip. The title text is horizontally centered with `3px` top padding.
 - If the parent 分块布局模板 has only one `3 componentArea` slot, the component content area title strip must be hidden.
+- Component content area templates do not own filters, pill switches, additional metrics, unit labels, summary text, explanation text, or description/help bands. Put those in the 分块布局模板 areas or in shell/page configuration.
 - A self-developed ECharts fallback is not an exception to the template flow. It must become a standalone component content area template before the slot is considered filled.
 
 ## Required Implementation Evidence
 
 - `frameworkTemplateId` and shell preservation proof.
 - `pageLayoutConfig` with `layoutRows`, block ids, block spans, nav/page wiring, and first-viewport plan.
-- `blockLayoutTemplateMap` with one entry per block id, including selected independent block layout Vue file, selected standard areas, and supporting-area config.
+- `blockLayoutTemplateMap` with one entry per block id, including selected independent block layout Vue file, selected standard areas, component slot contracts, and supporting-area config. `componentRegionPattern` may be recorded only as a derived compatibility descriptor.
 - `titleAreaConfig` for every block.
 - `pillAreaConfig` for every block, or explicit `null` when pill buttons are not needed.
 - `auxMetricAreaConfig` with evenly distributed additional information.
 - `unitAreaConfig` for every block, or explicit `null` when no unit is needed.
-- `componentContentAreaTemplateMap` with one entry per `componentArea` slot, including selected template file/id, copied or mounted path, props, data source, and state coverage.
+- `componentContentAreaTemplateMap` with one entry per `componentArea` slot, including selected standalone Vue template file/id, copied or mounted path, props, data source, and state coverage.
 - Component content area title-strip decision for every slot: title text or hidden, removable flag, single-slot hide proof, rounded root, and no border line.
 - `echartsSelfDevelopedTemplateMap` for every custom fallback, including renderer, chart option ownership, lifecycle proof, and registration/copy path.
 - `summaryAreaConfig` for every block, or explicit `null` when no conclusion/note/explanation is needed.
@@ -88,7 +90,7 @@ The prototype is not ready when any of these are true:
 - `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `auxMetricAreaConfig`, or `componentContentAreaTemplateMap` is missing.
 - Optional `pillAreaConfig`, `unitAreaConfig`, or `summaryAreaConfig` is neither configured nor explicitly marked `null`.
 - A selectable block layout is encoded only as generic `SpanCCxRRLayout.vue` plus `componentRegionPattern`, without a named independent block layout Vue file.
-- A component slot contains block title, pill, additional information, unit, summary, or explanation content.
+- A component slot contains block title, pill, additional information, unit, summary, explanation, description/help content, or any local filter/control surface beyond the optional removable title strip.
 - A custom ECharts chart is implemented directly inside a block without first becoming a standalone component content area template.
 - A 分块布局模板 component slot is filled before steps 4-7 are configured or explicitly marked not needed.
 - A nav template is selected without a substantial content plan for every retained nav page.

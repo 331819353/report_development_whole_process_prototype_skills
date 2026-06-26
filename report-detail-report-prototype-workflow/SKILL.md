@@ -60,7 +60,7 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 14. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 15. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, table/search/filter/detail block spans, first-viewport query path, and nav/page wiring.
 16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every query/table/detail/action block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
-17. For every `3 componentArea` slot, choose an existing 组件内容区模板 first. If no suitable table/list/detail template fits, create a standalone component content area template and register/copy it before slot fill. Do not put title, pills, additional information, units, trust copy, or summary text inside the component slot.
+17. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable table/list/detail template fits, create a standalone Vue component content area template and register/copy it before slot fill. Do not put title, pills, filters, controls, additional information, units, trust copy, description/help text, or summary text inside the component slot.
 18. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
 
 ## Required Output
@@ -90,5 +90,5 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 - Do not miss export scope, row limit, permission, masking, or audit rules.
 - Do not claim readiness without row grain, primary key, default sort, pagination, and exact filter binding.
 - Do not ignore empty, timeout, no-permission, over-limit, and export-failure states.
-- Do not put block template title, pills, additional information, units, trust copy, or summary/explanation content inside table/detail component content slots.
+- Do not put block template title, pills, filters, controls, additional information, units, trust copy, description/help text, or summary/explanation content inside table/detail component content slots.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or table/filter/export claims lack field-level evidence and non-default-state checks.

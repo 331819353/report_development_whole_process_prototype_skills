@@ -2,6 +2,8 @@
 
 This file was split from `12-internal-placement-algorithms.md`. Load it only when the matching component family is present.
 
+Template boundary: local-control placement rules in this file apply only to ordinary non-slot business widgets. A 组件内容区模板 mounted inside a 分块布局模板 `3 componentArea` slot may expose only the optional removable title strip plus body content; do not place filters, controls, additional information, units, descriptions, or summaries inside that slot.
+
 ## Required Placement Chapter
 
 Every reusable report component should include a chapter named `Positioning And Alignment Rules` or `位置排布与对齐规则`.

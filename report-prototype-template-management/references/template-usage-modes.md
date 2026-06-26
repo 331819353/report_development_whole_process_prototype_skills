@@ -50,12 +50,12 @@ Required changes:
 - Register business widgets in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 - Implement visual components under `src/widgets/components/`.
 - Bind widgets through `widget.data.id` and either `widget.data.params.key` for JSON mode or `widget.data.api` for standard API mode.
-- Bind component-local filters through `localFilters[].field`, `valueField`, and `labelField`; these filters run only on the component's already loaded data. Visible titles, local filter controls, and detail links are rendered by the component using the context values and setters supplied by the shell. `localFilters[]` must not replace template `filters[]`, page/global scope, permission scope, backend aggregation, pagination, export scope, or other widgets.
+- Bind component-local filters through `localFilters[].field`, `valueField`, and `labelField` only for ordinary non-slot business widgets; these filters run only on the component's already loaded data. Visible titles, local filter controls, and detail links are rendered by non-slot widgets using the context values and setters supplied by the shell. `localFilters[]` must not replace template `filters[]`, page/global scope, permission scope, backend aggregation, pagination, export scope, or other widgets, and must not be rendered inside 组件内容区模板 slot fills.
 - Before binding global/page filters, prove data completeness: options, business/API rows, required fields, default and non-default states, empty/no-permission states, and resolver/API branches exist for every affecting filter.
 - Bind global/page filters that affect widgets through `widget.data.filterFields`, `requiredFilters`, API query/body params, or resolver params. Do not put an affecting filter in `ignoredFilters`.
 - Configure `actions` only as event forwarding or integration hooks; component-level popup, navigation, drilldown, and detail behavior stays inside the component.
 - Add, remove, or relabel navigation/filter items through the template's existing `nav`/`page` and `filters` arrays. Do not create a new standalone sidebar, top navigation, filter bar, or filter drawer unless the task is explicitly a template-level redesign.
-- Treat "筛选工具栏", "主筛选栏", and "filter bar" wording as a filter contract request, not a visual-surface request. Implement it through `filters[]`, native template filter invocation, component-owned local filters, and filter-to-widget binding.
+- Treat "筛选工具栏", "主筛选栏", and "filter bar" wording as a filter contract request, not a visual-surface request. Implement it through `filters[]`, native template filter invocation, non-slot component-owned local filters, `1-2 pillArea`, and filter-to-widget binding; never place those controls inside 组件内容区模板 slot fills.
 - When `screen.defaultTheme` is `dark`, the logo variant, grid/card surfaces, Element Plus controls, and component scoped backgrounds must follow the same dark token system as the shell; do not leave default white cards, `ElSelect`/`ElInput`/date-picker surfaces, or popovers in a dark page.
 
 Data options:
@@ -85,10 +85,10 @@ Use when:
 
 Implementation rules:
 
-- Preserve the selected template's shell and block contract: logo slot, shell title/control area, navigation model, filter mechanism, `12 * N` grid, widget viewport, component-owned title/control/local filter tools, and action hook boundary.
+- Preserve the selected template's shell and block contract: logo slot, shell title/control area, navigation model, filter mechanism, `12 * N` grid, widget viewport, 分块布局模板 supporting areas, 组件内容区模板 optional removable title plus body boundary, non-slot component-owned title/control/local filter tools, and action hook boundary.
 - Use the built-in `apiData` / `httpData` config for ordinary REST/BFF endpoints; templates use a shared axios instance with request/response interceptors under this data-source boundary. Move complex provider calls into `src/dataSources/registry.ts` or the existing project's equivalent service layer; do not scatter axios or legacy fetch calls inside widgets.
 - Keep adapters at the data-source boundary so widgets receive stable rows/props.
-- Global/page-level filters must be passed through `api.query`, `api.body`, or the provider resolver before shaping component data. Component-title `localFilters` may filter only the already fetched component dataset.
+- Global/page-level filters must be passed through `api.query`, `api.body`, or the provider resolver before shaping component data. Non-slot component-title `localFilters` may filter only the already fetched component dataset; 组件内容区模板 slot fills may not render local filters or control strips.
 - API response fields may be mapped through an adapter or `filterFields`; do not rename fields randomly across config, data, and component props.
 - Component popup, jump, drilldown, and deep interaction logic is implemented inside the component or the hosting product module. The global `actions/registry.ts` remains a hook surface for external event observation or shell-level utilities.
 - Keep `demo/config-templates.ts` as copyable reference code, not as production data.
@@ -101,5 +101,5 @@ Production handoff should document:
 - filter-to-provider input mapping;
 - filter-to-widget response proof, including non-default filter states that change visible data;
 - response adapter mapping to widget rows;
-- component-level local filters and interactions;
+- non-slot component-level local filters and interactions;
 - build/runtime verification evidence and remaining blockers.

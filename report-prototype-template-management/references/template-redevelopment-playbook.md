@@ -23,7 +23,7 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
    - Let `layoutRows` grow when the report needs more content; do not cap the report at one viewport.
    - Output `pageLayoutConfig` with block ids, spans, nav/page wiring, and first-viewport plan.
 3. Based on 页面布局配置, choose 分块布局模板 for each page block:
-   - A 分块布局模板 includes the block size plus its `componentRegionPattern` / `componentSlotContracts`.
+   - A 分块布局模板 includes the block size plus its standard areas and `componentSlotContracts`; `componentRegionPattern` is only a derived compatibility descriptor.
    - Choose an independent block layout Vue entry file such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
    - Output `blockLayoutTemplateMap` with one entry per block id.
 4. Configure the 分块布局模板 `1-1 titleArea`:
@@ -41,9 +41,9 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
    - If not needed, record `unitAreaConfig: null`.
 8. Based on 分块布局模板槽位配置, choose 组件内容区模板:
    - `componentSlots` under `3 componentArea` carries only the selected component's internal content area.
-   - Mount or copy the selected component content area Vue file, or point to `componentContentAreaTemplateId`.
+   - Mount or copy the selected standalone component content area Vue file, or point to a `componentContentAreaTemplateId` that maps to that file.
    - If no existing component content area template fits the slot and business intent, self-develop a new standalone Vue component content area template with ECharts for chart needs.
-   - Do not attach additional information, unit slot, title pills, or summary copy to a component slot.
+   - Do not attach filters, controls, additional information, unit slot, title pills, description/help text, or summary copy to a component slot. The component content area may have only the optional removable title strip plus body content.
    - Output `componentContentAreaTemplateMap`; output `echartsSelfDevelopedTemplateMap` for newly created fallback templates.
 9. Configure `4 summaryArea`:
    - Add suitable conclusion, note, or explanation when needed.

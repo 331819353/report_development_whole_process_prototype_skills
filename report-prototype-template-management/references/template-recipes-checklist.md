@@ -41,9 +41,10 @@ Use this file for common adjustments and final verification after changing a tem
 5. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
 6. For every `3 componentArea` slot, select an existing 组件内容区模板 first.
 7. If no suitable component content area template exists, create a standalone Vue component content area template, use ECharts for standard chart needs, register/copy it, and record it in `echartsSelfDevelopedTemplateMap` or the equivalent fallback map.
-8. For every selected 组件内容区模板, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for multi-slot disambiguation; hide it when the parent 分块布局模板 has one slot or when `showContentTitle: false`.
-9. Configure `4 summaryArea` with suitable conclusion, note, or explanation when needed; otherwise record it as not configured.
-10. Do not treat a slot as filled until it points to a component content area Vue file/component id plus props/data/state contract.
+8. For every selected 组件内容区模板, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块布局模板 has one slot or when `showContentTitle: false`.
+9. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件内容区模板 slots. Those belong to 分块布局模板 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
+10. Configure `4 summaryArea` with suitable conclusion, note, or explanation when needed; otherwise record it as not configured.
+11. Do not treat a slot as filled until it points to a standalone component content area Vue file/component id plus props/data/state contract.
 
 ### Add A Data-Bound Widget
 
@@ -88,13 +89,13 @@ Use this file for common adjustments and final verification after changing a tem
 
 - Template choice matches report scope and usage scenario.
 - Nine-step template operation chain is complete: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and fallback map when custom component content area templates were created.
-- Component slots under `3 componentArea` contain only 组件内容区模板 content. Title, pills, additional information, units, and summaries stay in 分块布局模板 supporting areas.
-- Component content area templates are rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
+- Component slots under `3 componentArea` contain only 组件内容区模板 content. Title, pills, filters, controls, additional information, units, descriptions, explanations, and summaries stay in 分块布局模板 supporting areas, shell/page config, or non-slot widgets.
+- Component content area templates are standalone Vue files, rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
 - Stack contract is intact: `package.json` keeps Vue 3, TypeScript, Vite, Element Plus, ECharts, axios, and build/typecheck scripts; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus with locale, imports Element Plus base and dark CSS variables, and preserves project Element token styles.
 - Standard chart widgets use real ECharts runtime/options/series; ordinary controls and row tables use Element Plus/project control patterns; S2 is added only when pivot/cross/wide analytical table behavior is implemented.
 - Logo variant matches background.
 - `dashboard.config.ts` owns layout, filters, widgets, actions, and assets.
-- Each component-owned title/control area follows a stable structure chosen by the component: title remains readable; component-local filters use capsule/dropdown/panel rules by option count and fit; lightweight links cover detail actions.
+- Component content area templates expose only the optional removable title strip plus body content. Component-local filters, filter panels, and detail links are allowed only in non-slot business widgets with explicit ownership.
 - Business data is not stored directly in config.
 - Standard API endpoints are configured with `apiData` / `httpData`; custom resolvers are reserved for complex providers.
 - Every widget has `visualType`.

@@ -7,7 +7,7 @@ Terminology used by the report development flow:
 - 框架模板: the page shell, such as left navigation, filter entry, toolbar, theme, and runtime stack.
 - 页面布局配置: the page-level `layoutRows` and `widgets` wiring.
 - 分块布局模板: one reusable block template with size plus slots, packaged as an independent Vue entry file when it is selectable, such as `Span04x03SingleSlotLayout.vue`, `Span04x03DoubleSlotLayout.vue`, or `Span06x03TripleSlotLayout.vue`. Every template uses `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
-- 组件内容区模板: the implemented component's internal content area only. It fills slots inside `3 componentArea` by copying or mounting an independent Vue file, not additional information or explanatory copy.
+- 组件内容区模板: the implemented component's internal content area only. It fills slots inside `3 componentArea` by copying or mounting an independent Vue file, not filters, controls, additional information, units, title pills, descriptions, explanations, or summary copy.
 
 This library covers every legal rectangle span under the current layout contract:
 
@@ -18,13 +18,13 @@ This library covers every legal rectangle span under the current layout contract
 - Size files: 56 base wrappers named `SpanCCxRRLayout.vue`, from `Span02x02Layout.vue` to `Span12x08Layout.vue`
 - Selectable slot-template files: independent wrappers named by size plus slot mode, such as `Span04x03SingleSlotLayout.vue`, `Span04x03DoubleSlotLayout.vue`, `Span04x03CompactTripleSlotLayout.vue`, `Span06x03SingleSlotLayout.vue`, `Span06x03DoubleSlotLayout.vue`, and `Span06x03TripleSlotLayout.vue`
 
-These files are block layout templates, not component-category templates. Size files declare only a layout size; selectable slot-template files declare both layout size and `componentRegionPattern`. Both delegate to `BaseLayoutSpan.vue` for the shared block rendering. The report-development block areas are:
+These files are block layout templates, not component-category templates. Size files declare only a layout size; selectable slot-template files declare layout size plus component slot contracts. `componentRegionPattern` is only a derived compatibility descriptor. Both delegate to `BaseLayoutSpan.vue` for the shared block rendering. The report-development block areas are:
 
 - `1-1 titleArea`: 标题区, left aligned
 - `1-2 pillArea`: 胶囊按钮区, right aligned
 - `2-1 auxMetricArea`: 附加信息区, left aligned
 - `2-2 unitArea`: 单位区, right aligned
-- `3 componentArea`: 组件区, filled by `componentRegionPattern` / `componentSlots`
+- `3 componentArea`: 组件区, filled by `componentSlotContracts` / `componentSlots`; optional `componentRegionPattern` is derived for compatibility
 - `4 summaryArea`: 说明区, left aligned
 
 Grid sizing formula for this template:
@@ -62,7 +62,7 @@ Usage flow:
 5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise leave it unconfigured.
 6. Configure `2-1 auxMetricArea` with suitable additional information and even distribution.
 7. Decide whether `2-2 unitArea` is needed; configure unit text when needed, otherwise leave it unconfigured.
-8. Fill `componentSlots` inside `3 componentArea` only with component content area templates. Do not place additional information, units, title pills, or summaries inside `componentSlots`. If there is only one component slot, the component content area title strip must be hidden.
+8. Fill `componentSlots` inside `3 componentArea` only with standalone component content area templates. Do not place filters, controls, additional information, units, title pills, descriptions, explanations, or summaries inside `componentSlots`. If there is only one component slot, the component content area title strip must be hidden.
 9. Configure `4 summaryArea` with conclusion, note, or explanation when needed, otherwise leave it unconfigured.
 10. Register any new widget in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 11. Mount it in `src/config/dashboard.config.ts`.

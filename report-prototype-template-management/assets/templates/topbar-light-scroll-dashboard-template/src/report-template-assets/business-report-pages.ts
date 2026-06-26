@@ -1085,7 +1085,7 @@ const multiSlotTemplateWidgets: WidgetMap = {
         { label: '1 框架模板', value: '先定运行壳层' },
         { label: '2-3 布局/分块', value: '页面布局 -> 分块模板' },
         { label: '4-7 支撑区域', value: '标题/胶囊/附加/单位' },
-        { label: '8-9 组件/说明', value: '组件模板 -> 说明区', tone: 'primary' },
+        { label: '8-9 组件/说明', value: '组件内容区模板 -> 说明区', tone: 'primary' },
       ],
       displayBudget: {
         rowHeightPx: 28,
