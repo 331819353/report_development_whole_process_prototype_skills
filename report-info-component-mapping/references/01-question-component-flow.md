@@ -172,6 +172,8 @@ Rules:
 - Detail records verify the issue and support export, drawer, or source-system jump.
 - Action/source routes close the loop; otherwise the report may explain but not help the user act.
 
+For KPI dashboards, operating dashboards, cockpits, or metric-heavy reports, turn this relationship network into `metricDrilldownContract` using `10-metric-drilldown-contract.md`. The contract must name the root metric, result/diagnosis/process/action layers, trigger events, payload fields, context inheritance, state rules, and validation cases. Do not render the contract itself as a visible block; expose it through KPI clicks, cross-filters, breadcrumbs, drawers, detail tables, export, source jumps, or action routes.
+
 ## Component Selection Constraints
 
 - A component is valid only when it answers a named business question.

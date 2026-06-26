@@ -328,7 +328,7 @@ const getPercentStyle = (percent?: number) => ({
 .layout-span-header,
 .layout-span-footer {
   display: flex;
-  gap: 10px;
+  gap: clamp(4px, 1.2cqw, 10px);
   align-items: center;
   justify-content: space-between;
   min-width: 0;
@@ -337,14 +337,14 @@ const getPercentStyle = (percent?: number) => ({
 .layout-span-title-group {
   display: grid;
   min-width: 0;
-  gap: 2px;
+  gap: clamp(1px, 0.6cqh, 2px);
 }
 
 .layout-span-title-group span,
 .layout-span-footer span {
   overflow: hidden;
   color: var(--muted, #667085);
-  font-size: 11px;
+  font-size: clamp(8px, min(2.8cqw, 4cqh), 11px);
   font-weight: 800;
   line-height: 1.1;
   text-overflow: ellipsis;
@@ -355,7 +355,7 @@ const getPercentStyle = (percent?: number) => ({
 .layout-span-title-group strong {
   overflow: hidden;
   color: var(--text-strong, #101828);
-  font-size: 14px;
+  font-size: clamp(10px, min(3.6cqw, 5cqh), 14px);
   font-weight: 750;
   line-height: 1.2;
   text-overflow: ellipsis;
@@ -366,7 +366,7 @@ const getPercentStyle = (percent?: number) => ({
 .layout-span-footer em {
   overflow: hidden;
   color: var(--muted, #667085);
-  font-size: 11px;
+  font-size: clamp(8px, min(2.8cqw, 4cqh), 11px);
   font-style: normal;
   font-variant-numeric: tabular-nums;
   text-align: right;
@@ -377,7 +377,7 @@ const getPercentStyle = (percent?: number) => ({
 .layout-span-body {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
+  gap: clamp(4px, min(1.4cqw, 2.4cqh), 10px);
   min-width: 0;
   min-height: 0;
   overflow: hidden;
@@ -413,15 +413,15 @@ const getPercentStyle = (percent?: number) => ({
 .layout-span-secondary {
   display: grid;
   align-content: start;
-  gap: 6px;
-  padding: 10px;
+  gap: clamp(3px, 1.6cqh, 6px);
+  padding: clamp(4px, min(1.8cqw, 3cqh), 10px);
   background: rgba(0, 74, 198, 0.06);
   color: var(--muted, #667085);
 }
 
 .layout-span-secondary strong {
   color: var(--text-strong, #101828);
-  font-size: 14px;
+  font-size: clamp(10px, min(3.4cqw, 5cqh), 14px);
 }
 
 .layout-placeholder {
@@ -429,8 +429,8 @@ const getPercentStyle = (percent?: number) => ({
   min-width: 0;
   min-height: 0;
   place-items: center;
-  gap: 6px;
-  padding: 10px;
+  gap: clamp(3px, 1.8cqh, 6px);
+  padding: clamp(4px, min(1.8cqw, 3cqh), 10px);
   border: 1px dashed rgba(0, 74, 198, 0.38);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.12);
@@ -446,19 +446,19 @@ const getPercentStyle = (percent?: number) => ({
 
 .layout-placeholder strong {
   color: var(--text-strong, #101828);
-  font-size: 13px;
+  font-size: clamp(9px, min(3.2cqw, 5cqh), 13px);
   white-space: nowrap;
 }
 
 .layout-placeholder span {
   color: var(--muted, #667085);
-  font-size: 12px;
+  font-size: clamp(8px, min(3cqw, 4.5cqh), 12px);
 }
 
 .layout-zone-pattern {
   display: grid;
   grid-template-columns: repeat(var(--layout-region-column-count, 2), minmax(0, 1fr));
-  gap: 3px;
+  gap: clamp(1px, 0.8cqw, 3px);
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -467,6 +467,7 @@ const getPercentStyle = (percent?: number) => ({
 }
 
 .layout-zone-cell {
+  container-type: size;
   display: grid;
   place-items: center;
   min-width: 0;
@@ -489,7 +490,7 @@ const getPercentStyle = (percent?: number) => ({
   max-width: 100%;
   overflow: hidden;
   color: var(--primary, #004ac6);
-  font-size: 11px;
+  font-size: clamp(8px, min(5cqw, 8cqh), 11px);
   font-weight: 750;
   line-height: 1.2;
   text-align: center;
@@ -506,8 +507,24 @@ const getPercentStyle = (percent?: number) => ({
 }
 
 .layout-slot-content {
+  container-type: size;
+  --layout-slot-title-height: clamp(14px, 14cqh, 20px);
+  --layout-slot-title-size: clamp(9px, min(6cqw, 9cqh), 12px);
+  --layout-slot-title-line: calc(var(--layout-slot-title-size) + 2px);
+  --layout-slot-eyebrow-size: clamp(8px, min(5cqw, 8cqh), 11px);
+  --layout-slot-heading-size: clamp(10px, min(8cqw, 13cqh), 15px);
+  --layout-slot-metric-size: clamp(18px, min(18cqw, 32cqh), 40px);
+  --layout-slot-chip-size: clamp(8px, min(5cqw, 8cqh), 12px);
+  --layout-slot-row-size: clamp(8px, min(4.8cqw, 8cqh), 11px);
+  --layout-slot-gap: clamp(2px, 3cqh, 8px);
+  --layout-slot-pad: clamp(3px, min(2cqw, 3cqh), 8px);
+  --layout-slot-row-gap: clamp(3px, min(2cqw, 3cqh), 7px);
+  --layout-slot-inline-gap: clamp(3px, 2cqw, 8px);
+  --layout-slot-label-width: clamp(28px, 24cqw, 42px);
+  --layout-slot-row-min-height: clamp(15px, 16cqh, 24px);
+  --layout-slot-track-height: clamp(4px, 4cqh, 7px);
   display: grid;
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 0;
   width: 100%;
   height: 100%;
@@ -520,19 +537,19 @@ const getPercentStyle = (percent?: number) => ({
 }
 
 .layout-slot-content.has-content-title {
-  grid-template-rows: 20px minmax(0, 1fr);
+  grid-template-rows: var(--layout-slot-title-height) minmax(0, 1fr);
 }
 
 .layout-slot-content-title {
   display: block;
-  height: 20px;
+  height: var(--layout-slot-title-height);
   min-width: 0;
   overflow: hidden;
-  padding: 3px 8px 0;
+  padding: clamp(1px, 1cqh, 3px) clamp(4px, 2cqw, 8px) 0;
   color: var(--text-strong, #101828);
-  font-size: 12px;
+  font-size: var(--layout-slot-title-size);
   font-weight: 750;
-  line-height: 14px;
+  line-height: var(--layout-slot-title-line);
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -540,14 +557,16 @@ const getPercentStyle = (percent?: number) => ({
 
 .layout-slot-content-header {
   display: grid;
-  gap: 2px;
+  align-content: end;
+  gap: clamp(1px, 1.6cqh, 2px);
   min-width: 0;
+  padding: 0 var(--layout-slot-pad);
 }
 
 .layout-slot-content-header span {
   overflow: hidden;
   color: var(--muted, #667085);
-  font-size: 11px;
+  font-size: var(--layout-slot-eyebrow-size);
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -556,7 +575,7 @@ const getPercentStyle = (percent?: number) => ({
 .layout-slot-content-header strong {
   overflow: hidden;
   color: var(--text-strong, #101828);
-  font-size: 15px;
+  font-size: var(--layout-slot-heading-size);
   font-weight: 800;
   line-height: 1.15;
   text-overflow: ellipsis;
@@ -566,18 +585,19 @@ const getPercentStyle = (percent?: number) => ({
 .layout-slot-metric {
   display: grid;
   align-content: center;
-  gap: 8px;
+  gap: var(--layout-slot-gap);
   min-width: 0;
   min-height: 0;
-  padding: 8px;
+  overflow: hidden;
+  padding: var(--layout-slot-pad);
 }
 
 .layout-slot-metric strong {
   overflow: hidden;
   color: var(--primary, #004ac6);
-  font-size: 40px;
+  font-size: var(--layout-slot-metric-size);
   font-weight: 850;
-  line-height: 0.95;
+  line-height: 1.25;
   letter-spacing: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -595,12 +615,12 @@ const getPercentStyle = (percent?: number) => ({
   width: fit-content;
   max-width: 100%;
   overflow: hidden;
-  padding: 3px 8px;
+  padding: clamp(2px, 1cqh, 3px) clamp(4px, 2cqw, 8px);
   border: 1px solid rgba(0, 87, 217, 0.14);
   border-radius: 999px;
   background: rgba(0, 87, 217, 0.08);
   color: var(--primary, #004ac6);
-  font-size: 12px;
+  font-size: var(--layout-slot-chip-size);
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -610,27 +630,28 @@ const getPercentStyle = (percent?: number) => ({
 .layout-slot-summary {
   display: grid;
   align-content: center;
-  gap: 7px;
+  gap: var(--layout-slot-row-gap);
   min-width: 0;
   min-height: 0;
-  padding: 8px;
+  overflow: hidden;
+  padding: var(--layout-slot-pad);
 }
 
 .layout-slot-bar-row,
 .layout-slot-summary-row {
   display: grid;
-  grid-template-columns: minmax(42px, 0.8fr) minmax(0, 1fr) auto;
-  gap: 6px;
+  grid-template-columns: minmax(var(--layout-slot-label-width), 0.8fr) minmax(0, 1fr) auto;
+  gap: var(--layout-slot-inline-gap);
   align-items: center;
   min-width: 0;
   color: var(--muted, #667085);
-  font-size: 11px;
+  font-size: var(--layout-slot-row-size);
 }
 
 .layout-slot-summary-row {
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 22px;
-  padding: 0 8px;
+  min-height: var(--layout-slot-row-min-height);
+  padding: 0 var(--layout-slot-pad);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.42);
 }
@@ -645,13 +666,13 @@ const getPercentStyle = (percent?: number) => ({
 .layout-slot-bar-row strong,
 .layout-slot-summary-row strong {
   color: var(--text-strong, #101828);
-  font-size: 11px;
+  font-size: var(--layout-slot-row-size);
   font-weight: 800;
   white-space: nowrap;
 }
 
 .layout-slot-bar-track {
-  height: 7px;
+  height: var(--layout-slot-track-height);
   overflow: hidden;
   border-radius: 999px;
   background: rgba(0, 87, 217, 0.1);
@@ -668,26 +689,27 @@ const getPercentStyle = (percent?: number) => ({
 .layout-slot-funnel {
   display: grid;
   align-content: center;
-  gap: 6px;
+  gap: var(--layout-slot-row-gap);
   min-width: 0;
   min-height: 0;
-  padding: 8px;
+  overflow: hidden;
+  padding: var(--layout-slot-pad);
 }
 
 .layout-slot-funnel-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
+  gap: var(--layout-slot-inline-gap);
   align-items: center;
   justify-self: center;
   width: max(42%, var(--slot-bar-percent, 70%));
   max-width: 100%;
-  min-height: 24px;
-  padding: 0 10px;
+  min-height: var(--layout-slot-row-min-height);
+  padding: 0 var(--layout-slot-pad);
   border-radius: 3px;
   background: linear-gradient(90deg, rgba(0, 103, 223, 0.94), rgba(99, 181, 255, 0.82));
   color: #fff;
-  font-size: 11px;
+  font-size: var(--layout-slot-row-size);
   font-weight: 800;
 }
 

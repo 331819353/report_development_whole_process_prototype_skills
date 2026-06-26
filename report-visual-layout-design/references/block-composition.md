@@ -175,7 +175,20 @@ Body:
 
 Use when the panel answers one small loop such as current result -> trend -> driver -> exception/detail. Keep default children at 2-3 and normal maximum at 4. If all children feel equally important, the block is not ready; choose a primary child or split the panel.
 
-### 4a. Micro Dashboard Card
+### 4a. KPI Drilldown Loop
+
+Header: one root metric or business status question, with shared period/filter/action context.
+
+Body:
+
+- Result area: root KPI judgment, target attainment, comparison, status, and freshness.
+- Diagnosis area: ranked/split dimension evidence that locates where the issue or opportunity sits.
+- Process area: driver, conversion, decomposition, bottleneck, or variance evidence that explains why the selected result/diagnosis item moved.
+- Action area: detail preview, alert list, owner/status, export, assignment, or source jump route.
+
+Use when a parent block needs to preserve a small `metricDrilldownContract` loop inside one business topic. The result area is visually primary; diagnosis and process evidence must be linked through selection context; action can be a compact preview or route when full detail would crowd the parent. If the process or action layer cannot meet minimum size, split the loop across adjacent blocks, tabs, drawer, or detail route instead of squeezing text or hiding evidence.
+
+### 4b. Micro Dashboard Card
 
 Header: one management topic plus shared period/filter/action.
 

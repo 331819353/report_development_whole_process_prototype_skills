@@ -11,9 +11,11 @@ Detailed mapping constraints moved out of `SKILL.md`. Load this for implementati
 - Every primary section must declare a section conclusion and its role in explaining the overall conclusion. Missing or unrelated section logic is `RPT-ORPHAN-SECTION` and stays `partial`.
 - Every primary component must declare `conclusionChain` with `overallConclusionId`, `supportingSectionId`, `sectionConclusionId`, role, and evidence verb. A component that cannot explain a section conclusion is `RPT-ORPHAN-COMPONENT` and must be moved to detail/interaction/handoff or removed.
 - Primary metrics must form a relationship network, not a flat list: result metric -> driver metric -> dimension/object -> detail record -> action/source. A flat KPI wall is `RPT-FLAT-METRIC-LIST` unless the page is explicitly a narrow status-monitoring cockpit with a documented scan task.
+- KPI dashboards and metric-heavy reports must turn the primary metric relationship network into `metricDrilldownContract`: root metric, result/diagnosis/process/action layers, triggers, payload fields, target route/component, context inheritance, state rules, and validation cases. Missing contract coverage is `RPT-MISSING-METRIC-DRILLDOWN` unless a scoped static exception is documented.
 - Every primary metric needs a comparison basis: target, prior period, same period last year, benchmark, historical range, threshold, or denominator/total for shares/rates. Missing comparison is `RPT-MISSING-COMPARISON` and the metric cannot be the primary judgment anchor.
 - Decision reports place judgment/evidence before dense detail. Detail-first layout is `RPT-DETAIL-FIRST` unless the report is explicitly detail-query, reconciliation-first, audit-first, or source-record lookup.
 - Every primary judgment should carry a next path: tooltip, drilldown, drawer, cross-filter, export, fullscreen, source jump, action route, or explicit presentation-only static exception. Missing next path for an action/diagnosis report is `RPT-NO-SO-WHAT`.
+- Visible drilldown-route lists, metric-drill trees, binding matrices, or implementation chains are `RPT-DRILLDOWN-LIST-VISIBLE` unless the user explicitly requested visible documentation. Expose drilldown through user actions, breadcrumbs, drawers, detail tables, jumps, exports, or action routes.
 - Visible report content must pass the business-value test: it helps the reader judge, understand evidence/reason, verify trust/source, or take action. Content that does not pass is `RPT-NO-BUSINESS-VALUE`.
 - Design-process artifacts are not visible report components by default. 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, pattern-card inventories, and implementation notes shown as result content are `RPT-PROCESS-ARTIFACT-VISIBLE` unless the user explicitly asked for visible documentation or the item is rewritten as conclusion/evidence/trust/action content.
 - Every primary metric-bearing component must have formula/denominator, grain, period, source/freshness, numeric display contract, baseline, and owner/action notes when the output is implementation-ready.
@@ -138,12 +140,13 @@ When this skill is used, produce at least:
 9. Mock/data model: datasets, grain, fields, formulas, numeric display contracts, signals, realistic messy cases, edge cases.
 10. Filter/query model: filter surface, filters, option sources, defaults, cascades, permissions, query params.
 11. Control semantics model: perspective switches, global filters, local filters, and drilldown params, including schema impact.
-12. Navigation metric lineage: source dataset, field/formula, grain, affected filters, and period behavior for navigation percentages, rankings, and status lights.
-13. Interaction model: clickable objects, interaction type, parameters, state preservation, failure states.
-14. Unified parent-block/sub-block/data/filter/control/component/interaction binding matrix, including `conclusionChain`, `analysisPerspective`, `sourcePatternIds`, and `styleGeneralization` when pattern cards or sample-derived styles are used.
-15. Report type routing.
-16. Layout and style constraints.
-17. Missing information, assumptions, and removed decorative components.
+12. Metric drilldown contract for KPI dashboards or primary metric networks: root metric, result/diagnosis/process/action layers, triggers, payload fields, context inheritance, state rules, validation cases, or scoped static exception.
+13. Navigation metric lineage: source dataset, field/formula, grain, affected filters, and period behavior for navigation percentages, rankings, and status lights.
+14. Interaction model: clickable objects, interaction type, parameters, state preservation, failure states.
+15. Unified parent-block/sub-block/data/filter/control/component/interaction binding matrix, including `conclusionChain`, `analysisPerspective`, `sourcePatternIds`, `metricDrilldownContract`, and `styleGeneralization` when pattern cards or sample-derived styles are used.
+16. Report type routing.
+17. Layout and style constraints.
+18. Missing information, assumptions, and removed decorative components.
 
 For implementation tasks, items 5-12 are mandatory. Item 2 is also mandatory when the upstream workflow selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
 
@@ -154,6 +157,7 @@ Before finalizing, verify:
 - Every key business concern maps to at least one visible block or interaction.
 - The five report decision questions can be answered or have named gaps.
 - The good-report decision path can be answered or has named `RPT-*` gaps: primary question, first judgment, What/Why/So what, comparison baseline, metric relationship network, detail evidence, and next action/drilldown.
+- KPI dashboards and metric-heavy reports include `metricDrilldownContract` coverage for primary metrics, with result -> diagnosis -> process -> action layers and validation cases, or a scoped static exception.
 - The conclusion explanation chain can be answered or has named `RPT-*` gaps: one overall conclusion, each supporting section has a section conclusion, and every primary component names the section conclusion it explains.
 - The component bundle includes a data story path appropriate to the report type: state -> target/baseline -> driver -> abnormality -> detail -> action.
 - Generic dashboard KPI/chart shells are removed or converted into metric-tree-backed components.

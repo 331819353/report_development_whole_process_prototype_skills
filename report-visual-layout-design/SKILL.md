@@ -32,6 +32,7 @@ For Haier/enterprise Web surfaces, including report/dashboard/BI/data-screen lay
 | Anti-squeeze row-group expansion, full-row vacancy reflow, and typography/component floors | `references/block-size-constraints-05-anti-squeeze-reflow.md` when a block is crowded, moved to full row, or needs height expansion |
 | Direct block-size front door | `$report-layout-size-constraint-spec` |
 | Parent block and internal sub-block composition | `references/block-composition.md` |
+| KPI dashboard metric drilldown loop placement | `$report-info-component-mapping` `references/10-metric-drilldown-contract.md` when laying out result -> diagnosis -> process -> action dashboards |
 | Block title/body chrome style selection | `references/block-chrome-style-patterns.md` |
 | Toolbar, drawer, modal, responsive interactions | `references/components-interactions.md` |
 | Output checklist | `references/output-checklist.md` |
@@ -55,7 +56,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 6. Choose shell structure: topbar, left-nav, unified header/control area, fixed cockpit, existing shell, or custom shell.
 7. Place navigation, page/global filters, toolbar actions, brand/logo, refresh/export/fullscreen/status controls, and template-native filter entry when applicable.
 8. Plan the first meaningful viewport and downstream reading path from the conclusion explanation chain: overall conclusion first, supporting sections next, each section conclusion before its evidence components.
-9. Declare the page rhythm: `information-flow report`, `KPI dashboard`, `detail/query report`, `analysis narrative`, or `cockpit/status monitor`. Default to information flow unless the central question is current-state monitoring. Use typography, spacing, section rhythm, and subtle dividers before uniform card borders; reserve KPI/card grids for justified status-overview needs.
+9. Declare the page rhythm: `information-flow report`, `KPI dashboard`, `detail/query report`, `analysis narrative`, or `cockpit/status monitor`. Default to information flow unless the central question is current-state monitoring. KPI dashboards must place the metric drilldown loop as result -> diagnosis -> process -> action, not only a KPI card grid. Use typography, spacing, section rhythm, and subtle dividers before uniform card borders; reserve KPI/card grids for justified status-overview needs.
 10. Lay out top-level parent blocks in legal spans on the content-area grid: 12 equal columns after menu/sidebar width is deducted, and rowHeight from 8 visible row units after menu/header height is deducted. Row count is `N` and is not capped by the grid rule. Then decide whether each block contains one component or composed internal sub-blocks.
 11. Before filling detailed body content, choose or explicitly inherit one `blockChromePattern` for each top-level parent block through `references/block-chrome-style-patterns.md`. The block title/body chrome is chosen from business role, density, evidence type, and template family, then the internal content is placed inside the reserved body viewport.
 12. When the layout feeds a template implementation, output `pageLayoutConfig` for `$report-prototype-template-management`: `layoutRows`, stable block ids, block spans, nav/page wiring, first-viewport plan, and the intended component-area count per block. Do not fill component slots here.
@@ -70,6 +71,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - First-viewport hierarchy and reading path.
 - Conclusion-chain layout proof: placement of `overallConclusion`, supporting sections, each `sectionConclusion`, evidence components, and any unresolved `RPT-NO-OVERALL-CONCLUSION` / `RPT-ORPHAN-SECTION` / `RPT-ORPHAN-COMPONENT` gaps.
 - Page rhythm decision: information-flow report vs KPI/dashboard grid, KPI scope boundary, and card-border reduction strategy.
+- KPI drilldown loop placement when applicable: result layer in first viewport, diagnosis layer, process/cause layer, detail/action layer, and any scoped gaps.
 - Header/navigation/filter/toolbar/brand structure.
 - Block chrome style matrix: `blockChromePattern`, selection reason, title-stage geometry, body background relation, density, decoration budget, overflow/fallback, and implementation proof hook for every styled parent block.
 - Modern BI page-language plan when requested: light page canvas, white-card block surfaces, no nested-card strategy, first-viewport hierarchy, component-count rationale, and chart-lightness layout implications.
@@ -97,6 +99,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not treat "dashboard" as the default visual answer. If the task is analysis, review, detail, or decision support, the layout must be an information flow with a visible sequence from conclusion/status to evidence, driver, detail/action, and trust/source.
 - A requested modern SaaS / BI Dashboard / UI Kit layout is not ready unless light page/card styling, clear information hierarchy, no component pileup, and lightweight chart allocation are proven or recorded as `VIS-*` findings.
 - Report pages must expose metric tree, diagnostic path, detail/action route, and trust/source/version placement or explicit scoped gaps.
+- KPI dashboard layouts are not ready if they stop at result KPIs and dimension splits. The layout must reserve readable placement for process/cause evidence and detail/action closure when the `metricDrilldownContract` requires them.
 - Template-native filter surfaces must be reused unless a template-level redesign is explicitly requested.
 - Fixed-height navigation/cards/KPI strips need padding, explicit line-height, gap, and DOM overflow checks at `1920x1080` using `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`, or a declared visible scroll/disclosure strategy.
 - Layout defaults such as block composition, first-level navigation density, and template filter reuse are not optional polish when they affect readability, clipping, or shell consistency. Treat them as `MUST/fail` unless an explicit business/template exception and proof are recorded.

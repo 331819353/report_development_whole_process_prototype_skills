@@ -12,6 +12,7 @@ The same business input should produce the same:
 - `analysisPerspective` and `secondaryAnalysisPerspectives` before answer atoms when the business request is phrased as "看现状/看目标/看趋势/看排名/看原因/看行动" or equivalent.
 - Answer atoms and component priorities.
 - Conclusion explanation chain IDs and order: `overallConclusionId`, `supportingSectionId`, `sectionConclusionId`, `conclusionChain.role`, and `conclusionChain.evidenceVerb`.
+- Metric drilldown contract IDs and order for primary metric networks: `metricDrilldownContractId`, `rootMetricId`, `drillLayer`, `triggerEvent`, `payloadFields`, `targetComponentOrRoute`, and `validationCases`.
 - Sample/source module roles when restoration input exists.
 - Component IDs, parent block IDs, sub-block IDs, dataset IDs, filter IDs, and action names.
 - `visualType`, control semantics, component schema impact, layout span category, row grain, and required fields.
@@ -142,6 +143,7 @@ Use these values unless the target project explicitly defines a different vocabu
 - `filterValueType`: `single`, `multiple`, `range`, `keyword`, `date`, `treePath`, `enum`, `toggle`, `mixed`.
 - `filterControlPattern`: `single-select-dropdown`, `multi-tag-select`, `date-range-selector`, `searchable-select`, `tree-path-selector`, `advanced-filter-drawer`, `combined-filter-chipbar`. Use with visible page/global, component-local, table-toolbar, or drawer-internal filters.
 - `controlSemantics`: `perspective-switch`, `global-filter`, `local-filter`, `drilldown-param`.
+- `drillLayer`: `result`, `diagnosis`, `process`, `action`.
 - `componentSchemaImpact`: `none`, `row-scope-only`, `metric-name`, `metric-set`, `component-set`, `table-schema`, `dimension-set`, `definition-change`, `domain-vocabulary`, `mixed`.
 - `navigationMetricKind`: `percentage`, `ranking`, `status-light`.
 - `periodBehavior`: `selected-period`, `current-period`, `comparison-period`, `rolling-window`, `latest-snapshot`, `static-display-copy`.
@@ -265,6 +267,7 @@ For detailed deterministic component, pattern, KPI, state, and output selection 
 - Every primary filter must list affected components.
 - Every primary/global filter must state whether it narrows data through SQL/source/provider/repository/resolver/precompute/cache before component construction; every component-internal filter must state the already fetched component dataset it operates on.
 - First-level business domain, report theme, management object, subject area, or analysis perspective must map to navigation, route, tab, segment, or an explicit perspective state. Do not encode it only as a template `filters[]` item unless an accepted local project contract proves it is row-scope-only.
+- Every primary metric in a KPI dashboard or metric-heavy report must either declare `metricDrilldownContract` rows for result, diagnosis, process, and action layers, or document a scoped static exception.
 - Every clickable component must list event name, payload fields, target action, and stale-state behavior.
 
 ## Acceptance Gate
@@ -281,6 +284,7 @@ Before finalizing, answer yes to all:
 - Can every `reviewImpact` card be traced to event identity, event date or period, baseline method, visible metric fields, `reviewImpactCardPattern`, `reviewImpactEvidenceMode`, `reviewImpactEvidenceBinding`, and exact-value/detail route?
 - If a review-impact card uses "带来/推动/提升" wording, can the binding prove control-group, difference-in-differences, matched baseline, or a documented business rule rather than only before/after coincidence?
 - Can every global/page-level filter be tested without relying on full-materialize-then-filter behavior, and can every component-internal filter be tested against already fetched component data?
+- Can every primary metric drill from result judgment to diagnosis, process/cause, and detail/action without losing metric, period, filter, dimension, object, or return context?
 - Can every clickable mark or row produce a stable action payload?
 - Can the page still behave predictably when filters return empty data or remove a selected object?
 - Are unsupported chart choices explicitly ruled out by fallback rules?

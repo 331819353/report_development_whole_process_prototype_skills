@@ -33,6 +33,25 @@ For every primary judgment component, define at least one next path:
 
 If a primary component has no tooltip, drawer, drilldown, export, fullscreen, or action route, record why it is static. Runnable prototypes should avoid primary static evidence unless the report is intentionally presentation-only.
 
+## Metric Drilldown Contract
+
+For KPI dashboards, operating dashboards, cockpits, and metric-heavy reports, load `10-metric-drilldown-contract.md` and define `metricDrilldownContract` before listing individual interactions.
+
+The contract must preserve this user path:
+
+```text
+result KPI click -> diagnostic split -> process / driver cause -> detail / action closure
+```
+
+Required behavior:
+
+- The result layer owns the root metric judgment and passes `metric_id`, period, comparison period, active filters, and `return_to`.
+- The diagnosis layer receives the selected metric context and exposes the default split dimension plus alternative split dimensions when they are decision-relevant.
+- The process layer receives both the root metric and selected diagnosis item, then explains the cause through driver metrics, conversion/process stages, contribution, bottleneck, or variance evidence.
+- The action layer receives the selected metric/dimension/driver/object context and exposes detail rows, owner/status, export, source jump, or assignment route.
+- Global filter changes must clear or mark stale any selected dimension, driver, object, drawer, or detail route.
+- If a lower layer only repeats the aggregate root metric, it is fake depth and should be rejected.
+
 ## Interaction Types
 
 When an overlay, drawer, modal, action sheet, notification, navigation drawer, or detail panel is reusable, choose `overlayPanelPattern` from `$report-component-style-design` `references/08a-overlay-drawer-modal-patterns.md` and include the trigger payload, inherited filters, close behavior, mask behavior, focus behavior, scroll behavior, and stale-state rule in the mapping.

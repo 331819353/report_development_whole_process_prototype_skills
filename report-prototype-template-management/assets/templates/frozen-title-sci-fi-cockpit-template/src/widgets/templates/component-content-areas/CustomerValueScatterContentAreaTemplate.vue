@@ -61,6 +61,9 @@ const contentData = computed(() => props.data ?? []);
 <style scoped>
 .component-content-area-template {
   display: grid;
+  container-type: size;
+  --content-area-font-scale: 1;
+  --content-area-tight-scale: 1;
   grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: 100%;
@@ -83,15 +86,17 @@ const contentData = computed(() => props.data ?? []);
   overflow: hidden;
   padding: 3px 8px 0;
   color: var(--text-strong, #101828);
-  font-size: 12px;
+  font-size: calc(12px * var(--content-area-title-scale, 1));
   font-weight: 750;
-  line-height: 14px;
+  line-height: calc(14px * var(--content-area-title-scale, 1));
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .component-content-area-body {
+  --content-area-font-scale: 1;
+  --content-area-tight-scale: 1;
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -99,9 +104,36 @@ const contentData = computed(() => props.data ?? []);
   overflow: hidden;
   border: 0;
   border-radius: inherit;
+  font-size: calc(12px * var(--content-area-font-scale));
+  line-height: calc(16px * var(--content-area-tight-scale));
 }
 
 .component-content-area-template.has-content-title .component-content-area-body {
   border-radius: 0 0 var(--component-content-area-radius, 8px) var(--component-content-area-radius, 8px);
 }
+
+@container (max-width: 260px), (max-height: 150px) {
+  .component-content-area-title {
+    padding: 2px 6px 0;
+    --content-area-title-scale: 0.92;
+  }
+
+  .component-content-area-body {
+    --content-area-font-scale: 0.9;
+    --content-area-tight-scale: 0.88;
+  }
+}
+
+@container (max-width: 220px), (max-height: 118px) {
+  .component-content-area-title {
+    padding: 2px 5px 0;
+    --content-area-title-scale: 0.84;
+  }
+
+  .component-content-area-body {
+    --content-area-font-scale: 0.78;
+    --content-area-tight-scale: 0.76;
+  }
+}
+
 </style>

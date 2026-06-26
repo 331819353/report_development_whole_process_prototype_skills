@@ -514,6 +514,7 @@ button {
 .title-nav-current span {
   min-width: 0;
   overflow: hidden;
+  line-height: 1.18;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1296,6 +1297,10 @@ button {
 
 .placeholder-cell-body-section-1 {
   display: grid;
+  container-type: size;
+  --aux-label-font-size: clamp(5px, min(12cqi, 28cqh), 10px);
+  --aux-metric-gap: clamp(1px, 4cqh, 2px);
+  --aux-value-font-size: max(6px, min(calc(var(--aux-label-font-size) + 5px), calc(100cqh - var(--aux-label-font-size) - var(--aux-metric-gap))));
   grid-template-columns: var(--aux-metric-columns, repeat(var(--aux-metric-count, 1), minmax(0, 1fr)));
   align-items: center;
   border-radius: 4px;
@@ -1308,13 +1313,13 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: var(--aux-metric-gap);
   height: 100%;
   min-width: 0;
   overflow: hidden;
-  padding: 0 4px;
+  padding: 0 clamp(2px, 1cqi, 4px);
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.12;
   text-align: center;
   white-space: nowrap;
 }
@@ -1339,18 +1344,19 @@ button {
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
+  line-height: 1.12;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .placeholder-cell-aux-label {
   color: var(--text-strong);
-  font-size: 10px;
+  font-size: var(--aux-label-font-size);
 }
 
 .placeholder-cell-aux-value {
   color: color-mix(in srgb, var(--accent) 92%, white);
-  font-size: 15px;
+  font-size: var(--aux-value-font-size);
   font-weight: 800;
 }
 

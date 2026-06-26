@@ -21,6 +21,13 @@ Core intent:
 指标看板看“现在怎么样”。
 ```
 
+Design spine:
+
+```text
+look overall -> locate issue -> explain cause -> drive action
+result -> diagnosis -> process -> action
+```
+
 Even in this workflow, "dashboard" does not mean every module becomes a KPI card. The workflow must keep a bounded KPI summary, then use trend, driver, anomaly, detail, action, and trust components according to the decision path. Use brand/product color and neutral hierarchy for the page language; reserve red/green/orange for documented status, risk, warning, success, error, finance/market, or metric-direction semantics.
 
 Prototype story gate: this workflow does not call `$report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds what the current state is, which object or metric needs attention, and what drilldown or action should happen next.
@@ -52,22 +59,24 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
 3. Define the typed prototype story: who checks the dashboard, what "current state" they must remember, what status/risk/opportunity is the protagonist, and what next drilldown/action the page should push.
-4. Define the dashboard user path: enter with time/org context -> judge state -> compare target/baseline -> locate split/rank/anomaly -> drill to object/detail/action -> confirm freshness/trust.
-5. Define the dashboard decision: business health, target progress, abnormality, risk object, and next drilldown.
+4. Define the dashboard user path as a four-layer closed loop: result judgment -> diagnosis split -> process/driver cause -> detail/action closure, with time/org context and trust/freshness preserved across layers.
+5. Define the dashboard decision: business health, target progress, abnormality, risk object, root metric, and the next action-worthy drilldown.
 6. Lock the KPI set and KPI scope boundary: core KPI, process KPI, risk KPI, formula, unit, period, target, threshold, baseline, owner/source, freshness, and which metrics truly deserve KPI-card treatment.
-7. Design the first viewport as a current-state information flow: title, time range, update time, global filters, bounded core KPI summary, target completion, YoY/MoM, abnormal reminder, and the first diagnostic evidence. Avoid filling the viewport with same-weight KPI cards.
-8. Design the second layer: trends, target/average lines, regional/channel/product comparisons, key rankings.
-9. Design the third layer: anomaly detail, attention list, drilldown destination, and action entry.
-10. Use `$report-type-design`: default primary type is `status-overview`; use `anomaly-monitoring` only when alert handling is the central task.
-11. Use `$report-info-component-mapping` to bind KPIs, thresholds, trend datasets, anomaly rules, drilldowns, filters, and states.
-12. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
-13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-14. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport plan, and nav/page wiring. Keep the dashboard sparse, layered, and actionable, with reduced uniform card borders, limited KPI-card scope, inherited brand/product color hierarchy, and task-matched non-KPI components.
-15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
-16. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable template fits, create a standalone ECharts-backed Vue component content area template and register/copy it before slot fill. Do not put KPI filters, controls, additional information, units, title pills, description/help text, or summary copy inside the component slot.
-17. Use component/chart/table/filter specialty skills for any newly selected or self-developed component content area template before implementation-ready decisions.
-18. Run a visual density and first-viewport closure check before readiness: identify the primary status block, the first diagnostic evidence block, the action/detail block, and the trust/freshness cue; reject layouts where a block's allocated height is not justified by its content, where a chart has fewer than 5 meaningful marks but consumes a dominant half-screen without labels/target/average/explanation, or where lower modules appear as awkward clipped fragments instead of intentional section hints.
-19. Verify first-viewport answer, filter linkage, drilldown, abnormal states, refresh/freshness, runtime screenshot/DOM geometry, and runnable URL when requested.
+7. Define `metricDrilldownContract` for every primary metric before ordinary component mapping: root metric, result/diagnosis/process/action layers, trigger events, payload fields, context inheritance, state rules, validation cases, or scoped static exception.
+8. Design the first viewport as the result layer plus first diagnostic cue: title, time range, update time, global filters, bounded core KPI summary, target completion, YoY/MoM, threshold/status, abnormal reminder, and one clear path into diagnosis. Avoid filling the viewport with same-weight KPI cards.
+9. Design the diagnosis layer: regional/channel/product/customer/org/process comparisons, rankings, contribution, heatmap, or other dimension splits that locate where the issue or opportunity sits.
+10. Design the process layer: driver metrics, conversion/process stages, decomposition, waterfall, funnel, bottleneck, or variance evidence that explains why the selected result or diagnosis item moved.
+11. Design the action layer: anomaly detail, attention list, owner/status/deadline, export, source jump, assignment route, or detail table that closes the loop.
+12. Use `$report-type-design`: default primary type is `status-overview`; use `anomaly-monitoring` only when alert handling is the central task.
+13. Use `$report-info-component-mapping` to bind KPIs, thresholds, trend datasets, anomaly rules, `metricDrilldownContract`, drilldowns, filters, and states.
+14. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
+15. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
+16. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport plan, and nav/page wiring. Keep the dashboard sparse, layered, and actionable, with reduced uniform card borders, limited KPI-card scope, inherited brand/product color hierarchy, and task-matched non-KPI components.
+17. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
+18. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable template fits, create a standalone ECharts-backed Vue component content area template and register/copy it before slot fill. Do not put KPI filters, controls, additional information, units, title pills, description/help text, or summary copy inside the component slot.
+19. Use component/chart/table/filter specialty skills for any newly selected or self-developed component content area template before implementation-ready decisions.
+20. Run a visual density and first-viewport closure check before readiness: identify the primary status block, the first diagnostic evidence block, the action/detail block, and the trust/freshness cue; reject layouts where a block's allocated height is not justified by its content, where a chart has fewer than 5 meaningful marks but consumes a dominant half-screen without labels/target/average/explanation, or where lower modules appear as awkward clipped fragments instead of intentional section hints.
+21. Verify first-viewport answer, filter linkage, drilldown, abnormal states, refresh/freshness, runtime screenshot/DOM geometry, and runnable URL when requested.
 
 ## Required Output
 
@@ -76,10 +85,11 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Affected-surface to owning-skill routing, especially layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - KPI dictionary: formula, unit, period, target, threshold, baseline, owner/source, freshness, display status.
 - KPI scope boundary: which metrics are KPI cards, which metrics stay in charts/tables/text/lists, and why.
+- Metric drilldown contract: root metric, result/diagnosis/process/action layers, trigger events, payload fields, context inheritance, state rules, validation cases, and scoped static exceptions.
 - Result-content boundary: visible status/conclusion/evidence/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
-- First-viewport plan, trend/comparison/ranking plan, anomaly/detail/action plan.
+- First-viewport result plan, diagnosis split plan, process/cause plan, anomaly/detail/action plan.
 - Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and ECharts self-developed component content area fallback list.
-- Drilldown chain: state -> split -> object -> detail/action.
+- Drilldown chain: result -> diagnosis -> process -> action.
 - Visual density and first-viewport closure result: oversized/empty block scan, chart mark-to-area fit, text contrast/readability, next-section exposure, and evidence-backed repair decisions.
 - Filter, refresh, permission, export/share, abnormal, empty/error/no-permission state requirements.
 - Component/data/filter/control/interaction binding matrix.
@@ -106,4 +116,5 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Do not show only result metrics when process or risk metrics are needed to explain status.
 - Do not mark every fluctuation as an anomaly; thresholds and severity must be explicit.
 - Do not claim readiness unless the first viewport answers the current-state question and drilldown destinations are defined.
+- Do not claim readiness unless every primary KPI has `metricDrilldownContract` coverage from result to diagnosis, process/cause, and detail/action, or an explicit scoped static exception.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or implementation/QA evidence is only generic screenshots, default states, or unchecked assumptions.

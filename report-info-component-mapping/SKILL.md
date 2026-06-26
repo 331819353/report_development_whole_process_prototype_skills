@@ -35,6 +35,7 @@ Read only the files needed for the current task. Files are ordered by workflow s
 | Mock data, dimensions, facts, formulas, edge cases | `references/03-mock-data-modeling.md` |
 | Filters, option sources, query params, permissions, linkage | `references/04-filter-scope-query.md` |
 | Drilldown, cross-filtering, drawer/modal/jump/export states | `references/05-interaction-state-flow.md` |
+| KPI dashboard metric tree and reusable drilldown contract | `references/10-metric-drilldown-contract.md` when mapping KPI dashboards, operating dashboards, cockpits, metric-heavy reports, or primary metrics that must move from result to diagnosis, cause, detail, and action |
 | Implementation-ready component contracts and binding matrix | `references/06-binding-implementation-contract.md`; load its `06a`-`06k` split files only for the needed schema segment |
 | Report-type routing, layout/style constraints, output checklist | `references/07-routing-layout-quality.md` |
 | Layout fit contract, row-group expansion, vacancy reflow, typography/component floors | `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when mapping dense blocks, KPI groups, chart/table composites, or first-viewport summary rows |
@@ -87,9 +88,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 9. Define data before controls: datasets, row grain, formulas, rollups, numeric display contracts, edge cases, realistic dirty-data cases, default/non-default states, empty/loading/error/no-permission/building states, and resolver/API branch needs.
 10. Classify every control as `perspective-switch`, `global-filter`, `local-filter`, or `drilldown-param`; never hide metric/schema-changing perspectives inside ordinary filters.
 11. Define filter/query behavior after the data model proves it can support option data, defaults, cascades, permissions, affected components, and non-default variations.
-12. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
-13. Produce the binding matrix linking business question, conclusion-chain role, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, update triggers, validation cases, and `componentContentAreaIntent`.
-14. Route to report-type, layout, component-style, template, API/model, frontend, and test skills as needed.
+12. For KPI dashboards or primary metric networks, define `metricDrilldownContract` before ordinary interaction details: root metric, result/diagnosis/process/action layers, triggers, payload fields, context inheritance, state rules, and validation cases.
+13. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
+14. Produce the binding matrix linking business question, conclusion-chain role, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, `metricDrilldownContract`, update triggers, validation cases, and `componentContentAreaIntent`.
+15. Route to report-type, layout, component-style, template, API/model, frontend, and test skills as needed.
 
 ## Required Output
 
@@ -102,6 +104,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Dataset/mock model with grain, fields, formulas, numeric display contracts, realistic edge cases, and reconciliation rules.
 - Control semantics model and filter/query model.
 - Interaction and state model.
+- Metric drilldown contract when KPI dashboards or primary metric networks are in scope: `contractId`, root metric, result/diagnosis/process/action layers, triggers, payload fields, context inheritance, state rules, and validation cases.
 - Unified binding matrix with stable IDs, controlled vocabularies, and validation cases.
 - `layoutFitContract` fields for dense or metric-bearing component bundles: component family, planned span, minimum outer/content size, metric-cell minimums, required text rows, slot budget, density limits, overflow/reflow strategy, and squeeze failure code.
 - Style generalization fields in the binding matrix when reusable sample-derived patterns are used.
@@ -115,6 +118,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Every primary report component must participate in the conclusion explanation chain. A mapping is not ready if a section lacks a section conclusion or a component cannot name the section conclusion it explains.
 - Do not create visible report blocks from design-process artifacts. 下钻链路 can be an actionable route, breadcrumb, drawer, jump, or detail control; 指标清单 can be a metric contract, dictionary, tooltip, detail drawer, export metadata, validation case, or handoff artifact. Component mappings, binding matrices, workflow/gate outputs, dataset field catalogues, and implementation notes stay off the result page unless explicitly requested as visible documentation or justified as conclusion, evidence, trust, or action content.
 - A report mapping is not ready when it is only a metric list. Core metrics must be tied into a result -> driver -> dimension/object -> detail -> action/source relationship network.
+- A KPI dashboard or metric-heavy report is not ready when primary metrics lack `metricDrilldownContract` coverage or a scoped static exception. The contract must preserve result -> diagnosis -> process -> action closure without rendering the route list as visible page content.
 - Primary metrics need a comparison basis: target, previous period, same period last year, benchmark, historical range, threshold, or denominator/total for share/rate.
 - The first component group must make the primary judgment clear before dense detail unless the page is explicitly detail-query or reconciliation-first.
 - Primary metric-bearing components need formula/denominator, grain, period, source/freshness, numeric display contract, baseline, and owner/action notes when implementation-ready.
