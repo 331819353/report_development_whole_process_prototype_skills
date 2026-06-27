@@ -23,6 +23,7 @@ Use this as the focused PRD-writing skill after or alongside requirement clarifi
 - Report development is template-only except for two explicit extension surfaces: self-developed interaction behavior and self-developed component content area templates. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, and export surfaces must use configurable templates.
 - Metrics must include definitions, formulas, denominators, null rules, source, refresh cadence, and direction. Metric names alone are not acceptable.
 - The metric mounting matrix must say exactly where each metric appears and which component/content slot consumes it.
+- Summary areas, conclusion cards, and analysis insight components must be data-driven. The PRD must define `conclusionRuleMap` rows that tell frontend how to derive the conclusion from metrics/API fields, filters, thresholds, priorities, and empty-state rules; a fixed one-sentence conclusion is not acceptable.
 - Data/API and interaction sections must be implementable, not prose-only.
 - The PRD must include a PRD-to-workflow execution matrix so every PRD section has a downstream owning skill, execution artifact, and blocking rule.
 
@@ -61,12 +62,16 @@ Load references only as needed, but read the first four before finalizing a PRD:
 
 6. Fill every component slot.
    For each `3 componentArea` slot, name the component content area template, visual type, metric/data binding, slot role, and fallback. Do not put title, filters, controls, aux metrics, units, descriptions, or summaries inside component content area templates.
+   If the slot renders a conclusion card or analysis insight, bind it to `conclusionRuleId` instead of writing final static copy.
 
 7. Create metric contracts.
    Every metric needs ID, name, business meaning, formula, unit, direction, applicable business line, source, refresh cadence, denominator/sample size, null rule, and owner/status. Use `TBD(GAP-*)` for unknown fields that block implementation and `none` only when truly not applicable.
 
 8. Create the metric mounting matrix.
    Map each metric to page, block, block layout template, standard area or component slot, component content area template, visual role, API/data object, filter scope, interaction entry, and export behavior.
+
+8A. Create dynamic conclusion rules.
+   For every `4 summaryArea` narrative conclusion, conclusion card, or `analysisInsightContract`, create a `RULE-*` row in `conclusionRuleMap`: display target, input metric IDs/API fields, trigger state, threshold/comparison logic, priority/severity, output fields or sentence template, evidence fields, permission/masking, null/insufficient-data fallback, and QA case.
 
 9. Define data objects and APIs.
    Specify object grain, dimensions, fields, metrics, request parameters, response shape, permission filtering, pagination/sort, cache/freshness, empty/error behavior, and source lineage.
@@ -91,6 +96,7 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - 页面内容.
 - 页面布局配置 with framework template, shell configuration, page `layoutRows`, block layout template map, standard area configuration, component slot map, and component content area template map.
 - Template reuse constraint: explicitly state that all non-interaction and non-component-content-template surfaces use existing templates; list only interaction IDs and component content area template IDs in the self-development exception map.
+- Dynamic conclusion rule map: `conclusionRuleMap` for every summary-area conclusion, conclusion card, and analysis insight component, proving the frontend generates conclusions from data instead of fixed copy.
 - 指标清单 with complete metric口径.
 - 指标挂载矩阵.
 - 数据与 API 需求.
@@ -105,6 +111,7 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - Do not treat `componentRegionPattern` as the selected template. It is compatibility metadata derived from selected block layout slots.
 - Do not mark a PRD ready if it asks for self-developed framework shell, page layout, block layout template, title/pill/aux/unit/summary area, navigation, filter surface, toolbar, or export surface. Only interaction behavior and component content area templates may be self-developed, and both must remain inside the template contract.
 - Do not place block title, pills, filters, auxiliary metrics, units, or summary/explanation copy inside component content area slots.
+- Do not mark a PRD ready when `4 summaryArea`, a conclusion card, or an analysis insight component contains a fixed business conclusion without a `RULE-*` entry and frontend generation rule. Static copy is allowed only for source, scope, caveat, definition, or empty-state text.
 - Do not list metrics without口径, formula, source, denominator/sample, refresh, direction, and null rules.
 - Do not leave required table cells blank. Use `TBD(GAP-*)` for unknowns or `none` when not applicable.
 - Do not mark the PRD ready while any page block lacks a selected block layout template, any `componentArea` slot lacks a component content area template or custom fallback, any displayed metric lacks a mounting row, or any API lacks request/response fields.

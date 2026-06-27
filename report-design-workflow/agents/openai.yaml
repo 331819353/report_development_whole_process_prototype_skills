@@ -1,4 +1,4 @@
 interface:
   display_name: "报表原型 Workflow"
   short_description: "基于 PRD 执行矩阵编排报表/仪表盘/大屏原型，再进入类型、组件映射、模板、实现、运行QA和URL交付。"
-  default_prompt: "Use $report-design-workflow to orchestrate generic report prototype work from the prerequisite $report-prd-document-generation PRD and PRD-to-workflow execution matrix, then proceed through prototype thinking, report type, component mapping, template-only layout and block configuration, bundled template implementation, runtime QA, and URL handoff."
+  default_prompt: "Use $report-design-workflow to orchestrate generic report prototype work from the prerequisite $report-prd-document-generation PRD and PRD-to-workflow execution matrix, then proceed through prototype thinking, report type, dynamic conclusion-rule mapping, component mapping, template-only layout and block configuration, bundled template implementation, runtime QA, and URL handoff."

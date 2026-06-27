@@ -1,6 +1,6 @@
 # Metric, API, And Interaction Matrices
 
-Use this reference for PRD sections 6, 7, 8, and 9.
+Use this reference for PRD sections 5A, 6, 7, 8, and 9.
 
 ## Metric List
 
@@ -42,10 +42,28 @@ Rules:
 - Use `Standard area = 2-1 auxMetricArea` for supporting metrics shown in the block support area.
 - Use `Standard area = 2-2 unitArea` only for unit text, not business metrics.
 - Use `Standard area = 3 componentArea` when the metric is rendered by a component content area template.
-- Use `Standard area = 4 summaryArea` only for text/caveat/source/action note and only when no conclusion component already owns the conclusion.
+- Use `Standard area = 4 summaryArea` only for a `RULE-*` driven narrative conclusion when no conclusion component already owns the conclusion, or for static text/caveat/source/action note.
 - Use `none` in `Component slot` when the metric is not in `3 componentArea`.
 - Every `Metric ID` must exist in the metric list.
 - Every slot metric must be traceable to a component content area template and API/data object.
+
+## Conclusion Rule Matrix
+
+This is the frontend generation contract for summary areas, conclusion cards, and analysis insight components. Every visible business conclusion must appear here.
+
+| Rule ID | Display target | Page ID | Block ID | Standard area | Component slot | Component content area template | Input metric IDs | Data object | API ID | Trigger/filter state | Rule logic/threshold | Output fields or sentence template | Evidence fields | Priority/severity | Empty/null/insufficient-data rule | Permission/masking rule | QA case |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- `Rule ID` must use the `RULE-*` prefix and be referenced by `summaryAreaConfig.conclusionRuleId`, conclusion-card slot props, or `analysisInsightContract`.
+- `Display target` must be one of `summaryArea`, `conclusionCard`, `analysisInsight`, or a more specific component target approved by the component content area template.
+- `Input metric IDs` must exist in the metric list, and each metric must also appear in the metric mounting matrix when it is visible or drives visible text.
+- `Rule logic/threshold` must include the comparison baseline, period behavior, direction, denominator-zero handling, top-N/ranking rule when relevant, and priority when multiple rules match.
+- `Output fields or sentence template` is a template for frontend generation, not the final fixed conclusion. Use placeholders such as `{metricName}`, `{value}`, `{baseline}`, `{delta}`, `{dimensionName}`, `{reason}`, and `{action}` when useful.
+- `Evidence fields` must name the numbers, dimensions, timestamps, source/freshness, or links shown with the conclusion or exposed by tooltip/detail.
+- Empty/null/insufficient-data rules must not produce misleading positive or negative conclusions.
+- If a conclusion target has no rule, mark the PRD `draft` or `blocked`; do not replace the rule with static copy.
 
 ## Data Object Requirements
 
@@ -115,6 +133,7 @@ Rules for self-developed interactions:
 - Jump must declare internal route or external system, route/query/body parameters, permission check timing, open mode, and no-permission behavior.
 - Drawer/modal/popover must declare trigger, content owner, size, data object/API, loading/empty/error/no-permission state, close/confirm behavior, and whether changing global filters while open synchronizes or shows stale-selection state.
 - Every interaction that can change visible data must list affected blocks/APIs and reset/highlight behavior.
+- Every interaction that changes filters, date/period, metric, ranking context, drilldown context, permission scope, or API data must list the affected `RULE-*` conclusion rules and whether frontend recomputes, clears, or marks them stale.
 - Every interaction that cannot be used must be explicitly marked non-clickable or disabled with visible reason.
 
 Required interaction coverage for report PRDs:

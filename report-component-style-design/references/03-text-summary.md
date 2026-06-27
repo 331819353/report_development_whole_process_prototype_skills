@@ -40,7 +40,9 @@ type AnalysisInsightContract = {
   insightFamily: 'conclusion' | 'insight' | 'diagnosis' | 'recommendation' | 'explanation' | 'state';
   definitionHelpCardPattern?: string;
   definitionHelpEvidenceBinding?: string;
-  conclusion: string;
+  conclusionRuleId?: string;
+  generatedConclusionTemplate?: string;
+  fallbackConclusion?: string;
   evidence?: string[];
   affectedObjects?: string[];
   compareWith?: string;
@@ -58,11 +60,11 @@ type AnalysisInsightContract = {
 };
 ```
 
-Do not pass a text summary as implementation-ready when it only contains generic copy such as `整体表现良好`, `建议持续关注`, `数据有所波动`, or `智能分析结果`.
+Do not pass a text summary as implementation-ready when a generated business conclusion lacks `conclusionRuleId`, data/API inputs, trigger state, fallback, and QA case, or when it only contains generic copy such as `整体表现良好`, `建议持续关注`, `数据有所波动`, or `智能分析结果`.
 
 ## Structure
 
-- Start with the conclusion, then show supporting metric, reason, and suggested action if space allows.
+- Start with the frontend-generated conclusion, then show supporting metric, reason, and suggested action if space allows.
 - Keep short summaries vertically centered. Top-align multi-line narratives.
 - Highlight only key numbers, status words, or action verbs.
 - Avoid paragraph-length content in small grid blocks.

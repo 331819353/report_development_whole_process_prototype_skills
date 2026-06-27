@@ -16,6 +16,7 @@ Use stable IDs so downstream agents can reference the same objects:
 | API | `API-` | `API-OVERVIEW-SUMMARY` |
 | Interaction | `INT-` | `INT-BIZLINE-SWITCH` |
 | Role | `ROLE-` | `ROLE-GROUP-MANAGER` |
+| Dynamic conclusion rule | `RULE-` | `RULE-HEALTH-RISK-SUMMARY` |
 | Gap | `GAP-` | `GAP-METRIC-SOURCE-NPS` |
 
 Rules:
@@ -130,7 +131,26 @@ Follow `template-layout-prd-contract.md`. This section must include:
 - Block layout template map.
 - Standard area config for every block.
 - Component slot/component content area template map.
+- `conclusionRuleMap` bindings for any summary-area conclusion, conclusion card, or analysis insight component.
 - Layout acceptance notes.
+
+### 5A. Dynamic Conclusion Generation Rules
+
+Summary areas and conclusion cards are not fixed copy. When the page shows a business conclusion, the PRD must define how frontend derives it from current data after filters, date/period switches, metric switches, permission scope, drilldown state, or API refresh.
+
+Use this table:
+
+| Rule ID | Display target | Page/Block/Slot | Area or component template | Input metrics/API fields | Trigger state | Rule logic and threshold | Output fields or sentence template | Evidence fields | Priority/severity | Empty/null/insufficient-data rule | Permission/masking rule | QA case |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- Use `RULE-*` IDs and reference them from `summaryAreaConfig`, conclusion-card slots, `analysisInsightContract`, metric mounting rows, and the PRD-to-workflow execution matrix.
+- `4 summaryArea` may render a dynamic narrative conclusion only when the same block has no conclusion card/component. Its config must include `conclusionRuleId`, input bindings, refresh triggers, and fallback copy.
+- Conclusion cards and analysis insight components must compute their visible conclusion from bound data using `conclusionRuleId` or `analysisInsightContract`. Do not put the final generated conclusion sentence into the PRD as fixed copy.
+- Static text is allowed only for source, scope, caveat, definition, action-note label, loading, empty, permission-denied, or insufficient-data fallback.
+- Rule logic must specify comparison baseline, threshold, ranking/top-N rule, trend direction, priority when multiple rules match, and the evidence fields shown or linked with the conclusion.
+- Null and denominator-zero behavior must be compatible with the metric null rules in section 6.
 
 ### 6. 指标清单
 
@@ -184,6 +204,7 @@ Readiness rules:
 - `ready-for-review` requires no blank required cells and no unowned critical gaps.
 - `blocked` is required when core metric definitions, permission scope, page count, framework template, or data source cannot be inferred safely.
 - `draft` is acceptable when implementation can continue with documented `TBD(GAP-*)` fields.
+- The PRD cannot be `ready-for-review` when any `summaryArea`, conclusion card, or analysis insight component displays a business conclusion without a `RULE-*` row and frontend generation rule.
 
 ### 12. PRD-to-workflow 执行矩阵
 
@@ -196,7 +217,7 @@ Use:
 
 Rules:
 
-- Every PRD section from 0 to 11 must have at least one row.
-- Every `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, and `ROLE-*` that appears in earlier sections must be consumed by at least one execution row.
+- Every PRD section from 0 to 11, including section 5A, must have at least one row.
+- Every `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, and `RULE-*` that appears in earlier sections must be consumed by at least one execution row.
 - `Status` can be `ready`, `draft`, `blocked`, or `deferred-out-of-scope`.
 - A prototype workflow can start only when no execution row needed by the first design/layout/template step is `blocked`.

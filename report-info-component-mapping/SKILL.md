@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill as the bridge from business meaning to implementable report components:
 
-`business question -> analysis perspective -> answer atoms -> component bundle -> data model -> control semantics -> filter/query model -> interaction state -> binding matrix`
+`business question -> analysis perspective -> answer atoms -> component bundle -> conclusionRuleMap -> data model -> control semantics -> filter/query model -> interaction state -> binding matrix`
 
 When a component bundle uses screenshot-derived or reusable visual pattern knowledge, the mapping must also carry the style generalization decision: selected controlled pattern field, composed-pattern decision, extension gap, adaptive variables, and text-only reproduction status. This prevents later generation from depending on raw images or unstable visual memory.
 
@@ -31,6 +31,7 @@ Read only the files needed for the current task. Files are ordered by workflow s
 | Answer atoms, content blocks, chart/table/component selection | `references/01-question-component-flow.md` |
 | Good report decision-path gate | `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when turning requirements into report components, especially when the input is a metric list or a broad report topic |
 | Conclusion explanation chain | `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` plus `references/01-question-component-flow.md` when a report needs overall conclusion, reason sections, section conclusions, and evidence components |
+| Dynamic conclusion rules | `$report-prd-document-generation` `references/metric-api-interaction-matrices.md` and `references/prd-output-structure.md` section 5A when summary areas, conclusion cards, or analysis insight components need frontend-generated conclusions |
 | Typical scenario bundles and component sets | `references/02-business-bundle-patterns.md` |
 | Mock data, dimensions, facts, formulas, edge cases | `references/03-mock-data-modeling.md` |
 | Filters, option sources, query params, permissions, linkage | `references/04-filter-scope-query.md` |
@@ -80,24 +81,26 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 1. Normalize the report theme, audience, primary question, decision, time/org/object scope, metrics, dimensions, baselines, risks, tasks, source, permissions, and acceptance target.
 2. Run the good-report decision-path check when mapping a report page: one primary decision question, conclusion/status first, What/Why/So what coverage, comparison baseline, metric relationship network, and drilldown/action path.
 3. Declare the conclusion explanation chain: one `overallConclusion`, multiple supporting sections, each `sectionConclusion`, and the evidence components that prove, explain, locate, quantify, contradict, trace, recommend, or verify the section conclusion.
-4. Classify the primary `analysisPerspective` and any secondary perspectives, such as currentStatus, targetProgress, trendMovement, rankingContribution, causeDiagnosis, detailEvidence, or actionRecommendation.
-5. Decompose the selected perspectives into answer atoms such as state, target gap, trend, structure, ranking, process, cause, anomaly, detail, action, evidence, and data trust.
-6. Classify each candidate artifact as visible result content, interaction/contract content, supplemental/handoff content, or removed content. Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are not visible report blocks by default.
-7. Map answer atoms to parent blocks, optional sub-blocks, and component bundles with `must-have`, `should-have`, or `optional` priority. Each primary mapping must carry `conclusionChain` fields before handoff. When a component bundle is dense, metric-bearing, composed, or likely to share a first-viewport row, declare `layoutFitContract` before layout handoff. When a component bundle is a definition/help card, anomaly/risk/warning/outlier analysis card, Micro Dashboard Card, or state feedback surface, select the controlled pattern field before layout or visual handoff.
-8. For template-based implementation, declare `componentContentAreaIntent` for each component bundle: expected component family, renderer, data grain, primary visual/evidence body, required states, exact-value path, and whether an existing standalone Vue 组件内容区模板 is likely sufficient or an ECharts/table/list fallback may be needed. Do not include local controls, filters, block title, pill, additional information, unit, description/help, summary, or explanation content in this intent.
-9. Define data before controls: datasets, row grain, formulas, rollups, numeric display contracts, edge cases, realistic dirty-data cases, default/non-default states, empty/loading/error/no-permission/building states, and resolver/API branch needs.
-10. Classify every control as `perspective-switch`, `global-filter`, `local-filter`, or `drilldown-param`; never hide metric/schema-changing perspectives inside ordinary filters.
-11. Define filter/query behavior after the data model proves it can support option data, defaults, cascades, permissions, affected components, and non-default variations.
-12. For KPI dashboards or primary metric networks, define `metricDrilldownContract` before ordinary interaction details: root metric, result/diagnosis/process/action layers, triggers, payload fields, context inheritance, state rules, and validation cases.
-13. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
-14. Produce the binding matrix linking business question, conclusion-chain role, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, `metricDrilldownContract`, update triggers, validation cases, and `componentContentAreaIntent`.
-15. Route to report-type, layout, component-style, template, API/model, frontend, and test skills as needed.
+4. Declare `conclusionRuleMap` for every generated summary-area conclusion, conclusion card, or analysis insight component: `RULE-*` ID, display target, input metrics/API fields, trigger state, rule logic, output template, evidence fields, priority/severity, fallback, permission/masking, and QA case.
+5. Classify the primary `analysisPerspective` and any secondary perspectives, such as currentStatus, targetProgress, trendMovement, rankingContribution, causeDiagnosis, detailEvidence, or actionRecommendation.
+6. Decompose the selected perspectives into answer atoms such as state, target gap, trend, structure, ranking, process, cause, anomaly, detail, action, evidence, and data trust.
+7. Classify each candidate artifact as visible result content, interaction/contract content, supplemental/handoff content, or removed content. Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are not visible report blocks by default.
+8. Map answer atoms to parent blocks, optional sub-blocks, and component bundles with `must-have`, `should-have`, or `optional` priority. Each primary mapping must carry `conclusionChain` fields before handoff. When a component bundle is dense, metric-bearing, composed, or likely to share a first-viewport row, declare `layoutFitContract` before layout handoff. When a component bundle is a definition/help card, anomaly/risk/warning/outlier analysis card, Micro Dashboard Card, or state feedback surface, select the controlled pattern field before layout or visual handoff.
+9. For template-based implementation, declare `componentContentAreaIntent` for each component bundle: expected component family, renderer, data grain, primary visual/evidence body, required states, exact-value path, and whether an existing standalone Vue 组件内容区模板 is likely sufficient or an ECharts/table/list fallback may be needed. Do not include local controls, filters, block title, pill, additional information, unit, description/help, summary, or explanation content in this intent.
+10. Define data before controls: datasets, row grain, formulas, rollups, numeric display contracts, edge cases, realistic dirty-data cases, default/non-default states, empty/loading/error/no-permission/building states, and resolver/API branch needs.
+11. Classify every control as `perspective-switch`, `global-filter`, `local-filter`, or `drilldown-param`; never hide metric/schema-changing perspectives inside ordinary filters.
+12. Define filter/query behavior after the data model proves it can support option data, defaults, cascades, permissions, affected components, and non-default variations.
+13. For KPI dashboards or primary metric networks, define `metricDrilldownContract` before ordinary interaction details: root metric, result/diagnosis/process/action layers, triggers, payload fields, context inheritance, state rules, and validation cases.
+14. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
+15. Produce the binding matrix linking business question, conclusion-chain role, `conclusionRuleId`, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, `metricDrilldownContract`, update triggers, validation cases, and `componentContentAreaIntent`.
+16. Route to report-type, layout, component-style, template, API/model, frontend, and test skills as needed.
 
 ## Required Output
 
 - Theme, user scenario, primary question, decision, and report-decision risks or gaps.
 - Good report decision-path result: one primary decision question, first-viewport judgment, What/Why/So what answer atoms, metric relationship network, baselines, drilldown/action path, and `RPT-*` gaps.
 - Conclusion explanation chain: `overallConclusion`, `supportingSectionId`, `sectionConclusion`, reason role, component evidence role, and chain gaps for every primary parent block/component.
+- Dynamic conclusion rule map: `conclusionRuleMap` with `RULE-*` rows for every generated summary-area conclusion, conclusion card, and analysis insight component.
 - Result-content boundary table: visible business-value content, interaction/contract-only items, supplemental handoff items, removed process artifacts, and the reason for each decision.
 - Analysis perspective classification, answer atom decomposition, and component bundle map.
 - Component content area intent map for template-based work: component family, renderer, data grain, primary evidence body, states, exact-value path, existing-template fit expectation, standalone Vue file expectation, and self-developed fallback need.
@@ -116,6 +119,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Every component must answer a named business question and participate in a decision path.
 - Every primary report component must participate in the conclusion explanation chain. A mapping is not ready if a section lacks a section conclusion or a component cannot name the section conclusion it explains.
+- A mapping is not ready when a generated summary-area conclusion, conclusion card, or analysis insight component lacks a `RULE-*` row, data/API inputs, trigger refresh behavior, fallback, or QA case. Do not replace missing rules with fixed conclusion copy.
 - Do not create visible report blocks from design-process artifacts. 下钻链路 can be an actionable route, breadcrumb, drawer, jump, or detail control; 指标清单 can be a metric contract, dictionary, tooltip, detail drawer, export metadata, validation case, or handoff artifact. Component mappings, binding matrices, workflow/gate outputs, dataset field catalogues, and implementation notes stay off the result page unless explicitly requested as visible documentation or justified as conclusion, evidence, trust, or action content.
 - A report mapping is not ready when it is only a metric list. Core metrics must be tied into a result -> driver -> dimension/object -> detail -> action/source relationship network.
 - A KPI dashboard or metric-heavy report is not ready when primary metrics lack `metricDrilldownContract` coverage or a scoped static exception. The contract must preserve result -> diagnosis -> process -> action closure without rendering the route list as visible page content.

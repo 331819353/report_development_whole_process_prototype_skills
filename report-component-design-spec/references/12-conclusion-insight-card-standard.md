@@ -22,7 +22,7 @@ The source screenshots are temporary visual evidence. The durable knowledge is t
 The sample family feels strong because each card turns a loose AI-like "insight" into a visible decision chain.
 
 1. Clear analytical lens: each row answers a different job, such as key conclusion, trend comparison, structure share, formula driver, segment action, or next-step recommendation.
-2. Judgment before evidence: the left text block states one conclusion first; the right body proves it with metrics, chart, equation, table, or action list.
+2. Judgment before evidence: the left text block states one frontend-generated conclusion first; the right body proves it with metrics, chart, equation, table, or action list.
 3. Real evidence body: sparklines, donut rings, formula tiles, trend bars, and segmentation tables are tied to fields and baselines. They are not decorative chart variety.
 4. Shared grammar with controlled variation: icon/tag/title/copy repeat across cards, while the evidence body changes only when the data shape changes.
 5. Editorial whitespace: cards use generous horizontal rhythm, thin dividers, and quiet gutters so the eye can scan from conclusion to proof.
@@ -61,6 +61,8 @@ visualType: 'text-summary'
 analysisPerspective: 'conclusionInsight'
 analysisInsightContract.subtype: 'conclusion-card'
 analysisInsightContract.insightFamily: 'conclusion'
+analysisInsightContract.conclusionRuleId: 'RULE-*'
+analysisInsightContract.generatedConclusionTemplate: string
 analysisInsightContract.conclusionCardPattern: ConclusionCardPattern
 analysisInsightContract.conclusionEvidenceBodyMode: ConclusionEvidenceBodyMode
 analysisInsightContract.conclusionEvidenceBinding: ConclusionEvidenceBinding
@@ -78,7 +80,7 @@ Use child `visualType` values such as `metric-card`, `line`, `pie`, `bar`, `tabl
 | 指标拆解、公式说明、收入由哪些因素驱动 | `metric-evidence-conclusion` | `formula-driver-chain` | factor tiles and operator rail | `760x168` |
 | 高价值用户、分群运营、策略建议、行动路由 | `finding-action-conclusion` | `segment-action-table` | segment table/list with action column | `820x180` |
 | 关键发现 + 下一步建议 | `finding-action-conclusion` | `findings-action-list` | findings list plus action list | `720x160` |
-| 小卡片、移动端、侧栏摘要 | `compact-conclusion-summary` | `kpi-strip-sparkline` or `findings-action-list` | one conclusion, one evidence line, one detail/action | `320x120` |
+| 小卡片、移动端、侧栏摘要 | `compact-conclusion-summary` | `kpi-strip-sparkline` or `findings-action-list` | one generated conclusion, one evidence line, one detail/action | `320x120` |
 
 Selection order:
 
@@ -95,6 +97,9 @@ Every implementation-ready conclusion-insight card must declare data-backed evid
 
 ```ts
 type ConclusionEvidenceBinding = {
+  conclusionRuleId: string;
+  generatedConclusionTemplate: string;
+  fallbackConclusion?: string;
   conclusionEvidenceBodyMode: ConclusionEvidenceBodyMode;
   sourceDataset: string;
   periodField: string;
@@ -149,7 +154,7 @@ type ConclusionEvidenceBinding = {
 
 Rules:
 
-- The lead conclusion must derive from at least one visible metric, chart/table field, or linked component.
+- The lead conclusion must be generated from `conclusionRuleId` and derive from at least one visible metric, chart/table field, or linked component.
 - All evidence must share the same period, filter scope, permission scope, source/freshness, and numeric display contracts as the surrounding report.
 - If `confidence` is `insufficient`, the card must switch to an insufficient-data state and avoid positive/negative business claims.
 - Contradictory KPI/chart/table evidence blocks readiness until the wording changes or the data conflict is surfaced.
@@ -160,7 +165,7 @@ Required slots:
 
 - Header marker: badge such as 结论/洞察/摘要/解读 plus optional sequence A/B/C/D when comparing alternatives.
 - Semantic icon: weak circular icon, secondary to copy and data.
-- Lead conclusion: one business judgment, strongest text.
+- Lead conclusion: one generated business judgment, strongest text.
 - Explanation copy: `1-2` lines that name object, period, metric, baseline, and implication.
 - Evidence body: exactly one `conclusionEvidenceBodyMode`.
 - Detail/source path: tooltip, drawer, linked table, or adjacent evidence component.
@@ -248,7 +253,7 @@ Required states:
 
 - Loading: preserve card height, icon rail, text skeleton, and evidence body skeleton.
 - Empty/filter no-result: name the filter condition and avoid business judgment.
-- Insufficient data: show `当前数据不足以生成结论`, list missing metric/source/baseline, and set confidence to `insufficient`.
+- Insufficient data: show a declared fallback such as `当前数据不足以生成结论`, list missing metric/source/baseline, and set confidence to `insufficient`.
 - Missing comparison: remove period/baseline wording and comparison visuals.
 - Missing denominator/formula: downgrade composition/formula body and disclose the gap.
 - No permission: hide restricted values and explain scope without leaking row counts or restricted object names.
@@ -266,13 +271,13 @@ Reject or keep readiness `partial` when:
 - The design adds unrelated mini charts to look rich.
 - A raw screenshot, image path, or OCR text is the only reusable standard.
 - The card is always positive, smooth, and risk-free despite missing/negative/conflicting data.
-- The conclusion repeats KPI labels without explaining implication.
+- The generated conclusion repeats KPI labels without explaining implication.
 - Actions are generic and cannot map to owner, task, detail route, or follow-up check.
 
 Repair rule:
 
 ```text
-one conclusion -> one evidence body mode -> exact values/source -> implication -> action/detail/state
+conclusionRuleId -> generated conclusion -> one evidence body mode -> exact values/source -> implication -> action/detail/state
 ```
 
 ## 11. Acceptance Checklist
@@ -281,6 +286,7 @@ Before marking ready:
 
 - `analysisPerspective: conclusionInsight`.
 - `componentType: text-summary`, `visualType: text-summary`, `analysisInsightContract.subtype: conclusion-card`.
+- PRD `conclusionRuleId` and `generatedConclusionTemplate` are declared; fixed normal-state conclusion copy is not used.
 - `conclusionCardPattern` and `conclusionEvidenceBodyMode` use controlled values.
 - `conclusionEvidenceBinding` declares the data fields required by the selected evidence body.
 - The card answers one named business question: "这组数据说明了什么".

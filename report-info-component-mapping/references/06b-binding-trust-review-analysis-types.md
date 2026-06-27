@@ -266,7 +266,9 @@ type AnalysisInsightContract = {
   reviewImpactCardPattern?: ReviewImpactCardPattern;
   reviewImpactEvidenceMode?: ReviewImpactEvidenceMode;
   reviewImpactEvidenceBinding?: ReviewImpactEvidenceBinding;
-  conclusion: string;
+  conclusionRuleId?: string; // Required for normal-state generated business conclusions.
+  generatedConclusionTemplate?: string;
+  conclusion?: string; // Static copy is allowed only for definition/state/fallback text, not normal-state business conclusions.
   evidence?: string[];
   affectedObjects?: string[];
   compareWith?: string;

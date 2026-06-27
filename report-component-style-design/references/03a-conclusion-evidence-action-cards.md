@@ -25,7 +25,7 @@ analysisInsightContract.conclusionCardPattern: one of the values below
 | --- | --- | --- |
 | `metric-evidence-conclusion` | The conclusion must be backed by visible KPI evidence and followed by findings/actions. | Sequence/title/icon, quoted lead conclusion, KPI overview strip, key findings, action suggestions. |
 | `finding-action-conclusion` | KPI evidence is already visible nearby, and the card should focus on interpretation and next steps. | Lead conclusion, compact evidence lines, key findings, action suggestions, optional detail route. |
-| `compact-conclusion-summary` | The available space is small and only a one-sentence conclusion plus one evidence/action line can fit. | Short title/status, one conclusion, one evidence line, one next action or detail link. |
+| `compact-conclusion-summary` | The available space is small and only a generated one-sentence conclusion plus one evidence/action line can fit. | Short title/status, one generated conclusion, one evidence line, one next action or detail link. |
 
 Selection order:
 
@@ -89,11 +89,13 @@ type ConclusionEvidenceBodyMode =
   | 'findings-action-list';
 
 type ConclusionEvidenceActionContract = {
+  conclusionRuleId: string;
   conclusionCardPattern: ConclusionCardPattern;
   conclusionEvidenceBodyMode: ConclusionEvidenceBodyMode;
   subtype: 'conclusion-card';
   insightFamily: 'conclusion';
-  conclusion: string;
+  generatedConclusionTemplate: string;
+  fallbackConclusion?: string;
   metricSummaryItems: Array<{
     metricId: string;
     label: string;
@@ -201,7 +203,7 @@ Strength:
 
 Rules:
 
-- Keep one main conclusion only.
+- Keep one generated main conclusion only, produced from `conclusionRuleId` and the current data context.
 - Default KPI strip uses comparison, actual, and target/attainment. More than `4` cells moves to drawer/detail.
 - The actual metric can use primary blue and larger text; comparison/target stay calmer.
 - Findings and actions should be parallel and specific: at most `3` each.
@@ -234,7 +236,7 @@ Use for small cards, mobile previews, or section headers.
 
 Layout:
 
-- Title/status label, one conclusion sentence, one evidence line, one action/detail link.
+- Title/status label, one generated conclusion sentence, one evidence line, one action/detail link.
 - Icon is optional and usually smaller than in the full card.
 - No separate lower panel unless height allows.
 
@@ -336,7 +338,7 @@ This card fails when:
 Countermeasure:
 
 ```text
-one conclusion -> visible evidence -> specific findings -> concrete actions -> source/freshness/detail
+conclusionRuleId -> generated conclusion -> visible evidence -> specific findings -> concrete actions -> source/freshness/detail
 ```
 
 ## Acceptance Checklist

@@ -115,7 +115,7 @@ For every block, write the six areas:
 | `2-1 auxMetricArea` | Optional | Supporting metrics/info excluding unit, or `null`. |
 | `2-2 unitArea` | Optional | Unit text such as `单位：%`, `单位：件`, or `null`. |
 | `3 componentArea` | Required | Slot list and selected component content area template for every slot. |
-| `4 summaryArea` | Optional | Narrative conclusion only when no conclusion component exists; otherwise source/scope/caveat/action note or `null`. |
+| `4 summaryArea` | Optional | Dynamic narrative conclusion with `conclusionRuleId` only when no conclusion component exists; otherwise source/scope/caveat/action note or `null`. |
 
 Block area table:
 
@@ -135,20 +135,37 @@ Component content area template examples from current assets:
 | --- | --- | --- |
 | `OperatingRevenueMetricContentAreaTemplate.vue` | metric-card | KPI value. |
 | `OperatingProfitMetricContentAreaTemplate.vue` | metric-card | Profit/target/value KPI. |
-| `TargetAchievementContentAreaTemplate.vue` | text-summary | Goal achievement conclusion. |
+| `TargetAchievementContentAreaTemplate.vue` | text-summary | Data-driven goal achievement conclusion, bound to `conclusionRuleId`. |
 | `RegionalRevenueRankingContentAreaTemplate.vue` | ranking-list | Ranking by region/business line. |
 | `RevenueProfitTrendContentAreaTemplate.vue` | line | Time trend. |
 | `ChannelRevenueStructureContentAreaTemplate.vue` | pie | Composition/share. |
 | `CustomerValueScatterContentAreaTemplate.vue` | scatter | Quadrant or relationship analysis. |
 | `CostProfitHeatmapContentAreaTemplate.vue` | heatmap | Matrix/risk heat. |
 | `OperatingHealthRadarContentAreaTemplate.vue` | radar | Multi-dimensional health. |
-| `ExceptionWarningContentAreaTemplate.vue` | text-summary | Warning/conclusion text. |
+| `ExceptionWarningContentAreaTemplate.vue` | text-summary | Data-driven warning/conclusion text, bound to `conclusionRuleId`. |
 | `KeyActionListContentAreaTemplate.vue` | operational-list | Action/closure list. |
 | `OpportunityFunnelContentAreaTemplate.vue` | funnel | Funnel/conversion. |
-| `OperatingConclusionContentAreaTemplate.vue` | text-summary | Main conclusion. |
+| `OperatingConclusionContentAreaTemplate.vue` | text-summary | Data-driven main conclusion, bound to `conclusionRuleId`. |
 | `LaunchConversionWaterfallContentAreaTemplate.vue` | bar | Bar/waterfall-like conversion path. |
 
 If none fits, mark `componentContentAreaTemplateId: TBD(GAP-COMPONENT-TEMPLATE-*)` or declare a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate`, expected standalone Vue file, visual type, metrics, source page/block/slot, data object/API, and reason.
+
+## Dynamic Conclusion Rule Binding
+
+The PRD must separate conclusion placement from conclusion generation:
+
+| Target | Placement rule | Required PRD binding |
+| --- | --- | --- |
+| `4 summaryArea` dynamic conclusion | Allowed only when the same block has no conclusion card/component. | `summaryAreaConfig.conclusionRuleId`, input metrics/API fields, trigger state, rule logic, output fields, fallback copy. |
+| Conclusion card in `3 componentArea` | Use a selected or self-developed component content area template. | Slot `conclusionRuleId`, `analysisInsightContract` when applicable, component template ID/file, input metrics/API, state coverage. |
+| Non-conclusion note | May live in `4 summaryArea` when it is source/scope/caveat/definition/action note. | Static note text, note type, visibility rule, and permission/export behavior. |
+
+Rules:
+
+- Do not hardcode the final business conclusion sentence in `summaryAreaConfig`, conclusion-card props, mock data, or component template defaults.
+- Frontend must recompute conclusions after shell/page filters, business line, date, period, metric switch, ranking click, drilldown context, permission scope, or API refresh changes the input data.
+- A conclusion target without a `RULE-*` row is not implementation-ready unless it is explicitly a static source/scope/caveat/definition/action note.
+- Empty, null, denominator-zero, delayed-data, and permission-denied fallbacks must be declared separately from the normal conclusion sentence template.
 
 ## Self-Development Exception Map
 
@@ -168,6 +185,8 @@ If the requested self-developed item is not in one of these categories, mark it 
 - Every block names all standard areas, using `null` for optional areas not configured.
 - Every component slot has a component content area template or explicit custom fallback.
 - `summaryArea` does not duplicate a conclusion already represented as a conclusion component.
+- Every `summaryArea` conclusion, conclusion card, or analysis insight component references a `RULE-*` row and data/API inputs.
+- Static conclusion sentences in template config, slot props, or mock payloads fail readiness unless they are only fallback text for empty/permission/insufficient-data states.
 - Component content area templates do not include filters, controls, aux metrics, units, titles/pills, or summary explanations.
 - Metric IDs in slots appear in both the metric list and metric mounting matrix.
 - The self-development exception map contains only interaction behavior and component content area template entries.

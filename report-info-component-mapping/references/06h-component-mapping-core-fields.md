@@ -65,6 +65,8 @@ type ComponentMappingCoreFields = {
   answerAtom: string;
   semanticRole: string;
   conclusionChain?: ConclusionChainLink;
+  conclusionRuleId?: string;
+  conclusionRuleBinding?: ConclusionGenerationRuleBinding;
   block: string;
   // Top-level page-grid occupant. Uses the report page `12 * N` grid.
   parentBlockId?: string;

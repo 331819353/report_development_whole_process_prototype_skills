@@ -52,9 +52,9 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 cover the analysis audience, scope, page content, narrative layout, metrics, metric mounting, data/API, and interactions.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 plus 5A cover the analysis audience, scope, page content, narrative layout, dynamic conclusion rules, metrics, metric mounting, data/API, and interactions.
 4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-5. Derive the typed prototype story from the PRD: target audience, one-sentence conclusion/value, protagonist problem or variance, key evidence, and action or follow-up decision.
+5. Derive the typed prototype story from the PRD: target audience, conclusion/value intent plus `conclusionRuleMap`, protagonist problem or variance, key evidence, and action or follow-up decision.
 6. Define the report reader path from PRD roles/scenes and page content: enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source.
 7. Define the report question from PRD background/goals: what happened, why, impact, and next action.
 6. Write the conclusion-first answer before choosing charts. The conclusion must include fact, magnitude, likely reason, and suggested action when evidence allows.
@@ -62,12 +62,12 @@ Template-only gate: this workflow must use templates for framework shell, page l
 8. Define evidence: metric formulas, comparisons, baselines, time/region/channel/product/customer/person/process splits, contribution, and detail evidence.
 9. Define interaction: period switch, dimension switch, chart-to-detail, conclusion-to-chart anchor, expand/collapse, PDF/PPT export, share, comment, historical report.
 10. Use `$report-type-design`: default primary type is `analysis-diagnostic`; use `review-recap` when meeting/report circulation is the main scenario.
-11. Use `$report-info-component-mapping` to bind conclusions, evidence components, attribution blocks, action items, appendix details, and states.
+11. Use `$report-info-component-mapping` to bind conclusions, `conclusionRuleMap`, evidence components, attribution blocks, action items, appendix details, and states.
 12. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 14. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport narrative path, and nav/page wiring.
-15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every narrative/evidence block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
-16. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable template fits the evidence body, create a standalone ECharts-backed Vue component content area template and register/copy it before slot fill. Do not put title, pills, filters, controls, additional information, units, conclusion, description, or explanation copy inside the component slot.
+15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every narrative/evidence block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation. Any conclusion in `4 summaryArea`, conclusion cards, or analysis insight components must consume `conclusionRuleMap`.
+16. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable template fits the evidence body, create a standalone ECharts-backed Vue component content area template and register/copy it before slot fill. Do not put title, pills, filters, controls, additional information, units, description, or explanation copy inside the component slot. A conclusion card or analysis insight component may render a generated conclusion only when bound to `conclusionRuleId`; do not put fixed conclusion copy in slot props or component defaults.
 17. Use the owning layout, template, and component skills only in this order: finalize `pageLayoutConfig`, finalize `blockLayoutTemplateMap`, then finalize each component content area template so the report reads as a coherent story, not a chart gallery.
 18. Verify conclusion-evidence links, action follow-up, export/share/comment needs, and runnable URL when requested.
 
@@ -75,12 +75,13 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 - Workflow mode, Preflight understanding matrix, report audience, report period, data scope, business question, and meeting/circulation scenario.
 - PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, analysis-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
-- Typed prototype story: one-sentence conclusion/value, reader path, protagonist problem or variance, key evidence, action/follow-up decision, and 30-second review path.
+- Typed prototype story: conclusion/value intent plus dynamic rule coverage, reader path, protagonist problem or variance, key evidence, action/follow-up decision, and 30-second review path.
 - Affected-surface to owning-skill routing, especially narrative layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - Core conclusion, supporting evidence, cause breakdown, impact assessment, and action recommendation.
+- Dynamic conclusion rule map: `conclusionRuleMap` with `RULE-*` rows for the core conclusion, section conclusions, summary-area narratives, conclusion cards, and analysis insight components.
 - Result-content boundary: visible conclusions/evidence/actions versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - Narrative block plan: title/meta, conclusion, overview, problem analysis, attribution, action, appendix.
-- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and ECharts self-developed component content area fallback list.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence, and ECharts self-developed component content area fallback list.
 - Comparison model: current vs previous, YoY, actual vs target, before/after, segment comparison.
 - Action model: owner, deadline, follow-up metric, status, and tracking notes.
 - Filter, interaction, export/share/comment/history, permission, freshness, and state requirements.
@@ -103,5 +104,6 @@ Template-only gate: this workflow must use templates for framework shell, page l
 - Do not let recommendations appear without owner, follow-up metric, or tracking intent when the report drives action.
 - Do not repeat the same metric across multiple charts unless each chart answers a different narrative step.
 - Do not claim readiness unless each conclusion is tied to evidence or marked as insufficient-data.
-- Do not put narrative titles, evidence summaries, conclusion text, filters, controls, additional information, units, descriptions, or explanation copy inside component content slots. Those stay on 分块布局模板 supporting areas, shell/page config, or narrative blocks; the slot carries only the selected standalone Vue component content area.
+- Do not claim readiness when a core conclusion, section conclusion, `4 summaryArea` conclusion, conclusion card, or analysis insight component uses fixed normal-state copy instead of a PRD `RULE-*` rule that recomputes from current data.
+- Do not put narrative titles, evidence summaries, fixed conclusion text, filters, controls, additional information, units, descriptions, or explanation copy inside component content slots. Those stay on 分块布局模板 supporting areas, shell/page config, or narrative blocks. A conclusion card or analysis insight component may render generated conclusion output only through `conclusionRuleId`.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or conclusion/story claims rely on generic design assertions without evidence links.

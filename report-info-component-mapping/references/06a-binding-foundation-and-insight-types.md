@@ -139,6 +139,21 @@ type ConclusionChainLink = {
   unresolvedGapCode?: 'RPT-NO-OVERALL-CONCLUSION' | 'RPT-ORPHAN-SECTION' | 'RPT-ORPHAN-COMPONENT';
 };
 
+type ConclusionGenerationRuleBinding = {
+  conclusionRuleId: string; // RULE-* from PRD conclusionRuleMap.
+  displayTarget: 'summaryArea' | 'conclusionCard' | 'analysisInsight' | 'other';
+  inputMetricIds: string[];
+  inputFieldRefs: string[];
+  triggerState: string[];
+  ruleLogic: string;
+  outputTemplate: string;
+  evidenceFields: string[];
+  priorityOrSeverity?: string;
+  fallbackRule: string;
+  permissionMaskingRule?: string;
+  qaCase: string;
+};
+
 type ConclusionCardPattern =
   | 'metric-evidence-conclusion'
   | 'finding-action-conclusion'
@@ -153,6 +168,7 @@ type ConclusionEvidenceBodyMode =
   | 'findings-action-list';
 
 type ConclusionEvidenceBinding = {
+  conclusionRuleId: string;
   conclusionEvidenceBodyMode: ConclusionEvidenceBodyMode;
   sourceDataset: string;
   periodField: string;

@@ -51,7 +51,7 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 cover detail users, scope, page content, layout, record fields/metrics, data/API, interactions, permissions, export, and states.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 plus 5A cover detail users, scope, page content, layout, dynamic summary/conclusion rules when present, record fields/metrics, data/API, interactions, permissions, export, and states.
 4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
 5. Derive the typed prototype story from the PRD: target user, one-sentence lookup/verification value, protagonist record type, primary trace/export/action outcome, and required trust signal.
 6. Define the detail-report user path from PRD roles/scenes and interactions: enter with task/context -> narrow with filters/search -> identify row -> inspect details/source -> export or act -> return with filter/page state preserved.
@@ -62,11 +62,11 @@ Template-only gate: this workflow must use templates for framework shell, page l
 9. Define export: current page/current filter/all matched, current columns/full fields, row limits, async export, watermark, audit log, approval, masking, and export failure state.
 10. Define traceability: detail drawer, source-document jump, operation log, customer/order/product/invoice/payment links.
 11. Use `$report-type-design` with `detail-query` as primary; add `reconciliation-traceability` only when matching differences or audit evidence is central.
-12. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, export, detail drawer, source links, permissions, and states.
+12. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, export, detail drawer, source links, permissions, states, and `conclusionRuleMap` when the page has generated trust/summary/conclusion text.
 13. Route table, filter, and component-internal placement surfaces to `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 14. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 15. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, table/search/filter/detail block spans, first-viewport query path, and nav/page wiring.
-16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every query/table/detail/action block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation.
+16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every query/table/detail/action block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation. Generated trust/summary/conclusion text in `4 summaryArea` or a component must consume `conclusionRuleMap`.
 17. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable table/list/detail template fits, create a standalone Vue component content area template and register/copy it before slot fill. Do not put title, pills, filters, controls, additional information, units, trust copy, description/help text, or summary text inside the component slot.
 18. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
 
@@ -79,7 +79,8 @@ Template-only gate: this workflow must use templates for framework shell, page l
 - Filter plan: high-frequency filters, more filters, defaults, reset, saved schemes, query constraints.
 - Table field plan: visible columns, hidden/optional columns, field source, format, width/alignment, status tags, sensitive handling.
 - Table interaction plan: sorting, pagination, fixed/frozen behavior, column settings, detail drawer, source jumps, return-state preservation.
-- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and self-developed component content area fallback list.
+- Dynamic conclusion rule map when visible generated trust/summary/conclusion text exists: `RULE-*` rows, input fields, triggers, rule logic, fallback, and QA cases.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence when generated conclusions exist, and self-developed component content area fallback list.
 - Result-content boundary: visible query/verification/trust/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - Export plan: scope, fields, limits, async behavior, watermark, audit, approval, masking, failure state.
 - Component/data/filter/control/interaction binding matrix.
@@ -101,5 +102,6 @@ Template-only gate: this workflow must use templates for framework shell, page l
 - Do not miss export scope, row limit, permission, masking, or audit rules.
 - Do not claim readiness without row grain, primary key, default sort, pagination, and exact filter binding.
 - Do not ignore empty, timeout, no-permission, over-limit, and export-failure states.
+- Do not claim readiness when visible generated trust/summary/conclusion text is fixed normal-state copy instead of a PRD `RULE-*` rule that recomputes from current data.
 - Do not put block template title, pills, filters, controls, additional information, units, trust copy, description/help text, or summary/explanation content inside table/detail component content slots.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or table/filter/export claims lack field-level evidence and non-default-state checks.

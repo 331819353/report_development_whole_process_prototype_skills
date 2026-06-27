@@ -74,7 +74,7 @@ Keep `visualType` as the real evidence family. The review-impact fields own the 
 | 活动上线后趋势是否抬升 | `event-trend-lift-card` | `event-annotated-trend` | line chart with event marker and optional control/baseline | `760x260` |
 | 活动是否改善转化环节 | `event-funnel-lift-card` | `funnel-step-lift` | funnel/step rows with impacted value, baseline/control, lift | `760x260` |
 | 不同用户/门店/区域受影响是否不同 | `event-segment-lift-card` | `segment-lift-bars` | grouped bars or row bars by segment | `760x260` |
-| 只需要复盘摘要或结论条 | `event-conclusion-card` | `impact-summary-strip` | one conclusion plus `1-3` evidence facts | `560x180` |
+| 只需要复盘摘要或结论条 | `event-conclusion-card` | `impact-summary-strip` | one generated conclusion plus `1-3` evidence facts | `560x180` |
 
 Selection order:
 

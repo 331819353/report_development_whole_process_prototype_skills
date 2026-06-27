@@ -171,7 +171,7 @@ Annotations cannot cover axis labels, legends, selected marks, or the main anoma
 
 ### Subtype Fit Rules
 
-- Conclusion card: `320-560px` wide, `96-144px` high, one conclusion plus one evidence line.
+- Conclusion card: `320-560px` wide, `96-144px` high, one generated conclusion plus one evidence line.
 - Insight card: `2-4` insights by default, max `5`, item height `22-28px`.
 - Anomaly/risk card: reserve object, metric, magnitude, and action; use weak warning tint or `3-4px` left bar, not full-card red.
 - Attribution/impact card: Top `3` reasons by default, max `5`; contribution values align right.
