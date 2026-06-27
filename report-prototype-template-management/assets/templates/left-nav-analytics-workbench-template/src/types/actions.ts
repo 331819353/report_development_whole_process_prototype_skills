@@ -8,6 +8,17 @@ export type DashboardExpressionValue =
 export type DashboardParams = Record<string, DashboardExpressionValue>;
 
 export type DashboardActionType = 'dashboardAction' | (string & {});
+export type DashboardInteractionType = 'drilldown' | 'jump' | 'modal' | 'drawer' | 'popup' | 'crossFilter';
+export type DashboardInteractionTriggerOwner = 'templateActionHook' | 'componentOwnedEvent' | 'widgetEvent';
+export type DashboardInteractionTargetType =
+  | 'route'
+  | 'drawer'
+  | 'modal'
+  | 'popover'
+  | 'external'
+  | 'cross-filter'
+  | 'fullscreen'
+  | 'export';
 
 export interface DashboardRuntimeContext {
   // 当前组件所在区域。全局壳层只负责主画布分块，组件私有弹窗/下钻自行维护上下文。
@@ -36,6 +47,21 @@ export interface DashboardWidgetActionEvent {
 export interface DashboardActionConfig {
   // 动作配置仅作为预留钩子的元数据；壳层不内置执行业务交互。
   type: DashboardActionType;
+  interactionId?: string;
+  interactionType?: DashboardInteractionType;
+  triggerOwner?: DashboardInteractionTriggerOwner;
+  sourcePageId?: string;
+  sourceBlockId?: string;
+  sourceSlotId?: string;
+  sourceComponentContentAreaTemplateId?: string;
+  payloadFields?: string[];
+  targetType?: DashboardInteractionTargetType;
+  contextInheritance?: string[];
+  stateSync?: string;
+  apiId?: string;
+  permissionRule?: string;
+  closeBackBehavior?: string;
+  qaCase?: string;
   // 可选业务目标元数据，具体含义由注册的钩子自行约定。
   target?: DashboardExpressionValue;
   // 传给预留钩子的业务参数。

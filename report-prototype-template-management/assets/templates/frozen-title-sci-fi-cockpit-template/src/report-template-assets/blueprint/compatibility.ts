@@ -7,6 +7,7 @@ import type {
   ReportBlueprint,
   ReportBlueprintBlock,
   ReportBlueprintComponentSlot,
+  ReportBlueprintSelfDevelopmentException,
   ReportCompatibilityFinding,
   ReportCompatibilityRule,
   ReportTemplateSlotFill,
@@ -54,6 +55,10 @@ export const reportCompatibilityRules: ReportCompatibilityRule[] = [
 const knownSlotIds = new Set(['titleArea', 'pillArea', 'auxMetricArea', 'unitArea', 'componentArea', 'summaryArea']);
 const componentContentAreaSlotFillIds = new Set(['componentArea']);
 const standardSlotAreaList = '1-1 titleArea, 1-2 pillArea, 2-1 auxMetricArea, 2-2 unitArea, 3 componentArea, 4 summaryArea';
+const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'componentContentAreaTemplate']);
+const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
+const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
+const allowedInteractionTargetTypes = new Set(['route', 'drawer', 'modal', 'popover', 'external', 'cross-filter', 'fullscreen', 'export']);
 
 const pushFinding = (
   findings: ReportCompatibilityFinding[],
@@ -104,6 +109,151 @@ const validateSlotFills = (
 
     if (slotFill.slotId === 'auxMetricArea' && (slotFill.metrics?.length ?? 0) > 5) {
       pushFinding(findings, 'warning', 'RPT-SLOT-AUX-DENSE', '2-1 auxMetricArea has more than 5 metrics; the materializer will keep the first supported metrics plus the 2-2 unit.', slotPath);
+    }
+  });
+};
+
+const hasNonEmptyString = (value?: string) => Boolean(value?.trim());
+
+const requireExceptionStringField = (
+  exception: ReportBlueprintSelfDevelopmentException,
+  field: keyof ReportBlueprintSelfDevelopmentException,
+  findings: ReportCompatibilityFinding[],
+  path: string,
+) => {
+  const value = exception[field];
+
+  if (typeof value !== 'string' || !value.trim()) {
+    pushFinding(findings, 'error', 'RPT-SELFDEV-FIELD-MISSING', `selfDevelopmentExceptionMap.${String(field)} is required.`, `${path}.${String(field)}`);
+  }
+};
+
+const requireExceptionStringArrayField = (
+  exception: ReportBlueprintSelfDevelopmentException,
+  field: keyof ReportBlueprintSelfDevelopmentException,
+  findings: ReportCompatibilityFinding[],
+  path: string,
+) => {
+  const value = exception[field];
+
+  if (!Array.isArray(value) || !value.some((item) => typeof item === 'string' && item.trim())) {
+    pushFinding(findings, 'error', 'RPT-SELFDEV-FIELD-MISSING', `selfDevelopmentExceptionMap.${String(field)} must list at least one field.`, `${path}.${String(field)}`);
+  }
+};
+
+const getSelfDevelopmentExceptionEntries = (blueprint: ReportBlueprint) => {
+  const exceptions = blueprint.selfDevelopmentExceptionMap;
+
+  if (!exceptions) {
+    return [];
+  }
+
+  if (Array.isArray(exceptions)) {
+    return exceptions.map((exception, index) => ({
+      key: exception.id ?? String(index),
+      exception,
+      path: `selfDevelopmentExceptionMap[${index}]`,
+    }));
+  }
+
+  return Object.entries(exceptions).map(([key, exception]) => ({
+    key,
+    exception: { ...exception, id: exception.id ?? key },
+    path: `selfDevelopmentExceptionMap.${key}`,
+  }));
+};
+
+const validateSelfDevelopmentExceptions = (
+  blueprint: ReportBlueprint,
+  context: ReportAssetResolutionContext,
+  findings: ReportCompatibilityFinding[],
+) => {
+  getSelfDevelopmentExceptionEntries(blueprint).forEach(({ key, exception, path }) => {
+    const exceptionId = exception.id ?? key;
+
+    if (!hasNonEmptyString(exceptionId)) {
+      pushFinding(findings, 'error', 'RPT-SELFDEV-ID-MISSING', 'selfDevelopmentExceptionMap entries must declare id or use a non-empty map key.', path);
+    }
+
+    if (!exception.type || !allowedSelfDevelopmentExceptionTypes.has(exception.type)) {
+      pushFinding(
+        findings,
+        'error',
+        'RPT-SELFDEV-TYPE',
+        'Only interactionBehavior and componentContentAreaTemplate may be self-developed; all other report areas must use templates.',
+        `${path}.type`,
+      );
+      return;
+    }
+
+    if (exception.type === 'componentContentAreaTemplate') {
+      ['sourcePageId', 'sourceBlockId', 'sourceSlotId', 'componentContentAreaTemplateId'].forEach((field) =>
+        requireExceptionStringField(exception, field as keyof ReportBlueprintSelfDevelopmentException, findings, path),
+      );
+
+      if (
+        exception.componentContentAreaTemplateId &&
+        !getAssetById(context.componentContentAreaTemplates, exception.componentContentAreaTemplateId)
+      ) {
+        pushFinding(
+          findings,
+          'error',
+          'RPT-SELFDEV-COMPONENT-TEMPLATE-MISSING',
+          `Unknown component content area template "${exception.componentContentAreaTemplateId}". Register it before using it as a self-developed exception.`,
+          `${path}.componentContentAreaTemplateId`,
+        );
+      }
+
+      return;
+    }
+
+    [
+      'interactionId',
+      'interactionType',
+      'triggerOwner',
+      'sourcePageId',
+      'sourceBlockId',
+      'sourceSlotId',
+      'sourceComponentContentAreaTemplateId',
+      'target',
+      'targetType',
+      'stateSync',
+      'permissionRule',
+      'closeBackBehavior',
+      'qaCase',
+    ].forEach((field) =>
+      requireExceptionStringField(exception, field as keyof ReportBlueprintSelfDevelopmentException, findings, path),
+    );
+    requireExceptionStringArrayField(exception, 'payloadFields', findings, path);
+    requireExceptionStringArrayField(exception, 'contextInheritance', findings, path);
+
+    if (exception.interactionType && !allowedInteractionTypes.has(exception.interactionType)) {
+      pushFinding(findings, 'error', 'RPT-SELFDEV-INTERACTION-TYPE', `Unsupported interactionType "${exception.interactionType}".`, `${path}.interactionType`);
+    }
+
+    if (exception.triggerOwner && !allowedInteractionTriggerOwners.has(exception.triggerOwner)) {
+      pushFinding(findings, 'error', 'RPT-SELFDEV-TRIGGER-OWNER', `Unsupported triggerOwner "${exception.triggerOwner}".`, `${path}.triggerOwner`);
+    }
+
+    if (exception.targetType && !allowedInteractionTargetTypes.has(exception.targetType)) {
+      pushFinding(findings, 'error', 'RPT-SELFDEV-TARGET-TYPE', `Unsupported targetType "${exception.targetType}".`, `${path}.targetType`);
+    }
+
+    if (
+      exception.sourceComponentContentAreaTemplateId &&
+      !getAssetById(context.componentContentAreaTemplates, exception.sourceComponentContentAreaTemplateId)
+    ) {
+      pushFinding(
+        findings,
+        'error',
+        'RPT-SELFDEV-INTERACTION-SOURCE-MISSING',
+        `Unknown source component content area template "${exception.sourceComponentContentAreaTemplateId}".`,
+        `${path}.sourceComponentContentAreaTemplateId`,
+      );
+    }
+
+    if (!hasNonEmptyString(exception.reason)) {
+      pushFinding(findings, 'warning', 'RPT-SELFDEV-REASON', 'Self-development exceptions should state why no existing template is sufficient.', `${path}.reason`);
     }
   });
 };
@@ -188,7 +338,7 @@ const validateComponentSlots = (
         if (!hasConfiguredSlot) {
           pushFinding(
             findings,
-            'warning',
+            'error',
             'RPT-COMPONENT-SLOT-CONTRACT-UNFILLED',
             `Block layout template slot "${contract.label}" is not filled yet.`,
             `${path}.componentSlots`,
@@ -203,7 +353,7 @@ const validateComponentSlots = (
 
     regionKeys.forEach((key) => {
       if (!configuredKeys.has(key)) {
-        pushFinding(findings, 'warning', 'RPT-COMPONENT-SLOT-UNFILLED', `Region "${key}" is declared in the block layout template pattern but has no component slot.`, `${path}.componentSlots`);
+        pushFinding(findings, 'error', 'RPT-COMPONENT-SLOT-UNFILLED', `Region "${key}" is declared in the block layout template pattern but has no component slot.`, `${path}.componentSlots`);
       }
     });
   }
@@ -248,7 +398,7 @@ const validateComponentSlots = (
     }
 
     if (!widget) {
-      pushFinding(findings, 'warning', 'RPT-COMPONENT-SLOT-NO-WIDGET', `Component slot "${slot.id}" has no component content area template or inline widget.`, slotPath);
+      pushFinding(findings, 'error', 'RPT-COMPONENT-SLOT-NO-WIDGET', `Component slot "${slot.id}" has no component content area template or inline widget.`, slotPath);
     }
 
     if (countEnabledPills(widget?.titlePills) > 3) {
@@ -290,6 +440,8 @@ export const validateReportBlueprint = (
   if (!pageLayout) {
     pushFinding(findings, 'error', 'RPT-PAGE-LAYOUT-MISSING', `Unknown pageLayoutId "${blueprint.pageLayoutId}".`, 'pageLayoutId');
   }
+
+  validateSelfDevelopmentExceptions(blueprint, context, findings);
 
   blueprint.pages.forEach((page, pageIndex) => {
     const pagePath = `pages[${pageIndex}]`;
@@ -409,7 +561,7 @@ export const validateReportBlueprint = (
 
     spans.forEach((span) => {
       if (!blockById.has(span.label)) {
-        pushFinding(findings, 'warning', 'RPT-LAYOUT-BLOCK-UNCONFIGURED', `Block "${span.label}" is present in layoutRows but has no blueprint block config.`, `${pagePath}.blocks`);
+        pushFinding(findings, 'error', 'RPT-LAYOUT-BLOCK-UNCONFIGURED', `Block "${span.label}" is present in layoutRows but has no blueprint block config.`, `${pagePath}.blocks`);
       }
     });
   });

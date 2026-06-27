@@ -15,6 +15,8 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this workflow when the prototype should query, verify, export, or trace exact business records. It is one of the five peer prototype workflows.
 
+PRD prerequisite: consume `$report-prd-document-generation` as the independent input contract. This workflow executes detail-report-specific query, table, export, traceability, and permission design from the PRD; it must not generate a complete PRD internally.
+
 Core intent:
 
 ```text
@@ -25,11 +27,14 @@ Prototype story gate: this workflow does not call `$report-prototype-design-thin
 
 Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 and design-process artifacts such as 下钻链路清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes are supplemental by default and stay in tooltip/detail/dictionary/interaction contract/validation/handoff unless explicitly requested as visible page content or rewritten as business-value conclusion, evidence, trust/source, or action content.
 
+Template-only gate: this workflow must use templates for framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Only interaction behavior and component content area templates may be self-developed, and both must appear in the PRD/workflow `selfDevelopmentExceptionMap`.
+
 ## Child Skills
 
 | Stage | Skill |
 | --- | --- |
-| Requirement intake | `$report-requirement-structure-extraction` |
+| PRD prerequisite | `$report-prd-document-generation` |
+| Requirement evidence clarification | `$report-requirement-structure-extraction` |
 | Report business type | `$report-type-design` |
 | Component/data/filter/interaction mapping | `$report-info-component-mapping` |
 | Page layout | `$report-visual-layout-design` |
@@ -45,10 +50,12 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 ## Workflow
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
-2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-3. Define the typed prototype story: target user, one-sentence lookup/verification value, protagonist record type, primary trace/export/action outcome, and required trust signal.
-4. Define the detail-report user path: enter with task/context -> narrow with filters/search -> identify row -> inspect details/source -> export or act -> return with filter/page state preserved.
-5. Define row grain, primary key, business record identity, source system, freshness, and trace target.
+2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 cover detail users, scope, page content, layout, record fields/metrics, data/API, interactions, permissions, export, and states.
+4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
+5. Derive the typed prototype story from the PRD: target user, one-sentence lookup/verification value, protagonist record type, primary trace/export/action outcome, and required trust signal.
+6. Define the detail-report user path from PRD roles/scenes and interactions: enter with task/context -> narrow with filters/search -> identify row -> inspect details/source -> export or act -> return with filter/page state preserved.
+7. Define row grain, primary key, business record identity, source system, freshness, and trace target from PRD data/API requirements.
 6. Design filters: high-frequency filters outside, low-frequency filters under "more filters"; declare default values, reset behavior, query limits, and saved filter needs.
 7. Design table fields by order: identity -> time -> subject -> amount/quantity -> status -> owner -> operation.
 8. Define table behavior: default sort, optional sort fields, pagination, page size, fixed header, frozen key columns, column resize, column configuration, return-state preservation.
@@ -66,6 +73,7 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, users, query scenario, row grain, primary key, source system, freshness, and trace target.
+- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, detail-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: one-sentence lookup/verification value, user path, protagonist record type, trace/export/action outcome, trust signal, and 30-second review path.
 - Affected-surface to owning-skill routing, especially table, filter, component placement, layout, design-system, template, and runtime QA.
 - Filter plan: high-frequency filters, more filters, defaults, reset, saved schemes, query constraints.
@@ -76,12 +84,15 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 - Export plan: scope, fields, limits, async behavior, watermark, audit, approval, masking, failure state.
 - Component/data/filter/control/interaction binding matrix.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
-- Template/custom shell decision, changed files if implemented, verification, URL or blocker, and readiness.
+- `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
 ## Quality Gate
 
 - Do not design only a field list; query efficiency and traceability are part of the prototype.
+- Do not start query path, table field design, export/traceability, layout, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not mark ready until every PRD execution row needed for detail content, layout, fields/metrics, data/API, interactions, permissions, export, masking, and states is consumed or explicitly deferred out of scope.
 - Do not start layout or table design until the lookup/verification story, user path, row identity, trace/export/action outcome, and trust signal are explicit or safely inferred.
+- Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.
 - Do not start runnable implementation until the nine-step template operation chain has no missing block configs or slots. `blockLayoutTemplateMap` must name the selected independent block layout Vue file, not only a generic size wrapper plus `componentRegionPattern`. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone component content area template.
 - Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not start implementation or repair from this workflow alone when table/filter/placement surfaces require their specific front-door skills.

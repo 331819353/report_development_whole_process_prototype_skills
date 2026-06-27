@@ -1,6 +1,6 @@
 ---
 name: report-prototype-template-management
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于管理可运行报表原型模板资产，选择、复制、二开和校验 Vue/Vite 报表模板。报表原型默认走内置模板，只有用户明确自定义/精确复刻/保留现有壳或模板无法满足时才走 custom。用户提到报表模板、页面模板、模板布局token、模板筛选、选择模板、复制模板、模板二开、topbar、left nav、亮色模板、固定1920大屏、Haier logo、dashboard.config.ts、dashboard.dataset.json、validate-dashboard-contract、启动预览URL时触发。"
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于管理可运行报表原型模板资产，选择、复制、二开和校验 Vue/Vite 报表模板。报表开发固定走内置模板：除交互和组件内容区模板可自开发外，页面壳、页面布局、分块布局模板、标题区、辅助信息区、单位区、说明区、导航、筛选、工具栏、导出和权限面必须使用模板。用户提到报表模板、页面模板、模板布局token、模板筛选、选择模板、复制模板、模板二开、topbar、left nav、亮色模板、固定1920大屏、Haier logo、dashboard.config.ts、dashboard.dataset.json、validate-dashboard-contract、启动预览URL时触发。"
 ---
 
 # Report Prototype Template Management
@@ -17,7 +17,7 @@ Use this skill when the task needs a runnable report prototype template or must 
 
 It does not own report-type business logic, component visual rules, API documentation, or production frontend integration. Those route to `$report-type-design`, `$report-info-component-mapping`, `$report-component-style-design`, and `frontend-development-workflow`.
 
-Default routing: choose `pageShellPath: template` for runnable report prototypes unless the user explicitly asks for custom/free design, exact screenshot/HTML/source restoration, existing shell preservation, or a documented bundled-template limitation.
+Default routing: choose `pageShellPath: template` for runnable report prototypes. In the report development flow, custom/free shell, exact shell restoration, existing shell preservation, custom page layout, custom block layout, duplicate filter/nav/toolbar surfaces, and static HTML shell paths are blockers or out-of-scope exceptions, not implementation routes. The only self-developed surfaces are interaction behavior and component content area templates.
 
 Default development stack contract: bundled report prototype projects use `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` as one integrated stack. Do not downgrade this to "Vue 3 only", "Vue 3 + ECharts only", or a hand-built UI shell. Element Plus owns base controls, messages, tables/forms/dialog-ready styling, locale, and CSS variables; ECharts owns standard chart rendering through actual option/series/runtime instances. Add AntV S2 only for pivot/cross/wide analytical table needs.
 
@@ -62,6 +62,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 ## Workflow
 
+0. Enforce the template-only report development constraint. Framework template, page layout config, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, permission, and shell state use the bundled template contracts. Record any self-developed items only in `selfDevelopmentExceptionMap` with type `interactionBehavior` or `componentContentAreaTemplate`.
 1. Select exactly one 框架模板 using display theme, selected pattern cards, content volume, navigation depth, interaction density, and display environment.
 2. Design 页面布局配置 through `layoutRows`, stable block ids, and page/nav widget wiring; for templates with `nav[]`, define substantial nav-page content before copying or editing.
 3. Based on 页面布局配置, select 分块布局模板 for each page block. Each selectable block layout template must resolve to an independent Vue entry file, such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; the generic `SpanCCxRRLayout.vue` size wrappers are only bases for creating new selectable templates. A block layout template is size plus slots, and every block uses the standard areas: `1-1 titleArea` 标题区, `1-2 pillArea` 胶囊按钮区, `2-1 auxMetricArea` 附加信息区, `2-2 unitArea` 单位区, `3 componentArea` 组件区, and `4 summaryArea` 说明区.
@@ -79,7 +80,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 12. Copy or merge the full template into the target.
 13. Keep shell-owned behavior in template config/data/action registries and widget registries.
 14. Preserve native template filter surfaces; configure `filters[]`, data sources, empty-filter values, resolvers, and widget bindings instead of adding a duplicate filter bar.
-15. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar; widgets own only current-component local filters, drill/detail links, and component-scoped micro actions. If a business component must own a normally shell-owned control, set `controlOwnership: "component"` or an equivalent explicit decision and disable/hide the matching template control.
+15. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar. Widgets may own only component-scoped interaction behavior that appears in the PRD `selfDevelopmentExceptionMap`, such as drill/detail links, row actions, chart-point actions, drawer/modal triggers, or micro actions that do not duplicate shell controls. Do not move shell-owned controls into components inside the report development flow.
 16. Preserve the stack contract before source edits: keep `vue`, `@vitejs/plugin-vue`, `vite`, `typescript`, `vue-tsc`, `element-plus`, `echarts`, and `axios` in package dependencies; keep `src/main.ts` bootstrapping Vue 3 and registering Element Plus; use ECharts for standard chart widgets instead of manual SVG/HTML/CSS/canvas marks.
 17. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
 18. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
@@ -90,7 +91,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Required Output
 
 - Selected template ID and reason.
-- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with each block's selected independent block layout Vue file, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
+- `pageShellPath: template` and `selfDevelopmentExceptionMap`, containing only interaction behavior IDs and component content area template IDs.
+- Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with each block's selected independent block layout Vue file, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and `selfDevelopmentExceptionMap` entries when component content area templates or interaction behavior are self-developed.
 - Compatibility notes for display theme, pattern cards, report decision path, and navigation depth.
 - Shell decisions: title, logo, navigation, native filters, toolbar, controls.
 - Control ownership matrix: refresh, download/export, copy/share, global filters, local filters, period/date controls, toolbar actions, and any disabled template controls.
@@ -105,13 +107,13 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 ## Quality Gate
 
-- Do not choose custom development when a bundled template can satisfy the requirement.
+- Do not choose custom shell/page/block/supporting-area development inside the report development flow. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, permission, and shell state must use templates; only interaction behavior and component content area templates may be self-developed.
 - Do not mark the template implementation ready until the nine-step operation chain is complete: framework template selected, page layout configured, block layout templates mapped with SingleSlot/MultiSlot rationale, title configured, pill/aux/unit/summary decisions recorded, optional supporting areas configured only when needed, and every `3 componentArea` slot filled by a component content area template or a newly registered standalone ECharts component content area template.
 - Do not accept a selectable 分块布局模板 that exists only as `SpanCCxRRLayout.vue` plus `componentRegionPattern` config. The selected block must name/export/register an independent Vue entry file; generic size wrappers are allowed only as bases for creating new selectable templates.
 - Do not choose a nav template unless multiple substantial nav pages are implemented.
 - Do not accept a generated/copied project that keeps Vue 3 but drops ECharts or Element Plus. Missing `echarts`, `element-plus`, Vue 3 bootstrap, Element Plus global registration/style import, or actual ECharts runtime ownership for chart widgets is a template readiness failure.
-- Do not replace Element Plus controls with ad hoc HTML controls for ordinary buttons, selects, popovers, drawers, dialogs, tables, messages, or form-like controls unless the user names an existing project design system or an explicit custom-shell exception.
-- Do not add duplicate shell, filter bar, toolbar, or navigation layers over existing template slots without an explicit redesign decision.
+- Do not replace Element Plus controls with ad hoc HTML controls for ordinary buttons, selects, popovers, drawers, dialogs, tables, messages, or form-like controls unless the user names an existing project design system and the control is inside an allowed interaction or component content area template exception.
+- Do not add duplicate shell, filter bar, toolbar, or navigation layers over existing template slots. Redesign requests for those surfaces are blockers or out-of-scope exceptions for report development.
 - Do not fill component slots with block-layout additional information, unit fields, title pills, filters, controls, description/help text, or summary/explanation copy. Component slots carry only the selected standalone Vue component content area file / mounted component; `1-1`, `1-2`, `2-1`, `2-2`, and `4` supporting areas stay on the 分块布局模板.
 - Do not accept component content area templates that introduce their own bordered card shell. The component content area root is a rounded rectangle with no border line; its optional top title strip is `20px` high, centered, `3px` top-padded, removable through configuration, and hidden when the parent block layout has only one component slot.
 - Do not render duplicate refresh, download/export, copy/share, period/date, global-filter, or toolbar controls in business widgets when the selected template already owns those controls. Duplicate visible controls are `VIS-DUPLICATE-CONTROL` or `RPT-SHELL-DUPLICATE` unless component ownership is explicitly declared and the corresponding template control is disabled/hidden.

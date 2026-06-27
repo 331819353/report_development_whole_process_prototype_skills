@@ -112,6 +112,13 @@ const getStringArray = (node) =>
     ? node.elements.map((element) => getStringValue(element)).filter(Boolean)
     : [];
 
+const hasNonEmptyStringProperty = (objectNode, propertyName) => Boolean(getStringValue(getProperty(objectNode, propertyName)).trim());
+
+const hasNonEmptyStringArrayProperty = (objectNode, propertyName) => {
+  const values = getStringArray(getProperty(objectNode, propertyName));
+  return values.some((value) => value.trim());
+};
+
 const collectGridConfigs = () => {
   const gridConfigs = [];
 
@@ -182,6 +189,10 @@ const minimumAxisChartBodyHeight = 180;
 const minimumAxisPlotHeight = 120;
 const denseAxisPlotHeight = 140;
 const reservedActionHooks = new Set(['dashboardAction']);
+const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'componentContentAreaTemplate']);
+const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
+const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
+const allowedInteractionTargetTypes = new Set(['route', 'drawer', 'modal', 'popover', 'external', 'cross-filter', 'fullscreen', 'export']);
 const requiredStackDependencies = ['vue', '@vitejs/plugin-vue', 'vite', 'typescript', 'vue-tsc', 'element-plus', 'echarts', 'axios'];
 const chartVisualTypes = new Set([
   'line',
@@ -447,6 +458,115 @@ const validateAllLayoutRows = () => {
   visit(sourceFile);
 };
 
+const validateEnumProperty = (objectNode, propertyName, allowedValues, location) => {
+  const value = getStringValue(getProperty(objectNode, propertyName));
+
+  if (value && !allowedValues.has(value)) {
+    errors.push(`${location}.${propertyName}: unsupported value "${value}".`);
+  }
+};
+
+const validateInteractionBehaviorContract = (objectNode, location) => {
+  [
+    'interactionId',
+    'interactionType',
+    'triggerOwner',
+    'sourcePageId',
+    'sourceBlockId',
+    'sourceSlotId',
+    'sourceComponentContentAreaTemplateId',
+    'targetType',
+    'stateSync',
+    'permissionRule',
+    'closeBackBehavior',
+    'qaCase',
+  ].forEach((field) => {
+    if (!hasNonEmptyStringProperty(objectNode, field)) {
+      errors.push(`${location}: interaction behavior must declare ${field}.`);
+    }
+  });
+
+  if (!hasProperty(objectNode, 'target')) {
+    errors.push(`${location}: interaction behavior must declare target.`);
+  }
+
+  ['payloadFields', 'contextInheritance'].forEach((field) => {
+    if (!hasNonEmptyStringArrayProperty(objectNode, field)) {
+      errors.push(`${location}: interaction behavior must declare non-empty ${field}.`);
+    }
+  });
+
+  validateEnumProperty(objectNode, 'interactionType', allowedInteractionTypes, location);
+  validateEnumProperty(objectNode, 'triggerOwner', allowedInteractionTriggerOwners, location);
+  validateEnumProperty(objectNode, 'targetType', allowedInteractionTargetTypes, location);
+};
+
+const validateSelfDevelopmentExceptionObject = (exceptionNode, location, fallbackId = '') => {
+  if (!isObject(exceptionNode)) {
+    errors.push(`${location}: self-development exception must be an object.`);
+    return;
+  }
+
+  const id = getStringValue(getProperty(exceptionNode, 'id')) || fallbackId;
+  const type = getStringValue(getProperty(exceptionNode, 'type'));
+
+  if (!id.trim()) {
+    errors.push(`${location}: self-development exception must declare id or use a non-empty map key.`);
+  }
+
+  if (!type || !allowedSelfDevelopmentExceptionTypes.has(type)) {
+    errors.push(`${location}.type: only interactionBehavior and componentContentAreaTemplate may be self-developed; all other report areas must use templates.`);
+    return;
+  }
+
+  if (type === 'componentContentAreaTemplate') {
+    ['sourcePageId', 'sourceBlockId', 'sourceSlotId', 'componentContentAreaTemplateId'].forEach((field) => {
+      if (!hasNonEmptyStringProperty(exceptionNode, field)) {
+        errors.push(`${location}: component content area self-development must declare ${field}.`);
+      }
+    });
+  } else {
+    validateInteractionBehaviorContract(exceptionNode, location);
+  }
+
+  if (!hasNonEmptyStringProperty(exceptionNode, 'reason')) {
+    warnings.push(`${location}: self-development exception should state why no existing template is sufficient.`);
+  }
+};
+
+const validateSelfDevelopmentExceptionMap = (mapNode, location) => {
+  if (isArray(mapNode)) {
+    mapNode.elements.forEach((item, index) => validateSelfDevelopmentExceptionObject(item, `${location}[${index}]`));
+    return;
+  }
+
+  if (!isObject(mapNode)) {
+    errors.push(`${location}: selfDevelopmentExceptionMap must be an object map or array.`);
+    return;
+  }
+
+  mapNode.properties.forEach((property) => {
+    if (!ts.isPropertyAssignment(property)) {
+      return;
+    }
+
+    const key = getName(property.name);
+    validateSelfDevelopmentExceptionObject(property.initializer, `${location}.${key}`, key);
+  });
+};
+
+const validateSelfDevelopmentExceptionMaps = () => {
+  const visit = (node) => {
+    if (ts.isPropertyAssignment(node) && getName(node.name) === 'selfDevelopmentExceptionMap') {
+      validateSelfDevelopmentExceptionMap(node.initializer, 'selfDevelopmentExceptionMap');
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+};
+
 const validateActionObject = (actionNode, location) => {
   if (!isObject(actionNode)) {
     return;
@@ -459,9 +579,30 @@ const validateActionObject = (actionNode, location) => {
     return;
   }
 
+  const hasInteractionFields = [
+    'interactionId',
+    'interactionType',
+    'triggerOwner',
+    'sourcePageId',
+    'sourceBlockId',
+    'sourceSlotId',
+    'sourceComponentContentAreaTemplateId',
+    'payloadFields',
+    'target',
+    'targetType',
+    'contextInheritance',
+    'stateSync',
+    'permissionRule',
+    'closeBackBehavior',
+    'qaCase',
+  ].some((field) => hasProperty(actionNode, field));
+
+  if (!reservedActionHooks.has(type) || hasInteractionFields) {
+    validateInteractionBehaviorContract(actionNode, location);
+  }
 
   if (!reservedActionHooks.has(type)) {
-    warnings.push(`${location}: custom action "${type}" must be registered in src/actions/registry.ts.`);
+    errors.push(`${location}: custom action "${type}" must be registered in src/actions/registry.ts.`);
   }
 };
 
@@ -1792,6 +1933,7 @@ gridConfigs.forEach(({ contentWidth, contentGap, contentStartY, contentEndY, row
 });
 
 validateAllLayoutRows();
+validateSelfDevelopmentExceptionMaps();
 validateStackContract();
 collectWidgets().forEach(({ node, location, span }) => validateWidget(node, location, span));
 walkVueFiles(widgetComponentsPath).forEach(validateWidgetSource);

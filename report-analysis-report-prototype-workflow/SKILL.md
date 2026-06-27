@@ -15,6 +15,8 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this workflow when the prototype should explain a topic, variance, or business problem through a structured data story. It is one of the five peer prototype workflows.
 
+PRD prerequisite: consume `$report-prd-document-generation` as the independent input contract. This workflow executes analysis-report-specific story, evidence, layout, and interaction design from the PRD; it must not generate a complete PRD internally.
+
 Core intent:
 
 ```text
@@ -25,11 +27,14 @@ Prototype story gate: this workflow does not call `$report-prototype-design-thin
 
 Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 and design-process artifacts such as 下钻链路清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes are supplemental by default and stay in tooltip/detail/dictionary/interaction contract/validation/handoff unless explicitly requested as visible page content or rewritten as business-value conclusion, evidence, trust/source, or action content.
 
+Template-only gate: this workflow must use templates for framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Only interaction behavior and component content area templates may be self-developed, and both must appear in the PRD/workflow `selfDevelopmentExceptionMap`.
+
 ## Child Skills
 
 | Stage | Skill |
 | --- | --- |
-| Requirement intake | `$report-requirement-structure-extraction` |
+| PRD prerequisite | `$report-prd-document-generation` |
+| Requirement evidence clarification | `$report-requirement-structure-extraction` |
 | Report business type | `$report-type-design` |
 | Component/data/filter/interaction mapping | `$report-info-component-mapping` |
 | Page layout | `$report-visual-layout-design` |
@@ -46,10 +51,12 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 ## Workflow
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
-2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-3. Define the typed prototype story: target audience, one-sentence conclusion/value, protagonist problem or variance, key evidence, and action or follow-up decision.
-4. Define the report reader path: enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source.
-5. Define the report question: what happened, why, impact, and next action.
+2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 cover the analysis audience, scope, page content, narrative layout, metrics, metric mounting, data/API, and interactions.
+4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
+5. Derive the typed prototype story from the PRD: target audience, one-sentence conclusion/value, protagonist problem or variance, key evidence, and action or follow-up decision.
+6. Define the report reader path from PRD roles/scenes and page content: enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source.
+7. Define the report question from PRD background/goals: what happened, why, impact, and next action.
 6. Write the conclusion-first answer before choosing charts. The conclusion must include fact, magnitude, likely reason, and suggested action when evidence allows.
 7. Build the narrative path: conclusion -> overview -> problem analysis -> attribution -> impact -> action -> appendix.
 8. Define evidence: metric formulas, comparisons, baselines, time/region/channel/product/customer/person/process splits, contribution, and detail evidence.
@@ -67,6 +74,7 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, report audience, report period, data scope, business question, and meeting/circulation scenario.
+- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, analysis-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: one-sentence conclusion/value, reader path, protagonist problem or variance, key evidence, action/follow-up decision, and 30-second review path.
 - Affected-surface to owning-skill routing, especially narrative layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - Core conclusion, supporting evidence, cause breakdown, impact assessment, and action recommendation.
@@ -78,12 +86,15 @@ Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * 
 - Filter, interaction, export/share/comment/history, permission, freshness, and state requirements.
 - Component/data/filter/control/interaction binding matrix.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
-- Template/custom shell decision, changed files if implemented, verification, URL or blocker, and readiness.
+- `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
 ## Quality Gate
 
 - Do not build a chart collection with no conclusion.
+- Do not start analysis story, narrative layout, component mapping, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not mark ready until every PRD execution row needed for report story, page content, layout, metrics, metric mounting, data/API, interactions, and export/comment/history behavior is consumed or explicitly deferred out of scope.
 - Do not start layout or component selection until the report story, reader path, protagonist problem/variance, evidence chain, and action/follow-up decision are explicit or safely inferred.
+- Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.
 - Do not start runnable implementation until the nine-step template operation chain has no missing block configs or slots. `blockLayoutTemplateMap` must name the selected independent block layout Vue file, not only a generic size wrapper plus `componentRegionPattern`. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone ECharts component content area template.
 - Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not start implementation or repair from this workflow alone when affected chart/table/filter/placement surfaces require their specific front-door skills.

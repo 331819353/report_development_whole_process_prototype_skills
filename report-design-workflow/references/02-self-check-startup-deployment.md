@@ -62,8 +62,8 @@ Self-check dimensions:
    - Every configured widget mounts to an existing block, declares `visualType`, and either declares `data` or an explicit `dataPolicy`.
    - Widget registry, widget props/types, data-source registry, filter sources, modals, assets, logo, theme, toolbar, and route/download configs are complete.
    - Parent block spans obey the legal span matrix; internal sub-blocks declare local layout, `5px` inset/gap, and component ownership; oversized diagrams use viewport zoom/pan rather than overflowing their block.
-   - Custom implementations define equivalent `dataSource`, `filterMap`, `componentBindings`, and `updateTriggers` contracts.
-   - Custom and HTML-replica implementations preserve global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and controls unless exact restoration was explicitly requested.
+   - `selfDevelopmentExceptionMap` contains only interaction behavior and component content area template entries, each with data/source/filter/update-trigger contracts when they affect data.
+   - Sample-derived styling preserves global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and controls while staying inside selected template surfaces.
 
 6. Visual and runtime verification.
    - Run `npm run validate:dashboard` when the project uses a bundled template or has the script.

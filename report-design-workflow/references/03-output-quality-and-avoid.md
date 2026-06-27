@@ -45,7 +45,7 @@ Use this structure:
 4. Files/components/data to create or modify.
 5. Mock data and filter state plan.
 6. Interaction state and parameter plan.
-7. Shell path, style source, brand mode, visual mode, and brand asset gate: `pageShellPath`, `pageStyleSource`, `brandMode`, `visualMode`, `customDesignPath` and `customLayoutPattern` if any, logo discovery result, logo slot/placeholder, sample-fidelity decision, and sample module classification.
+7. Shell path, style source, brand mode, visual mode, and brand asset gate: `pageShellPath: template`, selected framework template, `pageStyleSource`, `brandMode`, `visualMode`, `selfDevelopmentExceptionMap`, logo discovery result, logo slot/placeholder, sample-fidelity decision, and sample module classification.
 8. Visual layout, block chrome style matrix, and component style plan.
 9. Technical architecture: TypeScript, Vue 3, Element Plus, ECharts, optional AntV S2 trigger, and template choice.
 10. Self-check report and repair-loop plan.
@@ -77,7 +77,7 @@ Use this structure after implementation and after each repair cycle:
 6. 筛选配置检查.
 7. 交互可用性检查.
 8. 配置完整性检查.
-9. 视觉与运行态检查：include `pageShellPath`, `pageStyleSource`, `brandMode`, `visualMode`, custom design/layout path if any, logo/header screenshot acceptance, sample fidelity and sample module classification when applicable, conclusion placement, global UI token consistency, Chinese metric display, complex diagram spacing, and primary filter control implementation.
+9. 视觉与运行态检查：include `pageShellPath: template`, selected framework template, `pageStyleSource`, `brandMode`, `visualMode`, `selfDevelopmentExceptionMap`, logo/header screenshot acceptance, sample fidelity and sample module classification when applicable, conclusion placement, global UI token consistency, Chinese metric display, complex diagram spacing, and primary filter control implementation.
 10. 无头浏览器截图证据：screenshot path, viewport, page/state, cycle.
 11. 确定性视觉回归：baseline/current/diff path, threshold, masked regions, `VDIFF-*` findings, baseline missing/not run status.
 12. 多模态视觉异常识别：`VIS-*` finding, severity, screenshot, component/region, observation, impact, fix plan, retest criteria, or multimodal not-run blocker.
@@ -102,16 +102,15 @@ Before final delivery, verify:
 - Each primary section has a section conclusion, and each primary component names the section conclusion it proves, explains, locates, quantifies, contradicts, traces, recommends, or verifies.
 - Visible result content passes the business-value test: it helps the reader judge, understand evidence/reason, verify trust/source, or take action.
 - Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are absent from visible report results unless the user explicitly requested visible documentation or they were rewritten as conclusion/evidence/trust/action content.
-- `pageShellPath` is declared as `template` or `custom`.
+- `pageShellPath` is declared as `template`.
+- `selfDevelopmentExceptionMap` contains only interaction behavior and component content area template entries.
 - `pageStyleSource` is declared. If no page style is specified, a bundled template is used by default; provided HTML/MD/source/sample styling is requirement and hierarchy evidence unless explicit restoration or HTML/static output is requested.
 - `outputArtifact` is declared. Default is `vueTemplatePrototype`; `htmlPrototype` appears only with explicit user wording for HTML/static/single-file HTML output or exact static preservation.
 - A source-material requirement matrix exists when the user provided HTML, Markdown/MD, source snippets, screenshots, documents, code, data, or config files.
 - When source material or design intent includes block title/background style, a `blockChromePattern` matrix exists before body content placement. It records selected or inherited pattern, business-role reason, title/body geometry, body background relation, fallback, and proof hook.
 - Exactly one `brandMode` is declared and its logo/global UI token implications are followed.
 - Exactly one `visualMode` is declared before implementation and remains consistent in the final self-check.
-- If `pageShellPath: custom`, `customDesignPath` is declared as `htmlReplica` or `freeDesign`.
-- Custom shells declare exactly one `customLayoutPattern`: `symmetricBalance`, `threePart`, `masterDetail`, or `narrativeStack`.
-- Custom `htmlReplica` and `freeDesign` pages with `brandMode: haierBranded` use a real bundled Haier logo; placeholder state is reported as blocked.
+- Custom shell, custom page layout, custom block layout, custom supporting areas, HTML shell replication, and template-level redesign requests are reported as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exceptions.
 - Haier/branded pages have a configured logo asset or a visible placeholder with the missing asset recorded.
 - Screenshot evidence verifies the logo/header area, correct logo variant, aspect ratio, and no clipping.
 - When input is a display sample, screenshot, image, or HTML source and `visualMode: sampleRestore`, page shell, module order, container hierarchy, main control count, layer structure, card proportions, and first viewport are compared against the source.
@@ -119,7 +118,7 @@ Before final delivery, verify:
 - Added conclusions, insights, or status summaries in `sampleRestore` are embedded into existing sample-equivalent regions instead of standalone horizontal bands.
 - Analysis & Insight components in runnable prototypes declare `analysisInsightContract`, show conclusion before evidence, expose evidence/action/trust/source/freshness or an explicit insufficient-data state, and have dedicated crop/source checks when present.
 - Conclusions, insights, recommendations, risk notes, and status summaries are kept visible only when they name a concrete business judgment, evidence or insufficient-data state, affected object/scope when relevant, source/freshness or trust context, and a detail/action path when action is expected.
-- HTML-replica and custom layouts use global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and controls unless exact restoration is explicitly requested.
+- Sample-derived styling uses global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and controls while being adapted into the selected template.
 - Metrics include baselines, direction, unit, and formulas where needed.
 - Rate/change/completion fields use `%` in visible Chinese UI; change-rate and variance-rate indicators use positive-red-up / negative-green-down SVG/icon semantics only when inherited company, finance, market, or explicit business convention requires it.
 - Mock data, if used, reconciles with KPI cards, charts, tables, and filters.
@@ -175,12 +174,11 @@ Before final delivery, verify:
 
 - Do not start from visual layout before classifying the report purpose.
 - Do not start from visual layout before classifying the display theme and selecting a bounded pattern-card set.
-- Do not choose a custom shell merely because the user did not specify page style.
+- Do not choose a custom shell, custom page layout, custom block layout, or custom supporting area inside the report development workflow.
 - Do not skip requirement transformation when the user provides HTML, Markdown/MD, copied source, screenshots, documents, code, data, or config files.
 - Do not output HTML/static/single-file prototypes merely because provided materials are HTML/MD/source; default runnable prototypes use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios unless explicit user wording says otherwise.
 - Do not treat block title/background sample styles as raw HTML/CSS to paste after content is complete. Convert them into `blockChromePattern` contracts before filling parent blocks.
-- Do not mark a `brandMode: haierBranded` custom shell complete when it has only a logo placeholder instead of a real bundled Haier logo.
-- Do not start implementation before declaring `pageShellPath`, `pageStyleSource`, `brandMode`, `visualMode`, custom design/layout paths when applicable, and passing the logo asset gate.
+- Do not start implementation before declaring `pageShellPath: template`, selected framework template, `pageStyleSource`, `brandMode`, `visualMode`, `selfDevelopmentExceptionMap`, and passing the logo asset gate.
 - Do not use every skill for every task; use the smallest complete path.
 - Do not duplicate detailed rules from child skills; route to them.
 - Do not invent new report categories when one of the eight categories fits.
@@ -200,7 +198,7 @@ Before final delivery, verify:
 - Do not put design process into the result page. 下钻链路 may be a breadcrumb, button, chart/table click, drawer, jump, or detail route; it must not become a standalone design-chain list. 指标清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes belong to contract, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence unless explicitly requested as visible documentation.
 - Do not show rate/change labels as `pt`, `p.p.`, or `percentage point` in Chinese UI unless explicitly required.
 - Do not reverse the required change-rate semantics: positive is red/up and negative is green/down.
-- Do not let copied HTML inline colors or one-off custom surfaces override global UI tokens.
+- Do not let copied HTML inline colors or one-off surfaces override global UI tokens or selected template surfaces.
 - Do not use naked native `<select>` as the final visual for primary filters; use Element Plus or the project design-system equivalent.
 - Do not finish deterministic visual regression without headless browser screenshots and baseline diff status when baselines exist.
 - Do not claim multimodal explanatory visual review passed without multimodal review results; if the model is unavailable, record `multimodal: not run` and keep overall visual QA `partial` when explanatory review is required.

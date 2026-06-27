@@ -14,6 +14,48 @@ export interface DashboardPageConfig {
   widgets?: WidgetMap;
 }
 
+export type DashboardSelfDevelopmentExceptionType = 'interactionBehavior' | 'componentContentAreaTemplate';
+export type DashboardSelfDevelopmentInteractionType = 'drilldown' | 'jump' | 'modal' | 'drawer' | 'popup' | 'crossFilter';
+export type DashboardSelfDevelopmentTriggerOwner = 'templateActionHook' | 'componentOwnedEvent' | 'widgetEvent';
+export type DashboardSelfDevelopmentTargetType =
+  | 'route'
+  | 'drawer'
+  | 'modal'
+  | 'popover'
+  | 'external'
+  | 'cross-filter'
+  | 'fullscreen'
+  | 'export';
+
+export interface DashboardSelfDevelopmentException {
+  id?: string;
+  type: DashboardSelfDevelopmentExceptionType;
+  reason?: string;
+  owner?: string;
+  sourcePageId?: string;
+  sourceBlockId?: string;
+  sourceSlotId?: string;
+  componentContentAreaTemplateId?: string;
+  interactionId?: string;
+  interactionType?: DashboardSelfDevelopmentInteractionType;
+  triggerOwner?: DashboardSelfDevelopmentTriggerOwner;
+  sourceComponentContentAreaTemplateId?: string;
+  payloadFields?: string[];
+  target?: string;
+  targetType?: DashboardSelfDevelopmentTargetType;
+  contextInheritance?: string[];
+  stateSync?: string;
+  apiId?: string;
+  permissionRule?: string;
+  closeBackBehavior?: string;
+  qaCase?: string;
+  notes?: string[];
+}
+
+export type DashboardSelfDevelopmentExceptionMap =
+  | DashboardSelfDevelopmentException[]
+  | Record<string, DashboardSelfDevelopmentException>;
+
 
 export interface DashboardGridConfig {
   contentStartY: number;
@@ -90,4 +132,5 @@ export interface DashboardConfig {
   pages?: Record<string, DashboardPageConfig>;
   page: DashboardPageConfig;
   filters: DashboardFilterGroup[];
+  selfDevelopmentExceptionMap?: DashboardSelfDevelopmentExceptionMap;
 }

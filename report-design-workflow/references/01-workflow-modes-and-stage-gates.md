@@ -6,14 +6,17 @@ Choose the mode before starting.
 
 Before choosing a mode, enforce the trigger gate. Do not let adjacent words such as `报表`, `页面`, `模板`, `部署`, `筛选联动`, `mock 数据`, `自检`, or `返回URL` activate this workflow by themselves; they must appear in a request that also includes `原型`.
 
+Template-only report development gate: within this workflow, `pageShellPath` must be `template`. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must be configured through templates. The only self-developed surfaces are interaction behavior and component content area templates.
+
 Before implementation, also choose exactly one `pageShellPath`, exactly one `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`: `haierEnterprise`, `sampleRestore`, or `sciFiCockpit`. When `pageShellPath: template`, also declare the nine-step template chain from `$report-prototype-template-management` `references/template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. These are blocking decisions, not later polish choices.
 
 Source-material intake gate:
 
 - Treat every user-provided message, file, HTML, Markdown/MD, screenshot, source snippet, code file, data file, or document as requirement evidence first.
-- Convert source materials into confirmed facts, inferred assumptions, missing gaps, component/data/filter/interaction constraints, and acceptance checks before choosing shell, template, output format, or implementation target.
-- Source file format is not output-format authority. Provided HTML/MD/source files do not by themselves mean `htmlPrototype`, `pageShellPath: custom`, or `customDesignPath: htmlReplica`.
+- Convert source materials into confirmed facts, inferred assumptions, missing gaps, component/data/filter/interaction constraints, and acceptance checks as PRD evidence before choosing shell, template, output format, or implementation target.
+- Source file format is not output-format authority. Provided HTML/MD/source files do not by themselves mean `htmlPrototype` or any custom shell/layout path.
 - Declare exactly one `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly asks for HTML/static/single-file HTML output or exact static HTML preservation.
+- Before any prototype workflow continues, a PRD from `$report-prd-document-generation` must exist or be generated. The PRD must include the PRD-to-workflow execution matrix from `$report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
 
 ### 1. Prototype-Oriented Design Mode
 
@@ -38,7 +41,7 @@ Use when the user wants an implementation-ready report prototype specification.
 
 Deliver:
 
-- Structured requirement.
+- PRD prerequisite proof and PRD section execution matrix.
 - Display theme and pattern-card set.
 - Report type and secondary roles.
 - Page layout.
@@ -92,7 +95,9 @@ Clarify or infer:
 - Is there a specific report page or a report category?
 - Which of the six display themes is primary: 明细、汇总统计、经营看板、分析探索、管理报告/专题报告, or 监控告警?
 - Is the expected output text, specification, code, or both?
-- Which standard inputs are present: 需求文档, 指标清单, optional screenshot/image, optional HTML源码, optional Markdown/MD, optional copied source/code, optional data/config files?
+- Which standard inputs are present: PRD/需求文档, 指标清单, optional screenshot/image, optional HTML源码, optional Markdown/MD, optional copied source/code, optional data/config files?
+- Does a `$report-prd-document-generation` PRD exist, and does it include the PRD-to-workflow execution matrix?
+- Which PRD rows are `ready`, `draft`, `blocked`, or `deferred-out-of-scope` for this workflow?
 - What is the source-material requirement matrix: each source artifact, extracted facts, inferred assumptions, missing gaps, affected requirement areas, and whether it is explicit output-format authority?
 - Which `outputArtifact` is required: default `vueTemplatePrototype`, or `htmlPrototype` only with explicit HTML/static-output wording?
 - If screenshot/image input is present, is it a full page, first viewport, partial component, modal/drawer, mobile view, export page, or style reference?
@@ -101,7 +106,7 @@ Clarify or infer:
 - Is the page a single-page top-bar report, standard enterprise sidebar dashboard, or sci-fi/big-screen cockpit?
 - Does the user need automatic deployment, automatic local startup, and a returned URL?
 
-Before moving to design or implementation, write two explicit statements: `User Intent` (what the user is trying to accomplish and decide) and `Design Thinking` (the report logic and layout direction you will use to satisfy that intent). Keep them concise, but do not skip them for prototype work.
+Before moving to design or implementation, write three explicit statements: `PRD Prerequisite` (PRD status and execution-matrix readiness), `User Intent` (what the user is trying to accomplish and decide), and `Design Thinking` (the report logic and layout direction you will use to satisfy that intent). Keep them concise, but do not skip them for prototype work.
 
 Do not block if missing details can be safely assumed.
 
@@ -128,21 +133,19 @@ Run this gate before Stage 8 visual layout and before Stage 10 implementation.
 
 Shell path:
 
-- Declare exactly one `pageShellPath`: `template` or `custom`.
-- Use `pageShellPath: template` by default for runnable prototypes, including when HTML/MD/source/sample files are provided as requirement evidence, hierarchy evidence, or style reference.
-- Use `pageShellPath: custom` only when the user explicitly requests custom/free design, exact screenshot/HTML/source restoration, HTML/static output, existing shell preservation, or a documented template limitation.
-- If `pageShellPath: custom`, declare exactly one `customDesignPath`: `htmlReplica` or `freeDesign`.
-- Use `customDesignPath: htmlReplica` only when the user explicitly asks to replicate the provided HTML/source/sample structure or `outputArtifact: htmlPrototype` requires static structure preservation.
-- Use `customDesignPath: freeDesign` when creating a custom shell from requirements without source visual authority.
-- Custom Haier pages default to `brandMode: haierBranded` and must configure a real bundled Haier logo before final delivery; explicit `sampleNative` or `neutral` pages must record why Haier branding is not required.
+- Declare exactly one `pageShellPath`: `template`.
+- Use `pageShellPath: template` for runnable report development prototypes, including when HTML/MD/source/sample files are provided as requirement evidence, hierarchy evidence, or style reference.
+- Treat user requests for custom/free shell, exact shell restoration, HTML/static shell output, existing shell preservation, or bundled-template limitation as blockers or out-of-scope exceptions for this report development workflow. Do not continue by creating a custom shell inside this workflow.
+- Record a `selfDevelopmentExceptionMap` containing only interaction behavior IDs and component content area template IDs.
+- If the requested self-development target is shell, page layout, block layout template, title/pill/aux/unit/summary area, navigation, filter surface, toolbar, export, or permission surface, stop before implementation and route it as a PRD gap, template backlog item, or non-report-development exception.
 
 Style source:
 
 - Declare exactly one `pageStyleSource`: `templateDefault`, `userSpecified`, or `sampleProvided`.
 - Use `templateDefault` when no page style is specified and no HTML/source/sample styling is provided; choose a bundled template by scenario.
 - Use `userSpecified` when the user names a page style, shell, or design direction; follow that direction unless it violates hard gates.
-- Use `sampleProvided` when screenshot, image, HTML source, Markdown/MD, copied source, or display sample supplies page structure/style evidence; this preserves evidence for hierarchy and tone, but it does not force `pageShellPath: custom` or `outputArtifact: htmlPrototype`.
-- Do not choose a custom shell merely because style requirements are absent.
+- Use `sampleProvided` when screenshot, image, HTML source, Markdown/MD, copied source, or display sample supplies page structure/style evidence; this preserves evidence for hierarchy and tone, but it does not override `pageShellPath: template` or force `htmlPrototype`.
+- Do not choose a non-template shell because style requirements are absent.
 
 Brand mode:
 
@@ -151,7 +154,7 @@ Brand mode:
 - Use `sampleNative` only when a provided sample/HTML/source is explicitly non-Haier and the user asks to keep the source-native brand/style.
 - Use `neutral` only when the user explicitly asks for a generic non-branded report.
 - If `brandMode: haierBranded`, configure the Haier logo and global UI tokens without changing the sample's main hierarchy.
-- If `brandMode: sampleNative` or `neutral`, do not inject a Haier logo only because `pageShellPath: custom`; record "no Haier brand required by input".
+- If `brandMode: sampleNative` or `neutral`, record "no Haier brand required by input" and do not inject a Haier logo unless a template slot or user requirement calls for it.
 
 Visual mode:
 
@@ -166,7 +169,7 @@ Brand assets:
 - For Haier/branded pages, search for logo assets in the existing project, selected template `public` path, and `report-prototype-template-management/assets/brand`.
 - Configure the logo in the header, unified title area, sidebar brand area, or template logo slot before implementing components.
 - If no usable asset exists, render an explicit logo placeholder in that slot and record the missing asset. Do not silently omit the logo.
-- For `pageShellPath: custom` with `brandMode: haierBranded`, placeholder state is a blocker. Do not pass visual QA until `haier-logo.svg`, `haier-logo-original.svg`, or `haier-logo-white.svg` is actually configured.
+- For `brandMode: haierBranded`, placeholder state is a blocker when the selected template requires a logo slot. Do not pass visual QA until `haier-logo.svg`, `haier-logo-original.svg`, or `haier-logo-white.svg` is actually configured.
 
 Sample fidelity:
 
@@ -189,18 +192,17 @@ Blocking behavior:
 - Stop before implementation if `visualMode` is not declared.
 - Stop before implementation if `brandMode` is not declared.
 - Stop before implementation if `pageShellPath` is not declared.
+- Stop before implementation if `pageShellPath` is anything other than `template` inside this report development workflow.
 - Stop before implementation if `pageStyleSource` is not declared.
 - Stop before implementation if `pageShellPath: template` and any part of `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig` is missing, if `blockLayoutTemplateMap` does not name selected independent block layout Vue files, or if optional areas are not explicitly marked as unnecessary.
-- Stop before implementation if `pageShellPath: custom` and `customDesignPath` is not declared.
-- Stop before implementation if `pageShellPath: custom`, `brandMode: haierBranded`, and the page has no real Haier logo asset configured.
+- Stop before implementation if custom shell/page/block/supporting-area development is requested but not reclassified as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exception.
 - Stop before implementation if a required logo slot has neither asset nor placeholder.
 - Stop before implementation if `sampleRestore` additions would alter the sample's first viewport without an explicit user request.
 
 Custom layout pattern:
 
-- If a custom shell is used, declare exactly one `customLayoutPattern`.
-- Allowed values: `symmetricBalance` 对称式, `threePart` 三部式, `masterDetail` 主从式, and `narrativeStack` 分层叙事式.
-- Record why the selected pattern fits the report and how it preserves the `12 * N` grid.
+- Custom shell layout patterns are not available inside this report development workflow.
+- If a source sample implies a custom layout pattern, translate the intent into the selected template's `pageLayoutConfig`, `blockLayoutTemplateMap`, and standard area configs, or mark the requirement `blocked` / `deferred-out-of-scope`.
 
 ### Screenshot Or Image Source Handling
 
@@ -226,30 +228,24 @@ Hard rules:
 - Convert visible text, metrics, controls, and blocks into the same binding matrix required by `report-info-component-mapping`.
 - Verification must compare the rebuilt page against the screenshot for structure, hierarchy, key text, visible component count, spacing, and no overlap; exact pixel matching is not required unless explicitly requested.
 
-### Stage 1: Requirement Extraction
+### Stage 1: PRD Prerequisite And Requirement Evidence
 
-Use `report-requirement-structure-extraction`.
+Use `$report-prd-document-generation`.
 
-Run this stage when any user-provided file/source artifact is present, including HTML, Markdown/MD, copied source, code, screenshot, document, data, or config. Skip only when the user already provides a clean structured brief and no extra source artifact needs requirement transformation.
+Run this stage before display theme, report type, component mapping, layout, template, or implementation. Skip only when the user already provides a complete PRD that passes `$report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
+
+Use `$report-requirement-structure-extraction` only as a feeder when evidence is unclear, conflicting, or scattered. Feed the extracted facts, assumptions, and gaps back into the PRD before continuing.
 
 Output must include:
 
-- Report theme.
+- PRD status: `ready-for-review`, `draft`, or `blocked`.
+- Complete PRD sections: background/goals, roles/scenes, scope boundary, page content, page layout configuration, metric list, metric mounting matrix, data/API requirements, interactions, permissions/export/states, acceptance/gaps.
+- PRD-to-workflow execution matrix: every PRD section mapped to owner skill/workflow, execution artifact, blocking rule, and status.
 - Source-material requirement matrix and `outputArtifact` decision.
-- Display theme and selected/rejected theme rationale.
-- User intent.
-- Design thinking.
-- Primary and secondary report types.
-- Users and scenario.
-- Core questions.
-- Business objects and grain.
-- Metrics, dimensions, baselines.
-- Content blocks.
-- Data, filter, interaction, visual, and component needs.
-- Assumptions and missing information.
-- Prototype design thinking output from Stage 0.5, or the explicit reason it was skipped.
+- Blocking PRD gaps that prevent prototype design, layout, template configuration, component mapping, data/API handoff, interaction design, or QA.
+- Explicit reason if a supplied PRD is accepted as complete.
 
-Skip only when the user already provides a clean structured brief.
+Do not use this stage to rewrite the PRD inside the workflow. If the PRD changes, return to `$report-prd-document-generation` and update the PRD artifact first.
 
 ### Stage 1.5: Display Theme And Pattern Routing
 

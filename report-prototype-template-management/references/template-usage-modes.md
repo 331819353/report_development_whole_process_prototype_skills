@@ -2,6 +2,8 @@
 
 Use this file when explaining how a selected template should be used in a delivery flow.
 
+Hard rule for report development: all modes use the selected template for shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Only interaction behavior and component content area templates may be self-developed, and both must be declared in `selfDevelopmentExceptionMap`.
+
 ## 1. 零开发 Mode
 
 Purpose: give the user a runnable, brand-correct report shell with placeholders and configuration entry points, without implementing business widgets.
@@ -45,7 +47,7 @@ Required changes:
 - Copy `assets/templates/<template-id>/` into the project.
 - Use `template-layout-design-system.md` before changing template-level spacing, block padding, card radius, component title/control handoff, content range, or shell hover/focus behavior.
 - Edit `src/config/dashboard.config.ts` for title, theme, navigation, `layoutRows`, `widgets`, global filters, and toolbar labels, but preserve the copied template's native nav/page shape, filter trigger/panel/popover pattern, toolbar placement, theme fields, and logo slot.
-- Adapt requirement-document title/filter/navigation/toolbar requirements into the copied template's existing config slots. Do not add a second title area, standalone filter bar, extra sidebar, or duplicate toolbar unless the task is explicitly a template-level redesign.
+- Adapt requirement-document title/filter/navigation/toolbar requirements into the copied template's existing config slots. Do not add a second title area, standalone filter bar, extra sidebar, or duplicate toolbar; template-level redesign requests are blockers or out-of-scope exceptions for report development.
 - Put mock/static data in `src/data/dashboard.dataset.json`. Do not create generated `src/widgets/*Data.ts`, `src/data/*.ts`, or other TS fixture modules for rows, arrays, or payloads.
 - Register business widgets in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 - Implement visual components under `src/widgets/components/`.
@@ -53,8 +55,8 @@ Required changes:
 - Bind component-local filters through `localFilters[].field`, `valueField`, and `labelField` only for ordinary non-slot business widgets; these filters run only on the component's already loaded data. Visible titles, local filter controls, and detail links are rendered by non-slot widgets using the context values and setters supplied by the shell. `localFilters[]` must not replace template `filters[]`, page/global scope, permission scope, backend aggregation, pagination, export scope, or other widgets, and must not be rendered inside 组件内容区模板 slot fills.
 - Before binding global/page filters, prove data completeness: options, business/API rows, required fields, default and non-default states, empty/no-permission states, and resolver/API branches exist for every affecting filter.
 - Bind global/page filters that affect widgets through `widget.data.filterFields`, `requiredFilters`, API query/body params, or resolver params. Do not put an affecting filter in `ignoredFilters`.
-- Configure `actions` only as event forwarding or integration hooks; component-level popup, navigation, drilldown, and detail behavior stays inside the component.
-- Add, remove, or relabel navigation/filter items through the template's existing `nav`/`page` and `filters` arrays. Do not create a new standalone sidebar, top navigation, filter bar, or filter drawer unless the task is explicitly a template-level redesign.
+- Configure `actions` only as event forwarding or integration hooks. Any self-developed action or component-level popup, navigation, drilldown, and detail behavior must appear in `selfDevelopmentExceptionMap` and declare `interactionId`, `interactionType`, `triggerOwner`, `sourcePageId`, `sourceBlockId`, `sourceSlotId`, `sourceComponentContentAreaTemplateId`, `payloadFields`, `target`, `targetType`, `contextInheritance`, `stateSync`, `permissionRule`, `closeBackBehavior`, and `qaCase`.
+- Add, remove, or relabel navigation/filter items through the template's existing `nav`/`page` and `filters` arrays. Do not create a new standalone sidebar, top navigation, filter bar, or filter drawer.
 - Treat "筛选工具栏", "主筛选栏", and "filter bar" wording as a filter contract request, not a visual-surface request. Implement it through `filters[]`, native template filter invocation, non-slot component-owned local filters, `1-2 pillArea`, and filter-to-widget binding; never place those controls inside 组件内容区模板 slot fills.
 - When `screen.defaultTheme` is `dark`, the logo variant, grid/card surfaces, Element Plus controls, and component scoped backgrounds must follow the same dark token system as the shell; do not leave default white cards, `ElSelect`/`ElInput`/date-picker surfaces, or popovers in a dark page.
 
@@ -90,7 +92,7 @@ Implementation rules:
 - Keep adapters at the data-source boundary so widgets receive stable rows/props.
 - Global/page-level filters must be passed through `api.query`, `api.body`, or the provider resolver before shaping component data. Non-slot component-title `localFilters` may filter only the already fetched component dataset; 组件内容区模板 slot fills may not render local filters or control strips.
 - API response fields may be mapped through an adapter or `filterFields`; do not rename fields randomly across config, data, and component props.
-- Component popup, jump, drilldown, and deep interaction logic is implemented inside the component or the hosting product module. The global `actions/registry.ts` remains a hook surface for external event observation or shell-level utilities.
+- Component popup, jump, drilldown, and deep interaction logic is implemented inside the component or the hosting product module only when declared as `interactionBehavior` in `selfDevelopmentExceptionMap`. The global `actions/registry.ts` remains a hook surface for external event observation or shell-level utilities; custom action configs without the full interaction contract fail template validation.
 - Keep `demo/config-templates.ts` as copyable reference code, not as production data.
 
 Production handoff should document:

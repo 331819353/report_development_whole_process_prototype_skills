@@ -14,11 +14,9 @@ Copy the selected asset directory into the target project, or merge its `src/`, 
 
 Default to `pageShellPath: template`.
 
-Choose `pageShellPath: custom` only when:
+In the report development flow, do not choose `pageShellPath: custom`. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must use bundled templates. If the user explicitly asks for 自行设计开发, 自由设计, 自定义开发, 百分百复刻, 像素级复刻, exact restoration, existing shell preservation, HTML/static shell output, or a documented requirement cannot be met by any bundled template, record it as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exception.
 
-- the user explicitly says 自行设计开发, 自由设计, 自定义开发, custom development, or equivalent; or
-- the user provides a screenshot/HTML/source/sample and explicitly asks for 百分百复刻, 像素级复刻, exact restoration, or equivalent; or
-- a documented requirement cannot be met by any bundled template.
+Only interaction behavior and component content area templates may be self-developed, and both must be declared in `selfDevelopmentExceptionMap`.
 
 When the user provides a sample but does not demand exact restoration, treat the sample as evidence for information hierarchy, density, and visual tone. Still choose the closest bundled template by scenario.
 
@@ -42,7 +40,7 @@ When a report prototype workflow supplies `displayTheme` and selected pattern ca
 | `summary-stat` | `topbar-light-scroll-dashboard-template` for compact office summary; `left-nav-analytics-workbench-template` for multi-chapter summaries or pivot-heavy analysis. | Aggregation/matrix density, drilldown path, and whether AntV S2 is needed. |
 | `business-dashboard` | Topbar light for one-story dashboard; fixed sci-fi only for explicit big-screen/presentation. | First-screen answer, global context, number of KPI/chart/list modules, and refresh context. |
 | `exploratory-analysis` | Topbar for focused analysis; `left-nav-analytics-workbench-template` for saved views, repeated filtering, and multiple analysis chapters. | Dynamic dimension/metric controls, linked detail table, interaction density, and multiple substantial pages. |
-| `management-report` | Topbar light for interactive report; left-nav for long chaptered suite; custom only for exact paginated/print restoration. | Conclusion/evidence structure, export/print, version/sign-off, and chapter count. |
+| `management-report` | Topbar light for interactive report; left-nav for long chaptered suite; exact paginated/print restoration is a blocker or out-of-scope exception unless it can be carried by the selected template. | Conclusion/evidence structure, export/print, version/sign-off, and chapter count. |
 | `monitoring-alert` | `frozen-title-sci-fi-cockpit-template` for monitoring wall; `left-nav-analytics-workbench-template` for multi-environment workbench. | Fixed-screen requirement, refresh cadence, alert list density, runbook/root-cause paths, and whether retained nav pages are substantial. |
 
 ## Report Decision Routing Guard
@@ -54,19 +52,19 @@ Before choosing a template for a report surface, verify the template can carry t
 - `left-nav-analytics-workbench-template` is preferred when the decision path naturally splits into multiple substantial chapters such as overview, diagnosis, detail, action, and audit.
 - `frozen-title-sci-fi-cockpit-template` is for fixed monitoring or command screens; it must still expose alert cause, runbook/action, refresh/freshness, and drilldown paths. Do not use it for ordinary office reports only to create "科技感".
 - If a report-designer/editor page is requested, route by data-binding workflow needs, not by the three-panel shell appearance. The chosen shell must support data source, field binding, aggregation, filters, validation, preview, version, and publish flow.
-- If the chosen template cannot support the required decision path without fighting its shell, document a real template limitation before routing to custom.
+- If the chosen template cannot support the required decision path without fighting its shell, document a real template limitation and keep readiness `partial` or `blocked`; do not create a custom shell inside report development.
 
 ## Selection Priority
 
-0. Hard intent: 自行设计开发 / 自由设计 routes to `custom/freeDesign`; 百分百复刻 routes to `custom/htmlReplica`.
-1. Existing project shell: if the user explicitly says to keep an existing shell, implement the selected template contract inside that shell where possible.
+0. Hard template-only constraint: all report development routes start from a bundled template; custom/free design and exact shell replication are blockers or out-of-scope exceptions.
+1. Existing project shell: if the user explicitly says to keep an existing shell, implement the selected template contract inside that shell only when the framework/page/block/supporting-area template contract remains intact; otherwise record a blocker or non-report-development exception.
 2. Display scenario: fixed big-screen/presentation/command-center use `frozen-title-sci-fi-cockpit-template`.
 3. Navigation depth and content volume: multiple chapters/views, dense repeated work, or daily workbench use `left-nav-analytics-workbench-template` only when each nav page can be made substantial.
 4. Focused one-topic report uses `topbar-light-scroll-dashboard-template`.
 5. Choose `topbar-light-scroll-dashboard-template` for ordinary office analysis, long reading, detail/query, handoff clarity, and scrollable status/diagnosis reports.
 6. Analysis/diagnostic reports default to a topbar scroll template unless the user requests sidebar, multi-page, workbench, big screen, or fixed 1920*1080 cockpit.
 
-Do not switch to a custom shell merely because the user omitted page style or provided a loose reference. Custom shell requires explicit custom-development intent, explicit exact-restoration intent, or a documented template limitation.
+Do not switch to a custom shell inside report development because the user omitted page style, provided a loose reference, requested exact restoration, or exposed a template limitation. Record the limitation or route it out of scope.
 
 ## `nav[]` Template Gate
 
@@ -80,4 +78,4 @@ Do not switch to a custom shell merely because the user omitted page style or pr
 - Requirement-document title, filter, navigation, toolbar, and shell-layout sketches are inputs to adapt, not authority to duplicate the shell.
 - When a bundled template is selected, map title text to `screen.title` and template title/logo assets; map filters to the template `filters` array and data-source/filter-field contracts; map navigation requests to existing `nav[]` or `page` structures; map toolbar actions to `screen.controls` or `actions`.
 - Do not add a second header/title band, separate filter bar, filter toolbar, extra sidebar, extra top navigation, or ad hoc toolbar just because the requirement document drew one. A requested "main filter bar" is interpreted as the selected template's native filter trigger/panel/popover/drawer plus `filters[]` config.
-- If a requirement shell element is incompatible with the selected template, preserve the business intent through the nearest template slot and document the adaptation. Only redesign the template shell when the user explicitly asks for template-level redesign.
+- If a requirement shell element is incompatible with the selected template, preserve the business intent through the nearest template slot and document the adaptation. Template-level redesign requests are blockers or template backlog items, not report-development implementation routes.

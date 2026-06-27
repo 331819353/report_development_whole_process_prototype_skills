@@ -1,6 +1,6 @@
 ---
 name: report-requirement-structure-extraction
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于把模糊想法、业务口述、截图、会议纪要、指标清单或零散资料转成可开发需求包。用户提到需求分析、需求梳理、需求拆解、需求澄清、PRD整理、业务问题转开发需求、范围/对象/指标/数据源/权限/验收标准不清、下一步该进哪个流程时触发；不直接产出API文档、代码或测试结果。"
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于在完整 PRD 生成前，把模糊想法、业务口述、截图、会议纪要、指标草表或零散资料拆成事实、假设、缺口和下游路由证据。用户提到需求分析、需求梳理、需求拆解、需求澄清、业务问题转开发需求、范围/对象/指标/数据源/权限/验收标准不清、下一步该进哪个流程时触发；完整 PRD/产品需求文档必须转交 `$report-prd-document-generation`，本 skill 不直接产出完整 PRD、API 文档、代码或测试结果。"
 ---
 
 # Requirement Transformation Analysis
@@ -41,6 +41,7 @@ Load references only when their scenario is relevant. Do not bulk-load every ref
 - Read `references/data-governance-permission-playbook.md` whenever data source credibility,口径, lineage, reconciliation, masking, audit, or permission design matters.
 - Read `references/object-model-and-acceptance.md` when object fields, acceptance criteria, or implementation task lists need more detail than the core output skeleton.
 - Read `references/output-skeleton-and-gates.md` before finalizing the requirement package, output structure, quality checklist, or avoid-list.
+- Use `$report-prd-document-generation` when the user asks for a complete PRD/产品需求文档, especially when the output must include report background, role scenes, scope boundary, page content, template-backed page layout, metric口径 list, metric mounting matrix, data/API requirements, and interaction logic.
 - Use `$artifact-readability-standard` when the requirement package must be reviewed by humans and consumed by downstream AI/workflows.
 - Use `$report-delivery-pipeline-governance` when routing the requirement package into prototype, technical solution, backend, frontend, testing, release, or retest stages.
 - Use `$metric-number-display-contract` when requirements include units, percentages, rates, precision, rounding, tooltip/export values, or numeric consistency expectations.

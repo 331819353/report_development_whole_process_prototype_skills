@@ -1,0 +1,173 @@
+# Template Layout PRD Contract
+
+Use this reference for the PRD "页面布局配置" section. The goal is to make the PRD directly usable by report-template development.
+
+## Layer Vocabulary
+
+Use these terms exactly:
+
+| Layer | Meaning | PRD must specify |
+| --- | --- | --- |
+| 框架模板 | Runtime shell template: navigation, title, filters, toolbar, theme, logo, stack. | One selected template family and why. |
+| 页面布局配置 | Page-level 12-column grid and blocks. | Page ID, nav, `layoutRows`, block IDs, spans, order. |
+| 分块布局模板 | Independent Vue entry with block size plus standard areas. | Selected block layout template file/type and slot rationale. |
+| 组件内容区模板 | Standalone Vue component content mounted inside `3 componentArea`. | Component content template ID/file, visual type, data/metric binding. |
+
+Do not use `componentRegionPattern` as the selected template. It is derived compatibility metadata.
+
+## Framework Template Selection
+
+Select one of the current bundled framework templates. In the report development flow, custom framework shells, custom page layouts, custom block layout surfaces, and custom title/filter/nav/toolbar/export surfaces are out of scope. Only interaction behavior and component content area templates may be self-developed, and both must stay inside the selected template contracts:
+
+| Framework template ID | Use when | Avoid when |
+| --- | --- | --- |
+| `topbar-light-scroll-dashboard-template` | Single report/dashboard, horizontal top title/filter/action area, scrollable content, normal enterprise report. | There are multiple substantial nav pages needing persistent side navigation. |
+| `left-nav-analytics-workbench-template` | Multi-page analytics workbench, stable left navigation, business-line pages, detail/analysis subpages. | The report is a single first-screen cockpit with no meaningful nav. |
+| `frozen-title-sci-fi-cockpit-template` | Fixed 1920 * 1080 cockpit, frozen title band, dark/sci-fi visual framing, command-center display. | The requirement is dense operational workbench or scroll-heavy analysis. |
+
+PRD table:
+
+| Field | Required content |
+| --- | --- |
+| `frameworkTemplateId` | Exact template ID. |
+| 选择原因 | Match to user role, display environment, page count, nav depth, density. |
+| 壳层保留 | Title, filter, navigation, toolbar/export, logo/theme. |
+| 壳层配置 | Values to configure, not custom UI instructions. |
+| 不改造项 | Shell surfaces that must not be duplicated in widgets. |
+
+## Existing Shell Configuration
+
+Current templates already provide title, filter, navigation, and toolbar/export surfaces. The PRD should configure them:
+
+| Shell area | PRD field | Examples |
+| --- | --- | --- |
+| 标题区 | `pageTitle`, `subtitle`, `periodLabel`, `ownerLabel` | `集团用户体验管理驾驶舱`, `月度体验健康监控`. |
+| 筛选区 | `filters[]` | business line, period type, date range, region, channel, product. |
+| 导航区 | `nav[]` | overview, risk analysis, closure tracking, business-line detail. |
+| 工具栏 | `actions[]` | refresh, export, fullscreen, help. |
+| 权限入口 | `permissionScope` | group-wide, business-line, region, admin. |
+
+Rules:
+
+- Do not add a second filter bar inside page blocks when shell `filters[]` can own it.
+- Period/date/business-line controls are shell/page controls unless the PRD explicitly declares component ownership.
+- Block-level pills can live in `1-2 pillArea`; component content slots cannot own shell filters.
+- Do not self-develop or duplicate the title, filter, navigation, toolbar, export, permission, page layout, or block layout surfaces. Configure the selected template surfaces instead.
+
+## Page Layout Configuration
+
+For each page, provide:
+
+| Field | Required content |
+| --- | --- |
+| `pageId` | Stable `PAGE-*` ID. |
+| `navId` | Navigation entry or `none`. |
+| `layoutRows` | 12-character row strings or a precise block grid map. |
+| `visibleRows` | First-screen rows and total rows. |
+| `blockMap` | Block ID, row/column span, business purpose. |
+| `scrollPolicy` | Fixed first screen, vertical scroll, or nav split. |
+| `responsivePolicy` | Usually fixed 1920 design frame unless otherwise requested. |
+
+If writing `layoutRows`, every row must have exactly 12 characters. Repeated letters define a rectangular block. Explain each letter in `blockMap`.
+
+Example shape:
+
+```text
+layoutRows:
+  AAAAAAAABBBB
+  AAAAAAAABBBB
+  CCCCDDDDEEEE
+  CCCCDDDDEEEE
+```
+
+## Block Layout Template Map
+
+In the PRD, name this table `blockLayoutTemplateMap`.
+
+For every page block, create:
+
+| Block ID | 业务内容 | Span | Selected 分块布局模板 | Slot pattern | Single/Multi rationale | `componentRegionPattern` |
+| --- | --- | --- | --- | --- | --- | --- |
+
+Current selectable examples include:
+
+| Template | Pattern | Use when |
+| --- | --- | --- |
+| `Span04x03SingleSlotLayout` | `AAAA` | One dominant KPI, chart, list, conclusion, or compact evidence card. |
+| `Span04x03DoubleSlotLayout` | `AABB` | Two tightly related values/components in one 4*3 block. |
+| `Span04x03CompactTripleSlotLayout` | `AABC` | One primary short content plus two narrow supporting items. Use cautiously. |
+| `Span06x03SingleSlotLayout` | `AAAAAA` | One wider chart/table/list/conclusion component. |
+| `Span06x03DoubleSlotLayout` | `AAABBB` | Main evidence plus comparison/driver/detail. |
+| `Span06x03TripleSlotLayout` | `AABBCC` | Three same口径 indicators or tightly related evidence components. |
+| `Span03x02Layout`, `Span04x02Layout`, `Span05x02Layout` | Single or compact split patterns | Small KPI/status/action cards. |
+| `Span05x03Layout`, `Span07x03Layout`, `Span08x03Layout` | Single or split patterns | Wider analysis, trend, table, and mixed blocks when dedicated selectable entries are not available. |
+
+Use SingleSlot when one conclusion or component should dominate. Use MultiSlot only when simultaneous evidence, comparison, driver, detail, or same口径 metric group is necessary.
+
+## Standard Block Area Configuration
+
+For every block, write the six areas:
+
+| Area | Required? | PRD content |
+| --- | --- | --- |
+| `1-1 titleArea` | Required | Block title and title style intent. |
+| `1-2 pillArea` | Optional | Up to 3 block-level mode/status pills, or `null`. |
+| `2-1 auxMetricArea` | Optional | Supporting metrics/info excluding unit, or `null`. |
+| `2-2 unitArea` | Optional | Unit text such as `单位：%`, `单位：件`, or `null`. |
+| `3 componentArea` | Required | Slot list and selected component content area template for every slot. |
+| `4 summaryArea` | Optional | Narrative conclusion only when no conclusion component exists; otherwise source/scope/caveat/action note or `null`. |
+
+Block area table:
+
+| Block ID | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` |
+| --- | --- | --- | --- | --- | --- |
+
+## Component Slot Map
+
+For every `3 componentArea` slot:
+
+| Slot ID | Block ID | Slot role | Region key | Component content area template | Visual type | Metric IDs | Data object/API | Fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Component content area template examples from current assets:
+
+| Template file | Visual type | Typical PRD use |
+| --- | --- | --- |
+| `OperatingRevenueMetricContentAreaTemplate.vue` | metric-card | KPI value. |
+| `OperatingProfitMetricContentAreaTemplate.vue` | metric-card | Profit/target/value KPI. |
+| `TargetAchievementContentAreaTemplate.vue` | text-summary | Goal achievement conclusion. |
+| `RegionalRevenueRankingContentAreaTemplate.vue` | ranking-list | Ranking by region/business line. |
+| `RevenueProfitTrendContentAreaTemplate.vue` | line | Time trend. |
+| `ChannelRevenueStructureContentAreaTemplate.vue` | pie | Composition/share. |
+| `CustomerValueScatterContentAreaTemplate.vue` | scatter | Quadrant or relationship analysis. |
+| `CostProfitHeatmapContentAreaTemplate.vue` | heatmap | Matrix/risk heat. |
+| `OperatingHealthRadarContentAreaTemplate.vue` | radar | Multi-dimensional health. |
+| `ExceptionWarningContentAreaTemplate.vue` | text-summary | Warning/conclusion text. |
+| `KeyActionListContentAreaTemplate.vue` | operational-list | Action/closure list. |
+| `OpportunityFunnelContentAreaTemplate.vue` | funnel | Funnel/conversion. |
+| `OperatingConclusionContentAreaTemplate.vue` | text-summary | Main conclusion. |
+| `LaunchConversionWaterfallContentAreaTemplate.vue` | bar | Bar/waterfall-like conversion path. |
+
+If none fits, mark `componentContentAreaTemplateId: TBD(GAP-COMPONENT-TEMPLATE-*)` or declare a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate`, expected standalone Vue file, visual type, metrics, source page/block/slot, data object/API, and reason.
+
+## Self-Development Exception Map
+
+The PRD may list self-developed items only in these two categories:
+
+| Exception type | Allowed content | Required PRD evidence | Not allowed |
+| --- | --- | --- | --- |
+| `interactionBehavior` | Drilldown, jump, popup, drawer, modal, row click, chart-point click, or action-hook behavior. | Exact fields: `interactionId`, `interactionType`, `triggerOwner`, `sourcePageId`, `sourceBlockId`, `sourceSlotId`, `sourceComponentContentAreaTemplateId`, `payloadFields`, `target`, `targetType`, `contextInheritance`, `stateSync`, `apiId`, `permissionRule`, `closeBackBehavior`, `qaCase`, and `reason`. | New shell, duplicate navigation, duplicate filter bar, custom page layout, custom block layout, custom toolbar. |
+| `componentContentAreaTemplate` | New standalone Vue component content area template, usually ECharts/table/list based, mounted only in `3 componentArea`. | Exact fields: `id`, `type`, `sourcePageId`, `sourceBlockId`, `sourceSlotId`, `componentContentAreaTemplateId`, template file, visual type, metrics, data object/API, props, states, registration/copy path, and reason no existing template fits. | Title/pill/aux/unit/summary areas, shell filters, block-level controls, explanations or summary bands inside the component slot. |
+
+If the requested self-developed item is not in one of these categories, mark it `blocked` or `deferred-out-of-scope` instead of treating it as a report-development requirement.
+
+## Layout Acceptance Gates
+
+- Every page has a framework template and shell configuration.
+- Every page block has an ID, purpose, span, and selected block layout template.
+- Every block names all standard areas, using `null` for optional areas not configured.
+- Every component slot has a component content area template or explicit custom fallback.
+- `summaryArea` does not duplicate a conclusion already represented as a conclusion component.
+- Component content area templates do not include filters, controls, aux metrics, units, titles/pills, or summary explanations.
+- Metric IDs in slots appear in both the metric list and metric mounting matrix.
+- The self-development exception map contains only interaction behavior and component content area template entries.

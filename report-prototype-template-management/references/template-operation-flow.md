@@ -2,6 +2,8 @@
 
 Use this file when a report prototype is implemented with bundled template assets. It is the no-break handoff contract between report design, page layout, block layout templates, block supporting areas, and component content area templates.
 
+Hard rule: report development is template-only except for interaction behavior and component content area templates. Framework shell, page layout config, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must use template configuration. Self-developed work may only be listed as `interactionBehavior` or `componentContentAreaTemplate` in the PRD/workflow self-development exception map.
+
 ## Canonical Terms
 
 | Term | Owns | Required output |
@@ -40,14 +42,17 @@ Use this file when a report prototype is implemented with bundled template asset
 8. Fill `3 componentArea` slots from 组件内容区模板.
    - Select an existing standalone Vue component content area template first.
    - If no suitable template fits, self-develop a new standalone Vue component content area template. Use ECharts for standard chart needs.
+   - This fallback may not change the framework shell, page layout, block layout template, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, or permission surfaces.
    - The component content area may render only the optional removable title strip and the component body. Do not add local filters, extra controls, additional information, unit labels, summary, explanation, or description bands.
-   - Output `componentContentAreaTemplateMap` and `echartsSelfDevelopedTemplateMap` when fallbacks are created.
+   - Output `componentContentAreaTemplateMap` and a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate` when fallback templates are created.
 9. Decide and configure `4 summaryArea`.
    - If the block has no conclusion card/component, `4 summaryArea` may carry a text-only/narrative conclusion, note, caveat, or explanation.
    - If the block has a conclusion card/component, `4 summaryArea` must be `null` or carry only non-conclusion content such as scope, source, caveat, definition, or action note.
    - If not needed, record `summaryAreaConfig: null`.
 
 Do not skip from page layout directly to ad hoc chart/table markup. Do not treat `componentRegionPattern` as a replacement for selecting a block layout template Vue file. Do not fill component slots before the block supporting areas in steps 4-7 have been configured or explicitly marked not needed. If a slot needs custom work, create or register a component content area template first, then mount or copy it into the slot.
+
+Interaction note: drilldown, jump, drawer, modal, popup, and row/chart-point actions may be self-developed only as component-owned behavior or template action-hook behavior. They must keep the current template shell/layout and must not create duplicate filter/navigation/toolbar surfaces.
 
 ## Standard 分块布局模板 Areas
 
@@ -84,9 +89,10 @@ Required-area policy: only `1-1 titleArea` and `3 componentArea` are always requ
 - `unitAreaConfig` for every block, or explicit `null` when no unit is needed.
 - `componentContentAreaTemplateMap` with one entry per `componentArea` slot, including selected standalone Vue template file/id, copied or mounted path, props, data source, and state coverage.
 - Component content area title-strip decision for every slot: title text or hidden, removable flag, single-slot hide proof, rounded root, and no border line.
-- `echartsSelfDevelopedTemplateMap` for every custom fallback, including renderer, chart option ownership, lifecycle proof, and registration/copy path.
+- `selfDevelopmentExceptionMap` component content area entries for every custom fallback, including component content area template ID, renderer, chart option ownership, lifecycle proof, and registration/copy path.
 - `summaryAreaConfig` for every block, or explicit `null` when no conclusion/note/explanation is needed.
 - Validation evidence: `npm run validate:dashboard`, build result, and runtime/screenshot/geometry evidence when a URL exists.
+- `selfDevelopmentExceptionMap` containing only interaction behavior entries and component content area template entries.
 
 ## Readiness Gate
 
@@ -97,5 +103,6 @@ The prototype is not ready when any of these are true:
 - A selectable block layout is encoded only as generic `SpanCCxRRLayout.vue` plus `componentRegionPattern`, without a named independent block layout Vue file.
 - A component slot contains block title, pill, additional information, unit, summary, explanation, description/help content, or any local filter/control surface beyond the optional removable title strip.
 - A custom ECharts chart is implemented directly inside a block without first becoming a standalone component content area template.
+- A self-developed interaction creates a custom shell, custom page/block layout, duplicate navigation, duplicate filter bar, duplicate toolbar, or shell-level export/permission replacement.
 - A 分块布局模板 component slot is filled before steps 4-7 are configured or explicitly marked not needed.
 - A nav template is selected without a substantial content plan for every retained nav page.

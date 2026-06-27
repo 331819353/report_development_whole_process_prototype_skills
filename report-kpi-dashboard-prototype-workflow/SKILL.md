@@ -15,6 +15,8 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this workflow when the prototype should monitor business state quickly. It is one of the five peer prototype workflows.
 
+PRD prerequisite: consume `$report-prd-document-generation` as the independent input contract. This workflow executes KPI-dashboard-specific design from the PRD; it must not generate a complete PRD internally.
+
 Core intent:
 
 ```text
@@ -34,13 +36,16 @@ Prototype story gate: this workflow does not call `$report-prototype-design-thin
 
 Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 and design-process artifacts such as 下钻链路清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes are supplemental by default and stay in tooltip/detail/dictionary/interaction contract/validation/handoff unless explicitly requested as visible page content or rewritten as business-value conclusion, evidence, trust/source, or action content.
 
+Template-only gate: this workflow must use templates for framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Only interaction behavior and component content area templates may be self-developed, and both must appear in the PRD/workflow `selfDevelopmentExceptionMap`.
+
 Visual quality gate: a dashboard that passes data/config validation can still fail as a prototype when the first viewport feels empty, fragmented, or template-like. Treat excessive blank space, oversized charts with too few marks, equal-weight blocks, low-contrast tiny copy, half-exposed next-row modules, and component content stretched away from its natural reading group as implementation defects, not polish preferences. A valid KPI dashboard prototype must prove that the first viewport is visually closed enough to answer the current-state question while still hinting at the next diagnostic layer intentionally.
 
 ## Child Skills
 
 | Stage | Skill |
 | --- | --- |
-| Requirement intake | `$report-requirement-structure-extraction` |
+| PRD prerequisite | `$report-prd-document-generation` |
+| Requirement evidence clarification | `$report-requirement-structure-extraction` |
 | Report business type | `$report-type-design` |
 | Component/data/filter/interaction mapping | `$report-info-component-mapping` |
 | Page layout | `$report-visual-layout-design` |
@@ -57,10 +62,12 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 ## Workflow
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
-2. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-3. Define the typed prototype story: who checks the dashboard, what "current state" they must remember, what status/risk/opportunity is the protagonist, and what next drilldown/action the page should push.
-4. Define the dashboard user path as a four-layer closed loop: result judgment -> diagnosis split -> process/driver cause -> detail/action closure, with time/org context and trust/freshness preserved across layers.
-5. Define the dashboard decision: business health, target progress, abnormality, risk object, root metric, and the next action-worthy drilldown.
+2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 cover the dashboard story, roles, scope, page content, layout, metrics, metric mounting, data/API, and interactions.
+4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
+5. Derive the typed prototype story from the PRD: who checks the dashboard, what "current state" they must remember, what status/risk/opportunity is the protagonist, and what next drilldown/action the page should push.
+6. Define the dashboard user path as a four-layer closed loop from PRD roles/scenes and interactions: result judgment -> diagnosis split -> process/driver cause -> detail/action closure, with time/org context and trust/freshness preserved across layers.
+7. Define the dashboard decision from PRD background/goals and metric list: business health, target progress, abnormality, risk object, root metric, and the next action-worthy drilldown.
 6. Lock the KPI set and KPI scope boundary: core KPI, process KPI, risk KPI, formula, unit, period, target, threshold, baseline, owner/source, freshness, and which metrics truly deserve KPI-card treatment.
 7. Define `metricDrilldownContract` for every primary metric before ordinary component mapping: root metric, result/diagnosis/process/action layers, trigger events, payload fields, context inheritance, state rules, validation cases, or scoped static exception.
 8. Design the first viewport as the result layer plus first diagnostic cue: title, time range, update time, global filters, bounded core KPI summary, target completion, YoY/MoM, threshold/status, abnormal reminder, and one clear path into diagnosis. Avoid filling the viewport with same-weight KPI cards.
@@ -81,6 +88,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, dashboard user role, business state question, decision/action, time scope, and managed objects.
+- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, KPI-dashboard rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: one-sentence current-state value, user path, protagonist metric/object/risk, supporting evidence, and 30-second review path.
 - Affected-surface to owning-skill routing, especially layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - KPI dictionary: formula, unit, period, target, threshold, baseline, owner/source, freshness, display status.
@@ -94,12 +102,15 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Filter, refresh, permission, export/share, abnormal, empty/error/no-permission state requirements.
 - Component/data/filter/control/interaction binding matrix.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
-- Template/custom shell decision, changed files if implemented, verification, URL or blocker, and readiness.
+- `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
 ## Quality Gate
 
 - Do not turn a dashboard into a dense detail report.
+- Do not start KPI dashboard story, layout, KPI scope, component mapping, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not mark ready until every PRD execution row needed for dashboard content, layout, metrics, metric mounting, data/API, and interactions is consumed or explicitly deferred out of scope.
 - Do not start layout or component selection until the current-state story, user path, protagonist metric/object/risk, and next drilldown/action are explicit or safely inferred.
+- Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.
 - Do not start runnable implementation until the nine-step template operation chain has no missing block configs or slots. `blockLayoutTemplateMap` must name the selected independent block layout Vue file, not only a generic size wrapper plus `componentRegionPattern`. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone ECharts component content area template.
 - Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
 - Do not turn a KPI dashboard into a wall of KPI cards. The first viewport may have a bounded KPI summary, but trend, driver, anomaly, detail, action, and trust content must use task-matched component forms.

@@ -1,6 +1,6 @@
 ---
 name: report-design-workflow
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。运行通用报表、仪表盘、数据大屏、页面原型的设计和可运行原型编排。用户明确提到原型、页面原型、报表原型、仪表盘原型、大屏原型、demo、样机、截图/HTML还原、HTML源码原型、mock数据原型、模板原型、可运行URL、本地预览、部署预览、Vue报表原型，且没有明确要求自助分析、指标看板、分析报告、明细报表专项 workflow 时触发；默认加载通用原型设计思路，开发过程中执行行动前自省，并默认用内置报表模板和 Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios；AntV S2 仅在分析型表格需要时加入；HTML中的SVG/canvas标准图表只作证据，应重建为ECharts，除非用户指定栈、现有项目权威、要求自定义/精确复刻，或模板无法满足。"
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。运行通用报表、仪表盘、数据大屏、页面原型的设计和可运行原型编排。用户明确提到原型、页面原型、报表原型、仪表盘原型、大屏原型、demo、样机、截图/HTML还原、HTML源码原型、mock数据原型、模板原型、可运行URL、本地预览、部署预览、Vue报表原型，且没有明确要求自助分析、指标看板、分析报告、明细报表专项 workflow 时触发；默认加载通用原型设计思路，开发过程中执行行动前自省，并默认用内置报表模板和 Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios；AntV S2 仅在分析型表格需要时加入；HTML中的SVG/canvas标准图表只作证据，应重建为ECharts；报表开发流程内除交互和组件内容区模板可自开发外，其余页面壳、布局、分块与支持区必须使用模板。"
 ---
 
 # Report Design Workflow
@@ -15,7 +15,9 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this workflow only when the user asks for a report/page/dashboard prototype, runnable demo, screenshot/HTML restoration, template-based prototype, or preview URL. It orchestrates atomic skills and keeps implementation details in the owning skills.
 
-Default policy: load `$report-prototype-design-thinking` for the generic design-thinking layer, then use a bundled report template and `Vue 3 + TypeScript + Vite + Element Plus + ECharts + AntV S2 + axios` unless the user specifies another stack, an existing project is authoritative, exact restoration is required, or no bundled template can satisfy the requirement.
+PRD prerequisite: this workflow consumes a complete PRD from `$report-prd-document-generation`. If the request has no PRD, or the PRD lacks the required PRD-to-workflow execution matrix, generate/update the PRD first and then continue from that contract. Do not recreate full PRD content inside this workflow.
+
+Default policy: load `$report-prototype-design-thinking` for the generic design-thinking layer, then use a bundled report template and `Vue 3 + TypeScript + Vite + Element Plus + ECharts + AntV S2 + axios`. In the report development flow, `pageShellPath` is fixed to `template`: framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces are configured through templates. Only interaction behavior and component content area templates may be self-developed.
 
 Source-material policy: every user-provided message, screenshot, HTML, Markdown/MD, copied source, code, data file, or document is first converted into requirement evidence: confirmed facts, inferred assumptions, gaps, component/data/filter/interaction constraints, and acceptance checks. Source file format is not output-format authority. Only explicit wording such as "输出 HTML", "单 HTML 文件", "HTML 格式原型", or "保留静态 HTML" switches the prototype output to HTML; otherwise runnable prototypes default to bundled `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`.
 
@@ -23,7 +25,8 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 
 | Stage | Skill |
 | --- | --- |
-| Requirement intake | `$report-requirement-structure-extraction` |
+| PRD prerequisite | `$report-prd-document-generation` |
+| Requirement evidence clarification | `$report-requirement-structure-extraction` |
 | Prototype design thinking | `$report-prototype-design-thinking` |
 | Report business type | `$report-type-design` |
 | Component/data/filter/interaction mapping | `$report-info-component-mapping` |
@@ -45,6 +48,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 ## Reference Loading
 
 - Stage gates and modes: `references/01-workflow-modes-and-stage-gates.md`; load `references/01a-workflow-visual-implementation-gates.md` for Stage 8 visual layout, Stage 9 component style, and Stage 10 template/implementation gates.
+- PRD prerequisite and execution map: `$report-prd-document-generation` `references/prototype-workflow-execution-map.md`; load before design, layout, template, component, or implementation work.
 - Preflight understanding gate: `$quality-gate-validation` `references/preflight-understanding-gate.md`
 - Default prototype design thinking: `$report-prototype-design-thinking` before display theme, report type, layout, or template decisions.
 - Good-report decision path: `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when report/dashboard/BI pages are designed, mapped, accepted, or repaired.
@@ -65,12 +69,13 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 ## Workflow
 
 1. Run the Preflight understanding gate before layout, template, styling, or code. Name the workflow mode, evidence inventory, authority order, affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
-2. Confirm prototype intent and mode: design spec, runnable implementation, screenshot/HTML restoration, repair, or URL handoff.
-3. Run the anti-laziness execution gate from `$quality-gate-validation` for design routing, implementation, repair, HTML restoration, QA, or handoff. Keep `LAZY-*` findings visible until evidence closes them.
-4. Before each non-trivial mode, template, visual-source, component, renderer, or source-code action, run the action reflection loop from `$quality-gate-validation` `references/preflight-understanding-gate.md`; revise or stop when the action fails hard constraints or design reasonableness.
-5. Convert every provided source artifact, including HTML/MD/source files, into a source-material requirement matrix before selecting output format, shell, template, or code path.
-6. Load `$report-prototype-design-thinking` as the default generic thinking layer. Do not branch into 自助分析、指标看板、分析报告、or 明细报表 inside this workflow; those are separate workflow skills.
-7. Normalize rough requirements when needed.
+2. Confirm the PRD prerequisite. If no complete PRD exists, use `$report-prd-document-generation` to create one. If source evidence is unclear, use `$report-requirement-structure-extraction` only to feed facts/gaps back into the PRD. Do not continue design from unstructured notes.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and create/validate the PRD section execution matrix. Every PRD section must map to a downstream owner skill, execution artifact, blocking rule, and status before workflow design starts.
+4. Confirm prototype intent and mode: design spec, runnable implementation, screenshot/HTML restoration, repair, or URL handoff.
+5. Run the anti-laziness execution gate from `$quality-gate-validation` for design routing, implementation, repair, HTML restoration, QA, or handoff. Keep `LAZY-*` findings visible until evidence closes them.
+6. Before each non-trivial mode, template, visual-source, component, renderer, or source-code action, run the action reflection loop from `$quality-gate-validation` `references/preflight-understanding-gate.md`; revise or stop when the action fails hard constraints or design reasonableness.
+7. Convert every provided source artifact, including HTML/MD/source files, into a source-material requirement matrix only as PRD evidence. Update the PRD before selecting output format, shell, template, or code path when new facts affect scope/layout/metrics/API/interactions.
+8. Load `$report-prototype-design-thinking` as the default generic thinking layer. Do not branch into 自助分析、指标看板、分析报告、or 明细报表 inside this workflow; those are separate workflow skills.
 8. Choose one `displayTheme`, one primary report type, one style baseline when requested, and a small reusable pattern-card set. Record rejected competing themes and rejected generic style directions.
 9. Run anti-AI and report-decision gates before layout, styling, or code.
    Carry the visual constraints from the design-system gates: reduce uniform card borders, do not KPI-ize every module, inherit brand/product color before status colors, lower default green/red dependence, and choose information flow instead of generic dashboard collage unless current-state monitoring justifies it.
@@ -79,7 +84,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
     Dense or metric-bearing bundles must carry `layoutFitContract` before layout handoff.
 11. Run the result-content boundary check before layout or implementation: visible report content must pass a business-value test, while design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes stay in contracts, interactions, tooltip/detail/dictionary, validation, appendix/handoff, or QA evidence by default.
 12. Decide `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly requests HTML/static/single-file HTML output or exact static HTML preservation.
-13. Decide `pageShellPath`: default `template`; use `custom` only for explicit custom/free design, exact restoration, existing shell preservation, HTML/static output, or documented template limitation.
+13. Declare `pageShellPath: template` and the self-development exception map. In report development, custom/free shell, exact shell restoration, custom page layout, custom block layout, duplicate filter/navigation/toolbar surfaces, and static HTML shell paths are blockers or out-of-scope exceptions, not implementation routes. The only allowed self-developed entries are interaction behavior IDs and component content area template IDs.
 14. If HTML/source is provided, classify any SVG/canvas/DOM chart marks as sample evidence, not standard-chart implementation. Standard charts must be rebuilt with ECharts/data-driven options unless an explicit custom-diagram exception is documented.
 15. Use `$report-visual-layout-design` for shell, navigation, filter surface, `12 * N` grid, block sizing, page规范, and per-parent-block `blockChromePattern` selection. Its handoff must include `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport plan, and nav/page wiring.
 16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every page block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill only `3 componentArea` slots with 组件内容区模板 and configure summary/explanation on `4 summaryArea`.
@@ -93,6 +98,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, input inventory, prototype design-thinking output, core narrative, user path, key decision points, target user/scenario/decision/action, `displayTheme`, pattern cards, report type, and core question.
+- PRD prerequisite proof: PRD status, source PRD path or generated output, PRD-to-workflow execution matrix, blocked/draft rows, and how every PRD section is consumed or explicitly deferred.
 - Source-material requirement matrix: every user-provided message/file/source artifact, extracted facts, inferred assumptions, gaps, affected requirement areas, and whether it is output-format authority.
 - Output artifact decision: `vueTemplatePrototype` by default, or `htmlPrototype` with the user's explicit HTML/static-output wording.
 - Good-report decision-path output: primary decision question, 3-second main point, conclusion/evidence/cause/detail/action sequence, comparison baseline, metric relationship network, drilldown/action path, and `RPT-*` findings.
@@ -107,7 +113,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Anti-AI and report-decision gate result.
 - Analysis perspective and component/data/filter/control/interaction binding matrix.
 - Filter/value semantics table with `detailValue`, `aggregateValue`, `emptyFilterValue`, display label, data-row role, query behavior, and primary-key eligibility.
-- Layout plan, selected template/custom reason, filter surface mapping, perspective-layer mapping, baseline inheritance decision, anti-squeeze row-group/vacancy reflow decisions when triggered, and implementation target path.
+- Layout plan, selected framework template, template-only decision, self-development exception map, filter surface mapping, perspective-layer mapping, baseline inheritance decision, anti-squeeze row-group/vacancy reflow decisions when triggered, and implementation target path.
 - Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, ECharts self-developed component content area fallbacks, and validation evidence for every filled slot.
 - Files changed, code-ledger proof, verification commands, URL or blocker.
 - Quality-gate findings and readiness: `ready`, `partial`, or `blocked`.
@@ -115,12 +121,14 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 ## Quality Gate
 
 - Do not use this workflow without prototype/demo/page-output intent.
+- Do not start design, layout, component mapping, template copying, implementation, or repair without a PRD from `$report-prd-document-generation` or a freshly generated draft PRD. `$report-requirement-structure-extraction` is evidence intake only, not a complete PRD substitute.
+- Do not mark the workflow `ready` until every PRD-to-workflow execution row is consumed by an artifact or explicitly `deferred-out-of-scope`.
 - Do not skip `$report-prototype-design-thinking` for new prototype work unless the user provides an already structured prototype design brief with core narrative, user path, key decision points, user/scenario/decision/action, metric layers, analysis path, and block intent.
 - Do not start implementation, repair, layout, or template copying before the Preflight understanding gate has a `ready-to-start` or bounded `partial-start` decision.
 - Do not continue from the initial preflight into implementation on autopilot. Non-trivial template, component, renderer, data, layout, HTML conversion, and readiness actions require action reflection; revise or stop when the action conflicts with constraints or design reasonableness.
 - Do not treat Haier UI and report design-system baselines as alternatives for Haier/enterprise report pages; inherit Haier application tokens/base controls and then apply report-specific rules.
 - Do not rely only on this top-level workflow when a chart, table, filter, component-placement, or reusable component standard is affected; route to the specific front-door skill before implementation or acceptance.
-- Do not implement before display theme, report type, binding matrix, layout, and template/custom shell decision exist.
+- Do not implement before display theme, report type, binding matrix, layout, `pageShellPath: template`, selected framework template, and self-development exception map exist.
 - Do not implement or accept a bundled-template prototype before the nine-step template operation chain exists: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap`, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. `blockLayoutTemplateMap` must name the selected independent block layout Vue file, not only a generic size wrapper plus `componentRegionPattern`. Every `3 componentArea` slot must be filled by an existing 组件内容区模板 or a newly registered standalone ECharts component content area template.
 - Do not implement a dense KPI/chart/table/composite layout before `layoutFitContract` and anti-squeeze reflow decisions exist. Crowding must be resolved by row-group expansion, wider/full-row move with vacancy handling, split/tab/drawer/fullscreen/pagination, or density reduction, not by font shrinkage, hidden overflow, or empty sibling stretching.
 - Do not start implementation from raw HTML, Markdown/MD, copied source, screenshots, or docs before converting them into requirement facts, assumptions, gaps, bindings, and acceptance checks.
@@ -132,8 +140,8 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Do not implement a report prototype as peer modules without a conclusion explanation chain. A non-detail-only report must start with one overall conclusion, then use sections with partial conclusions and components that explain those partial conclusions.
 - Do not render design-process artifacts as report results. 下钻链路 may appear as an actionable control, breadcrumb, drawer/jump route, or detail entry tied to current context; it must not appear as a standalone design-chain list. 指标清单, component mappings, binding matrices, workflow/gate outputs, dataset field catalogues, and implementation notes stay out of the visible page unless the user explicitly asks for visible documentation or the item passes the business-value test as conclusion, evidence, trust, or action content.
 - Do not reuse one sentinel value such as `all` for detail rows, aggregate rows, and empty/no-filter state. "All detail rows", "aggregate row", and "empty filter value" must be declared as separate semantics before implementation.
-- Do not choose custom development when a bundled template can satisfy the request.
-- Template-native filters and shell slots must be reused unless template-level redesign is explicitly requested.
+- Do not choose custom shell/page/block/supporting-area development inside the report development flow. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must use templates; only interaction behavior and component content area templates may be self-developed.
+- Template-native filters and shell slots must be reused; redesign requests for those surfaces are blockers or out-of-scope exceptions for this report development workflow.
 - Component slots must not carry block-layout supporting areas or local control surfaces. Title, pill buttons, filters, controls, additional information, units, description/help text, and summary/explanation copy stay on the 分块布局模板 areas `1-1`, `1-2`, `2-1`, `2-2`, and `4`, shell/page config, or non-slot widgets.
 - Do not silently degrade the default runnable stack to Vue 3 only, Vue 3 + ECharts without Element Plus, or Vue 3 + Element Plus with hand-drawn charts. Stack exceptions require a named source authority and readiness impact.
 - Standard charts must be real ECharts option/series/runtime components; S2-class analytical tables must use S2/project-equivalent behavior.

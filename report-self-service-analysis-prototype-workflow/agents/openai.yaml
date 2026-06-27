@@ -1,4 +1,4 @@
 interface:
   display_name: "自助分析原型 Workflow"
-  short_description: "独立编排自助分析类报表原型，从数据集、字段面板、拖拽配置、图表切换、保存分享导出到运行QA。"
-  default_prompt: "Use $report-self-service-analysis-prototype-workflow to design or build a self-service analysis prototype with datasets, field metadata, row/column/metric/filter configuration, chart switching, save/share/export, permissions, performance limits, and runtime QA."
+  short_description: "基于 PRD 执行矩阵编排自助分析原型，覆盖数据集、字段、配置、图表切换、保存分享和运行QA。"
+  default_prompt: "Use $report-self-service-analysis-prototype-workflow to design or build a self-service analysis prototype from the prerequisite $report-prd-document-generation PRD, covering datasets, field metadata, row/column/metric/filter configuration, chart switching, save/share/export, permissions, performance limits, template-only layout/block configuration, and runtime QA."

@@ -4,7 +4,7 @@ Use this file when building a new business report from a copied template or heav
 
 ## Sequence
 
-Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` names the selected independent block layout Vue file for every block. If a slot uses custom ECharts work, add `echartsSelfDevelopedTemplateMap` and create/register the standalone Vue component content area template before filling the slot.
+Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` names the selected independent block layout Vue file for every block. If a slot uses custom ECharts work, add a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate` and create/register the standalone Vue component content area template before filling the slot.
 
 1. Select 框架模板:
    - Choose the shell first: topbar scroll dashboard, left-nav analytics workbench, frozen-title cockpit, an existing project shell, or an explicit custom exception.
@@ -46,7 +46,7 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> blockLayou
    - Mount or copy the selected standalone component content area Vue file, or point to a `componentContentAreaTemplateId` that maps to that file.
    - If no existing component content area template fits the slot and business intent, self-develop a new standalone Vue component content area template with ECharts for chart needs.
    - Do not attach filters, controls, additional information, unit slot, title pills, description/help text, or summary copy to a component slot. The component content area may have only the optional removable title strip plus body content.
-   - Output `componentContentAreaTemplateMap`; output `echartsSelfDevelopedTemplateMap` for newly created fallback templates.
+   - Output `componentContentAreaTemplateMap`; output `selfDevelopmentExceptionMap` component content area entries for newly created fallback templates.
 9. Configure `4 summaryArea`:
    - If the block has no conclusion card/component, add a text-only/narrative conclusion, note, caveat, or explanation when needed.
    - If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.

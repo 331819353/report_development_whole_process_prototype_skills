@@ -89,6 +89,44 @@ export interface ReportBlueprintDataBinding {
   notes?: string[];
 }
 
+export type ReportBlueprintSelfDevelopmentExceptionType = 'interactionBehavior' | 'componentContentAreaTemplate';
+export type ReportBlueprintInteractionType = 'drilldown' | 'jump' | 'modal' | 'drawer' | 'popup' | 'crossFilter';
+export type ReportBlueprintInteractionTriggerOwner = 'templateActionHook' | 'componentOwnedEvent' | 'widgetEvent';
+export type ReportBlueprintInteractionTargetType =
+  | 'route'
+  | 'drawer'
+  | 'modal'
+  | 'popover'
+  | 'external'
+  | 'cross-filter'
+  | 'fullscreen'
+  | 'export';
+
+export interface ReportBlueprintSelfDevelopmentException {
+  id?: string;
+  type: ReportBlueprintSelfDevelopmentExceptionType;
+  reason?: string;
+  owner?: string;
+  sourcePageId?: string;
+  sourceBlockId?: string;
+  sourceSlotId?: string;
+  componentContentAreaTemplateId?: string;
+  interactionId?: string;
+  interactionType?: ReportBlueprintInteractionType;
+  triggerOwner?: ReportBlueprintInteractionTriggerOwner;
+  sourceComponentContentAreaTemplateId?: string;
+  payloadFields?: string[];
+  target?: string;
+  targetType?: ReportBlueprintInteractionTargetType;
+  contextInheritance?: string[];
+  stateSync?: string;
+  apiId?: string;
+  permissionRule?: string;
+  closeBackBehavior?: string;
+  qaCase?: string;
+  notes?: string[];
+}
+
 export interface ReportBlueprintComponentSlot {
   id: string;
   templateSlotId?: string;
@@ -148,6 +186,7 @@ export interface ReportBlueprint {
   status?: 'draft' | 'ready' | 'blocked';
   pages: ReportBlueprintPage[];
   filters?: DashboardFilterGroup[];
+  selfDevelopmentExceptionMap?: ReportBlueprintSelfDevelopmentException[] | Record<string, ReportBlueprintSelfDevelopmentException>;
   notes?: string[];
 }
 

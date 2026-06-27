@@ -28,7 +28,7 @@ Use this file for common adjustments and final verification after changing a tem
 6. Verify each span can hold its chart/table/KPI/composite content at the target viewport size.
 7. Keep or add vertical scrolling when the report needs more rows than the first viewport can show.
 8. Rename widget keys to match changed block ids.
-9. Update the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and any `echartsSelfDevelopedTemplateMap` fallback.
+9. Update the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and any `selfDevelopmentExceptionMap` component content area fallback.
 10. Append the config ledger entry with changed layout ranges and affected widget/filter contracts.
 11. Run `npm run validate:dashboard`.
 
@@ -41,7 +41,7 @@ Use this file for common adjustments and final verification after changing a tem
 4. Decide whether `2-1 auxMetricArea` is needed. Configure it when needed and keep the items evenly distributed; otherwise record it as not configured.
 5. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
 6. For every `3 componentArea` slot, select an existing 组件内容区模板 first.
-7. If no suitable component content area template exists, create a standalone Vue component content area template, use ECharts for standard chart needs, register/copy it, and record it in `echartsSelfDevelopedTemplateMap` or the equivalent fallback map.
+7. If no suitable component content area template exists, create a standalone Vue component content area template, use ECharts for standard chart needs, register/copy it, and record it in `selfDevelopmentExceptionMap` with `type: componentContentAreaTemplate`.
 8. For every selected 组件内容区模板, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块布局模板 has one slot or when `showContentTitle: false`.
 9. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件内容区模板 slots. Those belong to 分块布局模板 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
 10. Configure `4 summaryArea`: if the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
