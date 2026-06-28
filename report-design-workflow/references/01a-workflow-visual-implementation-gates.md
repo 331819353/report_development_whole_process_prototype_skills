@@ -52,7 +52,7 @@ This stage prevents overlap, truncation, low contrast, and component sizing fail
 
 Use this stage only when the user asks for runnable files, page implementation, or a prototype.
 
-Before implementation, declare `outputArtifact`. Default to `vueTemplatePrototype` and the bundled Vue stack even when the user provided HTML/MD/source files as requirement material. In report development, HTML/static/single-file shell output and exact static shell preservation are blockers or out-of-scope exceptions unless they can still be implemented through the selected template contract.
+Before implementation, declare `outputArtifact` and `implementationMode`. Default to `vueTemplatePrototype` plus `copyTemplateProject`: copy the selected bundled template project and preserve its Vue stack even when the user provided HTML/MD/source files as requirement material. In report development, HTML/static/single-file shell output, exact static shell preservation, and blank new Vue3 projects are blockers or out-of-scope exceptions unless they can still be implemented through the selected template contract or are documented as self-developed/non-template exceptions.
 
 Default technical architecture:
 

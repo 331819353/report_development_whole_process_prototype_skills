@@ -18,7 +18,7 @@ When transforming a requirement, use this structure. Keep small inputs concise, 
 12. 非功能需求: performance, freshness, reliability, observability, compatibility, deployment, rollback.
 13. 测试与验收标准: acceptance criteria, test cases, evidence, data consistency checks, integration smoke tests.
 14. UI/设计基线: Haier/company application baseline, report development baseline, inherited dual baseline, or explicit non-Haier/native/neutral exception, with downstream skills that must apply it.
-15. 交付形态与默认栈: expected artifact, default `vueTemplatePrototype`, explicit HTML/static-output authority if any, and downstream Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios constraint for runnable prototypes.
+15. 交付形态与默认实施方式: expected artifact, default `vueTemplatePrototype`, default `implementationMode: copyTemplateProject`, copied-template path, explicit HTML/static-output authority if any, explicit `newVue3Project` exception if any, and downstream Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios constraint for copied runnable prototypes.
 16. 既有设计思路审查: accepted/repaired/rejected existing design proposals from the source requirement, including conflicts with story, path, hierarchy, `1920x1080`, `12 * N`, chart sizing, density, or metric-display rules.
 17. 指标展示边界: visible metrics/components versus supplemental metric口径, calculation notes, and indicator lists that stay in tooltip/detail/dictionary/handoff unless explicitly requested for page display.
 18. 后续调用建议: exact downstream skills/workflows and why.
@@ -47,7 +47,7 @@ Before finalizing, verify:
 
 - The primary scenario and expected deliverable are explicit.
 - Every user-provided source artifact is either transformed into requirements or explicitly marked out of scope.
-- HTML/static/single-file output is chosen only when the user's wording explicitly requests it; otherwise runnable prototypes keep the default Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios path.
+- HTML/static/single-file output is chosen only when the user's wording explicitly requests it; otherwise runnable prototypes copy a bundled template project and keep the default Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios path. A blank/new Vue3 project needs a self-developed/non-template exception and rejected copy candidates.
 - Facts, assumptions, and missing inputs are separated.
 - User/stakeholder and usage moment are named.
 - Vague goals are converted into specific problems and outcomes.

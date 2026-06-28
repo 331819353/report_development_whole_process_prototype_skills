@@ -107,6 +107,12 @@ Explicitly decide whether phase one includes or excludes:
 - Real-time data.
 - Mobile adaptation.
 
+Also include the prototype output boundary:
+
+| Output ID | Prototype artifact | Required stack | HTML/static exception authority | Notes |
+| --- | --- | --- | --- | --- |
+| `ART-PROTOTYPE-RUNTIME` | `vueTemplatePrototype` with `implementationMode: copyTemplateProject` | Copy the selected bundled template project first, then preserve `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`; add AntV S2 only for pivot/cross/wide analytical tables | Latest explicit user request for HTML/static/single-file output or exact static preservation; self-developed/non-template exception with rejected copy candidates for `newVue3Project` | PRD sections, attachments, screenshots, copied source, and HTML source files are requirement evidence only; they must not switch downstream workflow output to `htmlPrototype` or default to a blank Vue3 project. |
+
 ### 4. 页面内容
 
 Describe page business content before layout. Use:
@@ -303,6 +309,8 @@ Readiness rules:
 - The PRD cannot be `ready-for-review` when section 4A lacks attachment intake for provided files, user-thought validation when applicable, one primary `RTP-*` pattern, reading path, first-viewport plan, and path-step-to-block-layout mapping.
 - The PRD cannot be `ready-for-review` for a management-facing report when section 4B lacks `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*` severity, required `ACT-*` closure, `TRUST-*` source/freshness, or required `MEET-*` review/export behavior.
 - The PRD cannot be `ready-for-review` when any `summaryArea`, conclusion card, or analysis insight component displays a business conclusion without a `RULE-*` row and frontend generation rule.
+- The PRD cannot be `ready-for-review` when it implies HTML/static prototype generation from PRD wording, attachments, screenshots, copied source, or HTML source samples. Downstream runnable prototype output must stay `vueTemplatePrototype` with the bundled Vue/TypeScript/ECharts stack unless the latest explicit user request is the HTML/static-output authority.
+- The PRD cannot be `ready-for-review` when it implies `newVue3Project` as the normal path. Downstream runnable prototype implementation must default to `copyTemplateProject`; a new Vue3 project requires a self-developed/non-template exception, rejected template candidates, owner, and readiness impact.
 
 ### 12. PRD-to-workflow 执行矩阵
 
@@ -319,3 +327,5 @@ Rules:
 - Every `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RTP-*`, `PATH-*`, `RULE-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` that appears in earlier sections must be consumed by at least one execution row.
 - `Status` can be `ready`, `draft`, `blocked`, or `deferred-out-of-scope`.
 - A prototype workflow can start only when no execution row needed by the first design/layout/template step is `blocked`.
+- A prototype workflow can start only when the execution matrix includes the `ART-PROTOTYPE-RUNTIME` row or equivalent output artifact rule, with `vueTemplatePrototype` as the default runnable artifact and a cited latest-user-request exception for any `htmlPrototype`.
+- A prototype workflow can start only when the execution matrix declares `implementationMode: copyTemplateProject` by default, or records a bounded `newVue3Project` exception with rejected copy candidates.

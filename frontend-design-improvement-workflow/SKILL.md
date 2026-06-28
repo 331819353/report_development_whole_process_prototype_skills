@@ -17,6 +17,8 @@ Use this as the router for vague frontend design-improvement requests. It decide
 
 This skill does not replace implementation skills. It creates the improvement route, scope, quality criteria, and required references so page-level and component-level work do not drift apart.
 
+For runnable report/page prototype improvement, preserve the prototype route: `implementationMode: copyTemplateProject` by default, copying the selected bundled template project and keeping its `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` stack; add AntV S2 only for pivot/cross/wide analytical tables. HTML, Markdown, screenshots, copied source, PRD wording, or static samples are evidence only; they must not switch implementation to HTML/static output or blank new Vue3 project unless the latest explicit user request asks for HTML/static/single-file output or a documented self-developed/non-template exception requires `newVue3Project`.
+
 ## Reference Map
 
 | Need | Read |
@@ -48,6 +50,7 @@ This skill does not replace implementation skills. It creates the improvement ro
 7. Route reusable component standards to `$report-component-design-spec`; route chart, table, and filter-specific standards to `$report-chart-design-spec`, `$report-table-design-spec`, and `$report-filter-control-design-spec`.
 8. Route implementation-ready x/y/slot/alignment work to `$report-component-placement-spec`; route mixed single-component review/repair to `$report-component-style-design`.
 9. For runnable/report UI work, build a shared proof-obligation list before implementation or acceptance: KPI X/Y alignment and CSS cascade, template/component control ownership, fixed-height overflow/clipping, chart/table option evidence, contract-to-DOM/CSS/renderer mapping, modern BI page/card token evidence, component-pileup and chart-lightness proof, screenshot/crop coverage, and non-default state checks.
+   Include `outputArtifact: vueTemplatePrototype`, `implementationMode: copyTemplateProject`, copied-template path, and Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof in that list unless the latest explicit user request is the HTML/static-output authority or a documented self-developed/non-template exception requires `newVue3Project`.
 10. When code or a live URL exists, require runtime screenshot/DOM/interaction evidence through `$frontend-runtime-qa-validation` before marking visual work ready.
 11. Run the anti-laziness execution gate from `$quality-gate-validation` before declaring an improvement plan, repair, QA, or readiness. Keep `LAZY-*` findings visible until source evidence, owner routing, and proof obligations are closed.
 12. Return a short action plan or execute the implementation workflow when the user asked for changes, not only advice.
@@ -71,6 +74,7 @@ This skill does not replace implementation skills. It creates the improvement ro
 - Do not make every module a KPI card or metric tile. KPI scope must be bounded to primary decision metrics.
 - Do not use red/green as the default "professional" palette. Brand/product color and neutral hierarchy must carry identity and emphasis; semantic colors require explicit status/business meaning.
 - Do not call a page improved when it is still a dashboard collage without conclusion -> evidence -> driver -> detail/action -> trust/source flow.
+- Do not route runnable prototype improvement to HTML/static output merely because the PRD, source sample, screenshot, or provided file mentions HTML. Keep the Vue/TypeScript/ECharts stack unless the latest explicit user request asks for HTML/static output.
 - Do not begin visual repair or implementation before the affected surfaces and owning skills are classified.
 - Do not route report/dashboard design only to report-design skills when the page is a Haier/enterprise Web application; inherit Haier color, typography, spacing, base controls, states, and brand rules as well.
 - Do not skip page规范 when the issue includes shell, navigation, grid, section order, filters, spacing, overlap, or responsive behavior.

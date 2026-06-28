@@ -15,7 +15,7 @@ Source-material intake gate:
 - Treat every user-provided message, file, HTML, Markdown/MD, screenshot, source snippet, code file, data file, or document as requirement evidence first.
 - Convert source materials into confirmed facts, inferred assumptions, missing gaps, component/data/filter/interaction constraints, and acceptance checks as PRD evidence before choosing shell, template, output format, or implementation target.
 - Source file format is not output-format authority. Provided HTML/MD/source files do not by themselves mean `htmlPrototype` or any custom shell/layout path.
-- Declare exactly one `outputArtifact`: default `vueTemplatePrototype`; use `htmlPrototype` only when the user explicitly asks for HTML/static/single-file HTML output or exact static HTML preservation.
+- Declare exactly one `outputArtifact` and one `implementationMode`: default `vueTemplatePrototype` plus `copyTemplateProject`; use `htmlPrototype` only when the user explicitly asks for HTML/static/single-file HTML output or exact static HTML preservation, and use `newVue3Project` only for a documented self-developed/non-template exception.
 - Before any prototype workflow continues, a PRD from `$report-prd-document-generation` must exist or be generated. The PRD must include the PRD-to-workflow execution matrix from `$report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
 
 ### 1. Prototype-Oriented Design Mode
@@ -59,7 +59,7 @@ Deliver:
 
 - All prototype design outputs.
 - Display theme, pattern-card-to-component mapping, and pattern acceptance cases.
-- Technical architecture based on `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`, with ECharts standard charts including Combo through shared `xAxis` plus `bar` and `line`/`markLine` series, funnel through `series.type: 'funnel'` or a data-driven horizontal `bar` funnel, parallel coordinates through `parallelAxis` plus `series.type: 'parallel'`, and AntV S2 installed and used only when the binding matrix contains S2-class analytical tables.
+- Technical architecture based on a copied bundled template project that preserves `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`, with ECharts standard charts including Combo through shared `xAxis` plus `bar` and `line`/`markLine` series, funnel through `series.type: 'funnel'` or a data-driven horizontal `bar` funnel, parallel coordinates through `parallelAxis` plus `series.type: 'parallel'`, and AntV S2 installed and used only when the binding matrix contains S2-class analytical tables.
 - Template choice.
 - Data files or mock data.
 - Component implementation.
@@ -70,7 +70,7 @@ Deliver:
 - Public URL or local preview URL.
 - Screenshot or browser QA when applicable.
 
-Do not treat the word "report" as a single-page constraint. A report may be a one-page summary, a multi-chapter report suite, or a big-screen cockpit. Choose the template by content volume, chapter/view count, interaction density, and display scenario. Use the bundled template assets under `report-prototype-template-management/assets/templates/`: `topbar-light-scroll-dashboard-template` for compact focused reports, `left-nav-analytics-workbench-template` for multi-chapter analytics workbenches, and `frozen-title-sci-fi-cockpit-template` for fixed 1920x1080 cockpit screens. Topbar and left-nav templates may exceed 1080px and scroll vertically. Only select a template with `nav[]` when the content can be redesigned into multiple substantial nav pages; never use a navigation template while populating only the homepage. All bundled implementation paths use `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` as the base stack; add AntV S2 dependencies only when a generated component actually needs S2.
+Do not treat the word "report" as a single-page constraint. A report may be a one-page summary, a multi-chapter report suite, or a big-screen cockpit. Choose the template by content volume, chapter/view count, interaction density, and display scenario. Use the bundled template assets under `report-prototype-template-management/assets/templates/`: `topbar-light-scroll-dashboard-template` for compact focused reports, `left-nav-analytics-workbench-template` for multi-chapter analytics workbenches, and `frozen-title-sci-fi-cockpit-template` for fixed 1920x1080 cockpit screens. Topbar and left-nav templates may exceed 1080px and scroll vertically. Only select a template with `nav[]` when the content can be redesigned into multiple substantial nav pages; never use a navigation template while populating only the homepage. All bundled implementation paths start by copying the selected template project and preserving `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` as the base stack; add AntV S2 dependencies only when a generated component actually needs S2.
 
 ### 4. Review And Repair Mode
 
@@ -99,7 +99,7 @@ Clarify or infer:
 - Does a `$report-prd-document-generation` PRD exist, and does it include the PRD-to-workflow execution matrix?
 - Which PRD rows are `ready`, `draft`, `blocked`, or `deferred-out-of-scope` for this workflow?
 - What is the source-material requirement matrix: each source artifact, extracted facts, inferred assumptions, missing gaps, affected requirement areas, and whether it is explicit output-format authority?
-- Which `outputArtifact` is required: default `vueTemplatePrototype`, or `htmlPrototype` only with explicit HTML/static-output wording?
+- Which `outputArtifact` and `implementationMode` are required: default `vueTemplatePrototype` plus `copyTemplateProject`, `htmlPrototype` only with explicit HTML/static-output wording, or `newVue3Project` only with a self-developed/non-template exception?
 - If screenshot/image input is present, is it a full page, first viewport, partial component, modal/drawer, mobile view, export page, or style reference?
 - If HTML/MD/source content is present, is it a requirement source, layout reference, full static page, partial component, copy source, data source, style evidence, or source of mock/chart configuration?
 - If HTML源码 contains chart-like SVG/canvas/DOM marks, which evidence is legitimate to extract: layout rhythm, labels, series/categories, colors, mock values, or config hints? Do not treat the sample SVG/canvas marks themselves as the implementation for standard charts.
@@ -241,7 +241,7 @@ Output must include:
 - PRD status: `ready-for-review`, `draft`, or `blocked`.
 - Complete PRD sections: background/goals, roles/scenes, scope boundary, page content, page layout configuration, metric list, metric mounting matrix, data/API requirements, interactions, permissions/export/states, acceptance/gaps.
 - PRD-to-workflow execution matrix: every PRD section mapped to owner skill/workflow, execution artifact, blocking rule, and status.
-- Source-material requirement matrix and `outputArtifact` decision.
+- Source-material requirement matrix, `outputArtifact` decision, `implementationMode` decision, copied template path, and any HTML/static or new-project exception authority.
 - Blocking PRD gaps that prevent prototype design, layout, template configuration, component mapping, data/API handoff, interaction design, or QA.
 - Explicit reason if a supplied PRD is accepted as complete.
 

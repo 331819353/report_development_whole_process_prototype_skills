@@ -23,6 +23,7 @@ Use this as the focused PRD-writing skill after or alongside requirement clarifi
 - For management-facing reports, the PRD must include an executive satisfaction auxiliary design gate: decision profile, 3-second answer, 30-second cause path, 3-minute action, priority/severity, closure, trust/source, meeting/export reuse, and acceptance checklist.
 - The page layout section must be concrete enough for current configurable report templates: framework template, shell configuration, page `layoutRows`, block layout template, standard block areas, component slots, and component content area templates.
 - Report development is template-only except for two explicit extension surfaces: self-developed interaction behavior and self-developed component content area templates. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, and export surfaces must use configurable templates.
+- For prototype handoff, the PRD must default runnable output to `outputArtifact: vueTemplatePrototype` and `implementationMode: copyTemplateProject`: downstream workflows copy the selected bundled template project first, then preserve `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`; add AntV S2 only for pivot/cross/wide analytical tables. HTML in attachments, copied source, screenshots, source files, or PRD text is requirement evidence only and must not become `htmlPrototype`. A blank/new Vue3 project is allowed only as `implementationMode: newVue3Project` for a documented self-developed/non-template exception where no copyable template route works.
 - Metrics must include definitions, formulas, denominators, null rules, source, refresh cadence, and direction. Metric names alone are not acceptable.
 - The metric mounting matrix must say exactly where each metric appears and which component/content slot consumes it.
 - Summary areas, conclusion cards, and analysis insight components must be data-driven. The PRD must define `conclusionRuleMap` rows that tell frontend how to derive the conclusion from metrics/API fields, filters, thresholds, priorities, and empty-state rules; a fixed one-sentence conclusion is not acceptable.
@@ -57,6 +58,7 @@ Load references only as needed, but read the first four before finalizing a PRD:
 
 3. Define PRD scope before design.
    Separate phase-one deliverables from out-of-scope items. Record sensitive data exclusions, permission boundaries, unavailable data, deferred backend work, and non-goals.
+   Record the prototype output boundary: runnable report prototypes use `vueTemplatePrototype` plus `implementationMode: copyTemplateProject` by default. Treat the bundled Vue/TypeScript/ECharts stack as the copied template stack to preserve, not as permission to create a blank Vue project. Treat any HTML mentioned in requirements, PRD sections, attachments, screenshots, or source samples as evidence only unless the latest explicit user instruction requests HTML/static output.
 
 4. Build the page-content story.
    Convert business goals into page modules: overview, core conclusion, KPI, trend, ranking, issue type, closure status, drilldown/detail, business-line-specific content, export/review content, and empty/error states.
@@ -111,6 +113,7 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - 页面布局配置 with framework template, shell configuration, page `layoutRows`, block layout template map, standard area configuration, component slot map, and component content area template map.
 - Template reuse constraint: explicitly state that all non-interaction and non-component-content-template surfaces use existing templates; list only interaction IDs and component content area template IDs in the self-development exception map.
 - Dynamic conclusion rule map: `conclusionRuleMap` for every summary-area conclusion, conclusion card, and analysis insight component, proving the frontend generates conclusions from data instead of fixed copy.
+- Output artifact and implementation mode rule: default downstream runnable prototypes to `vueTemplatePrototype` with `implementationMode: copyTemplateProject`, copied template path, and `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` stack preservation; any `htmlPrototype` exception must cite the latest explicit user request, and any `newVue3Project` exception must cite a self-developed/non-template reason and rejected copy candidates.
 - 指标清单 with complete metric口径.
 - 指标挂载矩阵.
 - 数据与 API 需求.
@@ -131,6 +134,8 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - Do not mark a PRD ready if it asks for self-developed framework shell, page layout, block layout template, title/pill/aux/unit/summary area, navigation, filter surface, toolbar, or export surface. Only interaction behavior and component content area templates may be self-developed, and both must remain inside the template contract.
 - Do not place block title, pills, filters, auxiliary metrics, units, or summary/explanation copy inside component content area slots.
 - Do not mark a PRD ready when `4 summaryArea`, a conclusion card, or an analysis insight component contains a fixed business conclusion without a `RULE-*` entry and frontend generation rule. Static copy is allowed only for source, scope, caveat, definition, or empty-state text.
+- Do not mark a PRD ready if it routes a downstream runnable prototype to HTML/static output merely because the PRD, requirement document, attachment, screenshot, copied source, or source sample mentions HTML. Use `vueTemplatePrototype` with `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` unless the latest explicit user request asks for HTML/static/single-file output or exact static preservation.
+- Do not mark a PRD ready if it implies a new Vue3/Vite project as the default implementation route. The PRD must default to copying a selected bundled template project; `newVue3Project` requires a self-developed/non-template exception, rejected copy candidates, owner, and readiness impact.
 - Do not list metrics without口径, formula, source, denominator/sample, refresh, direction, and null rules.
 - Do not leave required table cells blank. Use `TBD(GAP-*)` for unknowns or `none` when not applicable.
 - Do not mark the PRD ready while any page block lacks a selected block layout template, any `componentArea` slot lacks a component content area template or custom fallback, any displayed metric lacks a mounting row, or any API lacks request/response fields.

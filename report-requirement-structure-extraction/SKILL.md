@@ -56,7 +56,7 @@ Accept incomplete inputs and infer cautiously.
 
 Supported input forms include one-sentence ideas, PRDs, meeting notes, screenshots, prototypes, HTML files/source, Markdown/MD documents, copied DOM snippets, static pages, metric lists, data dictionaries, database fields, source-system metadata, API documents, mock data, frontend/backend code, logs, deployment notes, SSO/security notes, and mixed Chinese/English terminology.
 
-When HTML/MD/source artifacts are provided for a report/page prototype, extract page intent, visible content, metric names, dimensions, filters, controls, chart labels/config hints, copy, hierarchy, states, and style evidence into the requirement package. The default downstream runnable implementation remains Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios; HTML/static output requires explicit user wording such as "输出 HTML", "单 HTML 文件", "HTML 格式原型", or "保留静态 HTML".
+When HTML/MD/source artifacts are provided for a report/page prototype, extract page intent, visible content, metric names, dimensions, filters, controls, chart labels/config hints, copy, hierarchy, states, and style evidence into the requirement package. The default downstream runnable implementation is `implementationMode: copyTemplateProject`: copy a bundled template project and preserve Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios; HTML/static output requires explicit user wording such as "输出 HTML", "单 HTML 文件", "HTML 格式原型", or "保留静态 HTML"; a blank/new Vue3 project requires a documented self-developed/non-template exception.
 
 When information is missing:
 

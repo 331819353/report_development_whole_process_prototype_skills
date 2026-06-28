@@ -105,7 +105,7 @@ Before final delivery, verify:
 - `pageShellPath` is declared as `template`.
 - `selfDevelopmentExceptionMap` contains only interaction behavior and component content area template entries.
 - `pageStyleSource` is declared. If no page style is specified, a bundled template is used by default; provided HTML/MD/source/sample styling is requirement and hierarchy evidence unless explicit restoration or HTML/static output is requested.
-- `outputArtifact` is declared. Default is `vueTemplatePrototype`; `htmlPrototype` appears only with explicit user wording for HTML/static/single-file HTML output or exact static preservation.
+- `outputArtifact` and `implementationMode` are declared. Default is `vueTemplatePrototype` plus `copyTemplateProject`; `htmlPrototype` appears only with explicit user wording for HTML/static/single-file HTML output or exact static preservation, and `newVue3Project` appears only with a documented self-developed/non-template exception.
 - A source-material requirement matrix exists when the user provided HTML, Markdown/MD, source snippets, screenshots, documents, code, data, or config files.
 - When source material or design intent includes block title/background style, a `blockChromePattern` matrix exists before body content placement. It records selected or inherited pattern, business-role reason, title/body geometry, body background relation, fallback, and proof hook.
 - Exactly one `brandMode` is declared and its logo/global UI token implications are followed.
@@ -166,7 +166,7 @@ Before final delivery, verify:
 - Export, refresh, download, share, and fullscreen actions respect filters and permissions.
 - Empty, loading, no-permission, error, and stale-selection states are defined.
 - Implementation uses existing project patterns and is verified locally when built.
-- Runnable prototypes use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios as the base stack unless the existing project has an explicit conflicting stack. AntV S2 is installed and used only for pivot tables, cross tables, wide metric matrices, frozen-header analytical tables, dense financial grids, or equivalent table needs.
+- Runnable prototypes copy a bundled template project by default and preserve Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios as the base stack unless the existing project has an explicit conflicting stack. AntV S2 is installed and used only for pivot tables, cross tables, wide metric matrices, frozen-header analytical tables, dense financial grids, or equivalent table needs.
 - Runnable prototypes are automatically started on a verified available port and return the exact local URL when no public URL is available.
 - Deployment, when requested, builds successfully and returns a public URL or explains why only a local preview URL is available.
 
@@ -176,7 +176,7 @@ Before final delivery, verify:
 - Do not start from visual layout before classifying the display theme and selecting a bounded pattern-card set.
 - Do not choose a custom shell, custom page layout, custom block layout, or custom supporting area inside the report development workflow.
 - Do not skip requirement transformation when the user provides HTML, Markdown/MD, copied source, screenshots, documents, code, data, or config files.
-- Do not output HTML/static/single-file prototypes merely because provided materials are HTML/MD/source; default runnable prototypes use Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios unless explicit user wording says otherwise.
+- Do not output HTML/static/single-file prototypes or start a blank Vue3 project merely because provided materials are HTML/MD/source; default runnable prototypes copy a bundled template project and preserve Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios unless explicit user wording or a documented self-developed/non-template exception says otherwise.
 - Do not treat block title/background sample styles as raw HTML/CSS to paste after content is complete. Convert them into `blockChromePattern` contracts before filling parent blocks.
 - Do not start implementation before declaring `pageShellPath: template`, selected framework template, `pageStyleSource`, `brandMode`, `visualMode`, `selfDevelopmentExceptionMap`, and passing the logo asset gate.
 - Do not use every skill for every task; use the smallest complete path.

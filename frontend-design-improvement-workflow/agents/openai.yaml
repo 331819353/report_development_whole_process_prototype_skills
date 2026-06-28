@@ -1,4 +1,4 @@
 interface:
   display_name: "前端设计提升 Workflow"
   short_description: "把提高前端设计、现代SaaS/BI Dashboard/UI Kit风格、页面规范、组件规范、UI优化等模糊请求路由到页面布局、组件规范、报表设计系统、海尔UI基线和运行QA。"
-  default_prompt: "Use $frontend-design-improvement-workflow to route vague frontend design improvement requests into page-level, component-level, modern SaaS / BI Dashboard / UI Kit style-contract, design-system, common-app baseline, implementation, and runtime QA work."
+  default_prompt: "Use $frontend-design-improvement-workflow to route vague frontend design improvement requests into page-level, component-level, modern SaaS / BI Dashboard / UI Kit style-contract, design-system, common-app baseline, implementation, and runtime QA work, preserving copyTemplateProject as the default runnable prototype route with Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios in the copied template, treating PRD/source HTML as evidence unless the latest user explicitly requests HTML/static output, and allowing new Vue3 projects only for documented self-development exceptions."

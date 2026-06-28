@@ -10,6 +10,8 @@ If the user asks for prototype work without a PRD, create a draft PRD first. If 
 
 Report development workflows must stay template-only except for two explicit extension surfaces: self-developed interaction behavior and self-developed component content area templates. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must be configured through templates, not self-developed.
 
+All runnable report prototype workflows default to `outputArtifact: vueTemplatePrototype` and `implementationMode: copyTemplateProject`: copy the selected bundled template project first, then preserve its `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` stack; add AntV S2 only for pivot/cross/wide analytical tables. A PRD section, attachment, screenshot, HTML source, or requirement document mentioning HTML is not output-format authority. `htmlPrototype` is allowed only when the latest explicit user instruction asks for HTML/static/single-file HTML output or exact static HTML preservation. `newVue3Project` is allowed only for a documented self-developed/non-template exception with rejected copy candidates.
+
 Summary areas, conclusion cards, and analysis insight components must consume PRD `RULE-*` entries from `conclusionRuleMap`. Prototype workflows must not replace dynamic frontend-generated conclusions with fixed one-sentence copy.
 
 Report-type implementation paths are binding. Prototype workflows must consume PRD section 4A `RTP-*` and `PATH-*` rows to preserve the intended reading path before page layout, component mapping, and block layout template selection. A dashboard starts with status/conclusion before cause/process/action; a detail report starts with scope/summary and detail rows; an analysis report starts with conclusion before evidence/attribution/action unless the PRD validates a better exception.
@@ -64,6 +66,7 @@ Before any prototype workflow continues past preflight, require:
 - A PRD status of `ready-for-review`, or `draft` with non-blocking `TBD(GAP-*)` items.
 - A PRD execution matrix row for every PRD section.
 - No `blocked` row for the target workflow's first executable step.
+- `outputArtifact` is `vueTemplatePrototype` and `implementationMode` is `copyTemplateProject` by default with copied-template Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof; any `htmlPrototype` exception cites the latest explicit user HTML/static-output request, and any `newVue3Project` exception cites self-developed/non-template authority plus rejected copy candidates.
 - Section 4A declares a primary `RTP-*` pattern, `PATH-*` reading path, first-viewport plan, and path-to-block layout mapping; if user attachments or user-supplied thinking exist, section 4A records their intake/validation.
 - Management-facing reports include section 4B rows for `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*`, `ACT-*`, `TRUST-*`, and required `MEET-*` behavior.
 - Every displayed metric in sections 6 and 7 has a mount path.
@@ -87,3 +90,5 @@ Rows with `draft` or `blocked` status keep the prototype stage `partial` or `blo
 Dynamic conclusion rows are not optional. A workflow cannot mark the stage `ready` while a visible summary-area conclusion, conclusion card, or analysis insight component is backed only by fixed copy instead of a consumed `RULE-*` execution row.
 
 Executive satisfaction rows are not optional for management-facing reports. A workflow cannot mark the stage `ready` while first-viewport blocks, component bundles, template maps, interactions, or export behavior fail to consume required `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` rows.
+
+Output stack rows are not optional for runnable prototypes. A workflow cannot mark the stage `ready` if it chose HTML/static output from PRD/source wording instead of an explicit user request, if it created a new Vue3 project while a bundled template could be copied, or if the copied-template Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof is missing.
