@@ -52,17 +52,17 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 plus 5A cover analysts, scope, workbench content, layout, dynamic result-summary rules when present, field/metric definitions, data/API, interactions, permissions, save/share/export, and states.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 plus 4A, 4B, and 5A cover analysts, report-type implementation path, executive/reuse satisfaction gate when shared upward, scope, workbench content, layout, dynamic result-summary rules when present, field/metric definitions, data/API, interactions, permissions, save/share/export, and states.
 4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-5. Derive the typed prototype story from the PRD: target analyst, one-sentence exploration value, starting question, analysis result, reuse outcome, and trust/permission boundary.
-6. Define the self-service user path from PRD roles/scenes and interactions: choose dataset/template -> select dimensions/metrics -> configure filters/view -> inspect chart/table result -> drill/verify detail -> save/share/export/reuse.
+5. Derive the typed prototype story from PRD section 4A `RTP-*` / `PATH-*` rows and section 4B gates when present: target analyst, one-sentence exploration value, starting question, analysis result, trust/quality cue, save/share/export reuse outcome, and management-facing interpretation when the result will be circulated upward.
+6. Define the self-service user path from PRD section 4A first. Default to choose dataset/template -> select dimensions/metrics -> configure filters/view -> inspect chart/table result -> drill/verify detail -> save/share/export/reuse only when it matches the selected `RTP-*` pattern.
 7. Define `dataScope -> analysisModel -> operationModel -> outputResult` from PRD page content, metric list, data/API requirements, and interaction logic.
 6. List available datasets, dimensions, metrics, time fields, filter fields, and custom fields.
 7. Define field metadata: field type, groupability, filterability, calculability, permissions, masking, allowed combinations, and performance limits.
 8. Design the workbench structure: dataset/report title/save/share/export, field panel, row/column/metric/filter configuration, chart/style configuration, result area, drilldown/detail drawer.
 9. Define user operations: drag/drop or equivalent selection, filter, sort, Top N, null handling, chart switching, pivot/table view, drilldown, save, duplicate, share, scheduled delivery, export, add-to-dashboard.
 10. Use `$report-type-design` with exploratory-analysis intent; keep detail-query only as a drilldown or output block.
-11. Use `$report-info-component-mapping` for field panel, config zones, result widgets, dataset contracts, invalid-combination states, `conclusionRuleMap` when generated result summaries exist, and binding matrix.
+11. Use `$report-info-component-mapping` for field panel, config zones, result widgets, dataset contracts, invalid-combination states, section 4B `TRUST-*` / `MEET-*` / management `ESG-*` gates when applicable, `conclusionRuleMap` when generated result summaries exist, and binding matrix.
 12. Route chart, table/pivot, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 14. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, field-panel/config/result/detail block spans, first-viewport workbench path, and nav/page wiring.
@@ -74,8 +74,9 @@ Template-only gate: this workflow must use templates for framework shell, page l
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, target analysts, business scenarios, datasets, and exploration questions.
-- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, self-service rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
+- PRD prerequisite proof: PRD status, section 4A `RTP-*` / `PATH-*` rows consumed, PRD-to-workflow execution matrix, self-service rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: one-sentence exploration value, user path, starting question, result/reuse outcome, trust/permission boundary, and 30-second review path.
+- Self-service satisfaction gate consumption: `TRUST-*` result quality/source/freshness, `MEET-*` save/share/export reuse when shared upward, management-facing `ESG-*` interpretation when required, and unresolved permission/performance gaps.
 - Affected-surface to owning-skill routing, especially field-panel layout, chart, table/pivot, filter, component placement, design-system, template, and runtime QA.
 - Data scope, analysis model, operation model, and output/result reuse model.
 - Field catalog: dimensions, metrics, time fields, statuses, custom fields, and each field's allowed operations.
@@ -92,6 +93,8 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 - Do not design a BI-looking page unless the data model can support the promised field combinations.
 - Do not start analysis model, field metadata, workbench layout, result component mapping, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not start layout or result mapping when PRD section 4A lacks `RTP-SELF-SERVICE` or an accepted `RTP-MIXED` primary path with self-service `PATH-*` rows.
+- Do not start layout or result mapping for shared-upward self-service results when PRD section 4B lacks required `TRUST-*`, `MEET-*`, or management-facing `ESG-*` rows.
 - Do not mark ready until every PRD execution row needed for datasets, fields/metrics, layout, data/API, interactions, permissions, save/share/export, and states is consumed or explicitly deferred out of scope.
 - Do not start layout or workbench controls until the exploration story, user path, starting question, result/reuse outcome, and trust/permission boundary are explicit or safely inferred.
 - Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.

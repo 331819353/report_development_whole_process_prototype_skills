@@ -17,6 +17,12 @@ Use stable IDs so downstream agents can reference the same objects:
 | Interaction | `INT-` | `INT-BIZLINE-SWITCH` |
 | Role | `ROLE-` | `ROLE-GROUP-MANAGER` |
 | Dynamic conclusion rule | `RULE-` | `RULE-HEALTH-RISK-SUMMARY` |
+| Report type implementation path | `RTP-` / `PATH-` | `RTP-KPI-DASHBOARD`, `PATH-DASH-RESULT` |
+| Executive satisfaction gate | `ESG-` | `ESG-GROUP-MGMT-DECISION` |
+| Priority/severity rule | `SEV-` | `SEV-EXPERIENCE-RISK-HIGH` |
+| Action closure item | `ACT-` | `ACT-RISK-CLOSURE-OWNER` |
+| Trust/source item | `TRUST-` | `TRUST-NPS-SOURCE-FRESHNESS` |
+| Meeting/export item | `MEET-` | `MEET-MONTHLY-REVIEW-EXPORT` |
 | Gap | `GAP-` | `GAP-METRIC-SOURCE-NPS` |
 
 Rules:
@@ -121,6 +127,96 @@ Required content categories for management reports:
 - 明细/证据/钻取入口 when needed.
 - 导出/复盘内容 when needed.
 
+### 4A. 报表类型实现思路与分块布局映射
+
+Follow `report-type-implementation-patterns.md`. This section must decide how the report should be read before section 5 decides the final page grid and block templates.
+
+If attachments exist, include evidence intake:
+
+| Source ID | Source type | Filename or description | Key facts extracted | Sections affected | Confidence | Gaps raised |
+| --- | --- | --- | --- | --- | --- | --- |
+
+If the user supplies a report implementation thought, validate it:
+
+| Idea ID | User-provided report thought | Fit result | Validation dimensions | Recommended adjustment | Reason | User confirmation needed |
+| --- | --- | --- | --- | --- | --- | --- |
+
+Choose one primary report-type pattern:
+
+| Pattern selection ID | Primary `RTP-*` pattern | Secondary pattern if mixed | Core management question | Recommended reading path | First viewport priority | Why this is the best path | Downstream workflow |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+Map the selected reading path to block-layout intent:
+
+| Path step ID | Reading step | Business purpose | Page/Block IDs | First-viewport order | Recommended span | Selected block layout template | Component slot strategy | Dynamic conclusion rule IDs | Interaction IDs | Acceptance note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- Use `RTP-*` for the report type pattern and `PATH-*` for reading-path steps.
+- The first viewport must implement the first one or two path steps of the selected report type.
+- Every visible page block in section 5 must trace to a `PATH-*` row unless it is a support/source/export/permission-only block.
+- If the user's proposed thought is optimized or rejected, explain what changed and why the recommended path better serves the role, decision, data grain, and template constraints.
+- For dashboards and cockpits, prefer result/status before cause, process, and action.
+- For analysis reports, prefer conclusion before evidence, attribution, comparison, and recommendation.
+- For detail reports, prefer scope/summary and the authoritative detail table before row trace, validation, and export.
+- For risk monitors, prefer risk severity and impacted objects before cause and closure.
+- For closure/action boards, prefer task status and overdue pressure before owner progress and review.
+- For review/export reports, prefer period conclusion and goal/event evidence before export packaging.
+- For self-service analysis, prefer configuration and generated result before interpretation, drilldown, and save/export.
+
+### 4B. 管理层满意度辅助设计
+
+Follow `executive-satisfaction-design-gate.md`. This section is required for management-facing reports and optional only for pure analyst/operator detail queries with no management decision, review, or circulation use.
+
+Create the executive decision profile:
+
+| ESG ID | Role/level | Decision to make | 3-second answer | 30-second cause path | 3-minute action | Decision owner | Evidence needed | Blocker/gap |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Create the first-viewport conclusion quality map:
+
+| ESG ID | Conclusion target | Rule ID | Direction | Magnitude | Object/scope | Likely reason | Business impact | Recommended action | Evidence fields | Failure condition |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Create the management-vs-technical metric language map:
+
+| ESG ID | Metric ID | Management wording | Technical definition pointer | Formula/owner | Page expression | Detail/tooltip path |
+| --- | --- | --- | --- | --- | --- | --- |
+
+Create the priority/severity model when the report has risk, warning, anomaly, overdue, target-miss, exception, or closure content:
+
+| SEV ID | Trigger rule/RULE | Severity | Impact measure | Urgency | Priority sort | Color/non-color cue | Owner/escalation | Empty/conflict rule |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Create the action closure model when the report raises problems, risks, tasks, or recommendations:
+
+| ACT ID | Source risk/conclusion | Owner | Due date/SLA | Status | Next action | System entry | Closure evidence | Overdue rule |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Create the trust/source model:
+
+| TRUST ID | Data/source item | Source system | Freshness | Coverage/sample | Missing/null policy | Reconciliation/baseline | Permission masking | Source detail route |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Create the meeting/review/export model when the report supports review, monthly/quarterly meeting, circulation, or export:
+
+| MEET ID | Scenario | Meeting/review use | Export format | Included conclusion/evidence/action | Filter snapshot | Audience | Audit/watermark |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+Create the executive satisfaction checklist:
+
+| ESG ID | Check question | Evidence | Pass rule | Gap code |
+| --- | --- | --- | --- | --- |
+
+Rules:
+
+- Management-facing dashboards, cockpits, analysis reports, risk monitors, closure boards, and review/export reports must have at least one `ESG-*` row.
+- The first viewport must answer the primary management question in 3 seconds; the 30-second cause path and 3-minute action must trace to `PATH-*`, `BLK-*`, `MET-*`, `RULE-*`, `INT-*`, and when relevant `ACT-*` IDs.
+- Conclusions must be data-driven through `RULE-*`; section 4B validates conclusion quality but does not replace section 5A rules.
+- Section 5 page layout must map `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` IDs to blocks, slots, summary areas, interactions, or export behavior.
+- For detail reports, section 4B may emphasize query efficiency, row identity, trust/source, export/audit, and row-level action instead of conclusion-first management reading.
+
 ### 5. 页面布局配置
 
 Follow `template-layout-prd-contract.md`. This section must include:
@@ -128,7 +224,7 @@ Follow `template-layout-prd-contract.md`. This section must include:
 - Framework template choice.
 - Existing shell configuration: title, filters, navigation, toolbar/export, permission entry.
 - Page `layoutRows` or equivalent block map.
-- Block layout template map.
+- Block layout template map traced to section 4A `PATH-*` steps and section 4B `ESG-*` / `SEV-*` / `ACT-*` / `TRUST-*` / `MEET-*` IDs when applicable.
 - Standard area config for every block.
 - Component slot/component content area template map.
 - `conclusionRuleMap` bindings for any summary-area conclusion, conclusion card, or analysis insight component.
@@ -204,6 +300,8 @@ Readiness rules:
 - `ready-for-review` requires no blank required cells and no unowned critical gaps.
 - `blocked` is required when core metric definitions, permission scope, page count, framework template, or data source cannot be inferred safely.
 - `draft` is acceptable when implementation can continue with documented `TBD(GAP-*)` fields.
+- The PRD cannot be `ready-for-review` when section 4A lacks attachment intake for provided files, user-thought validation when applicable, one primary `RTP-*` pattern, reading path, first-viewport plan, and path-step-to-block-layout mapping.
+- The PRD cannot be `ready-for-review` for a management-facing report when section 4B lacks `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*` severity, required `ACT-*` closure, `TRUST-*` source/freshness, or required `MEET-*` review/export behavior.
 - The PRD cannot be `ready-for-review` when any `summaryArea`, conclusion card, or analysis insight component displays a business conclusion without a `RULE-*` row and frontend generation rule.
 
 ### 12. PRD-to-workflow 执行矩阵
@@ -217,7 +315,7 @@ Use:
 
 Rules:
 
-- Every PRD section from 0 to 11, including section 5A, must have at least one row.
-- Every `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, and `RULE-*` that appears in earlier sections must be consumed by at least one execution row.
+- Every PRD section from 0 to 11, including sections 4A, 4B, and 5A, must have at least one row.
+- Every `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RTP-*`, `PATH-*`, `RULE-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` that appears in earlier sections must be consumed by at least one execution row.
 - `Status` can be `ready`, `draft`, `blocked`, or `deferred-out-of-scope`.
 - A prototype workflow can start only when no execution row needed by the first design/layout/template step is `blocked`.

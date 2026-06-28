@@ -63,10 +63,10 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 plus 5A cover the dashboard story, roles, scope, page content, layout, dynamic conclusion rules, metrics, metric mounting, data/API, and interactions.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 plus 4A, 4B, and 5A cover the dashboard story, report-type implementation path, executive satisfaction gate, roles, scope, page content, layout, dynamic conclusion rules, metrics, metric mounting, data/API, and interactions.
 4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-5. Derive the typed prototype story from the PRD: who checks the dashboard, what "current state" they must remember, what status/risk/opportunity is the protagonist, and what next drilldown/action the page should push.
-6. Define the dashboard user path as a four-layer closed loop from PRD roles/scenes and interactions: result judgment -> diagnosis split -> process/driver cause -> detail/action closure, with time/org context and trust/freshness preserved across layers.
+5. Derive the typed prototype story from the PRD section 4A `RTP-*` / `PATH-*` rows and section 4B `ESG-*` rows: who checks the dashboard, what "current state" they must remember in 3 seconds, what 30-second diagnosis path explains it, what status/risk/opportunity is the protagonist, and what 3-minute drilldown/action the page should push.
+6. Define the dashboard user path from PRD section 4A first. Default to result judgment -> diagnosis split -> process/driver cause -> detail/action closure only when it matches the selected `RTP-*` pattern; preserve time/org context and trust/freshness across layers.
 7. Define the dashboard decision from PRD background/goals and metric list: business health, target progress, abnormality, risk object, root metric, and the next action-worthy drilldown.
 6. Lock the KPI set and KPI scope boundary: core KPI, process KPI, risk KPI, formula, unit, period, target, threshold, baseline, owner/source, freshness, and which metrics truly deserve KPI-card treatment.
 7. Define `metricDrilldownContract` for every primary metric before ordinary component mapping: root metric, result/diagnosis/process/action layers, trigger events, payload fields, context inheritance, state rules, validation cases, or scoped static exception.
@@ -75,7 +75,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 10. Design the process layer: driver metrics, conversion/process stages, decomposition, waterfall, funnel, bottleneck, or variance evidence that explains why the selected result or diagnosis item moved.
 11. Design the action layer: anomaly detail, attention list, owner/status/deadline, export, source jump, assignment route, or detail table that closes the loop.
 12. Use `$report-type-design`: default primary type is `status-overview`; use `anomaly-monitoring` only when alert handling is the central task.
-13. Use `$report-info-component-mapping` to bind KPIs, thresholds, trend datasets, anomaly rules, `metricDrilldownContract`, `conclusionRuleMap`, drilldowns, filters, and states.
+13. Use `$report-info-component-mapping` to bind KPIs, thresholds, trend datasets, anomaly rules, section 4B `ESG-*` / `SEV-*` / `ACT-*` / `TRUST-*` gates, `metricDrilldownContract`, `conclusionRuleMap`, drilldowns, filters, and states.
 14. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 15. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 16. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport plan, and nav/page wiring. Keep the dashboard sparse, layered, and actionable, with reduced uniform card borders, limited KPI-card scope, inherited brand/product color hierarchy, and task-matched non-KPI components.
@@ -88,15 +88,16 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, dashboard user role, business state question, decision/action, time scope, and managed objects.
-- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, KPI-dashboard rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
+- PRD prerequisite proof: PRD status, section 4A `RTP-*` / `PATH-*` rows consumed, PRD-to-workflow execution matrix, KPI-dashboard rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: one-sentence current-state value, user path, protagonist metric/object/risk, supporting evidence, and 30-second review path.
+- Executive satisfaction gate consumption: `ESG-*` 3-second answer, 30-second diagnosis path, 3-minute action, `SEV-*` severity ordering, `ACT-*` closure route, `TRUST-*` freshness/source cue, and unresolved gaps.
 - Affected-surface to owning-skill routing, especially layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - KPI dictionary: formula, unit, period, target, threshold, baseline, owner/source, freshness, display status.
 - KPI scope boundary: which metrics are KPI cards, which metrics stay in charts/tables/text/lists, and why.
 - Metric drilldown contract: root metric, result/diagnosis/process/action layers, trigger events, payload fields, context inheritance, state rules, validation cases, and scoped static exceptions.
 - Dynamic conclusion rule map: `conclusionRuleMap` with `RULE-*` rows for current-state summary, abnormal warning conclusions, conclusion cards, and analysis insight components.
 - Result-content boundary: visible status/conclusion/evidence/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
-- First-viewport result plan, diagnosis split plan, process/cause plan, anomaly/detail/action plan.
+- First-viewport result plan, diagnosis split plan, process/cause plan, anomaly/detail/action plan, each traced to PRD `PATH-*` rows.
 - Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence, and ECharts self-developed component content area fallback list.
 - Drilldown chain: result -> diagnosis -> process -> action.
 - Visual density and first-viewport closure result: oversized/empty block scan, chart mark-to-area fit, text contrast/readability, next-section exposure, and evidence-backed repair decisions.
@@ -109,6 +110,8 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 
 - Do not turn a dashboard into a dense detail report.
 - Do not start KPI dashboard story, layout, KPI scope, component mapping, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not start layout or component mapping when PRD section 4A lacks `RTP-KPI-DASHBOARD`, `RTP-COCKPIT`, `RTP-RISK-MONITOR`, `RTP-CLOSURE-BOARD`, or an accepted `RTP-MIXED` primary path with `PATH-*` rows.
+- Do not start layout or component mapping when a management-facing KPI/dashboard/cockpit PRD lacks section 4B `ESG-*` 3-second answer, 30-second cause path, 3-minute action, required `SEV-*`, `ACT-*`, or `TRUST-*` rows.
 - Do not mark ready until every PRD execution row needed for dashboard content, layout, metrics, metric mounting, data/API, and interactions is consumed or explicitly deferred out of scope.
 - Do not start layout or component selection until the current-state story, user path, protagonist metric/object/risk, and next drilldown/action are explicit or safely inferred.
 - Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.

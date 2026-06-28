@@ -51,10 +51,10 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 plus 5A cover detail users, scope, page content, layout, dynamic summary/conclusion rules when present, record fields/metrics, data/API, interactions, permissions, export, and states.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-10 plus 4A, 4B, and 5A cover detail users, report-type implementation path, management/query satisfaction gate when applicable, scope, page content, layout, dynamic summary/conclusion rules when present, record fields/metrics, data/API, interactions, permissions, export, and states.
 4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-5. Derive the typed prototype story from the PRD: target user, one-sentence lookup/verification value, protagonist record type, primary trace/export/action outcome, and required trust signal.
-6. Define the detail-report user path from PRD roles/scenes and interactions: enter with task/context -> narrow with filters/search -> identify row -> inspect details/source -> export or act -> return with filter/page state preserved.
+5. Derive the typed prototype story from PRD section 4A `RTP-*` / `PATH-*` rows and section 4B gates when present: target user, one-sentence lookup/verification value, protagonist record type, query scope/total answer, primary trace/export/action outcome, audit/export use, and required trust signal.
+6. Define the detail-report user path from PRD section 4A first. Default to enter with task/context -> narrow with filters/search -> identify row -> inspect details/source -> export or act -> return with filter/page state preserved only when it matches the selected `RTP-*` pattern.
 7. Define row grain, primary key, business record identity, source system, freshness, and trace target from PRD data/API requirements.
 6. Design filters: high-frequency filters outside, low-frequency filters under "more filters"; declare default values, reset behavior, query limits, and saved filter needs.
 7. Design table fields by order: identity -> time -> subject -> amount/quantity -> status -> owner -> operation.
@@ -62,7 +62,7 @@ Template-only gate: this workflow must use templates for framework shell, page l
 9. Define export: current page/current filter/all matched, current columns/full fields, row limits, async export, watermark, audit log, approval, masking, and export failure state.
 10. Define traceability: detail drawer, source-document jump, operation log, customer/order/product/invoice/payment links.
 11. Use `$report-type-design` with `detail-query` as primary; add `reconciliation-traceability` only when matching differences or audit evidence is central.
-12. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, export, detail drawer, source links, permissions, states, and `conclusionRuleMap` when the page has generated trust/summary/conclusion text.
+12. Use `$report-info-component-mapping` to bind row fields, filters, sorting, pagination, section 4B `TRUST-*` / export/audit / row-action gates, export, detail drawer, source links, permissions, states, and `conclusionRuleMap` when the page has generated trust/summary/conclusion text.
 13. Route table, filter, and component-internal placement surfaces to `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 14. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 15. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, table/search/filter/detail block spans, first-viewport query path, and nav/page wiring.
@@ -73,8 +73,9 @@ Template-only gate: this workflow must use templates for framework shell, page l
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, users, query scenario, row grain, primary key, source system, freshness, and trace target.
-- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, detail-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
+- PRD prerequisite proof: PRD status, section 4A `RTP-*` / `PATH-*` rows consumed, PRD-to-workflow execution matrix, detail-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: one-sentence lookup/verification value, user path, protagonist record type, trace/export/action outcome, trust signal, and 30-second review path.
+- Detail satisfaction gate consumption: management-facing `ESG-*` rows when present, `TRUST-*` source/freshness/row identity, export/audit behavior, row-level action route, and unresolved query/permission/masking gaps.
 - Affected-surface to owning-skill routing, especially table, filter, component placement, layout, design-system, template, and runtime QA.
 - Filter plan: high-frequency filters, more filters, defaults, reset, saved schemes, query constraints.
 - Table field plan: visible columns, hidden/optional columns, field source, format, width/alignment, status tags, sensitive handling.
@@ -91,6 +92,8 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 - Do not design only a field list; query efficiency and traceability are part of the prototype.
 - Do not start query path, table field design, export/traceability, layout, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not start layout or table mapping when PRD section 4A lacks `RTP-DETAIL-QUERY` or an accepted `RTP-MIXED` primary path with detail-query `PATH-*` rows.
+- Do not start layout or table mapping for management-facing detail/reconciliation reports when PRD section 4B lacks required `TRUST-*`, export/audit, row-action, or management `ESG-*` rows.
 - Do not mark ready until every PRD execution row needed for detail content, layout, fields/metrics, data/API, interactions, permissions, export, masking, and states is consumed or explicitly deferred out of scope.
 - Do not start layout or table design until the lookup/verification story, user path, row identity, trace/export/action outcome, and trust signal are explicit or safely inferred.
 - Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.

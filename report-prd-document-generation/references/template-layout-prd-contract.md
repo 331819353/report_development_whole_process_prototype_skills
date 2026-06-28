@@ -2,6 +2,8 @@
 
 Use this reference for the PRD "页面布局配置" section. The goal is to make the PRD directly usable by report-template development.
 
+Before selecting concrete block layout templates, use `report-type-implementation-patterns.md` to define the selected `RTP-*` report pattern and `PATH-*` reading path. For management-facing reports, also use `executive-satisfaction-design-gate.md` section 4B IDs. Section 5 layout choices must implement those paths and gates, not invent a new reading order.
+
 ## Layer Vocabulary
 
 Use these terms exactly:
@@ -86,8 +88,8 @@ In the PRD, name this table `blockLayoutTemplateMap`.
 
 For every page block, create:
 
-| Block ID | 业务内容 | Span | Selected 分块布局模板 | Slot pattern | Single/Multi rationale | `componentRegionPattern` |
-| --- | --- | --- | --- | --- | --- | --- |
+| Block ID | `PATH-*` source | 4B gate IDs | 业务内容 | Span | Selected 分块布局模板 | Slot pattern | Single/Multi rationale | `componentRegionPattern` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Current selectable examples include:
 
@@ -182,6 +184,9 @@ If the requested self-developed item is not in one of these categories, mark it 
 
 - Every page has a framework template and shell configuration.
 - Every page block has an ID, purpose, span, and selected block layout template.
+- Every visible page block traces to a PRD section 4A `PATH-*` reading step, or is explicitly marked as support/source/export/permission-only.
+- Management-facing blocks trace to section 4B `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` IDs when they implement first-viewport answers, severity, closure, trust/source, or review/export behavior.
+- The first viewport implements the first one or two steps of the selected `RTP-*` report-type implementation path.
 - Every block names all standard areas, using `null` for optional areas not configured.
 - Every component slot has a component content area template or explicit custom fallback.
 - `summaryArea` does not duplicate a conclusion already represented as a conclusion component.

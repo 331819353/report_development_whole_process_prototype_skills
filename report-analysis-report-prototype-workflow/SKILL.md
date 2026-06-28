@@ -52,17 +52,17 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 1. Run `$quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning skills, hard constraints, missing evidence, and start decision.
 2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, use `$report-prd-document-generation` before continuing. Use `$report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 plus 5A cover the analysis audience, scope, page content, narrative layout, dynamic conclusion rules, metrics, metric mounting, data/API, and interactions.
+3. Load `$report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that PRD sections 1-9 plus 4A, 4B, and 5A cover the analysis audience, report-type implementation path, executive satisfaction gate, scope, page content, narrative layout, dynamic conclusion rules, metrics, metric mounting, data/API, and interactions.
 4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-5. Derive the typed prototype story from the PRD: target audience, conclusion/value intent plus `conclusionRuleMap`, protagonist problem or variance, key evidence, and action or follow-up decision.
-6. Define the report reader path from PRD roles/scenes and page content: enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source.
+5. Derive the typed prototype story from PRD section 4A `RTP-*` / `PATH-*` rows and section 4B gates: target audience, conclusion/value intent plus `conclusionRuleMap`, first-viewport conclusion quality, protagonist problem or variance, key evidence, impact, action or follow-up decision, and meeting/export reuse when required.
+6. Define the report reader path from PRD section 4A first. Default to enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source only when it matches the selected `RTP-*` pattern.
 7. Define the report question from PRD background/goals: what happened, why, impact, and next action.
 6. Write the conclusion-first answer before choosing charts. The conclusion must include fact, magnitude, likely reason, and suggested action when evidence allows.
 7. Build the narrative path: conclusion -> overview -> problem analysis -> attribution -> impact -> action -> appendix.
 8. Define evidence: metric formulas, comparisons, baselines, time/region/channel/product/customer/person/process splits, contribution, and detail evidence.
 9. Define interaction: period switch, dimension switch, chart-to-detail, conclusion-to-chart anchor, expand/collapse, PDF/PPT export, share, comment, historical report.
 10. Use `$report-type-design`: default primary type is `analysis-diagnostic`; use `review-recap` when meeting/report circulation is the main scenario.
-11. Use `$report-info-component-mapping` to bind conclusions, `conclusionRuleMap`, evidence components, attribution blocks, action items, appendix details, and states.
+11. Use `$report-info-component-mapping` to bind conclusions, section 4B `ESG-*` / `ACT-*` / `TRUST-*` / `MEET-*` gates, `conclusionRuleMap`, evidence components, attribution blocks, action items, appendix details, export/review behavior, and states.
 12. Route chart, table, filter, and component-internal placement surfaces to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, and `$report-component-placement-spec` before implementation-ready decisions.
 13. Run the anti-laziness execution gate from `$quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
 14. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, block spans, first-viewport narrative path, and nav/page wiring.
@@ -74,13 +74,14 @@ Template-only gate: this workflow must use templates for framework shell, page l
 ## Required Output
 
 - Workflow mode, Preflight understanding matrix, report audience, report period, data scope, business question, and meeting/circulation scenario.
-- PRD prerequisite proof: PRD status, PRD-to-workflow execution matrix, analysis-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
+- PRD prerequisite proof: PRD status, section 4A `RTP-*` / `PATH-*` rows consumed, PRD-to-workflow execution matrix, analysis-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
 - Typed prototype story: conclusion/value intent plus dynamic rule coverage, reader path, protagonist problem or variance, key evidence, action/follow-up decision, and 30-second review path.
+- Executive satisfaction gate consumption: `ESG-*` conclusion quality, 30-second evidence/attribution path, 3-minute action/follow-up, `ACT-*` owner route, `TRUST-*` source/freshness, `MEET-*` review/export package, and unresolved gaps.
 - Affected-surface to owning-skill routing, especially narrative layout, chart, table, filter, component placement, design-system, template, and runtime QA.
 - Core conclusion, supporting evidence, cause breakdown, impact assessment, and action recommendation.
 - Dynamic conclusion rule map: `conclusionRuleMap` with `RULE-*` rows for the core conclusion, section conclusions, summary-area narratives, conclusion cards, and analysis insight components.
 - Result-content boundary: visible conclusions/evidence/actions versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
-- Narrative block plan: title/meta, conclusion, overview, problem analysis, attribution, action, appendix.
+- Narrative block plan: title/meta, conclusion, overview, problem analysis, attribution, action, appendix, each traced to PRD `PATH-*` rows.
 - Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence, and ECharts self-developed component content area fallback list.
 - Comparison model: current vs previous, YoY, actual vs target, before/after, segment comparison.
 - Action model: owner, deadline, follow-up metric, status, and tracking notes.
@@ -93,6 +94,8 @@ Template-only gate: this workflow must use templates for framework shell, page l
 
 - Do not build a chart collection with no conclusion.
 - Do not start analysis story, narrative layout, component mapping, template, or implementation work without a PRD from `$report-prd-document-generation`.
+- Do not start layout or component mapping when PRD section 4A lacks `RTP-ANALYSIS-REPORT`, `RTP-REVIEW-EXPORT`, or an accepted `RTP-MIXED` primary path with `PATH-*` rows.
+- Do not start layout or component mapping when a management-facing analysis/review PRD lacks section 4B `ESG-*` conclusion quality, required `ACT-*`, `TRUST-*`, or `MEET-*` rows.
 - Do not mark ready until every PRD execution row needed for report story, page content, layout, metrics, metric mounting, data/API, interactions, and export/comment/history behavior is consumed or explicitly deferred out of scope.
 - Do not start layout or component selection until the report story, reader path, protagonist problem/variance, evidence chain, and action/follow-up decision are explicit or safely inferred.
 - Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.

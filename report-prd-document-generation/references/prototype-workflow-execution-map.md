@@ -12,6 +12,10 @@ Report development workflows must stay template-only except for two explicit ext
 
 Summary areas, conclusion cards, and analysis insight components must consume PRD `RULE-*` entries from `conclusionRuleMap`. Prototype workflows must not replace dynamic frontend-generated conclusions with fixed one-sentence copy.
 
+Report-type implementation paths are binding. Prototype workflows must consume PRD section 4A `RTP-*` and `PATH-*` rows to preserve the intended reading path before page layout, component mapping, and block layout template selection. A dashboard starts with status/conclusion before cause/process/action; a detail report starts with scope/summary and detail rows; an analysis report starts with conclusion before evidence/attribution/action unless the PRD validates a better exception.
+
+Executive satisfaction design gates are binding for management-facing reports. Prototype workflows must consume PRD section 4B `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` rows before layout, component mapping, template selection, export design, or readiness acceptance. These IDs decide the first-viewport answer, cause path, action route, severity ordering, trust/source disclosure, and meeting/export reuse.
+
 Prototype workflows must not recreate complete PRD content internally. They may only:
 
 - Consume PRD sections as execution inputs.
@@ -27,7 +31,7 @@ Add this matrix to every PRD:
 
 Rules:
 
-- `Executable IDs` must reference actual IDs from the PRD, such as `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RULE-*`, and `GAP-*`.
+- `Executable IDs` must reference actual IDs from the PRD, such as `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RTP-*`, `PATH-*`, `RULE-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, and `GAP-*`.
 - `Downstream owner skill/workflow` must name the workflow or atomic skill that will consume the section.
 - `Execution artifact` must be concrete: binding matrix, pageLayoutConfig, blockLayoutTemplateMap, API contract, interaction contract, permission matrix, runtime QA case, etc.
 - `Blocking rule` must say whether missing data blocks prototype start, only blocks implementation, or is explicitly out of scope.
@@ -42,7 +46,9 @@ Rules:
 | 2. 用户角色与使用场景 | Produce role-specific user path, permission scope, navigation visibility, export scope, and scenario acceptance cases. | target prototype workflow, `$report-info-component-mapping`, `$report-filter-control-design-spec` |
 | 3. 开发范围边界 | Lock phase-one scope, out-of-scope exclusions, `outputArtifact`, template-only constraint, self-development exception map, deferred items, and blockers. | target prototype workflow, `$report-delivery-pipeline-governance`, `$quality-gate-validation` |
 | 4. 页面内容 | Produce visible business module inventory, result-content boundary, component bundle plan, and nav/page content plan. | target prototype workflow, `$report-info-component-mapping`, `$report-design-system-governance` |
-| 5. 页面布局配置 | Produce `frameworkTemplateId`, shell config, `pageLayoutConfig`, `layoutRows`, `blockLayoutTemplateMap`, standard area configs, component slot map, and component content area map. | `$report-visual-layout-design`, `$report-prototype-template-management` |
+| 4A. 报表类型实现思路与分块布局映射 | Produce attachment evidence intake, user-thought validation, primary `RTP-*` pattern, `PATH-*` reading path, first-viewport plan, and path-step-to-block-layout mapping. | `$report-prd-document-generation`, target prototype workflow, `$report-prototype-template-management` |
+| 4B. 管理层满意度辅助设计 | Produce `ESG-*` executive decision profiles, first-viewport 3-second answer, 30-second cause path, 3-minute action, management metric wording, `SEV-*` priority/severity, `ACT-*` closure, `TRUST-*` source/freshness/coverage, `MEET-*` review/export, and satisfaction checklist. | `$report-prd-document-generation`, target prototype workflow, `$report-info-component-mapping`, `$report-prototype-template-management` |
+| 5. 页面布局配置 | Produce `frameworkTemplateId`, shell config, `pageLayoutConfig`, `layoutRows`, `blockLayoutTemplateMap`, standard area configs, component slot map, component content area map, and section 4B ID traces where applicable. | `$report-visual-layout-design`, `$report-prototype-template-management` |
 | 5A. Dynamic conclusion generation rules | Produce `conclusionRuleMap`, summaryArea conclusion bindings, conclusion-card/analysisInsight rule bindings, affected API/filter/interaction refresh behavior, fallback text, and QA cases. | `$report-info-component-mapping`, `$report-prototype-template-management`, `$frontend-runtime-qa-validation` |
 | 6. 指标清单 | Produce metric dictionary, KPI scope boundary, display precision, formula validation, source/freshness, denominator/null behavior, and tooltip/export metadata. | `$metric-number-display-contract`, `$report-info-component-mapping`, target prototype workflow |
 | 7. 指标挂载矩阵 | Produce component/data/filter/control/interaction binding matrix and slot-level metric binding. | `$report-info-component-mapping`, `$report-prototype-template-management` |
@@ -58,6 +64,8 @@ Before any prototype workflow continues past preflight, require:
 - A PRD status of `ready-for-review`, or `draft` with non-blocking `TBD(GAP-*)` items.
 - A PRD execution matrix row for every PRD section.
 - No `blocked` row for the target workflow's first executable step.
+- Section 4A declares a primary `RTP-*` pattern, `PATH-*` reading path, first-viewport plan, and path-to-block layout mapping; if user attachments or user-supplied thinking exist, section 4A records their intake/validation.
+- Management-facing reports include section 4B rows for `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*`, `ACT-*`, `TRUST-*`, and required `MEET-*` behavior.
 - Every displayed metric in sections 6 and 7 has a mount path.
 - Every summary-area conclusion, conclusion card, or analysis insight target has a `RULE-*` row and frontend generation behavior.
 - Every page block in section 5 has a block layout template and component slot plan.
@@ -77,3 +85,5 @@ A workflow may mark a prototype stage `ready` only when every PRD execution matr
 Rows with `draft` or `blocked` status keep the prototype stage `partial` or `blocked`. Do not hide incomplete PRD sections inside assumptions, mock data, or visual placeholders.
 
 Dynamic conclusion rows are not optional. A workflow cannot mark the stage `ready` while a visible summary-area conclusion, conclusion card, or analysis insight component is backed only by fixed copy instead of a consumed `RULE-*` execution row.
+
+Executive satisfaction rows are not optional for management-facing reports. A workflow cannot mark the stage `ready` while first-viewport blocks, component bundles, template maps, interactions, or export behavior fail to consume required `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` rows.
