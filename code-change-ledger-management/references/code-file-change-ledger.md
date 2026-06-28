@@ -34,6 +34,8 @@ Default location is a sidecar Markdown file in the same directory as the code fi
 <code-file-directory>/__change_logs__/<code-file-name>.changes.md
 ```
 
+`change_logs` without leading and trailing double underscores is not the default or required folder. If a project has no `change_logs` directory, that is normal. The readiness check looks for the per-file sidecars under `__change_logs__`.
+
 Examples:
 
 ```text
@@ -175,6 +177,15 @@ npm run ledger:code -- --file src/widgets/components/SalesTrend.vue --stage afte
 ```
 
 The helper should be run in both stages. `before` captures a pre-edit snapshot; `after` compares the snapshot with the edited file and appends a unified diff or sidecar patch. If the helper reports that no pre-edit snapshot exists, the ledger entry is not ready unless an exact external VCS/release reference is supplied.
+
+For copied report template projects, initialize and check project-wide baseline sidecars before normal edit tracking:
+
+```bash
+npm run ledger:init
+npm run ledger:check
+```
+
+`ledger:init` creates baseline sidecars for scoped source files that do not have them yet. It does not replace the per-file `ledger:code --stage before` and `ledger:code --stage after` commands around actual edits. `ledger:check` should pass before prototype handoff.
 
 Manual updates are acceptable when the project does not run Python/Node, but the same fields and before/after behavior still apply.
 

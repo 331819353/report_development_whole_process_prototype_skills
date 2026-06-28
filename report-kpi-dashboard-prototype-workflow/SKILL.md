@@ -86,7 +86,8 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 18. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable template fits, create a standalone ECharts-backed Vue component content area template inside the copied template project and register/copy it before slot fill. This component fallback does not justify a new Vue project. Do not put KPI filters, controls, additional information, units, title pills, description/help text, or summary copy inside the component slot.
 19. Use component/chart/table/filter specialty skills for any newly selected or self-developed component content area template before implementation-ready decisions.
 20. Run a visual density and first-viewport closure check before readiness: identify the primary status block, the first diagnostic evidence block, the action/detail block, and the trust/freshness cue; reject layouts where a block's allocated height is not justified by its content, where a chart has fewer than 5 meaningful marks but consumes a dominant half-screen without labels/target/average/explanation, or where lower modules appear as awkward clipped fragments instead of intentional section hints.
-21. Verify first-viewport answer, filter linkage, drilldown, abnormal states, refresh/freshness, runtime screenshot/DOM geometry, and runnable URL when requested.
+21. After data, filters, widgets, generated conclusion rules, and interactions are configured, create or update `docs/prototype-data-summary.md` with dataset catalog, field dictionary, KPI/conclusion inputs, component binding matrix, filter/parameter semantics, drilldown/action payloads, backend API/model suggestions, gaps, verification, and code-ledger sidecar paths.
+22. Verify first-viewport answer, filter linkage, drilldown, abnormal states, refresh/freshness, runtime screenshot/DOM geometry, and runnable URL when requested.
 
 ## Required Output
 
@@ -107,6 +108,7 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Visual density and first-viewport closure result: oversized/empty block scan, chart mark-to-area fit, text contrast/readability, next-section exposure, and evidence-backed repair decisions.
 - Filter, refresh, permission, export/share, abnormal, empty/error/no-permission state requirements.
 - Component/data/filter/control/interaction binding matrix.
+- Prototype data summary: `docs/prototype-data-summary.md` with actual dashboard data modes, datasets, fields, KPI/conclusion inputs, component bindings, filter semantics, drilldown/action payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
 - `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
@@ -139,4 +141,5 @@ Visual quality gate: a dashboard that passes data/config validation can still fa
 - Do not claim readiness unless the first viewport answers the current-state question and drilldown destinations are defined.
 - Do not claim readiness unless every primary KPI has `metricDrilldownContract` coverage from result to diagnosis, process/cause, and detail/action, or an explicit scoped static exception.
 - Do not claim readiness when a status summary, abnormal warning conclusion, `4 summaryArea` conclusion, conclusion card, or analysis insight component uses fixed normal-state copy instead of a PRD `RULE-*` rule that recomputes from current data.
+- Do not claim readiness for backend-facing handoff when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks actual dashboard dataset/field/KPI/filter/drilldown/API-model/gap/verification content.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or implementation/QA evidence is only generic screenshots, default states, or unchecked assumptions.

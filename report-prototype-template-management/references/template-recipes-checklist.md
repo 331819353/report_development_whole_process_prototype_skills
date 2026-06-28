@@ -4,6 +4,13 @@ Use this file for common adjustments and final verification after changing a tem
 
 ## Common Recipes
 
+### Initialize Code Ledgers After Copy
+
+1. Run `npm run ledger:init` in the copied template project before the first source edit.
+2. Confirm the command created same-directory `__change_logs__/<code-file-name>.changes.md` sidecars for scoped source files.
+3. Use `npm run ledger:code -- --file <source-file> --stage before` and `--stage after` for each edited file after this baseline bootstrap.
+4. Run `npm run ledger:check` before handoff; missing sidecars block readiness.
+
 ### Change Logo
 
 - Single-page: update `assets.logoSrc`.
@@ -59,6 +66,16 @@ Use this file for common adjustments and final verification after changing a tem
 8. For line, area, and category-axis charts, sort row tuples first and derive labels, values, tooltip payloads, and click payloads from the same sorted rows.
 9. Render from the `data` prop inside the widget.
 10. Append sidecar ledger entries for every changed source file with feature list, code ranges, affected data/filter/API contracts, and verification.
+11. Update `docs/prototype-data-summary.md` with the dataset id, fields, metric/conclusion inputs, component binding row, filters, interaction payloads, backend API/model implications, gaps, and verification.
+
+### Update Prototype Data Summary
+
+1. Read `prototype-data-summary-contract.md` before final handoff, backend handoff, or any meaningful data/API/filter/widget/interaction change.
+2. Create `docs/prototype-data-summary.md` when it does not exist.
+3. Summarize actual project evidence from `src/data/dashboard.dataset.json`, `src/config/dashboard.config.ts`, `src/dataSources/registry.ts`, widget components, and action hooks.
+4. Include dataset catalog, field dictionary, metric and generated-conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, `GAP-*` rows, and verification.
+5. Keep full fixture rows out of the document; include representative shape and backend design implications.
+6. Record the code-ledger sidecar path for every changed scoped source file that produced or changed the data contract.
 
 ### Add Or Change First-Level Perspective
 
@@ -102,6 +119,8 @@ Use this file for common adjustments and final verification after changing a tem
 - Every widget has `visualType`.
 - Widgets without data have `dataPolicy`.
 - Data completeness is verified before filter binding: filter option rows, business/API rows, required fields, default/non-default states, and resolver/API branches exist or are documented as gaps.
+- `docs/prototype-data-summary.md` exists, names actual project data files and data modes, and is current with `dashboard.config.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, widget data contracts, generated conclusion rules, filters, and interactions.
+- The data summary includes backend API/model suggestions plus explicit `GAP-*` rows for missing source/model/API/permission/freshness facts.
 - First-level perspective switches are not hidden in `filters[]`; domain/theme/management-object controls use nav/page/route/tab/segment/perspective state unless explicitly row-scope-only.
 - Binding matrix includes `controlSemantics` and `componentSchemaImpact` for controls that affect widgets.
 - Navigation percentages, rankings, and status lights have lineage and are not stored in `filterData.meta` unless explicitly static display copy.
@@ -117,7 +136,7 @@ Use this file for common adjustments and final verification after changing a tem
 - Layout blocks do not clip titles, legends, charts, tables, empty states, or controls.
 - `npm run validate:dashboard` runs after the minimal required dependencies are installed.
 - Stack-contract failures from `npm run validate:dashboard` block handoff even if Vite build or screenshots appear fine.
-- Every changed source file has a sidecar code ledger under `__change_logs__`, the ledger was read before editing, and a post-change version entry records feature/function list, changed code ranges, affected widget/data/filter/API contracts, verification, and rollback notes.
+- `npm run ledger:init` ran after project copy, `npm run ledger:check` passes before handoff, and every changed source file has a sidecar code ledger under `__change_logs__`. The ledger was read before editing, and a post-change version entry records feature/function list, changed code ranges, affected widget/data/filter/API contracts, verification, and rollback notes. A `change_logs` folder is not required and is not the expected path.
 - If npm dependency installation is blocked by domestic network access, retry with a temporary command-level mirror such as `npm install --registry=https://registry.npmmirror.com` or `npm install <package-name> --registry=https://registry.npmmirror.com`; if unavailable, replace the registry URL with `https://npm.aliyun.com/`, `https://mirrors.cloud.tencent.com/npm/`, `https://mirrors.ustc.edu.cn/npm/`, or `https://mirrors.tuna.tsinghua.edu.cn/npm/`. Do not persist registry changes unless explicitly requested.
 - `npm run build` runs before handoff when implementation code changed.
 - A local dev/preview URL is started and verified when a runnable project is part of the task.

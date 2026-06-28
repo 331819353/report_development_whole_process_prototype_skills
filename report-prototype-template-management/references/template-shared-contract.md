@@ -22,13 +22,16 @@ All bundled template assets share these extension points:
 - `src/styles.css`: template shell styles only.
 - `public/`: logo and static assets.
 - `scripts/validate-dashboard-contract.mjs`: dashboard contract validator.
+- `scripts/init-code-ledgers.mjs`: project-wide baseline sidecar ledger initializer/checker for copied template projects.
 - `scripts/update-code-ledger.mjs`: sidecar code change ledger helper for copied template projects.
 - `scripts/start-available-port.mjs`: local port helper for `dev:auto` / `preview:auto`.
+- `docs/prototype-data-summary.md`: required backend-facing handoff artifact created or updated after data, filters, widgets, generated conclusions, and interactions are configured.
 
 ## Basic Create Loop
 
 1. Copy `assets/templates/<template-id>/` to the target project.
    This copy step is the default implementation route for runnable report prototypes. Do not replace it with `npm create vite`, a blank Vue scaffold, or a hand-built Vue project unless the workflow records `implementationMode: newVue3Project` with a self-developed/non-template exception, rejected template candidates, owner, and readiness impact.
+   Immediately after copying, run `npm run ledger:init` in the copied project to create baseline `__change_logs__` sidecars for all scoped source files before any source edit. This is the project-level bootstrap; still use `npm run ledger:code -- --file <source-file> --stage before/after` around each edited file.
 2. Keep the base stack dependencies as an integrated contract: `vue`, `@vitejs/plugin-vue`, `vite`, `typescript`, `vue-tsc`, `element-plus`, `echarts`, and `axios`. Do not remove ECharts or Element Plus because the first component batch is simple. Add `@antv/s2` and `@antv/s2-vue` only when the implementation contains pivot tables, cross tables, wide metric matrices, frozen-header analytical tables, or equivalent S2-class table needs.
    PRD/source mentions of HTML do not change this default stack. Use static HTML only when the latest explicit user request asks for HTML/static/single-file HTML output or exact static HTML preservation.
 3. Before editing any copied source file, run or manually follow the code ledger trigger: `npm run ledger:code -- --file <source-file> --stage before`. Read the sidecar ledger before changing the file.
@@ -38,9 +41,11 @@ All bundled template assets share these extension points:
 7. Add widgets through `components/`, `types.ts`, and `registry.ts`.
 8. Build standard chart widgets with an actual ECharts wrapper/instance and data-driven `option`/`series`; build ordinary row tables with Element Plus/project table patterns; use Element Plus controls for standard UI controls.
 9. After each source-file edit, append the sidecar ledger entry: `npm run ledger:code -- --file <source-file> --stage after --summary "<change>" --ranges "L10-L42"`.
-10. Run `npm run validate:dashboard`. This validates both dashboard contracts and the Vue 3 + Element Plus + ECharts stack contract.
-11. Run `npm run build`.
-12. Start with `npm run dev:auto -- --port <port>` or `npm run preview:auto -- --port <port>` when a preview is needed.
+10. Create or update `docs/prototype-data-summary.md` from `references/prototype-data-summary-contract.md`. The summary must name actual data files, datasets, fields, metrics, conclusion rules, component bindings, filters, interactions, backend API/model suggestions, gaps, and verification.
+11. Run `npm run ledger:check` to prove all scoped source files still have `__change_logs__` sidecars.
+12. Run `npm run validate:dashboard`. This validates both dashboard contracts and the Vue 3 + Element Plus + ECharts stack contract.
+13. Run `npm run build`.
+14. Start with `npm run dev:auto -- --port <port>` or `npm run preview:auto -- --port <port>` when a preview is needed.
 
 ## Report Development Terms
 
@@ -79,6 +84,7 @@ Prefer config/data/widget layers:
 - Static/mock data -> `dashboard.dataset.json`.
 - Standard API endpoint/query binding -> `widget.data.api` or `filters[].source.api` in `dashboard.config.ts`.
 - Response adapters and custom API/provider resolvers -> `dataSources/registry.ts`.
+- Backend-facing data handoff -> `docs/prototype-data-summary.md`. Generate this after each meaningful data/config/widget/filter/interaction change and before technical solution, backend, frontend integration, testing, or final handoff. It is not visible report content.
 - Business visuals -> `src/widgets/components/*.vue`.
 - Parent block title/body chrome -> widget config plus the owning business/composite component. Prefer `widget.chrome.blockChromePattern` or an equivalent prop with `titleStageHeightPx`, `bodyBackgroundRelation`, `selectionReason`, and `overflowStrategy`; render the selected style in `src/widgets/components/*.vue` or scoped component CSS, not in the template shell.
 - KPI/metric card visuals -> `src/widgets/components/*.vue` with explicit title ownership. Use `widget.title` or `props.displayTitle` for the reader-facing block/card title, `props.metricName` for tooltip/export/口径/detail payloads, and `props.showBodyMetricLabel` only when a body label is truly needed. When a block-owned title exists, `showBodyMetricLabel` defaults to `false` if the body metric label is the same or near-same text as the block title. Do not render both `title` and `metric.label` visibly for a single-metric KPI card.
@@ -92,7 +98,7 @@ Prefer config/data/widget layers:
 - Chart row sorting and series helpers -> `src/widgets/chartDataUtils.ts` or a similarly named utility file, never a data-bearing `*Data.ts` module.
 - Component-owned popup/jump/drilldown -> component implementation, with an `interactionBehavior` entry in `selfDevelopmentExceptionMap`.
 - Shell-level event observation or external integration hooks -> `src/actions/registry.ts`.
-- Code change ledgers -> same-directory sidecars under `__change_logs__/<code-file-name>.changes.md`. Read before each scoped source edit and append after each scoped source edit. Do not store file-level change history only in chat, commit messages, PR descriptions, or broad delivery indexes.
+- Code change ledgers -> same-directory sidecars under `__change_logs__/<code-file-name>.changes.md`. Run `npm run ledger:init` immediately after copying the template project to create baseline sidecars, run `npm run ledger:check` before handoff, read before each scoped source edit, and append after each scoped source edit. Do not store file-level change history only in chat, commit messages, PR descriptions, broad delivery indexes, or a legacy `change_logs` folder. The expected directory name is `__change_logs__`.
 
 Avoid framework edits unless intentionally changing the template itself:
 

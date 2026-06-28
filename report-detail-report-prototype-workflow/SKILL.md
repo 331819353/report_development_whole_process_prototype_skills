@@ -71,7 +71,8 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 15. Use `$report-visual-layout-design` to produce `pageLayoutConfig`: `layoutRows`, stable block ids, table/search/filter/detail block spans, first-viewport query path, and nav/page wiring.
 16. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every query/table/detail/action block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation. Generated trust/summary/conclusion text in `4 summaryArea` or a component must consume `conclusionRuleMap`.
 17. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable table/list/detail template fits, create a standalone Vue component content area template inside the copied template project and register/copy it before slot fill. This component fallback does not justify a new Vue project. Do not put title, pills, filters, controls, additional information, units, trust copy, description/help text, or summary text inside the component slot.
-18. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
+18. After data, filters, widgets, generated trust/summary rules, and interactions are configured, create or update `docs/prototype-data-summary.md` with dataset catalog, field dictionary, row grain, primary keys, table/export fields, component binding matrix, filter/query semantics, detail/export/source-jump payloads, backend API/model suggestions, gaps, verification, and code-ledger sidecar paths.
+19. Verify query/filter linkage, row identity, export scope, permissions/masking, timeout/over-limit states, and runnable URL when requested.
 
 ## Required Output
 
@@ -89,6 +90,7 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 - Result-content boundary: visible query/verification/trust/action content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - Export plan: scope, fields, limits, async behavior, watermark, audit, approval, masking, failure state.
 - Component/data/filter/control/interaction binding matrix.
+- Prototype data summary: `docs/prototype-data-summary.md` with actual detail-report data modes, row grain, primary keys, datasets, fields, table/export bindings, filter/query semantics, detail/source-jump payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
 - `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
@@ -113,4 +115,5 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 - Do not ignore empty, timeout, no-permission, over-limit, and export-failure states.
 - Do not claim readiness when visible generated trust/summary/conclusion text is fixed normal-state copy instead of a PRD `RULE-*` rule that recomputes from current data.
 - Do not put block template title, pills, filters, controls, additional information, units, trust copy, description/help text, or summary/explanation content inside table/detail component content slots.
+- Do not claim readiness for backend-facing handoff when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks actual row-grain/field/table/filter/export/interaction/API-model/gap/verification content.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or table/filter/export claims lack field-level evidence and non-default-state checks.

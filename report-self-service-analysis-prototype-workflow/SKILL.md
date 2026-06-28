@@ -72,7 +72,8 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every workbench/result block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation. Generated result summaries or insight conclusions must consume `conclusionRuleMap`.
 16. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable field-panel, chart/table/pivot result, or state template fits, create a standalone Vue component content area template inside the copied template project and register/copy it before slot fill. This component fallback does not justify a new Vue project. Use ECharts for standard chart fallbacks and S2/project-equivalent behavior for pivot/cross-table fallbacks when needed. Do not put filters, controls, additional information, units, descriptions, or explanation text inside the slot.
 17. Use the owning layout, template, and component skills only in this order: finalize `pageLayoutConfig`, finalize `blockLayoutTemplateMap`, then finalize each component content area template so the workbench does not hide the analysis model behind decorative charts.
-18. Verify data completeness, permission states, empty/error/timeout/invalid-combination states, and runnable URL when requested.
+18. After data, filters, widgets, generated result-summary rules, and interactions are configured, create or update `docs/prototype-data-summary.md` with dataset catalog, field dictionary, allowed dimension/metric operations, component binding matrix, filter/parameter semantics, drilldown/save/share/export payloads, backend API/model suggestions, gaps, verification, and code-ledger sidecar paths.
+19. Verify data completeness, permission states, empty/error/timeout/invalid-combination states, and runnable URL when requested.
 
 ## Required Output
 
@@ -90,6 +91,7 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 - Result-content boundary: visible exploration/result/trust/reuse content versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
 - Filter, grouping, sorting, chart switching, drilldown, save/share/export, permission, masking, and performance rules.
 - Component/data/filter/control/interaction binding matrix.
+- Prototype data summary: `docs/prototype-data-summary.md` with actual self-service data modes, datasets, fields, allowed operations, result component bindings, filter/parameter semantics, drilldown/save/share/export payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
 - `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
@@ -114,4 +116,5 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 - Do not put field-panel title bands, filters, filter summary copy, controls, additional information, units, descriptions, or explanation text inside result component content slots. Those stay on 分块布局模板 supporting areas or explicit workbench shell/config blocks.
 - Do not claim runnable readiness until non-default field/filter/chart changes visibly alter the result.
 - Do not claim readiness when generated result summaries, `4 summaryArea` conclusions, conclusion cards, or analysis insight components are fixed normal-state copy instead of PRD `RULE-*` rules that recompute from current data.
+- Do not claim readiness for backend-facing handoff when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks actual dataset/field-operation/filter/result/interaction/API-model/gap/verification content.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or only default field/filter/chart states were checked.

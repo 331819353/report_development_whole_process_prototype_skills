@@ -59,6 +59,7 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Block title/body chrome style selection: `$report-visual-layout-design` `references/block-chrome-style-patterns.md` when source samples define parent-block title/background style or when styled report blocks are needed.
 - Anti-squeeze row-group expansion and vacancy reflow: `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when dense KPI/chart/table/composite blocks are mapped, laid out, repaired, or accepted.
 - Template operation flow: `$report-prototype-template-management` `references/template-operation-flow.md` before copying, editing, or accepting bundled template implementations.
+- Prototype data handoff summary: `$report-prototype-template-management` `references/prototype-data-summary-contract.md` before final prototype handoff, technical-solution handoff, backend/data-service handoff, or any meaningful data/API/filter/widget/interaction change.
 - Modern SaaS / BI Dashboard / UI Kit positive style contract: `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when that design language is requested.
 - Detailed prototype implementation gates: `references/05-prototype-implementation-gates.md`
 - Code-file ledger: `$code-change-ledger-management` before code edits.
@@ -93,9 +94,10 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 17. Route chart, table, filter, component-placement, and reusable component work to `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec`, `$report-component-placement-spec`, or `$report-component-design-spec` whenever those surfaces are affected. If no suitable 组件内容区模板 exists for a slot, define the ECharts/table/list contract here before creating the standalone Vue component content area template.
 18. Use `$report-component-style-design` and `$report-component-design-spec` for component fit, chart/table/KPI readability, reusable component rules, and the internal geometry of each selected or newly created 组件内容区模板. Component content area templates must be standalone Vue files and must not include block title, pill, filters, controls, additional information, unit, description/help, summary, or explanation areas.
 19. Apply Haier UI as the company-level application baseline for Haier/enterprise report pages, then apply report design-system rules as report-specific extensions. Skip Haier baseline only for explicit non-Haier/native sample/neutral brand decisions.
-20. Before implementation or repair touches source, read/create code ledgers for every changed file through `$code-change-ledger-management`; append version entries after edits.
+20. For copied template projects, run `npm run ledger:init` after copy. Before implementation or repair touches source, read/create code ledgers for every changed file through `$code-change-ledger-management`; append version entries after edits. Run `npm run ledger:check` before handoff.
 21. Start/verify the prototype when a runnable URL is requested and route runtime findings through `$frontend-runtime-qa-validation`.
-22. For handoff artifacts, apply `$artifact-readability-standard` and `$report-delivery-pipeline-governance` so downstream technical solution, backend, frontend, and testing workflows know the entry conditions.
+22. Before marking the runnable prototype complete, generate or update `docs/prototype-data-summary.md` in the copied prototype project. It must summarize actual data files, data modes, datasets, fields, metric/conclusion inputs, component bindings, filter/parameter semantics, interaction payloads, backend API/model suggestions, `GAP-*` rows, verification, and code-ledger sidecar paths for changed source files.
+23. For handoff artifacts, apply `$artifact-readability-standard` and `$report-delivery-pipeline-governance` so downstream technical solution, backend, frontend, and testing workflows know the entry conditions.
 
 ## Required Output
 
@@ -119,7 +121,8 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Filter/value semantics table with `detailValue`, `aggregateValue`, `emptyFilterValue`, display label, data-row role, query behavior, and primary-key eligibility.
 - Layout plan, selected framework template, template-only decision, self-development exception map, filter surface mapping, PRD `PATH-*` and section 4B gate IDs to block mapping, perspective-layer mapping, baseline inheritance decision, anti-squeeze row-group/vacancy reflow decisions when triggered, and implementation target path.
 - Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence, ECharts self-developed component content area fallbacks, and validation evidence for every filled slot.
-- Files changed, code-ledger proof, verification commands, URL or blocker.
+- Prototype data summary: `docs/prototype-data-summary.md` path, data modes, dataset catalog, field dictionary, metric/conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
+- Files changed, code-ledger proof including `ledger:init`/`ledger:check` status for copied templates, verification commands, URL or blocker.
 - Quality-gate findings and readiness: `ready`, `partial`, or `blocked`.
 
 ## Quality Gate
@@ -155,5 +158,8 @@ Source-material policy: every user-provided message, screenshot, HTML, Markdown/
 - Standard charts must be real ECharts option/series/runtime components; S2-class analytical tables must use S2/project-equivalent behavior.
 - HTML-provided SVG/canvas/DOM chart marks are visual/source evidence only. Do not copy or keep them as standard chart implementation; rebuild standard charts as ECharts data-driven components unless a named custom-diagram exception is approved.
 - Changed prototype source files require code-ledger read/create evidence and post-change version entries.
+- Copied template projects require `npm run ledger:init` after copy and `npm run ledger:check` before handoff.
+- Do not mark a runnable prototype `ready` for technical solution, backend/data-service design, frontend integration, or testing handoff unless `docs/prototype-data-summary.md` exists and reflects the current data/config/widget/filter/conclusion/interaction implementation. A generic placeholder or missing backend implication/gap list keeps readiness `partial`.
+- Do not look for or create a legacy `change_logs` folder as the expected process log. Prototype source changes require sidecar ledgers under the same-directory `__change_logs__/<code-file-name>.changes.md` path.
 - Do not mark prototype/design work ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, available local evidence was not inspected, or the conclusion only says "optimized/looks good/implemented" without proof.
 - Load `05-prototype-implementation-gates.md` before implementing, repairing, or accepting runnable prototypes.

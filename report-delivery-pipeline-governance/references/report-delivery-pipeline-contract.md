@@ -30,7 +30,9 @@ When backend implementation replaces a data source, source table/view, upstream 
 
 When artifacts span more than one iteration, maintain a delivery version chain through `$delivery-version-management`. Every prototype/API/model/backend/frontend/test/release artifact should state which upstream version it consumes and which downstream version validated it.
 
-When frontend, backend, or runnable prototype source code is created, repaired, refactored, or modified, maintain file-level code change ledgers through `$code-change-ledger-management`. Every changed scoped code file must have a sidecar ledger under `__change_logs__`, must be read before editing, and must receive a post-change version entry with feature list, changed code ranges/stable anchors, affected contracts, verification, and rollback notes.
+When frontend, backend, or runnable prototype source code is created, repaired, refactored, or modified, maintain file-level code change ledgers through `$code-change-ledger-management`. Copied template projects must run `npm run ledger:init` after copy and `npm run ledger:check` before handoff. Every changed scoped code file must have a sidecar ledger under `__change_logs__`, must be read before editing, and must receive a post-change version entry with feature list, changed code ranges/stable anchors, affected contracts, verification, and rollback notes.
+
+When a runnable prototype is completed or handed off to technical solution, backend/data-service design, frontend integration, or testing, include `docs/prototype-data-summary.md` from the copied prototype project. This Markdown file must summarize actual data files, datasets, fields, metric/conclusion inputs, component bindings, filters, interaction payloads, backend API/model suggestions, gaps, verification, and relevant code-ledger sidecar paths.
 
 ## Stage Routing Matrix
 
@@ -63,7 +65,8 @@ Every stage output must include:
 - `Stage`: workflow name.
 - `Artifact version/source`: file paths, source URLs, commit, or user-provided document names when known.
 - `Delivery version chain`: upstream/downstream version mapping when the artifact participates in an iteration or release.
-- `Code file ledger`: for source-code changes, list changed code files, sidecar ledger paths, pre-change read/create status, appended version, changed ranges/stable anchors, affected contracts, and verification.
+- `Code file ledger`: for source-code changes, list project-wide `ledger:init`/`ledger:check` status when applicable, changed code files, sidecar ledger paths, pre-change read/create status, appended version, changed ranges/stable anchors, affected contracts, and verification.
+- `Prototype data summary`: for runnable prototype handoff, list `docs/prototype-data-summary.md`, readiness, main data modes, missing `GAP-*` rows, and whether the document is current with the prototype implementation.
 - `Entry consistency`: `pass`, `partial`, `blocked`, or `not needed`, with unresolved `ENTRY-*` IDs when applicable.
 - `Design reasonableness`: `pass`, `partial`, `blocked`, or `not needed`, with unresolved `DESIGN-*` IDs when applicable.
 - `Production closed loop`: `ready`, `partial`, `blocked`, or `not needed`, with missing production controls or open retest items when applicable.
@@ -107,7 +110,9 @@ Do not mark an artifact `ready` when an unresolved `P0` `DESIGN-*` finding exist
 
 Do not mark a production-bound artifact `ready` when required source authority, runtime URL/health, auth/permission, deployment/config, observability, performance/resilience/capacity, testing evidence, or blocker/major/high defect retest closure is missing.
 
-Do not mark implementation, repair, or runnable prototype handoff `ready` when any changed scoped code file lacks a sidecar code ledger, pre-change read evidence, or a post-change version entry with changed code ranges, modified content, affected contracts, and verification/blocker.
+Do not mark implementation, repair, or runnable prototype handoff `ready` when a copied template project skipped `npm run ledger:init`/`npm run ledger:check`, or when any changed scoped code file lacks a sidecar code ledger, pre-change read evidence, or a post-change version entry with changed code ranges, modified content, affected contracts, and verification/blocker.
+
+Do not mark runnable prototype handoff `ready` for technical solution, backend/data-service design, frontend integration, or testing when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks dataset/field/component/filter/interaction/API-model/gap/verification content.
 
 ## Cross-Stage Artifact Contract
 
@@ -116,6 +121,7 @@ Do not mark implementation, repair, or runnable prototype handoff `ready` when a
 Required handoff bundle when a prototype feeds technical solution:
 
 - Prototype theme, user scenario, report type, and core business questions.
+- `docs/prototype-data-summary.md`: backend-facing data summary with dataset catalog, field dictionary, metric/conclusion inputs, component binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, assumptions/gaps, and verification.
 - Component binding matrix: component ID, business question, data source, row grain, required fields, controls, filters, `controlSemantics`, `componentSchemaImpact`, navigation metric lineage, interactions, and empty state.
 - Mock/data-source contract: dataset IDs, field names, sample rows, formulas, units, enums, and derived values.
 - Control/filter contract: perspective switches, global filters, local filters, drilldown params, filter IDs, defaults, option source, field/query mapping, global SQL/source execution stage, component-internal local filter scope, affected components, permission behavior, schema impact, navigation indicator lineage, and bounded-local exception if any.

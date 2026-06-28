@@ -45,6 +45,7 @@ Copy templates with their full project structure, including package/config files
 | Template operation flow | `references/template-operation-flow.md` |
 | Template routing and implementation gates | `references/template-routing-and-implementation-gates.md` |
 | Shared extension points | `references/template-shared-contract.md` |
+| Prototype data handoff summary | `references/prototype-data-summary-contract.md` |
 | Layout tokens and template design system | `references/template-layout-design-system.md` |
 | Block title/body chrome style selection | `$report-visual-layout-design` `references/block-chrome-style-patterns.md` |
 | Topbar template details | `references/template-single-page.md` |
@@ -80,13 +81,15 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 10. Carry the layout-provided `blockChromePattern` matrix or explicitly inherit `template-default`/`plain-enterprise` for every styled parent block before widget body content is configured. Block chrome is widget/composite-owned and must not create a duplicate shell title band.
 11. Verify report-decision compatibility: metric tree/data story, detail/action/trust capacity, realistic data states, and report-designer needs when applicable.
 12. Copy or merge the full template into the target.
+12A. In the copied project, run `npm run ledger:init` before source edits to create baseline `__change_logs__` sidecars for all scoped source files.
 13. Keep shell-owned behavior in template config/data/action registries and widget registries.
 14. Preserve native template filter surfaces; configure `filters[]`, data sources, empty-filter values, resolvers, and widget bindings instead of adding a duplicate filter bar.
 15. Declare control ownership before adding UI controls. Default: template owns page/global filters, refresh, download/export, topbar actions, logo/title/navigation, and route-level toolbar. Widgets may own only component-scoped interaction behavior that appears in the PRD `selfDevelopmentExceptionMap`, such as drill/detail links, row actions, chart-point actions, drawer/modal triggers, or micro actions that do not duplicate shell controls. Do not move shell-owned controls into components inside the report development flow.
 16. Preserve the stack contract before source edits: keep `vue`, `@vitejs/plugin-vue`, `vite`, `typescript`, `vue-tsc`, `element-plus`, `echarts`, and `axios` in package dependencies; keep `src/main.ts` bootstrapping Vue 3 and registering Element Plus; use ECharts for standard chart widgets instead of manual SVG/HTML/CSS/canvas marks.
 17. Before editing copied template source, read/create the sidecar code ledger through `$code-change-ledger-management`; append version entries after edits.
 18. Validate chart/table/component fidelity through owning component references when widgets are added or changed.
-19. Run template validation, build, and dev/preview startup when a local URL is required.
+18A. After data, filters, widgets, generated conclusion rules, and interactions are configured, generate or update `docs/prototype-data-summary.md` in the copied prototype project using `references/prototype-data-summary-contract.md`. The document must summarize actual data files, data modes, datasets, fields, metric/conclusion inputs, component binding, filter semantics, interaction payloads, backend API/model suggestions, gaps, and verification.
+19. Run `npm run ledger:check`, template validation, build, and dev/preview startup when a local URL is required.
 20. When widgets are configured, `npm run validate:dashboard` must check list and chart geometry contracts: list-like widgets declare `rowHeightPx`, `visibleRowCount`, and `overflowStrategy`; `3x2` action lists show at most `2` rows and use detail/tooltip/drawer/view-all/table fallback; full line/bar/combo axis charts first estimate post-layout `contentW/contentH` from grid span, `contentWidth`, `rowHeight`, and `cellPadding`, then require `contentW >=300px`, `contentH >=200px`, and `chartBodyH >=180px` unless they explicitly use `compact-sparkline` with legend, Y-axis unit/name, and permanent labels hidden. Blocks under `400px` wide or `250px` high, and blocks under `500px` with dense/long x-axis labels, must declare squeeze/dataZoom/axis-label/fallback strategy. ECharts Cartesian widgets also keep compact `grid.top/right/bottom/left`, side-placed Y-axis titles, bottom X-axis titles, `insideEndTop` target labels, dynamic NPS/score/rate Y-axis ranges, and no legend for single-series charts unless an exception is documented. Pie/donut/rose widgets declare `minAngle` or tiny-slice aggregation/fallback.
 21. When a runnable URL exists, run `npm run visual:geometry -- --url <url>` and include `visual-check/geometry-report.json` so clipped content, text overflow, sibling overlap, squeezed rows/cards, list rows where `scrollHeight > clientHeight + 1`, hidden list overflow, narrow/short chart containers, chart body/plot squeeze, chart/table crowding, and SVG label overlap are discovered automatically before readiness.
 
@@ -101,8 +104,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Control ownership matrix: refresh, download/export, copy/share, global filters, local filters, period/date controls, toolbar actions, and any disabled template controls.
 - Block chrome configuration: selected `blockChromePattern` per parent widget, source/inheritance reason, component-owned title/body geometry, body background relation, fallback, and inspectable config/DOM/scoped-style hook.
 - Asset copy/merge path and files/extension points changed.
+- Project-wide code-ledger bootstrap/check proof: `npm run ledger:init` after copy and `npm run ledger:check` before handoff.
 - Stack contract proof: package dependencies, `src/main.ts` Vue 3 bootstrap, Element Plus registration/style imports, ECharts runtime ownership for standard chart widgets, and S2 exception only when used.
 - Data binding mode and filter-to-widget binding proof.
+- Backend-facing data summary artifact: `docs/prototype-data-summary.md`, with dataset catalog, field dictionary, metric/conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, `GAP-*` rows, and verification.
 - Empty-filter configuration and aggregate-row key policy when filters or data contain all/total/synthetic options.
 - Code-ledger proof for changed template source files.
 - Validation/startup commands, URL, blockers, and template limitations.
@@ -133,4 +138,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - When a runnable URL exists, `npm run visual:geometry -- --url <url>` failures at `major` or above block `ready`. Do not bypass geometry audit by relying only on manual screenshot confirmation. List-row `scrollHeight > clientHeight + 1`, hard-hidden list overflow, axis chart containers under `300px` wide or `200px` high, squeeze-risk containers without strategy metadata, axis chart body below `180px`, and plot-height failures are direct readiness failures.
 - Template validation scripts or config contracts do not replace runtime proof. Widget contracts such as `compositePanelContract`, `analysisInsightContract`, chart/table option contracts, and control ownership must map to DOM/CSS/renderer/browser evidence before readiness.
 - Changed copied-template source files require code-ledger read/create evidence and post-change version entries.
+- Do not mark a copied project ready when `npm run ledger:init` was skipped after copy or `npm run ledger:check` fails before handoff.
+- Do not mark a copied prototype `ready` for technical solution, backend/data-service design, frontend integration, or testing handoff when `docs/prototype-data-summary.md` is missing, generic, or stale relative to `dashboard.config.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, widget data contracts, generated conclusion rules, filters, or interactions.
+- Do not expect a `change_logs` folder. The required file-level code-ledger path is the same-directory sidecar `__change_logs__/<code-file-name>.changes.md`; absence of `change_logs` is normal, while absence of required `__change_logs__` sidecars for changed code blocks readiness.
 - Load `template-routing-and-implementation-gates.md` before selecting, copying, editing, or accepting bundled report templates.

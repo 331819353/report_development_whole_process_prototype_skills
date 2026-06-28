@@ -51,8 +51,9 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 - In template mode, the native `filters[]` contract must not be used to hide first-level perspective switching. Domain/theme/management-object controls must be modeled as nav/page/tab/segment/route/perspective state unless the binding matrix proves `componentSchemaImpact: row-scope-only`.
 - Template `12 * N` validation covers top-level parent blocks only. A parent block may contain internal sub-blocks and components; those internals, summary text areas, nested KPI grids, chart/table sub-blocks, and small metric cells must pass `$report-visual-layout-design` composition rules and `$report-component-style-design` fit rules.
 - Missing API, model, field, formula, source, permission, or acceptance facts must be recorded as assumptions or gaps. Do not implement unsupported behavior as final prototype logic.
-- For every runnable prototype code file that will be created or changed, read or create the sidecar code ledger before editing and append a version entry after editing with feature list, changed code ranges, modified content, affected widget/data/filter/API contracts, verification, and rollback notes. Template projects may use `npm run ledger:code`; custom prototype projects may use `$delivery-version-management/scripts/update_code_change_ledger.py`.
-- When the prototype feeds technical solution, produce a handoff bundle: component binding, mock/data-source contract, filter contract, interaction payload, data/model assumptions or gaps, and readiness value.
+- For copied template projects, run `npm run ledger:init` after copy and `npm run ledger:check` before handoff. For every runnable prototype code file that will be created or changed, read or create the sidecar code ledger before editing and append a version entry after editing with feature list, changed code ranges, modified content, affected widget/data/filter/API contracts, verification, and rollback notes. Template projects may use `npm run ledger:code`; custom prototype projects may use `$delivery-version-management/scripts/update_code_change_ledger.py`.
+- After data, filters, widgets, generated conclusion rules, and interactions are configured, create or update `docs/prototype-data-summary.md` in the copied prototype project. It must summarize actual data files, data modes, dataset catalog, field dictionary, metric/conclusion inputs, component binding, filter/parameter semantics, interaction payloads, backend API/model suggestions, assumptions/gaps, verification, and code-ledger sidecar paths for changed source files.
+- When the prototype feeds technical solution, produce a handoff bundle: component binding, mock/data-source contract, `docs/prototype-data-summary.md`, filter contract, interaction payload, data/model assumptions or gaps, and readiness value.
 
 ## Workflow
 
@@ -77,7 +78,9 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 18. Before implementation or repair touches prototype source code, trigger the code-file ledger before-read step for every target file.
 19. Implement or repair the prototype in the selected target path when requested.
 20. Append code-file ledger version entries for every changed prototype source file before declaring implementation complete.
-21. Run build/start/visual QA when a runnable URL is requested and route findings through `$frontend-runtime-qa-validation`.
+21. Run `npm run ledger:check` in copied template projects before declaring implementation complete.
+22. Generate or update `docs/prototype-data-summary.md` before declaring implementation complete or handing off to technical/backend/frontend/testing work.
+23. Run build/start/visual QA when a runnable URL is requested and route findings through `$frontend-runtime-qa-validation`.
 
 ## Required Output
 
@@ -101,9 +104,10 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 - Layout plan, parent `12 * N` grid, internal sub-block plan when used, `pageShellPath: template`, selected framework template, self-development exception map, filter surface mapping, nav-page content plan when a template with `nav[]` is selected, and default-stack override reason if any.
 - Template operation chain: `frameworkTemplateId`, `pageLayoutConfig`, PRD `PATH-*` source and section 4B gate ID traces per visible block, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence, ECharts self-developed component content area fallbacks, and slot-fill evidence.
 - Perspective-layer mapping when the report has multiple domains, themes, management objects, subject areas, or first-level views.
-- Prototype-to-technical handoff bundle when the output will feed API/model/backend/frontend work.
+- Prototype-to-technical handoff bundle when the output will feed API/model/backend/frontend work, including `docs/prototype-data-summary.md`.
+- Prototype data summary: actual data files, data modes, dataset catalog, field dictionary, metric/conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
 - Files changed or created when implementation is requested.
-- Code file ledger proof when prototype code changed: each changed code file, sidecar ledger path, pre-change read/create status, appended version, changed code ranges/stable anchors, affected widget/data/filter/API contracts, and verification.
+- Code file ledger proof when prototype code changed: project-wide `ledger:init` and `ledger:check` status for copied templates, each changed code file, sidecar ledger path, pre-change read/create status, appended version, changed code ranges/stable anchors, affected widget/data/filter/API contracts, and verification.
 - Quality-gate findings and readiness: `ready`, `partial`, or `blocked`.
 - Verified URL, screenshot/QA evidence, or exact blocker.
 
@@ -136,6 +140,9 @@ Detailed prototype implementation and readiness rules moved out of `SKILL.md`. L
 - Do not use a non-Vue3/TypeScript/Vite/Element Plus/ECharts/axios stack for runnable prototypes unless the user specifies it or the existing project requires it.
 - Do not mark runnable implementation `ready` when `package.json`, `src/main.ts`, source imports, or `npm run validate:dashboard` show the default stack is incomplete. Missing Element Plus registration/style imports or missing ECharts runtime ownership for chart widgets is a blocker, not a cosmetic cleanup.
 - Do not claim runnable prototype implementation or repair `ready` when any changed scoped prototype code file lacks a sidecar code ledger, pre-change read evidence, or a post-change version entry with code ranges, modified content, affected contracts, and verification/blocker.
+- Do not claim copied-template implementation or handoff `ready` when `npm run ledger:init` was skipped after copy or `npm run ledger:check` fails before handoff.
+- Do not claim runnable prototype implementation, repair, or backend-facing handoff `ready` when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks actual dataset/field/component/filter/interaction/API-model/gap/verification evidence.
+- Do not use `change_logs` as the expected process-log folder. File-level change ledgers live beside changed source files under `__change_logs__/<code-file-name>.changes.md`; missing required `__change_logs__` sidecars blocks readiness.
 - Do not select a navigation/sidebar template unless the content is reorganized into multiple meaningful nav pages, each with enough components, data, and interactions to stand on its own.
 - Do not create a second title area, filter bar, sidebar, navigation layer, or toolbar inside an existing template because the requirement document showed one; adapt labels, options, defaults, and behavior through template config. Template-level redesign requests for these surfaces remain blocked or out of scope for report development.
 - Do not satisfy "筛选工具栏" or "主筛选栏" by rendering a new visual bar in bundled templates. Use the template's native filter entry and `filters[]` contract.

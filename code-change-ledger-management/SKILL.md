@@ -31,15 +31,18 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Workflow
 
 1. Identify scoped source files: frontend, backend, prototype, config, SQL, or tests that own behavior.
-2. Locate each sidecar ledger at `<code-file-directory>/__change_logs__/<code-file-name>.changes.md`.
-3. Before editing, read or create the ledger and inspect functional inventory, known ranges, risks, and prior entries.
-4. After editing, append a new version entry with summary, changed functionality, code ranges/stable anchors, affected contracts, verification, rollback note, related files, and reversible change evidence.
-5. Require one of these reversible evidence forms for every changed text code file: inline unified diff, sidecar patch path plus hash, or explicit external VCS commit/bundle reference. A sha256 snapshot alone is only an integrity check and never proves what changed.
-6. Report ledger status with changed files and unresolved follow-ups.
+2. For copied report template projects, run `npm run ledger:init` once after copy to generate baseline sidecars, and run `npm run ledger:check` before handoff.
+3. Locate each sidecar ledger at `<code-file-directory>/__change_logs__/<code-file-name>.changes.md`.
+   Do not look for `change_logs` as the default folder; this skill's required folder name is `__change_logs__`.
+4. Before editing, read or create the ledger and inspect functional inventory, known ranges, risks, and prior entries.
+5. After editing, append a new version entry with summary, changed functionality, code ranges/stable anchors, affected contracts, verification, rollback note, related files, and reversible change evidence.
+6. Require one of these reversible evidence forms for every changed text code file: inline unified diff, sidecar patch path plus hash, or explicit external VCS commit/bundle reference. A sha256 snapshot alone is only an integrity check and never proves what changed.
+7. Report ledger status with changed files and unresolved follow-ups.
 
 ## Required Output
 
 - Changed code files and ledger paths.
+- Project-wide ledger init/check status when a copied template project is involved.
 - Pre-change ledger read/create evidence.
 - Post-change version entry summary.
 - Changed code ranges or stable anchors.
@@ -52,3 +55,5 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not mark changed source code ready when any scoped file lacks a sidecar ledger, pre-change read/create evidence, post-change entry, changed ranges, reversible change evidence, verification, or rollback notes.
 - Do not mark a ledger `ready` when it only contains `sha256`, broad summaries, `full file`, or `TBD` code ranges. Those entries are `partial` unless an external VCS/release-bundle reference can reconstruct the exact previous content.
 - Do not replace file-level ledger evidence with only a final chat summary, commit message, PR description, or broad delivery index.
+- Do not treat the absence of a legacy `change_logs` folder as failure. Treat the absence of required `__change_logs__` sidecar ledgers for changed scoped source files as failure.
+- Do not mark a copied report template project ready when `npm run ledger:init` was skipped after copy or `npm run ledger:check` fails before handoff.

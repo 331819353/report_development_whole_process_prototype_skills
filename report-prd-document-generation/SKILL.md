@@ -28,6 +28,7 @@ Use this as the focused PRD-writing skill after or alongside requirement clarifi
 - The metric mounting matrix must say exactly where each metric appears and which component/content slot consumes it.
 - Summary areas, conclusion cards, and analysis insight components must be data-driven. The PRD must define `conclusionRuleMap` rows that tell frontend how to derive the conclusion from metrics/API fields, filters, thresholds, priorities, and empty-state rules; a fixed one-sentence conclusion is not acceptable.
 - Data/API and interaction sections must be implementable, not prose-only.
+- Section 8 data/API requirements must be detailed enough for the prototype workflow to generate `docs/prototype-data-summary.md` after implementation, including data objects, fields, metrics, generated conclusion inputs, component bindings, filter semantics, interaction payloads, backend API/model suggestions, and gaps.
 - The PRD must include a PRD-to-workflow execution matrix so every PRD section has a downstream owning skill, execution artifact, and blocking rule.
 
 ## Reference Loading
@@ -117,6 +118,7 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - 指标清单 with complete metric口径.
 - 指标挂载矩阵.
 - 数据与 API 需求.
+- Prototype data summary expectation: section 8 must state that runnable prototype completion produces `docs/prototype-data-summary.md` for technical/backend/frontend/testing handoff unless explicitly deferred out of scope.
 - 交互逻辑.
 - 权限、安全、导出、异常状态 when relevant.
 - 验收标准 and PRD readiness/gap list.

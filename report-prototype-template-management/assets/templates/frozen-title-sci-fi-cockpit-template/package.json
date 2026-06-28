@@ -9,6 +9,8 @@
     "validate:dashboard": "node scripts/validate-dashboard-contract.mjs",
     "visual:geometry": "node scripts/visual-geometry-audit.mjs",
     "ledger:code": "node scripts/update-code-ledger.mjs",
+    "ledger:init": "node scripts/init-code-ledgers.mjs --write",
+    "ledger:check": "node scripts/init-code-ledgers.mjs",
     "build": "npm run build:prod",
     "build:preview": "npm run validate:dashboard && vue-tsc --noEmit && vite build --mode preview",
     "build:test": "npm run validate:dashboard && vue-tsc --noEmit && vite build --mode test",

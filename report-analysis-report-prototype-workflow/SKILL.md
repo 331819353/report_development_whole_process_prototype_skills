@@ -72,7 +72,8 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 15. Use `$report-prototype-template-management` to execute the nine-step template operation flow: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the independent 分块布局模板 Vue file for every narrative/evidence block, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill `3 componentArea` slots and configure summary/explanation. Any conclusion in `4 summaryArea`, conclusion cards, or analysis insight components must consume `conclusionRuleMap`.
 16. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first. If no suitable template fits the evidence body, create a standalone ECharts-backed Vue component content area template inside the copied template project and register/copy it before slot fill. This component fallback does not justify a new Vue project. Do not put title, pills, filters, controls, additional information, units, description, or explanation copy inside the component slot. A conclusion card or analysis insight component may render a generated conclusion only when bound to `conclusionRuleId`; do not put fixed conclusion copy in slot props or component defaults.
 17. Use the owning layout, template, and component skills only in this order: finalize `pageLayoutConfig`, finalize `blockLayoutTemplateMap`, then finalize each component content area template so the report reads as a coherent story, not a chart gallery.
-18. Verify conclusion-evidence links, action follow-up, export/share/comment needs, and runnable URL when requested.
+18. After data, filters, widgets, generated conclusion rules, and interactions are configured, create or update `docs/prototype-data-summary.md` with dataset catalog, field dictionary, conclusion/evidence inputs, component binding matrix, filter/parameter semantics, attribution/action/export payloads, backend API/model suggestions, gaps, verification, and code-ledger sidecar paths.
+19. Verify conclusion-evidence links, action follow-up, export/share/comment needs, and runnable URL when requested.
 
 ## Required Output
 
@@ -91,6 +92,7 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 - Action model: owner, deadline, follow-up metric, status, and tracking notes.
 - Filter, interaction, export/share/comment/history, permission, freshness, and state requirements.
 - Component/data/filter/control/interaction binding matrix.
+- Prototype data summary: `docs/prototype-data-summary.md` with actual analysis data modes, datasets, fields, conclusion/evidence inputs, component bindings, filter semantics, attribution/action/export payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
 - Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
 - `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
 
@@ -115,4 +117,5 @@ Runnable output gate: when implementation, runnable URL, local preview, or deplo
 - Do not claim readiness unless each conclusion is tied to evidence or marked as insufficient-data.
 - Do not claim readiness when a core conclusion, section conclusion, `4 summaryArea` conclusion, conclusion card, or analysis insight component uses fixed normal-state copy instead of a PRD `RULE-*` rule that recomputes from current data.
 - Do not put narrative titles, evidence summaries, fixed conclusion text, filters, controls, additional information, units, descriptions, or explanation copy inside component content slots. Those stay on 分块布局模板 supporting areas, shell/page config, or narrative blocks. A conclusion card or analysis insight component may render generated conclusion output only through `conclusionRuleId`.
+- Do not claim readiness for backend-facing handoff when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks actual analysis dataset/field/conclusion-evidence/filter/interaction/API-model/gap/verification content.
 - Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or conclusion/story claims rely on generic design assertions without evidence links.

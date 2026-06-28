@@ -14,6 +14,8 @@ All runnable report prototype workflows default to `outputArtifact: vueTemplateP
 
 Summary areas, conclusion cards, and analysis insight components must consume PRD `RULE-*` entries from `conclusionRuleMap`. Prototype workflows must not replace dynamic frontend-generated conclusions with fixed one-sentence copy.
 
+Runnable prototype workflows must create or update `docs/prototype-data-summary.md` after data, filters, widgets, generated conclusion rules, and interactions are configured. The PRD section 8 data/API contract is not fully executed until this backend-facing Markdown handoff exists or is explicitly deferred out of scope.
+
 Report-type implementation paths are binding. Prototype workflows must consume PRD section 4A `RTP-*` and `PATH-*` rows to preserve the intended reading path before page layout, component mapping, and block layout template selection. A dashboard starts with status/conclusion before cause/process/action; a detail report starts with scope/summary and detail rows; an analysis report starts with conclusion before evidence/attribution/action unless the PRD validates a better exception.
 
 Executive satisfaction design gates are binding for management-facing reports. Prototype workflows must consume PRD section 4B `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` rows before layout, component mapping, template selection, export design, or readiness acceptance. These IDs decide the first-viewport answer, cause path, action route, severity ordering, trust/source disclosure, and meeting/export reuse.
@@ -54,7 +56,7 @@ Rules:
 | 5A. Dynamic conclusion generation rules | Produce `conclusionRuleMap`, summaryArea conclusion bindings, conclusion-card/analysisInsight rule bindings, affected API/filter/interaction refresh behavior, fallback text, and QA cases. | `$report-info-component-mapping`, `$report-prototype-template-management`, `$frontend-runtime-qa-validation` |
 | 6. 指标清单 | Produce metric dictionary, KPI scope boundary, display precision, formula validation, source/freshness, denominator/null behavior, and tooltip/export metadata. | `$metric-number-display-contract`, `$report-info-component-mapping`, target prototype workflow |
 | 7. 指标挂载矩阵 | Produce component/data/filter/control/interaction binding matrix and slot-level metric binding. | `$report-info-component-mapping`, `$report-prototype-template-management` |
-| 8. 数据与 API 需求 | Produce data object contracts, API request/response contracts, mock/data-source contract, permission filtering, cache/freshness, and technical-solution handoff. | `$report-info-component-mapping`, `$delivery-artifact-template-management`, downstream technical/backend workflows |
+| 8. 数据与 API 需求 | Produce data object contracts, API request/response contracts, mock/data-source contract, permission filtering, cache/freshness, `docs/prototype-data-summary.md`, and technical-solution handoff. | `$report-info-component-mapping`, `$report-prototype-template-management`, `$delivery-artifact-template-management`, downstream technical/backend workflows |
 | 9. 交互逻辑 | Produce interaction contracts for filters, period switch, metric switch, ranking click, drilldown, jump, drawer/modal, export, loading/empty/error/no-permission states. Self-developed interactions must remain component-owned or template action-hook behavior and must not create custom shell/layout/filter/nav/toolbar surfaces. | `$report-info-component-mapping`, `$report-filter-control-design-spec`, `$frontend-runtime-qa-validation` |
 | 10. 权限、安全、导出与异常状态 | Produce role/data-scope matrix, masking/export/audit behavior, state cases, and QA probes. | `$quality-gate-validation`, `$frontend-runtime-qa-validation`, downstream testing workflow |
 | 11. 验收标准与待确认问题 | Produce readiness gates, test/QA matrix, unresolved blocker list, and downstream handoff conditions. | `$quality-gate-validation`, `$report-delivery-pipeline-governance`, `$frontend-runtime-qa-validation` |
@@ -73,6 +75,7 @@ Before any prototype workflow continues past preflight, require:
 - Every summary-area conclusion, conclusion card, or analysis insight target has a `RULE-*` row and frontend generation behavior.
 - Every page block in section 5 has a block layout template and component slot plan.
 - Every API/data object used by a component has request/response or a documented mock/data-source fallback.
+- Runnable prototype handoff has `docs/prototype-data-summary.md`, or PRD section 3 explicitly defers backend-facing data handoff out of scope for the current phase.
 - Every interaction in section 9 has a system response and state behavior.
 - The self-development exception map contains only interaction IDs and component content area template IDs; any custom shell/page/block/supporting-area work is `blocked` or `deferred-out-of-scope`.
 
@@ -92,3 +95,5 @@ Dynamic conclusion rows are not optional. A workflow cannot mark the stage `read
 Executive satisfaction rows are not optional for management-facing reports. A workflow cannot mark the stage `ready` while first-viewport blocks, component bundles, template maps, interactions, or export behavior fail to consume required `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` rows.
 
 Output stack rows are not optional for runnable prototypes. A workflow cannot mark the stage `ready` if it chose HTML/static output from PRD/source wording instead of an explicit user request, if it created a new Vue3 project while a bundled template could be copied, or if the copied-template Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof is missing.
+
+Data handoff rows are not optional when the prototype will feed technical solution, backend/data-service design, frontend integration, or testing. A workflow cannot mark the stage `ready` while `docs/prototype-data-summary.md` is missing, generic, stale, or not tied to current datasets, fields, component bindings, filters, interactions, API/model suggestions, gaps, and verification.
