@@ -1,29 +1,205 @@
 # PRD Output Structure
 
-Use this reference when writing the final PRD. The output must be a development-ready Markdown PRD, not a loose requirement summary.
+Use this reference when writing the final PRD bundle. The output must be development-ready, but the reader-facing main PRD must stay short.
 
-## Reader-Facing Main Document First
+The PRD bundle has three layers:
 
-The PRD must have two layers plus a child-PRD bundle:
+1. Main PRD: human-readable decision brief.
+2. Execution appendices: dense reusable contracts and matrices.
+3. Child PRDs: stage-specific AI execution documents for 原型、前端、后端、技术方案、测试.
 
-1. Reader-facing main document: short, visual, and understandable by product, business, and management readers.
-2. Development execution appendix: IDs, matrices, `layoutRows`, metric formulas, API fields, workflow execution rows, and validation details.
-3. Full child PRDs for AI execution: stage-specific appendices/files for 原型、前端、后端、技术方案、测试. A registry or stage map alone is not enough.
+Read `main-prd-minimal-contract.md` before this file. It is the binding rule for what belongs in the main PRD.
+
+## Main PRD Rules
+
+- The main PRD uses readable Chinese names for report type, navigation pages, blocks, metrics, controls, and interactions.
+- Raw codes such as `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `PAGE-*`, `BLK-*`, `SLOT-*`, `MET-*`, `API-*`, and `RULE-*` are execution handles. Keep them out of headings and out of primary prose.
+- If an ID must appear in the main PRD, put it after the readable name or in a final column named `开发引用ID`.
+- Every retained navigation page must have a Markdown/mermaid preview before any template/layout summary.
+- Do not put full metric formulas, `layoutRows`, API field tables, interaction maps, conclusion rule maps, workflow matrices, or Template Build Packet sections in the main PRD.
+- The main PRD must include a child PRD registry and final stage map, but not the full child PRD bodies.
+
+## Required Main PRD Sections
+
+The main PRD may contain only these reader-facing sections.
+
+### 0. 文档摘要
+
+Use one compact table:
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档名称 | Business report name. |
+| 版本/状态 | `v0.1` plus `draft`, `ready-for-review`, or `blocked`. |
+| 需求来源 | User request, attachment, meeting note, screenshot, existing page, metric list. |
+| 确认事实 | Facts directly supported by input. |
+| 推断假设 | Safe assumptions. |
+| 关键缺口 | Only top blockers; full gap list goes to appendices/child PRDs. |
+
+### 0A. 子 PRD 索引与阶段使用说明
+
+Use one short table. This is an index, not the child PRD body.
+
+| 阶段 | 使用子 PRD | 子 PRD 作用 | 主 PRD 变更后的同步规则 |
+| --- | --- | --- | --- |
+| 原型 | `CHILD-PRD-PROTOTYPE` | 配置模板、页面、分块、槽位、组件、交互、动态结论和数据摘要。 | 页面、布局、指标、API、交互、结论或模板规则变化时同步。 |
+| 前端 | `CHILD-PRD-FRONTEND` | 指导路由、组件、接口适配、状态、权限、格式化和运行 QA。 | 页面、组件、API、权限、状态或格式化变化时同步。 |
+| 后端 | `CHILD-PRD-BACKEND` | 指导数据对象、指标计算、API、权限、缓存、导出和错误处理。 | 指标、数据源、字段、筛选、权限、导出或接口变化时同步。 |
+| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | 指导系统边界、架构、环境、NFR、风险和实施计划。 | 范围、架构、环境、NFR 或风险变化时同步。 |
+| 测试 | `CHILD-PRD-TESTING` | 指导测试矩阵、联调、权限、导出、异常、证据和回归。 | 验收、交互、API、权限、数据规则或异常状态变化时同步。 |
+
+### 1. 背景与目标
+
+Explain why the report exists, who uses it, what management problem it solves, and what success means. Keep it to 3-6 bullets or one compact table.
+
+### 2. 用户与场景
+
+Use one role table and optional scenario bullets:
+
+| 角色 | 关注内容 | 主要操作 | 权限范围 | 输出/动作 |
+| --- | --- | --- | --- | --- |
+
+### 3. 一期范围边界
+
+Separate:
+
+- 本期做.
+- 本期不做.
+- 延后做.
+- 敏感数据/权限边界.
+
+Also state the prototype output boundary in plain language: runnable prototypes default to copying the selected bundled `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` template project. HTML/static or new Vue3 project output requires an explicit exception.
+
+### 4. 报表实现思路
+
+Write the selected report type and reading path in natural language.
+
+| 报表类型 | 推荐阅读顺序 | 为什么适合 | 需要校验的点 |
+| --- | --- | --- | --- |
+
+If the user supplied an implementation thought, validate it:
+
+| 用户想法 | 判断 | 优化建议 | 原因 |
+| --- | --- | --- | --- |
+
+Detailed `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` rows go to `CHILD-PRD-PROTOTYPE`, `CHILD-PRD-TESTING`, and execution appendices.
+
+### 5. 导航页与页面预览
+
+Show the navigation/page relationship first:
+
+```mermaid
+flowchart LR
+  A["总览页"] --> B["原因诊断页"]
+  B --> C["闭环跟踪页"]
+  C --> D["明细查询页"]
+```
+
+Then write one preview per retained navigation page:
+
+```mermaid
+flowchart TB
+  F["筛选区：期间 / 业务线 / 区域"]
+  T["工具栏：刷新 / 导出 / 全屏"]
+  subgraph V["首屏：结论 -> 原因 -> 过程 -> 动作"]
+    B1["核心结论：当前是否健康、风险在哪里"]
+    B2["关键指标：满意度 / 投诉率 / 闭环率"]
+    B3["原因排名：业务线或问题类型Top风险"]
+    B4["趋势：近12个月变化"]
+    B5["动作：待闭环与超期事项"]
+  end
+  F --> B1
+  F --> B2
+  B1 --> B3
+  B3 --> B5
+```
+
+Add a compact table after each preview:
+
+| 页面区域 | 展示内容 | 模板使用 | 交互入口 | 说明 |
+| --- | --- | --- | --- | --- |
+| 筛选区 | 日期、业务线、区域 | 框架模板筛选区 | 切换后刷新页面 | 不自建筛选栏 |
+| 核心结论 | 前端按数据生成结论和证据 | 分块布局 + 结论组件内容区模板 | 点击查看证据 | 结论不是固定文案 |
+
+### 6. 模板布局摘要
+
+Keep this section understandable. Do not write the full machine layout here.
+
+| 页面 | 框架模板 | 页面分区 | 主要分块 | 分块模板摘要 | 槽位摘要 | 模板资产状态 |
+| --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
-- The main document uses readable Chinese names for report type, navigation pages, blocks, metrics, controls, and interactions.
-- Raw codes such as `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `PAGE-*`, `BLK-*`, and `SLOT-*` must not be the primary wording in the main document.
-- When an ID must appear in the main document, put it after the readable name or in a final column named `开发引用ID`.
-- Every navigation page or page tab must have a Markdown/mermaid preview before the technical layout table.
-- Keep the main document focused on the part the reader needs at that step; move exhaustive technical matrices to appendices.
-- The main document must include a child PRD registry and final stage map. It must state which child PRD is used by 原型、前端、后端、技术方案、测试, each child PRD's purpose, consumed parent sections, downstream artifact, sync status, and update trigger.
-- Child PRDs are allowed to be AI-oriented and ID-heavy; they must still declare parent PRD version, consumed parent sections, sync status, owner workflow, and blocking gaps.
-- The final PRD must include the full body of all five child PRDs. If output is one Markdown document, include Appendix H-L. If output is file-based, create the five child files and list their paths. Do not replace child bodies with a table of filenames.
+- Show `12*K` section split such as `12*2 + 12*3 + 12*3`.
+- State that total page rows must be at least 8 and every row is exactly 12 columns.
+- Use readable block coordinates only as examples: `R-B` for block, `R-B-S` for component slot.
+- Mention selected direct block templates and slot patterns such as `AB`, `AAB`, or `AABBCC`.
+- Move full `templateAssetUnderstandingMap`, `layoutRows`, block map, standard area config, component slot map, component content area template map, and validation rows to `CHILD-PRD-PROTOTYPE` and Appendix A/G.
+
+### 7. 指标、数据与交互摘要
+
+Use one summary table:
+
+| 主题 | 主体内容 | 页面/位置 | 数据或规则来源 | 子 PRD 负责方 |
+| --- | --- | --- | --- | --- |
+| 核心指标 | Metric names, business meaning, direction | Page/block summary | Appendix B | 原型、前端、后端、测试 |
+| 数据/API | API groups and data domains | Pages that call them | Appendix C | 前端、后端、技术方案、测试 |
+| 交互 | Filters, pills, ranking click, drilldown, jump, drawer/popup/modal, export | Visible locations | Appendix D | 原型、前端、测试 |
+| 动态结论 | Summary areas and conclusion cards generated from data | Target blocks/components | Appendix E | 原型、前端、测试 |
+
+Keep complete metric formulas, denominator/sample size, null rules, source lineage, API fields, interaction payloads, and conclusion rule logic out of the main PRD.
+
+### 8. 验收标准与待确认
+
+Use short, testable rows:
+
+| 验收项 | 验收标准 | 证据 | 状态 |
+| --- | --- | --- | --- |
+
+| 待确认问题 | 影响范围 | 建议提问对象 | 阻塞等级 |
+| --- | --- | --- | --- |
+
+## Execution Appendices
+
+The execution appendices are mandatory when the PRD feeds implementation, but they must not dominate the main PRD.
+
+| Appendix | Purpose | Main consumers |
+| --- | --- | --- |
+| Appendix A. Template execution contract | `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, direct block template availability, block map, standard area config, component slot map, component content area template map, visual-type size compatibility. | 原型 |
+| Appendix B. Metric dictionary and mounting matrix | Full metric口径, formula, unit, direction, source, refresh, denominator/sample, null rule, page/block/slot/API mounting. | 原型、前端、后端、测试 |
+| Appendix C. Data object and API contracts | Data grain, dimensions, fields, request/response, permissions, pagination/sort, cache/freshness, empty/error, lineage. | 前端、后端、技术方案、测试 |
+| Appendix D. Filter, pill, toolbar, and interaction maps | `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, `interactionBehaviorMap`, drilldown/jump/drawer/popup/modal/export behavior. | 原型、前端、测试 |
+| Appendix E. Dynamic conclusion rules | `conclusionRuleMap` for summary areas, conclusion cards, and analysis insight components. | 原型、前端、测试 |
+| Appendix F. PRD-to-workflow execution matrix | Every PRD section, appendix, child PRD, and executable ID mapped to downstream owner, artifact, blocker, status. | All stages |
+| Appendix G. Template Build Packet seed | Fixed packet sections from `report-prototype-template-management/references/template-build-packet-contract.md`. | 原型 |
+
+## Child PRD Bundle
+
+The final PRD output must include all five child PRD bodies, either as Appendix H-L in one Markdown document or as five actual files listed in the main PRD.
+
+| Child PRD | Stage | Required detail |
+| --- | --- | --- |
+| Appendix H / `CHILD-PRD-PROTOTYPE` | 原型 | Full template/layout/slot/component/conclusion/interaction packet, Template Build Packet seed, prototype data summary expectation. |
+| Appendix I / `CHILD-PRD-FRONTEND` | 前端 | Route/component/API adapter/state/permission/formatter/runtime QA contract. |
+| Appendix J / `CHILD-PRD-BACKEND` | 后端 | Data objects, source mapping, metric computation, endpoints, cache, export, security, errors. |
+| Appendix K / `CHILD-PRD-TECHNICAL-SOLUTION` | 技术方案 | Architecture, system boundary, technology choices, data flow, NFR, environment, risks, plan. |
+| Appendix L / `CHILD-PRD-TESTING` | 测试 | Test matrix, expected frontend/API/data results, permissions, export, visual/runtime evidence, regression. |
+
+Every child PRD must include:
+
+1. Common child header.
+2. Parent sections consumed.
+3. Stage execution input table.
+4. Stage-specific contract.
+5. Relevant data/API/interaction/conclusion/permission inputs.
+6. Blocking gaps and sync status.
+7. Downstream start gate.
+
+Do not copy the full main PRD into every child PRD. Child PRDs refine execution only; they must not override the main PRD's business goal, scope, roles, or acceptance.
 
 ## Appendix ID Rules
 
-Use stable IDs in execution appendices so downstream agents can reference the same objects:
+Use stable IDs in execution appendices and child PRDs so downstream agents can reference the same objects:
 
 | Object | Prefix | Example |
 | --- | --- | --- |
@@ -47,449 +223,20 @@ Use stable IDs in execution appendices so downstream agents can reference the sa
 
 Rules:
 
-- Use the same IDs in all sections.
+- Use the same IDs in all appendices and child PRDs.
 - Do not leave required fields blank.
 - Use `TBD(GAP-*)` when a missing value affects implementation, validation, permission, or delivery.
 - Use `none` only when a field is truly not applicable.
 
-## Required PRD Headings
-
-### 0A. PRD 文档包与子 PRD 索引
-
-Follow `child-prd-bundle-contract.md`. This section is part of the reader-facing main PRD and must stay short.
-
-Use this table:
-
-| 阶段 | 使用子 PRD | 子 PRD 作用 | 读取主 PRD 章节 | 下游产物 | 当前同步状态 | 主 PRD 变更后的同步规则 |
-| --- | --- | --- | --- | --- | --- | --- |
-| 原型 | `CHILD-PRD-PROTOTYPE` | Configure prototype workflow, template layout, blocks, slots, interactions, data-driven conclusions, Template Build Packet seed, and prototype data summary. | 1-13, especially 4A/4B/4C/5/5A/6/7/8/9/13 | Prototype spec/runtime, `docs/template-build-packet.md`, `docs/prototype-data-summary.md` | synced/stale/blocked/not-needed | Update when page, layout, metric, API, interaction, conclusion, scope, or template rules change. |
-| 前端 | `CHILD-PRD-FRONTEND` | Configure production frontend route/component/API adapter/state/permission/rendering/runtime QA work. | 1-12 plus prototype output/data summary when available | Frontend function spec, integration tasks, runtime QA | synced/stale/blocked/not-needed | Update when page, component, API, permission, state, formatter, or environment rules change. |
-| 后端 | `CHILD-PRD-BACKEND` | Configure data objects, API/service design, metric computation, permission, export, cache, error, and performance behavior. | 1/3/6/7/8/9/10/11 plus prototype data summary when available | API inventory, data model, backend service input | synced/stale/blocked/not-needed | Update when metric, source, field, filter, permission, export, cache, SLA, or API response rules change. |
-| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | Configure architecture, system boundary, technology choices, data flow, NFR, environment, deployment, risk, and milestone plan. | 0-12 plus child PRD status | Technical solution, ADR, implementation plan | synced/stale/blocked/not-needed | Update when scope, architecture boundary, technology stack, data flow, environment, NFR, or risk changes. |
-| 测试 | `CHILD-PRD-TESTING` | Configure test cases, integration checks, UI/API/data consistency, permission/export/error tests, evidence, and retest triggers. | 1-12 plus prototype/frontend/backend/API outputs | Test matrix, acceptance checklist, defect evidence | synced/stale/blocked/not-needed | Update when acceptance, interaction, API, permission, data rule, exception state, or delivery scope changes. |
-
-Rules:
-
-- The main PRD explains the child PRD purpose and sync rule; full child PRD details go to section 14 or separate child files.
-- Every child PRD must declare parent PRD version and `sync status`.
-- If a child PRD is not needed for the current phase, still list it as `not-needed` with a reason.
-- The child registry does not satisfy section 14. It only tells people which child PRDs exist.
-
-### 0. 文档元信息
-
-Include:
-
-| Field | Requirement |
-| --- | --- |
-| 文档名称 | Business report name, not a generic "PRD". |
-| 版本 | Use a simple version such as `v0.1`. |
-| 状态 | `draft`, `ready-for-review`, or `blocked`. |
-| 需求来源 | User request, meeting note, screenshot, existing page, metric list, etc. |
-| 适用阶段 | Usually phase-one report development. |
-| 主要输出 | PRD, template layout contract, metric matrix, API requirements, interaction rules. |
-| 确认事实 | Facts directly supported by input. |
-| 推断假设 | Safe assumptions made by the writer. |
-| 待确认缺口 | `GAP-*` list. |
-
-### 1. 需求背景与目标
-
-Answer:
-
-- Why build this report/dashboard now.
-- Who will use it.
-- What management decision, risk, tracking, closure, review, export, or operational problem it solves.
-- What success looks like after release.
-
-Use this table:
-
-| Item | Content |
-| --- | --- |
-| 背景 | Why the current process/data/product is insufficient. |
-| 目标用户 | Main users and decision owners. |
-| 管理问题 | The concrete problem to solve. |
-| 业务目标 | What users can judge, discover, track, export, or close. |
-| 成功标准 | Observable outcome or acceptance signal. |
-
-### 2. 用户角色与使用场景
-
-Create a role matrix:
-
-| Role ID | 角色 | 关注内容 | 主要操作 | 权限范围 | 输出/动作 |
-| --- | --- | --- | --- | --- | --- |
-
-Common roles include group management, business-line owner, experience/operator, data analyst, system administrator, and auditor/reviewer. Adapt names to the user's domain.
-
-Then create a scene matrix:
-
-| Scene ID | 场景 | 触发时机 | 使用角色 | 关键问题 | 页面入口 | 后续动作 |
-| --- | --- | --- | --- | --- | --- | --- |
-
-### 3. 开发范围边界
-
-Use separate tables for in scope, out of scope, and phase split:
-
-| Scope ID | 一期范围 | 说明 | 依赖 | 验收方式 |
-| --- | --- | --- | --- | --- |
-
-| Exclusion ID | 本期不做 | 原因 | 后续阶段 |
-| --- | --- | --- | --- |
-
-Explicitly decide whether phase one includes or excludes:
-
-- Dashboard display.
-- Filters.
-- Export.
-- Permission/data scope.
-- Drilldown/detail.
-- Metric口径 display.
-- Metric maintenance backend.
-- Work order handling.
-- Sensitive personal detail.
-- Real-time data.
-- Mobile adaptation.
-
-Also include the prototype output boundary:
-
-| Output ID | Prototype artifact | Required stack | HTML/static exception authority | Notes |
-| --- | --- | --- | --- | --- |
-| `ART-PROTOTYPE-RUNTIME` | `vueTemplatePrototype` with `implementationMode: copyTemplateProject` | Copy the selected bundled template project first, then preserve `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`; add AntV S2 only for pivot/cross/wide analytical tables | Latest explicit user request for HTML/static/single-file output or exact static preservation; self-developed/non-template exception with rejected copy candidates for `newVue3Project` | PRD sections, attachments, screenshots, copied source, and HTML source files are requirement evidence only; they must not switch downstream workflow output to `htmlPrototype` or default to a blank Vue3 project. |
-
-### 4. 页面内容
-
-Describe page business content before layout. Use:
-
-| Content ID | 页面/导航 | 内容模块 | 业务问题 | 关键指标/维度 | 表现形式 | 角色可见性 |
-| --- | --- | --- | --- | --- | --- | --- |
-
-Required content categories for management reports:
-
-- 数据概览.
-- 核心结论.
-- KPI.
-- 趋势.
-- 排名.
-- 问题类型.
-- 闭环情况.
-- 业务线专属内容.
-- 明细/证据/钻取入口 when needed.
-- 导出/复盘内容 when needed.
-
-### 4A. 报表类型实现思路与分块布局映射
-
-Follow `report-type-implementation-patterns.md`. This section must decide how the report should be read before section 5 decides the final page grid and block templates.
-
-If attachments exist, include evidence intake:
-
-| Source ID | Source type | Filename or description | Key facts extracted | Sections affected | Confidence | Gaps raised |
-| --- | --- | --- | --- | --- | --- | --- |
-
-If the user supplies a report implementation thought, validate it:
-
-| Idea ID | User-provided report thought | Fit result | Validation dimensions | Recommended adjustment | Reason | User confirmation needed |
-| --- | --- | --- | --- | --- | --- | --- |
-
-Choose one primary report-type pattern:
-
-| Pattern selection ID | Primary `RTP-*` pattern | Secondary pattern if mixed | Core management question | Recommended reading path | First viewport priority | Why this is the best path | Downstream workflow |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-
-Map the selected reading path to block-layout intent:
-
-| Path step ID | Reading step | Business purpose | Page/Block IDs | First-viewport order | Recommended span | Selected block layout template | Component slot strategy | Dynamic conclusion rule IDs | Interaction IDs | Acceptance note |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Rules:
-
-- Use `RTP-*` for the report type pattern and `PATH-*` for reading-path steps.
-- The first viewport must implement the first one or two path steps of the selected report type.
-- Every visible page block in section 5 must trace to a `PATH-*` row unless it is a support/source/export/permission-only block.
-- If the user's proposed thought is optimized or rejected, explain what changed and why the recommended path better serves the role, decision, data grain, and template constraints.
-- For dashboards and cockpits, prefer result/status before cause, process, and action.
-- For analysis reports, prefer conclusion before evidence, attribution, comparison, and recommendation.
-- For detail reports, prefer scope/summary and the authoritative detail table before row trace, validation, and export.
-- For risk monitors, prefer risk severity and impacted objects before cause and closure.
-- For closure/action boards, prefer task status and overdue pressure before owner progress and review.
-- For review/export reports, prefer period conclusion and goal/event evidence before export packaging.
-- For self-service analysis, prefer configuration and generated result before interpretation, drilldown, and save/export.
-
-### 4B. 管理层满意度辅助设计
-
-Follow `executive-satisfaction-design-gate.md`. This section is required for management-facing reports and optional only for pure analyst/operator detail queries with no management decision, review, or circulation use.
-
-Create the executive decision profile:
-
-| ESG ID | Role/level | Decision to make | 3-second answer | 30-second cause path | 3-minute action | Decision owner | Evidence needed | Blocker/gap |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Create the first-viewport conclusion quality map:
-
-| ESG ID | Conclusion target | Rule ID | Direction | Magnitude | Object/scope | Likely reason | Business impact | Recommended action | Evidence fields | Failure condition |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Create the management-vs-technical metric language map:
-
-| ESG ID | Metric ID | Management wording | Technical definition pointer | Formula/owner | Page expression | Detail/tooltip path |
-| --- | --- | --- | --- | --- | --- | --- |
-
-Create the priority/severity model when the report has risk, warning, anomaly, overdue, target-miss, exception, or closure content:
-
-| SEV ID | Trigger rule/RULE | Severity | Impact measure | Urgency | Priority sort | Color/non-color cue | Owner/escalation | Empty/conflict rule |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Create the action closure model when the report raises problems, risks, tasks, or recommendations:
-
-| ACT ID | Source risk/conclusion | Owner | Due date/SLA | Status | Next action | System entry | Closure evidence | Overdue rule |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Create the trust/source model:
-
-| TRUST ID | Data/source item | Source system | Freshness | Coverage/sample | Missing/null policy | Reconciliation/baseline | Permission masking | Source detail route |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Create the meeting/review/export model when the report supports review, monthly/quarterly meeting, circulation, or export:
-
-| MEET ID | Scenario | Meeting/review use | Export format | Included conclusion/evidence/action | Filter snapshot | Audience | Audit/watermark |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-
-Create the executive satisfaction checklist:
-
-| ESG ID | Check question | Evidence | Pass rule | Gap code |
-| --- | --- | --- | --- | --- |
-
-Rules:
-
-- Management-facing dashboards, cockpits, analysis reports, risk monitors, closure boards, and review/export reports must have at least one `ESG-*` row.
-- The first viewport must answer the primary management question in 3 seconds; the 30-second cause path and 3-minute action must trace to `PATH-*`, `BLK-*`, `MET-*`, `RULE-*`, `INT-*`, and when relevant `ACT-*` IDs.
-- Conclusions must be data-driven through `RULE-*`; section 4B validates conclusion quality but does not replace section 5A rules.
-- Section 5 page layout must map `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` IDs to blocks, slots, summary areas, interactions, or export behavior.
-- For detail reports, section 4B may emphasize query efficiency, row identity, trust/source, export/audit, and row-level action instead of conclusion-first management reading.
-
-### 4C. 导航页与页面预览
-
-This section is mandatory before technical page layout configuration. It shows the actual report structure in a way a reader can understand before seeing `layoutRows`, block IDs, or slot maps.
-
-First show the navigation/page relationship:
-
-```mermaid
-flowchart LR
-  A["总览页"] --> B["原因诊断页"]
-  B --> C["闭环跟踪页"]
-  C --> D["明细查询页"]
-```
-
-Then write one preview per navigation page:
-
-```mermaid
-flowchart TB
-  F["筛选区：期间 / 业务线 / 区域"]
-  T["工具栏：刷新 / 导出 / 全屏"]
-  subgraph V["首屏布局：12列 * 至少8行"]
-    B1["核心结论：当前是否健康、风险在哪里"]
-    B2["关键指标：满意度 / 投诉率 / 闭环率"]
-    B3["原因排名：业务线或问题类型Top风险"]
-    B4["趋势：近12个月变化"]
-    B5["动作：待闭环与超期事项"]
-  end
-  F --> B1
-  F --> B2
-  B1 --> B3
-  B3 --> B5
-```
-
-Use a compact readable table after each preview:
-
-| 页面区域 | 展示内容 | 模板使用 | 交互入口 | 说明 |
-| --- | --- | --- | --- | --- |
-| 筛选区 | 日期、业务线、区域 | 框架模板筛选区 | 切换后刷新全页 | 不自建筛选栏 |
-| 核心结论 | 前端按数据生成结论和证据 | 分块布局 + 结论组件内容区模板 | 点击查看证据 | 结论不是固定文案 |
-
-Rules:
-
-- Every retained navigation entry must have one preview.
-- The preview must show visible filters, toolbar actions, major blocks, block business content, and important drilldown/jump/modal/drawer/popup entry points.
-- The preview uses readable names; raw IDs go to the appendix.
-- The preview must reflect the selected report-type implementation path: for example dashboard/cockpit reads conclusion -> cause -> process -> action, while detail reports read summary/scope -> detail table -> row evidence/export.
-- If a nav entry does not have enough content, merge it into another page or mark it deferred; do not keep empty navigation.
-
-### 5. 页面布局配置
-
-Follow `template-layout-prd-contract.md`. This section must include:
-
-- Framework template choice.
-- Existing shell configuration: title, filters, navigation, toolbar/export, permission entry.
-- Reader-facing page preview summary from section 4C before any technical table.
-- Page `layoutRows` or equivalent block map, with exact-12-column audit, over-12 rejection, minimum-8-row audit, and block rectangle proof.
-- `layoutCoordinateMap`: readable coordinates for page blocks and slots. Use `R-B` for a block and `R-B-S` for a component slot, where `R` is the page reading row/region, `B` is the block order inside that row, and `S` is the slot order inside `3 componentArea`. Example: first page row has two `6*3` blocks; the second block is `1-2`, and its first slot is `1-2-1`.
-- `filterSurfaceMap` and `toolbarActionMap` with visible placement, owner, default state, option/action source, affected blocks, query params, and refresh behavior.
-- Block layout template map traced to section 4A `PATH-*` steps and section 4B `ESG-*` / `SEV-*` / `ACT-*` / `TRUST-*` / `MEET-*` IDs when applicable.
-- Standard area config for every block.
-- `pillAreaConfig` for every block, with configured pill details or `null` plus `notNeededReason`.
-- Component slot/component content area template map, including registered ID, standalone Vue file, copy source/target, sample evidence, props/data/state contract, and fallback registration when needed.
-- Component content area template index for quick copy lookup.
-- `conclusionRuleMap` bindings for any summary-area conclusion, conclusion card, or analysis insight component.
-- Layout acceptance notes.
-
-### 5A. Dynamic Conclusion Generation Rules
-
-Summary areas and conclusion cards are not fixed copy. When the page shows a business conclusion, the PRD must define how frontend derives it from current data after filters, date/period switches, metric switches, permission scope, drilldown state, or API refresh.
-
-Use this table:
-
-| Rule ID | Display target | Page/Block/Slot | Area or component template | Input metrics/API fields | Trigger state | Rule logic and threshold | Output fields or sentence template | Evidence fields | Priority/severity | Empty/null/insufficient-data rule | Permission/masking rule | QA case |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-
-Rules:
-
-- Use `RULE-*` IDs and reference them from `summaryAreaConfig`, conclusion-card slots, `analysisInsightContract`, metric mounting rows, and the PRD-to-workflow execution matrix.
-- `4 summaryArea` may render a dynamic narrative conclusion only when the same block has no conclusion card/component. Its config must include `conclusionRuleId`, input bindings, refresh triggers, and fallback copy.
-- Conclusion cards and analysis insight components must compute their visible conclusion from bound data using `conclusionRuleId` or `analysisInsightContract`. Do not put the final generated conclusion sentence into the PRD as fixed copy.
-- Static text is allowed only for source, scope, caveat, definition, action-note label, loading, empty, permission-denied, or insufficient-data fallback.
-- Rule logic must specify comparison baseline, threshold, ranking/top-N rule, trend direction, priority when multiple rules match, and the evidence fields shown or linked with the conclusion.
-- Null and denominator-zero behavior must be compatible with the metric null rules in section 6.
-
-### 6. 指标清单
-
-Follow `metric-api-interaction-matrices.md`. Every displayed metric and every API-returned metric that drives display must have a complete row.
-
-### 7. 指标挂载矩阵
-
-Follow `metric-api-interaction-matrices.md`. Every metric in the display must be mounted to an exact page/block/slot/component/API path.
-
-### 8. 数据与 API 需求
-
-Follow `metric-api-interaction-matrices.md`. Define data objects first, then interfaces.
-
-### 9. 交互逻辑
-
-Follow `metric-api-interaction-matrices.md`. Include both successful response and loading/empty/error/permission behavior.
-
-Required interaction/control tables:
-
-- `filterSurfaceMap`: template filter id, label, control type, option source, default, affected components, query params, permission scope, reset behavior, and state cases.
-- `pillAreaConfig`: block id, pill id, label, default active value, affected metric/component/API params, state reset, display position, and response.
-- `toolbarActionMap`: action id, label/icon, template toolbar slot, permission, payload, target, and success/failure behavior.
-- `interactionBehaviorMap`: trigger, owner, source page/block/slot/template id, target type, payload fields, context inheritance, state sync, close/back behavior, permission rule, and QA case.
-
-### 10. 权限、安全、导出与异常状态
-
-Include when relevant:
-
-| Item ID | 类型 | 规则 | 影响页面/接口 | 验收方式 |
-| --- | --- | --- | --- | --- |
-
-Cover:
-
-- Role-based visibility.
-- Business-line data scope.
-- Sensitive data masking or exclusion.
-- Export scope and file fields.
-- Empty data.
-- Partial data.
-- API failure.
-- Permission denial.
-- Audit/logging if required.
-
-### 11. 验收标准与待确认问题
-
-Use:
-
-| Acceptance ID | 验收项 | 验收标准 | 证据 | 状态 |
-| --- | --- | --- | --- | --- |
-
-Use:
-
-| Gap ID | 待确认问题 | 影响范围 | 建议提问对象 | 阻塞等级 |
-| --- | --- | --- | --- | --- |
-
-Readiness rules:
-
-- `ready-for-review` requires no blank required cells and no unowned critical gaps.
-- `blocked` is required when core metric definitions, permission scope, page count, framework template, or data source cannot be inferred safely.
-- `draft` is acceptable when implementation can continue with documented `TBD(GAP-*)` fields.
-- The PRD cannot be `ready-for-review` when section 4A lacks attachment intake for provided files, user-thought validation when applicable, one primary `RTP-*` pattern, reading path, first-viewport plan, and path-step-to-block-layout mapping.
-- The PRD cannot be `ready-for-review` for a management-facing report when section 4B lacks `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*` severity, required `ACT-*` closure, `TRUST-*` source/freshness, or required `MEET-*` review/export behavior.
-- The PRD cannot be `ready-for-review` when section 4C lacks a Markdown/mermaid preview for every retained navigation page, or when the preview does not show filters, toolbar actions, major blocks, block business content, and interaction entry points.
-- The PRD cannot be `ready-for-review` when any `summaryArea`, conclusion card, or analysis insight component displays a business conclusion without a `RULE-*` row and frontend generation rule.
-- The PRD cannot be `ready-for-review` when any visible block lacks a readable `blockCoordinate` such as `1-2`, any `3 componentArea` slot lacks a readable `slotCoordinate` such as `1-2-1`, or the coordinate order conflicts with the page preview, `layoutRows`, `blockMap`, or selected block layout template slot order.
-- The PRD cannot be `ready-for-review` when it implies HTML/static prototype generation from PRD wording, attachments, screenshots, copied source, or HTML source samples. Downstream runnable prototype output must stay `vueTemplatePrototype` with the bundled Vue/TypeScript/ECharts stack unless the latest explicit user request is the HTML/static-output authority.
-- The PRD cannot be `ready-for-review` when it implies `newVue3Project` as the normal path. Downstream runnable prototype implementation must default to `copyTemplateProject`; a new Vue3 project requires a self-developed/non-template exception, rejected template candidates, owner, and readiness impact.
-- The PRD cannot be `ready-for-review` when section 0A child PRD registry is missing, section 14 child PRD bundle is missing, any one of the five child PRD bodies is missing or replaced by a path/index only, the final stage map does not name the child PRD used by 原型、前端、后端、技术方案、测试, or any affected child PRD is stale after a main PRD change without a `GAP-*` impact note.
-
-### 12. PRD-to-workflow 执行矩阵
-
-Follow `prototype-workflow-execution-map.md`. The PRD must prove that every section is executable by downstream workflow skills.
-
-Use:
-
-| PRD section | Executable IDs | Downstream owner skill/workflow | Execution artifact | Blocking rule | Status |
-| --- | --- | --- | --- | --- | --- |
-
-Rules:
-
-- Every PRD section from 0 to 14, including sections 0A, 4A, 4B, 4C, 5A, 13, and 14, must have at least one row.
-- Every `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RTP-*`, `PATH-*`, `RULE-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, and `CHILD-PRD-*` that appears in earlier sections must be consumed by at least one execution row.
-- `Status` can be `ready`, `draft`, `blocked`, or `deferred-out-of-scope`.
-- A prototype workflow can start only when no execution row needed by the first design/layout/template step is `blocked`.
-- A prototype workflow can start only when the execution matrix includes the `ART-PROTOTYPE-RUNTIME` row or equivalent output artifact rule, with `vueTemplatePrototype` as the default runnable artifact and a cited latest-user-request exception for any `htmlPrototype`.
-- A prototype workflow can start only when the execution matrix declares `implementationMode: copyTemplateProject` by default, or records a bounded `newVue3Project` exception with rejected copy candidates.
-
-### 13. Template Build Packet Seed
-
-Follow `report-prototype-template-management` `references/template-build-packet-contract.md`. This section is required when the PRD will feed a template-based runnable prototype.
-
-Create a seed that downstream workflows can copy into `docs/template-build-packet.md` after the target project is created:
-
-| Packet section | PRD source | Required seed content | Status |
-| --- | --- | --- | --- |
-| 0. Packet Status | sections 0, 3 | packet id, source PRD, target template, output artifact, implementation mode | ready/draft/blocked |
-| 1. Source Authority | sections 0, 3 | source materials and what they are allowed/not allowed to decide | ready/draft/blocked |
-| 2. Framework And Shell | section 5 | framework template, copy source, title, nav/filter/toolbar surfaces, permission scope | ready/draft/blocked |
-| 3. Page Registry | sections 4, 4C | every nav/page, page purpose, reader preview ref, first viewport question | ready/draft/blocked |
-| 4. Page Layout Rows | section 5 | every page `layoutRows` audit with exact 12 cells and N >= 8, plus reading row/region order used by coordinates | ready/draft/blocked |
-| 5. Block Map | sections 4A, 4B, 5 | `blockCoordinate` (`R-B`), block span, selected block layout template, selected Vue file, slot count | ready/draft/blocked |
-| 6. Standard Block Areas | section 5 | `blockCoordinate + areaName` location, title/pill/aux/unit/summary configs or null reasons | ready/draft/blocked |
-| 7. Component Slot Fills | sections 5, 7 | `slotCoordinate` (`R-B-S`), registered component content area template IDs, standalone Vue files, copy paths, bindings | ready/draft/blocked |
-| 8. Data, API, Filters, And Interactions | sections 8, 9 | data/API rows, filter/action maps, interaction behavior rows | ready/draft/blocked |
-| 9. Dynamic Conclusion Rules | section 5A | rule rows for summary/conclusion/insight targets | ready/draft/blocked |
-| 10. Self-Development Exception Map | sections 3, 5, 9 | only interaction behavior and component content area template exceptions | ready/draft/blocked |
-| 11. Implementation File Plan | section 12 | target files and packet sections each file consumes | ready/draft/blocked |
-| 12. Validation Plan | sections 11, 12 | ledger, dashboard validation, build, geometry, data summary checks | ready/draft/blocked |
-
-Rules:
-
-- Do not put the full packet in the reader-facing main body.
-- The seed must not contain blank required fields. Use `TBD(GAP-*)` for unknown implementation-critical values.
-- A template implementation can start only after downstream workflow turns the seed into a current Template Build Packet and marks implementation-critical rows `ready` or `deferred`.
-
-### 14. Child PRD Bundle For Downstream AI Execution
-
-Follow `child-prd-bundle-contract.md`. This section is mandatory. It may be split into child files, but the final PRD output must include the full child PRD bodies or the actual child files, and must list the files/sections and their sync status. A bundle index, child registry, or final stage map alone is not section 14.
-
-Use this bundle index:
-
-| Child PRD ID | File/section | Stage | Purpose | Parent sections consumed | Required upstream artifacts | Owner workflow | Sync status | Blocking gaps |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `CHILD-PRD-PROTOTYPE` | Appendix H or `children/prd-child-prototype.md` | 原型 | Template-backed prototype execution | 1-13 | source evidence, section 13 packet seed | prototype workflow | synced/stale/blocked/not-needed | `GAP-*` |
-| `CHILD-PRD-FRONTEND` | Appendix I or `children/prd-child-frontend.md` | 前端 | Frontend implementation/integration | 1-12 | prototype output and data summary when available | frontend workflow | synced/stale/blocked/not-needed | `GAP-*` |
-| `CHILD-PRD-BACKEND` | Appendix J or `children/prd-child-backend.md` | 后端 | Backend/API/data service execution | 1/3/6/7/8/9/10/11 | metric/API sections and data summary when available | backend workflow | synced/stale/blocked/not-needed | `GAP-*` |
-| `CHILD-PRD-TECHNICAL-SOLUTION` | Appendix K or `children/prd-child-technical-solution.md` | 技术方案 | Architecture and implementation plan | 0-12 plus child status | all relevant child statuses | technical solution workflow | synced/stale/blocked/not-needed | `GAP-*` |
-| `CHILD-PRD-TESTING` | Appendix L or `children/prd-child-testing.md` | 测试 | Test design and acceptance | 1-12 plus stage outputs | prototype/frontend/backend/API outputs | testing workflow | synced/stale/blocked/not-needed | `GAP-*` |
-
-Then include the final stage map:
-
-| Delivery stage | Must use child PRD | Also read | Cannot start when |
-| --- | --- | --- | --- |
-| 原型 | `CHILD-PRD-PROTOTYPE` | Main PRD, source evidence, Template Build Packet seed | Child is missing/stale, layout/template rows blocked, or required `RULE-*`/API/interaction rows missing. |
-| 前端 | `CHILD-PRD-FRONTEND` | Main PRD, prototype output, `docs/prototype-data-summary.md`, backend/API child when available | Child is missing/stale, API/view model/permission/state contract blocked. |
-| 后端 | `CHILD-PRD-BACKEND` | Main PRD, metric dictionary, data/API sections, prototype data summary when available | Child is missing/stale, source/metric/grain/permission/export contract blocked. |
-| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | Main PRD, all child PRD statuses, delivery/version index when available | Child is missing/stale, system boundary or architecture decision blocked. |
-| 测试 | `CHILD-PRD-TESTING` | Main PRD, frontend/backend/API outputs, prototype URL/data summary when available | Child is missing/stale, acceptance/API/data/permission/test-data expectation blocked. |
-
-Rules:
-
-- Each child PRD must start with the common child header from `child-prd-bundle-contract.md`.
-- The child PRD content must be stage-specific. Do not copy the full main PRD into every child PRD.
-- Each child PRD must include a parent-section consumption table, stage execution input table, stage-specific contract, relevant data/API/interaction/conclusion/permission inputs, blocking gaps, sync status, and downstream start gate.
-- When any parent section changes, update affected child PRDs or mark them `stale` with a `GAP-*`.
-- Do not mark the PRD bundle `ready-for-review` unless section 0A and section 14 agree on child PRD IDs, stage purpose, and sync status.
-- Do not stop after the section 14 bundle index. Continue writing Appendix H-L child bodies in single-document output.
+## Readiness Gates
+
+- The main PRD is invalid if it is dominated by raw IDs or dense execution tables.
+- The PRD bundle is invalid if any of the five child PRD bodies is missing, reduced to a filename, or replaced by the child registry/stage map.
+- The PRD bundle is invalid if section 0A and the child PRD bundle disagree on child PRD IDs, purposes, sync status, or blocking gaps.
+- The PRD bundle is invalid if a retained navigation page lacks a Markdown/mermaid preview with filters, toolbar actions, major blocks, block business content, and interaction entries.
+- A template-backed PRD is not ready when Appendix A/G or `CHILD-PRD-PROTOTYPE` lacks `templateAssetUnderstandingMap`, exact-12 and minimum-8 layout proof, selected direct block templates, component slot size, visual-type size compatibility, or component content area template evidence.
+- A template-backed PRD is not ready when it selects a size-only `SpanCCxRRLayout.vue` wrapper as a complete block layout template.
+- A conclusion-bearing PRD is not ready when summary areas, conclusion cards, or analysis insight components contain fixed business conclusions without `RULE-*` frontend generation rules.
+- A runnable prototype PRD is not ready when it routes to HTML/static output because the PRD or source material mentions HTML. Default to `vueTemplatePrototype` with `implementationMode: copyTemplateProject` unless the latest explicit user request says otherwise.
+- A runnable prototype PRD is not ready when it defaults to a new Vue3 project. `newVue3Project` requires a self-developed/non-template exception, rejected copy candidates, owner, and readiness impact.
+- Parent PRD changes must update affected child PRDs in the same delivery or mark them `stale` with a `GAP-*`.

@@ -2,9 +2,11 @@
 
 Use this reference for the PRD "页面布局配置" section. The goal is to make the PRD directly usable by report-template development.
 
-Before selecting concrete block layout templates, use `report-type-implementation-patterns.md` to define the selected `RTP-*` report pattern and `PATH-*` reading path. For management-facing reports, also use `executive-satisfaction-design-gate.md` section 4B IDs. Section 5 layout choices must implement those paths and gates, not invent a new reading order.
+Before selecting concrete block layout templates, use `report-type-implementation-patterns.md` to define the selected report pattern and reading path. For management-facing reports, also use `executive-satisfaction-design-gate.md` gate rows. Layout choices in Appendix A / `CHILD-PRD-PROTOTYPE` must implement those paths and gates, not invent a new reading order.
 
-Before writing technical layout tables, show the reader-facing page preview from PRD section 4C. Each navigation page needs a Markdown/mermaid preview that shows filters, toolbar actions, first-viewport blocks, business content inside each block, and interaction entry points. Raw IDs and full `layoutRows` belong after that preview, not before it.
+Before writing technical layout tables, show the reader-facing page preview from the main PRD. Each navigation page needs a Markdown/mermaid preview that shows filters, toolbar actions, first-viewport blocks, business content inside each block, and interaction entry points. Raw IDs and full `layoutRows` belong in Appendix A / `CHILD-PRD-PROTOTYPE`, not in the main PRD.
+
+Before selecting block layout templates or component content area templates, use capability `report-prototype-template-management` `references/template-asset-construction-contract.md` and write `templateAssetUnderstandingMap`. PRD layout rows without actual template asset evidence are not implementation-ready.
 
 ## Layer Vocabulary
 
@@ -13,7 +15,7 @@ Use these terms exactly:
 | Layer | Meaning | PRD must specify |
 | --- | --- | --- |
 | 框架模板 | Runtime shell template: navigation, title, filters, toolbar, theme, logo, stack. | One selected template family and why. |
-| 页面布局配置 | Page-level 12-column grid and blocks. | Page ID, nav, `layoutRows`, block IDs, spans, order. |
+| 页面布局配置 | Page-level 12-column grid, readable section groups, and blocks. | Page ID, nav, `layoutSectionMap`, `layoutRows`, block IDs, spans, order. |
 | 分块布局模板 | Independent Vue entry with block size plus standard areas. | Selected block layout template file/type and slot rationale. |
 | 组件内容区模板 | Standalone Vue component content mounted inside `3 componentArea`. | Component content template ID/file, visual type, data/metric binding. |
 
@@ -25,18 +27,41 @@ Use readable coordinates before raw block letters or slot IDs. The coordinate he
 
 | Coordinate | Meaning | Example |
 | --- | --- | --- |
-| `R-B` | Block coordinate. `R` is the page reading row/region number, and `B` is the block order inside that row, left-to-right then top-to-bottom. | `1-2` = first page region row, second block in that row. |
-| `R-B-S` | Component slot coordinate. `S` is the slot order inside the selected block layout template's `3 componentArea`. | `1-2-1` = first slot inside block `1-2`. |
-| `R-B:areaName` | Standard block area coordinate. Use this for title/pill/aux/unit/summary areas so they do not consume the component slot digit. | `1-2:titleArea`, `1-2:summaryArea`. |
+| `R-B` | Block coordinate. `R` is the layout section/page region number, and `B` is the block order inside that section, left-to-right then top-to-bottom. | `2-2` = second layout section, second block in that section. |
+| `R-B-S` | Component slot coordinate. `S` is the slot order inside the selected block layout template's `3 componentArea`. | `2-2-1` = first slot inside block `2-2`. |
+| `R-B:areaName` | Standard block area coordinate. Use this for title/pill/aux/unit/summary areas so they do not consume the component slot digit. | `2-2:titleArea`, `2-2:summaryArea`. |
 
 Rules:
 
-- `R` is the report reading row/region, not every raw `layoutRows` grid line. A `6*3` block that spans three raw grid rows still belongs to one reading row.
-- `B` follows visible block order within the reading row. If row 1 has two `6*3` blocks, the left block is `1-1` and the right block is `1-2`.
+- `R` is the layout section/page region number, not every raw `layoutRows` grid line. A `12*3` section that spans three raw grid rows is still one section.
+- `B` follows visible block order within the layout section. If section 2 has two `6*3` blocks, the left block is `2-1` and the right block is `2-2`.
 - `S` follows the selected block layout template slot order. SingleSlot blocks have only `R-B-1`; DoubleSlot blocks use `R-B-1` and `R-B-2`.
 - Do not use opaque letters such as `A/B/C` or `BLK-*` as the only locator. They may remain technical IDs, but every block and component slot also needs the readable coordinate.
 - Coordinates must be stable across `blockMap`, `blockLayoutTemplateMap`, standard area configs, `componentContentAreaTemplateMap`, metric mounting rows, conclusion rules, and interaction sources.
-- Do not confuse page coordinates with block-layout internal area codes. `1-2` can mean the second block in page row 1 when it appears as `blockCoordinate`; `1-2 pillArea` remains the internal block area code for the pill area. When targeting a standard block area, write both clearly, for example `blockCoordinate: 1-2`, `areaCode: 1-2 pillArea`, `areaCoordinate: 1-2:pillArea`.
+- Do not confuse page coordinates with block-layout internal area codes. `2-2` can mean the second block in layout section/page region 2 when it appears as `blockCoordinate`; `1-2 pillArea` remains the internal block area code for the pill area. When targeting a standard block area, write both clearly, for example `blockCoordinate: 2-2`, `areaCode: 1-2 pillArea`, `areaCoordinate: 2-2:pillArea`.
+
+## Layout Section Map
+
+Before raw `layoutRows`, write a readable `layoutSectionMap`. This is the human explanation of the `12 * N` page composition.
+
+| Page ID | Section No (`R`) | Section name | Business purpose | Section grid | Row count | Local section row preview | Global machine row range | Blocks in section |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Example:
+
+| Page ID | Section No (`R`) | Section name | Business purpose | Section grid | Row count | Local section row preview | Global machine row range | Blocks in section |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `PAGE-OVERVIEW` | `1` | 核心结论区 | 先回答整体状态 | `12*2` | `2` | `AAAAAAAAAAAA` / `AAAAAAAAAAAA` | rows 1-2 | `1-1` full-width conclusion block |
+| `PAGE-OVERVIEW` | `2` | 原因诊断区 | 并列看趋势与排名 | `12*3` | `3` | `AAAAAABBBBBB` / `AAAAAABBBBBB` / `AAAAAABBBBBB` | rows 3-5 | `2-1` left `6*3`, `2-2` right `6*3` |
+| `PAGE-OVERVIEW` | `3` | 行动闭环区 | 看待办与风险处置 | `12*3` | `3` | `AAAAAABBBBBB` / `AAAAAABBBBBB` / `AAAAAABBBBBB` | rows 6-8 | `3-1` left `6*3`, `3-2` right `6*3` |
+
+Rules:
+
+- Each section grid must be `12*K`, and its row count must equal `K`.
+- The page total row count `N` is the sum of all section row counts and must be at least `8`.
+- Each local section row preview must show exactly 12 cells per row. Use `|` or line breaks between rows.
+- Local letters such as `A/B` may repeat across different sections for readability. Final machine `layoutRows` must still use globally unique block letters/IDs, or provide an explicit section-scoped mapping so section 2 `A` does not merge with section 3 `A`.
+- The section number is the `R` part of `blockCoordinate` and `slotCoordinate`.
 
 ## Framework Template Selection
 
@@ -77,6 +102,22 @@ Rules:
 - Block-level pills can live in `1-2 pillArea`; component content slots cannot own shell filters.
 - Do not self-develop or duplicate the title, filter, navigation, toolbar, export, permission, page layout, or block layout surfaces. Configure the selected template surfaces instead.
 
+## Template Asset Understanding Map
+
+Before `blockLayoutTemplateMap`, provide:
+
+| Field | Required content |
+| --- | --- |
+| `frameworkTemplateId` | Selected bundled template id. |
+| `assetRoot` | Exact template asset root. |
+| `shellConfigSource` | `src/config/dashboard.config.ts` and shell fields to configure. |
+| `pageLayoutId` / `gridContract` | Page layout asset id, 12 columns, `N >= 8`, first-screen row count. |
+| `blockLayoutLibrarySource` | `src/widgets/templates/block-spans/` and direct selectable slot templates used. |
+| `componentContentAreaLibrarySource` | `src/widgets/templates/component-content-areas/` and registered component content templates used. |
+| `widgetSchemaSource` | `src/report-template-assets/blueprint/widget-config-schemas.ts`. |
+| `validatorSource` | Blueprint compatibility and dashboard validator files. |
+| `assetGaps` | Missing direct block templates, unsupported visual/slot sizes, or missing component templates. |
+
 ## Page Layout Configuration
 
 For each page, provide:
@@ -85,7 +126,8 @@ For each page, provide:
 | --- | --- |
 | `pageId` | Stable `PAGE-*` ID. |
 | `navId` | Navigation entry or `none`. |
-| `readerPreview` | Markdown/mermaid preview from section 4C with filters, toolbar actions, major blocks, block content, and interaction entries. |
+| `readerPreview` | Markdown/mermaid preview from the main PRD with filters, toolbar actions, major blocks, block content, and interaction entries. |
+| `layoutSectionMap` | Readable `12*K` section decomposition, section row previews, section business purpose, and section-to-block coordinates. |
 | `layoutRows` | 12-character row strings or a precise block grid map. |
 | `layoutRowsAudit` | For every row: row index, raw row string, column count exactly `12`, over-12 check, block letters used, and pass/fail. |
 | `visibleRows` | First-screen rows `8`, total rows `N`, and proof that `N >= 8`. |
@@ -113,7 +155,7 @@ Acceptance rules:
 - Every block letter forms one rectangle. Disconnected, L-shaped, staggered, or masonry blocks are invalid.
 - Every non-empty block letter has exactly one `blockMap` row and one `blockLayoutTemplateMap` row.
 - Every `blockMap` row records `colStart`, `colSpan`, `rowStart`, `rowSpan`, and selected block layout template size.
-- Every visible block has exactly one `blockCoordinate` such as `1-2`, and every component slot has exactly one `slotCoordinate` such as `1-2-1`.
+- Every visible block has exactly one `blockCoordinate` such as `2-2`, and every component slot has exactly one `slotCoordinate` such as `2-2-1`.
 - `componentSlots` are filled only after the selected block layout template and standard areas are configured.
 
 ## Block Layout Template Map
@@ -122,10 +164,10 @@ In the PRD, name this table `blockLayoutTemplateMap`.
 
 For every page block, create:
 
-| Block ID | Block coordinate | `PATH-*` source | 4B gate IDs | 业务内容 | Span | Selected 分块布局模板 | Slot pattern | Single/Multi rationale | `componentRegionPattern` |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | `PATH-*` source | 4B gate IDs | 业务内容 | Span | Selected 分块布局模板 | Slot count | Component slot pattern | Slot coordinate list | Single/Multi rationale | `componentRegionPattern` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-Current selectable examples include:
+Current direct selectable examples include:
 
 | Template | Pattern | Use when |
 | --- | --- | --- |
@@ -135,10 +177,18 @@ Current selectable examples include:
 | `Span06x03SingleSlotLayout` | `AAAAAA` | One wider chart/table/list/conclusion component. |
 | `Span06x03DoubleSlotLayout` | `AAABBB` | Main evidence plus comparison/driver/detail. |
 | `Span06x03TripleSlotLayout` | `AABBCC` | Three same口径 indicators or tightly related evidence components. |
-| `Span03x02Layout`, `Span04x02Layout`, `Span05x02Layout` | Single or compact split patterns | Small KPI/status/action cards. |
-| `Span05x03Layout`, `Span07x03Layout`, `Span08x03Layout` | Single or split patterns | Wider analysis, trend, table, and mixed blocks when dedicated selectable entries are not available. |
+Size-only wrappers such as `Span03x02Layout.vue`, `Span04x02Layout.vue`, `Span05x03Layout.vue`, or `Span08x03Layout.vue` declare only `span-id`. They are useful as base renderers and compatibility evidence, but they are not direct slot-bearing block layout templates unless a registered/selectable slot template or backlog item wraps them with a component slot pattern.
 
 Use SingleSlot when one conclusion or component should dominate. Use MultiSlot only when simultaneous evidence, comparison, driver, detail, or same口径 metric group is necessary.
+
+Slot pattern rules:
+
+- `A` means one component slot.
+- `AB` means two component slots.
+- `AAB` means one wider primary slot plus one secondary slot.
+- `AABBCC` means three grouped component slots. The repeated letters represent component-area span, not page-grid block letters.
+- Slot pattern belongs to the selected 分块布局模板's `3 componentArea`; it does not replace page `layoutRows`.
+- `Slot count` must equal the number of distinct letters in the slot pattern, and `Slot coordinate list` must enumerate each slot, such as `2-2-1`, `2-2-2`, `2-2-3`.
 
 ## Standard Block Area Configuration
 
@@ -176,8 +226,8 @@ Shell/page filters must use the selected template's native filter surface. Block
 
 For every `3 componentArea` slot:
 
-| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot role | Region key | Component content area template ID | Standalone Vue file | Sample/source evidence | Visual type | Metric IDs | Data object/API | Props/state contract | Fallback |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot pattern code | Slot role | Region key | Component slot size | Component content area template ID | Standalone Vue file | Sample/source evidence | Visual type | Size compatibility | Metric IDs | Data object/API | Props/state contract | Fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Component content area template examples from current assets. Use the registered ID exactly; the same file path exists under each copied framework template's `src/widgets/templates/component-content-areas/` directory:
 
@@ -199,7 +249,7 @@ Component content area template examples from current assets. Use the registered
 | `component-library:M` | `OperatingConclusionContentAreaTemplate.vue` | `text-summary` | Data-driven main conclusion, bound to `conclusionRuleId`. |
 | `component-library:N` | `LaunchConversionWaterfallContentAreaTemplate.vue` | `bar` | Bar/waterfall-like conversion path. |
 
-If none fits, mark `componentContentAreaTemplateId: TBD(GAP-COMPONENT-TEMPLATE-*)` or declare a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate`, expected standalone Vue file, visual type, metrics, source page/block/slot, data object/API, props/state contract, registration/copy path, and reason. A slot is not filled by text copy, prose intent, visual type alone, or an inline widget object without a registered component content area template ID.
+If none fits, mark `componentContentAreaTemplateId: TBD(GAP-COMPONENT-TEMPLATE-*)` or declare a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate`, expected standalone Vue file, visual type, metrics, source page/block/slot, data object/API, props/state contract, registration/copy path, and reason. A slot is not filled by text copy, prose intent, visual type alone, or an inline widget object without a registered component content area template ID. A slot is also not ready when its visual type is incompatible with the slot size under the selected template's widget schema.
 
 ## Dynamic Conclusion Rule Binding
 
@@ -232,14 +282,17 @@ If the requested self-developed item is not in one of these categories, mark it 
 ## Layout Acceptance Gates
 
 - Every page has a framework template and shell configuration.
+- Every template-backed PRD has `templateAssetUnderstandingMap` based on the selected template asset root.
 - Every retained navigation page has a reader-facing Markdown/mermaid preview before the technical layout table.
 - Every page block has an ID, purpose, span, and selected block layout template.
 - Every page block has a readable `blockCoordinate`; every `3 componentArea` slot has a readable `slotCoordinate`; and standard block areas are addressed as `blockCoordinate + areaName`, for example `1-2:titleArea`.
-- Every visible page block traces to a PRD section 4A `PATH-*` reading step, or is explicitly marked as support/source/export/permission-only.
-- Management-facing blocks trace to section 4B `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` IDs when they implement first-viewport answers, severity, closure, trust/source, or review/export behavior.
+- Every page has a `layoutSectionMap`; every section has a `12*K` row group; every block map row declares `slotCount`, `componentSlotPattern`, and `slotCoordinateList`; every component content area template row maps to one declared slot.
+- Every visible page block traces to a `CHILD-PRD-PROTOTYPE` / Appendix A reading step, or is explicitly marked as support/source/export/permission-only.
+- Management-facing blocks trace to executive gate IDs when they implement first-viewport answers, severity, closure, trust/source, or review/export behavior.
 - The first viewport implements the first one or two steps of the selected `RTP-*` report-type implementation path.
 - Every block names all standard areas, using `null` for optional areas not configured.
 - Every component slot has a registered component content area template ID, standalone Vue file, sample/source evidence, props/data/state contract, or an explicit custom fallback template registered through `selfDevelopmentExceptionMap`.
+- Every component slot has visual-type size compatibility evidence from the selected template's widget schema.
 - `summaryArea` does not duplicate a conclusion already represented as a conclusion component.
 - Every `summaryArea` conclusion, conclusion card, or analysis insight component references a `RULE-*` row and data/API inputs.
 - Static conclusion sentences in template config, slot props, or mock payloads fail readiness unless they are only fallback text for empty/permission/insufficient-data states.

@@ -4,36 +4,38 @@ Use this file when building a new business report from a copied template or heav
 
 ## Sequence
 
-Before source edits, create or validate the Template Build Packet from `template-build-packet-contract.md`. Weak/literal models implement from packet rows only: framework/shell, pages, `layoutRows`, `layoutCoordinateMap`, blocks, standard areas, component slots, data/API, filters/actions, interactions, conclusion rules, self-development exceptions, target files, and validation commands.
+Before source edits, create or validate `templateAssetUnderstandingMap` from `template-asset-construction-contract.md`, then create or validate the Template Build Packet from `template-build-packet-contract.md`. Weak/literal models implement from packet rows only: framework/shell, template asset evidence, pages, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, blocks, standard areas, component slots, data/API, filters/actions, interactions, conclusion rules, self-development exceptions, target files, and validation commands.
 
-Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> filterSurfaceMap -> toolbarActionMap -> interactionBehaviorMap -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `pageLayoutConfig` includes an exact-12-column, over-12 rejection, and minimum-8-row `layoutRows` audit plus `layoutCoordinateMap`. `blockLayoutTemplateMap` names `blockCoordinate` (`R-B`) and the selected independent block layout Vue file for every block. `componentContentAreaTemplateMap` names `slotCoordinate` (`R-B-S`) for every `3 componentArea` slot; for example `1-2-1` means first component slot inside the second block of page row 1. If a slot uses custom ECharts work, add a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate` and create/register the standalone Vue component content area template before filling the slot.
+Nine-step handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap -> pageLayoutConfig -> filterSurfaceMap -> toolbarActionMap -> interactionBehaviorMap -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `pageLayoutConfig` includes `layoutSectionMap` with readable exact `12*K` parts such as `12*2 + 12*3 + 12*3`, an exact-12-column, over-12 rejection, and minimum-8-row `layoutRows` audit plus `layoutCoordinateMap`. `blockLayoutTemplateMap` names `blockCoordinate` (`R-B`), `slotCount`, `componentSlotPattern` such as `A`, `AB`, `AAB`, or `AABBCC`, `slotCoordinateList`, the selected direct independent block layout Vue file, and asset availability for every block. `componentContentAreaTemplateMap` names `slotCoordinate` (`R-B-S`), component slot size, and visual-type size compatibility evidence for every `3 componentArea` slot; for example `2-2-1` means first component slot inside the second block of layout section/page region 2. If a slot uses custom ECharts work, add a `selfDevelopmentExceptionMap` entry with `type: componentContentAreaTemplate` and create/register the standalone Vue component content area template before filling the slot.
 
 1. Select 框架模板:
    - Choose the shell first: topbar scroll dashboard, left-nav analytics workbench, frozen-title cockpit, an existing project shell, or an explicit custom exception.
    - Let display theme, content volume, navigation depth, interaction density, and delivery environment drive the choice.
    - Output `frameworkTemplateId`.
-   - Update Template Build Packet sections 0, 1, and 2.
+   - Create `templateAssetUnderstandingMap` from the selected asset root.
+   - Update Template Build Packet sections 0, 1, 2, and 2A.
 2. Design the `12 * N` 页面布局配置:
    - Single-page: one `page.layoutRows` and one `page.widgets`.
    - Left-nav / sci-fi: one `nav[]` item per page/chapter.
+   - Create `layoutSectionMap` before raw `layoutRows`, splitting the page into exact `12*K` sections such as section 1 `12*2` (`AAAAAAAAAAAA|AAAAAAAAAAAA`), section 2 `12*3` (`AAAAAABBBBBB|AAAAAABBBBBB|AAAAAABBBBBB`), and section 3 `12*3` (`AAAAAABBBBBB|AAAAAABBBBBB|AAAAAABBBBBB`).
    - Use 12 characters per row.
    - Use repeated characters for rectangular merged blocks.
    - Keep block ids stable.
    - Record the row audit: every row has exactly 12 cells, every block is rectangular, every block id maps to one widget and one `blockLayoutTemplateMap` row, and every span records `colStart`, `colSpan`, `rowStart`, and `rowSpan`.
-   - Assign `blockCoordinate` by page reading row/region and block order, then reserve `slotCoordinate` values for component slots after the block template is selected.
+   - Assign `blockCoordinate` by layout section/page region and block order, then reserve `slotCoordinate` values for component slots after the block template is selected. Local section A/B previews may repeat for readability, but final machine rows and block ids must globally disambiguate different blocks.
    - Use `template-layout-design-system.md` before changing shared template layout tokens such as `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, content range, or hover/focus surfaces.
    - Keep the shared block anatomy: grid block -> card frame -> body viewport -> `widget-renderer`.
    - Before finalizing `layoutRows`, calculate each block's actual size with `report-visual-layout-design`.
    - Check whether the block can safely hold its component count and component mix at the `1920 * 1080` viewport baseline.
    - Let `layoutRows` grow when the report needs more content; do not cap the report at one viewport.
-   - Output `pageLayoutConfig` with `layoutCoordinateMap`, block ids, spans, nav/page wiring, and first-viewport plan.
+   - Output `pageLayoutConfig` with `layoutSectionMap`, `layoutCoordinateMap`, block ids, spans, nav/page wiring, and first-viewport plan.
    - Update Template Build Packet sections 3 and 4.
 3. Based on 页面布局配置, choose 分块布局模板 for each page block:
    - A 分块布局模板 includes the block size plus its standard areas and `componentSlotContracts`; `componentRegionPattern` is only a derived compatibility descriptor.
-   - Choose an independent block layout Vue entry file such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
+   - Choose a direct independent block layout Vue entry file such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`; use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable template.
    - Decide SingleSlot vs MultiSlot from the user's analytical need. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups.
    - In MultiSlot templates, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed. Use later slots for evidence, drivers, details, actions, or trust/source support.
-   - Output `blockLayoutTemplateMap` with one entry per block id, including `blockCoordinate`.
+   - Output `blockLayoutTemplateMap` with one entry per block id, including `blockCoordinate`, selected direct Vue file, asset availability, `slotCount`, `componentSlotPattern`, and `slotCoordinateList`.
    - Update Template Build Packet section 5.
 4. Configure the 分块布局模板 `1-1 titleArea`:
    - Set the title and title style on the parent block/widget config.
@@ -54,12 +56,12 @@ Nine-step handoff output: `frameworkTemplateId -> pageLayoutConfig -> filterSurf
    - Update Template Build Packet section 6.
 8. Based on 分块布局模板槽位配置, choose 组件内容区模板:
    - `componentSlots` under `3 componentArea` carries only the selected component's internal content area.
-   - Inspect `references/component-content-area-template-map.md`, then inspect `src/widgets/templates/component-content-areas/` and its README/catalog before selecting.
-   - Mount or copy the selected standalone component content area Vue file, or point to a registered `componentContentAreaTemplateId` that maps to that file. Record `slotCoordinate`, copy source/target, sample/source evidence, props/data/state contract, and data binding.
+   - Inspect `references/component-content-area-template-map.md`, then inspect `src/widgets/templates/component-content-areas/`, its README/catalog, and `src/report-template-assets/blueprint/widget-config-schemas.ts` before selecting.
+   - Mount or copy the selected standalone component content area Vue file, or point to a registered `componentContentAreaTemplateId` that maps to that file. Record `slotCoordinate`, slot pattern code, component slot size, visual-type size compatibility evidence, copy source/target, sample/source evidence, props/data/state contract, and data binding.
    - If no existing component content area template fits the slot and business intent, self-develop a new standalone Vue component content area template with ECharts for chart needs and register it before the slot is considered filled.
    - Do not attach filters, controls, additional information, unit slot, title pills, description/help text, or summary copy to a component slot. The component content area may have only the optional removable title strip plus body content.
    - Do not fill a slot with text/prose/placeholder copy, `visualType` alone, or an inline widget object.
-   - Output `componentContentAreaTemplateMap` with `slotCoordinate`, registered ID, Vue file, copy source/target, sample evidence, props/data/state; output `selfDevelopmentExceptionMap` component content area entries for newly created fallback templates.
+   - Output `componentContentAreaTemplateMap` with `slotCoordinate`, slot pattern code, component slot size, visual-type size compatibility evidence, registered ID, Vue file, copy source/target, sample evidence, props/data/state; output `selfDevelopmentExceptionMap` component content area entries for newly created fallback templates.
    - Update Template Build Packet sections 7 and 10.
 9. Configure `4 summaryArea`:
    - If the block has no conclusion card/component, add a text-only/narrative conclusion, note, caveat, or explanation when needed.

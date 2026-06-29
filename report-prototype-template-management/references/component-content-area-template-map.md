@@ -1,6 +1,6 @@
 # Component Content Area Template Map
 
-Use this map before filling any `3 componentArea` slot. A slot is filled only when it names a readable `slotCoordinate` such as `1-2-1`, a registered `componentContentAreaTemplateId`, the standalone Vue file, the source template family, and data/props/state binding evidence.
+Use this map before filling any `3 componentArea` slot. A slot is filled only when it names a readable `slotCoordinate` such as `2-2-1`, consumes a slot declared by `blockLayoutTemplateMap.slotCoordinateList`, names a registered `componentContentAreaTemplateId`, the standalone Vue file, the source template family, component slot size, visual-type size compatibility evidence, and data/props/state binding evidence.
 
 ## Copy Roots
 
@@ -38,7 +38,10 @@ Every `componentContentAreaTemplateMap` row must include:
 
 | Field | Requirement |
 | --- | --- |
-| `slotCoordinate` | Readable `R-B-S` coordinate. Example: `1-2-1` means first component slot inside the second block of page row 1. |
+| `slotCoordinate` | Readable `R-B-S` coordinate. Example: `2-2-1` means first component slot inside the second block of section 2. |
+| `slotPatternCode` | Slot group from the parent block's `componentSlotPattern`, such as `A`, `B`, or `C`; must match the declared slot list. |
+| `componentSlotSize` | Actual slot width/height derived from the selected block layout template. |
+| `visualTypeSizeCompatibility` | Evidence from `src/report-template-assets/blueprint/widget-config-schemas.ts` that the selected visual type is legal for the slot size. |
 | `componentContentAreaTemplateId` | One registered ID from this map, or a newly registered custom ID. |
 | `standaloneVueFile` | File under the selected copied template project's `src/widgets/templates/component-content-areas/`. |
 | `copySource` | Selected framework template family and original file path. |
@@ -46,4 +49,4 @@ Every `componentContentAreaTemplateMap` row must include:
 | `slotBinding` | Source page/block/slot coordinate, metric IDs, API/data object, fields, filters, and interaction payload. |
 | `stateContract` | Loading, empty, error, no-permission, delayed-data, and fallback behavior. |
 
-Text, prose, placeholder content, `visualType` alone, or an inline widget without a registered ID does not fill a slot.
+Text, prose, placeholder content, `visualType` alone, an inline widget without a registered ID, or a visual type without slot-size compatibility evidence does not fill a slot.

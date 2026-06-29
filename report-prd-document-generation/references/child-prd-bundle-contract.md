@@ -7,6 +7,8 @@ Use this reference when the PRD will feed multiple downstream stages. The PRD bu
 
 Do not make the main PRD carry every execution table. Do not make child PRDs replace the main PRD's business authority.
 
+The main PRD is intentionally concise. Child PRDs are responsible for the detailed, stage-specific execution content that the main PRD omits. If a formula, API field, layout row, slot map, interaction payload, conclusion rule, or test case is needed by a downstream stage, it must appear in the matching child PRD or execution appendix rather than being expanded in the main PRD.
+
 Hard rule: a child PRD registry is only an index, not the child PRD bundle. A valid PRD bundle must include the full body of all five child PRDs, either as Appendix H-L in the same Markdown file or as five child files. If any child body is missing, the whole PRD remains incomplete.
 
 ## Required Bundle Files Or Sections
@@ -33,13 +35,13 @@ The main PRD must include a short registry so humans understand which child PRD 
 
 Use this table in the main PRD, preferably after document metadata:
 
-| 阶段 | 使用子 PRD | 子 PRD 作用 | 读取主 PRD 章节 | 下游产物 | 主 PRD 变更后的同步规则 |
+| 阶段 | 使用子 PRD | 子 PRD 作用 | 读取内容 | 下游产物 | 主 PRD 变更后的同步规则 |
 | --- | --- | --- | --- | --- | --- |
-| 原型 | `CHILD-PRD-PROTOTYPE` | 让原型 workflow 配置页面、模板、分块、槽位、交互、动态结论和数据摘要。 | 1-13, especially 4A/4B/4C/5/5A/6/7/8/9/13 | 原型说明、可运行原型、`docs/template-build-packet.md`, `docs/prototype-data-summary.md` | 主 PRD 的页面、布局、指标、API、交互、结论或范围变化时必须同步。 |
-| 前端 | `CHILD-PRD-FRONTEND` | 让前端实现页面路由、组件、状态、接口适配、权限、格式化、运行 QA。 | 1-12 plus prototype data summary when available | 前端功能说明、接口适配、页面实现、运行 QA 结果 | 页面、组件、交互、API、权限、数值格式或环境变化时必须同步。 |
-| 后端 | `CHILD-PRD-BACKEND` | 让后端/API 明确数据对象、计算口径、查询参数、权限、缓存、导出和错误处理。 | 1/3/6/7/8/9/10/11 plus prototype data summary when available | API 清单、数据模型、服务设计、接口实现输入 | 指标口径、数据源、字段、筛选、权限、导出、性能要求变化时必须同步。 |
-| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | 让技术方案明确系统边界、架构决策、前后端分工、环境、非功能和风险。 | 0-12 plus all child PRD status | 技术方案、ADR、实施计划、风险清单 | 范围、架构边界、技术栈、数据链路、环境、NFR 或风险变化时必须同步。 |
-| 测试 | `CHILD-PRD-TESTING` | 让测试阶段生成用例、联调检查、数据一致性检查、权限/异常/导出验证和证据要求。 | 1-12 plus frontend/backend/API/prototype outputs | 测试矩阵、验收清单、缺陷证据、回归报告 | 验收标准、交互、API、权限、数据规则、异常状态或交付范围变化时必须同步。 |
+| 原型 | `CHILD-PRD-PROTOTYPE` | 让原型 workflow 配置页面、模板、分块、槽位、交互、动态结论和数据摘要。 | 主 PRD 0-8 + Appendix A/G | 原型说明、可运行原型、`docs/template-build-packet.md`, `docs/prototype-data-summary.md` | 主 PRD 的页面、布局、指标、API、交互、结论或范围变化时必须同步。 |
+| 前端 | `CHILD-PRD-FRONTEND` | 让前端实现页面路由、组件、状态、接口适配、权限、格式化、运行 QA。 | 主 PRD 0-8 + Appendix B-E + prototype data summary when available | 前端功能说明、接口适配、页面实现、运行 QA 结果 | 页面、组件、交互、API、权限、数值格式或环境变化时必须同步。 |
+| 后端 | `CHILD-PRD-BACKEND` | 让后端/API 明确数据对象、计算口径、查询参数、权限、缓存、导出和错误处理。 | 主 PRD 0/1/3/7/8 + Appendix B/C + prototype data summary when available | API 清单、数据模型、服务设计、接口实现输入 | 指标口径、数据源、字段、筛选、权限、导出、性能要求变化时必须同步。 |
+| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | 让技术方案明确系统边界、架构决策、前后端分工、环境、非功能和风险。 | 主 PRD 0-8 + all child PRD status | 技术方案、ADR、实施计划、风险清单 | 范围、架构边界、技术栈、数据链路、环境、NFR 或风险变化时必须同步。 |
+| 测试 | `CHILD-PRD-TESTING` | 让测试阶段生成用例、联调检查、数据一致性检查、权限/异常/导出验证和证据要求。 | 主 PRD 0-8 + Appendix B-E + frontend/backend/API/prototype outputs | 测试矩阵、验收清单、缺陷证据、回归报告 | 验收标准、交互、API、权限、数据规则、异常状态或交付范围变化时必须同步。 |
 
 ## Child PRD Common Header
 
@@ -75,20 +77,20 @@ If the source information is thin, use `TBD(GAP-*)` inside the child PRD rather 
 
 ### `CHILD-PRD-PROTOTYPE`
 
-Include only what the prototype/design AI needs:
+Include detailed content, but only what the prototype/design AI needs:
 
 - Report type implementation path: selected `RTP-*`, `PATH-*`, first-viewport plan, and block intent.
 - Executive satisfaction gates: required `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*` rows.
-- Page previews: section 4C readable preview references.
-- Template layout contract: framework template, shell config, `layoutRows`, `layoutCoordinateMap`, block layout template map, standard block area configs.
-- Component slot contract: readable `slotCoordinate` (`R-B-S`), component content area template IDs, Vue files, sample evidence, data binding, and fallback template registrations.
+- Page previews: main PRD readable preview references.
+- Template layout contract: framework template, shell config, `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block layout template map, direct template asset availability, and standard block area configs.
+- Block/slot contract: `slotCount`, `componentSlotPattern` such as `A` / `AB` / `AAB` / `AABBCC`, `slotCoordinateList`, readable `slotCoordinate` (`R-B-S`), component slot size, visual-type size compatibility evidence, component content area template IDs, Vue files, sample evidence, data binding, and fallback template registrations.
 - Dynamic conclusion rules: `RULE-*` rows used by summary areas, conclusion cards, and analysis insight components.
 - Data/API and interaction rows required for prototype data, filters, drilldown, jump, modal/drawer, export, and state behavior.
 - Template Build Packet seed and validation plan.
 
 ### `CHILD-PRD-FRONTEND`
 
-Include only what frontend implementation/integration AI needs:
+Include detailed content, but only what frontend implementation/integration AI needs:
 
 - Route/page/component map, including production route names when known.
 - Component-to-API adapter map and frontend view-model fields.
@@ -101,7 +103,7 @@ Include only what frontend implementation/integration AI needs:
 
 ### `CHILD-PRD-BACKEND`
 
-Include only what backend/API AI needs:
+Include detailed content, but only what backend/API AI needs:
 
 - Data objects, row grain, primary keys, dimensions, metric fields, source systems, lineage, and freshness.
 - Metric computation ownership: backend-computed, source-computed, frontend-format-only, or `TBD(GAP-*)`.
@@ -112,7 +114,7 @@ Include only what backend/API AI needs:
 
 ### `CHILD-PRD-TECHNICAL-SOLUTION`
 
-Include only what technical-solution AI needs:
+Include detailed content, but only what technical-solution AI needs:
 
 - System boundary and architecture: frontend, backend/data service, source systems, external services, export/file services.
 - Technology decisions and ADR candidates, including default vs exception.
@@ -124,7 +126,7 @@ Include only what technical-solution AI needs:
 
 ### `CHILD-PRD-TESTING`
 
-Include only what testing AI needs:
+Include detailed content, but only what testing AI needs:
 
 - Acceptance criteria mapped to pages, components, APIs, metrics, interactions, permissions, exports, and data quality.
 - Test scenario matrix: e2e, API, data consistency, permission, empty/error/loading, export, visual/runtime, regression.
@@ -169,3 +171,4 @@ Every final PRD output must include this stage map in the main document and agai
 - Do not update a parent PRD section without either updating affected child PRDs or marking them `stale` with a `GAP-*`.
 - Do not make a child PRD more authoritative than the main PRD on business goal, scope, role, or acceptance. Child PRDs refine execution only.
 - Do not put full child PRD matrices inside the reader-facing main body. The main body contains the child registry and stage map; child details live in appendices/files.
+- Do not omit stage-critical detail just because the main PRD is concise. Missing executable detail belongs in the child PRD as `TBD(GAP-*)`, not in the main PRD as vague prose.

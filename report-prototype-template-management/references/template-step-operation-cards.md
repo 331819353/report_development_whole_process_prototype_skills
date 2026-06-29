@@ -18,9 +18,9 @@ Do not jump from `pageLayoutConfig` directly to chart/table markup. Component sl
 
 Coordinate rule for every step:
 
-- Use `R-B` to locate a visible page block: `R` = page reading row/region, `B` = block order inside that row.
+- Use `R-B` to locate a visible page block: `R` = layout section/page region, `B` = block order inside that section.
 - Use `R-B-S` to locate a `3 componentArea` slot: `S` = slot order inside the selected block layout template.
-- Example: if the first page row has two `6*3` blocks, the second block is `1-2`, and its first component slot is `1-2-1`.
+- Example: if section 2 has two `6*3` blocks, the second block is `2-2`, and its first component slot is `2-2-1`.
 - Standard block areas use `blockCoordinate + areaName`, such as `1-2:titleArea`, `1-2:pillArea`, or `1-2:summaryArea`; do not use the third number for title/pill/aux/unit/summary areas.
 - Keep this separate from the block template's internal area codes, such as `1-1 titleArea` and `1-2 pillArea`.
 
@@ -68,14 +68,17 @@ Operation:
 
 - Create one `pageLayoutConfig` per retained page/nav.
 - Define visible filters, toolbar actions, and navigation-page content.
+- Split the page into `layoutSectionMap` rows before raw `layoutRows`, such as section 1 `12*2`, section 2 `12*3`, section 3 `12*3`.
+- For each section, record business purpose, `sectionGrid`, row count, local row preview, global row range, and block coordinates.
 - Create `layoutRows` for each page.
 - Audit `12 * N`: every row is exactly 12 cells, no row exceeds 12 cells, and `N >= 8`.
 - Map every visible block to a readable business purpose, row/column span, and source reading-path step.
-- Assign `blockCoordinate` to every visible block using `R-B`, then reserve `R-B-S` for the component slots that will be created after the block template is selected.
+- Assign `blockCoordinate` to every visible block using `R-B`, where `R` is the section number, then reserve `R-B-S` for the component slots that will be created after the block template is selected.
 
 Output:
 
 - `pageLayoutConfig`
+- `layoutSectionMap`
 - `layoutRowsAudit`
 - `blockMap`
 - `layoutCoordinateMap`
@@ -85,15 +88,17 @@ Output:
 Stop check:
 
 - Every retained nav page has a meaningful page preview and layout.
+- Every page has `layoutSectionMap`; each section is exact `12*K`; section row counts sum to page `N`.
 - Every `layoutRows` row has exactly 12 cells.
 - Page row count is at least 8.
 - Every block is rectangular and maps to one block id.
 - Every visible block has a unique `blockCoordinate`, and the order matches the page preview and `layoutRows`.
+- Local section preview letters are not reused in final machine `layoutRows` without global disambiguation.
 - Filters, toolbar actions, and important controls are visibly placed.
 
 ## Step 3. Select Block Layout Template
 
-Focus: choose the independent block layout Vue file for each page block.
+Focus: choose the direct independent block layout Vue file for each page block.
 
 Inputs:
 
@@ -106,7 +111,9 @@ Operation:
 - For each block, select a size-compatible independent block layout template Vue file.
 - Choose SingleSlot or MultiSlot based on the business relationship, not because a template happens to exist.
 - Record source reading-path step and applicable management gate IDs.
+- Record `slotCount`, `componentSlotPattern`, and slot roles. Use patterns such as `A`, `AB`, `AAB`, or `AABBCC`; repeated letters represent component-area span within the block, not page `layoutRows`.
 - Expand each block's component slots into `slotCoordinate` values based on the selected template slot order.
+- Record asset availability from `templateAssetUnderstandingMap`; only direct selectable block layout Vue files may be marked ready.
 - Record derived `componentRegionPattern` only as compatibility metadata, not as the selected template.
 
 Output:
@@ -114,13 +121,17 @@ Output:
 - `blockLayoutTemplateMap`
 - SingleSlot/MultiSlot rationale
 - selected block layout Vue file per block
+- asset availability per block
+- slot count and component slot pattern per block
 - slot coordinate list for each block
 
 Stop check:
 
-- Every block has exactly one selected independent block layout template.
+- Every block has exactly one selected direct independent block layout template.
 - No block is represented only by a generic `SpanCCxRRLayout.vue` size wrapper.
+- Every block has `assetAvailability: direct-selectable`; otherwise record `TBD(GAP-BLOCK-LAYOUT-TEMPLATE-*)`.
 - The block template is selected before component slots are filled.
+- Every block has `slotCount`, `componentSlotPattern`, and `slotCoordinateList`.
 - Every component slot coordinate is known before step 8 fills component content.
 
 ## Step 4. Configure Title Area
@@ -235,14 +246,15 @@ Inputs:
 - Selected block layout template slots from step 3.
 - Component content area template map.
 - Copied template's `src/widgets/templates/component-content-areas/` catalog.
+- Copied template's `src/report-template-assets/blueprint/widget-config-schemas.ts`.
 - Metric/data/API binding matrix.
 - Conclusion rule map when the component is a conclusion card or analysis insight.
 
 Operation:
 
 - Select an existing component content area template first.
-- For each slot, work from its `slotCoordinate` such as `1-2-1`.
-- Record `slotCoordinate`, `componentContentAreaTemplateId`, standalone Vue file, copy source/target, sample evidence, visual type, props/state contract, data binding, and fallback.
+- For each slot, work from its `slotCoordinate` such as `2-2-1`.
+- Record `slotCoordinate`, slot pattern code, component slot size, visual-type size compatibility evidence, `componentContentAreaTemplateId`, standalone Vue file, copy source/target, sample evidence, visual type, props/state contract, data binding, and fallback.
 - If no suitable template exists, create/register a standalone component content area template, usually with ECharts for standard charts, before filling the slot.
 - Keep title, pills, filters, controls, auxiliary info, units, summary, explanation, and descriptions out of the component slot.
 
@@ -255,6 +267,8 @@ Stop check:
 
 - Every slot has a registered component content area template ID and standalone Vue file.
 - Every slot fill row has a `slotCoordinate` that matches the selected block layout template slot order.
+- Every slot fill row maps to one slot declared in `blockLayoutTemplateMap.slotCoordinateList`.
+- Every slot fill row records component slot size and visual-type size compatibility evidence.
 - No slot is filled by prose, visual type labels, placeholder text, or inline widget objects.
 - Custom ECharts work is registered as a component content area template before the slot is considered filled.
 
@@ -291,6 +305,6 @@ Stop check:
 
 The implementation chain is complete only when these artifacts exist in order:
 
-`frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`
+`frameworkTemplateId -> templateAssetUnderstandingMap -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`
 
 If any artifact is missing, do not mark the template implementation ready.

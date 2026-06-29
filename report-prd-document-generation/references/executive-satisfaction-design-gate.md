@@ -12,7 +12,7 @@ Section `4B. 管理层满意度辅助设计` is required when any of these are t
 - The report type is dashboard, cockpit, analysis report, risk monitor, closure/action board, review/export report, or a management-facing mixed report.
 - The page is expected to support meeting review, monthly/quarterly review, risk tracking, action closure, performance judgment, resource allocation, or export circulation.
 
-For pure row-level detail query reports used only by analysts/operators, section 4B may be scoped to query efficiency, trust/source, export/audit, and row-level action instead of conclusion-first management reading.
+For pure row-level detail query reports used only by analysts/operators, the executive gate may be scoped to query efficiency, trust/source, export/audit, and row-level action instead of conclusion-first management reading.
 
 ## Required Tables
 
