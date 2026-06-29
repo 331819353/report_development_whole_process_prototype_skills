@@ -18,7 +18,7 @@ Output must include:
 - Header, native/template filter surface, toolbar, sidebar/menu, footer decisions.
 - 12*N rectangular grid structure with minimum `2*1` blocks and default `3*2` analytical/chart blocks.
 - Legal component span matrix and each component's selected `columns * rows` span.
-- `pageLayoutConfig` handoff for template implementations: `layoutRows`, stable block ids, block spans, nav/page wiring, first-viewport plan, and intended component-area slot count per block.
+- `pageLayoutConfig` handoff for template implementations: `layoutRows`, stable block ids, block spans, nav/page wiring, first-viewport plan, intended component-area slot count per block, and Template Build Packet layout fragments for sections 3, 4, 5, and layout-facing section 6.
 - Block-height and overflow rule: for prototype templates, column width comes from the visible width after menu/sidebar width is deducted, rowHeight comes from the first 8 visible content rows after menu/header height is deducted, and grids taller than the first viewport use vertical scrolling instead of row compression.
 - Content pattern: 总分总, 总分, 分总, 明细优先, 告警处理, 执行闭环, or recap narrative.
 - Visual style preset.
@@ -70,7 +70,7 @@ Default technical architecture:
 Template choice:
 
 - The three bundled templates now live under `report-prototype-template-management/assets/templates/`; use `topbar-light-scroll-dashboard-template`, `left-nav-analytics-workbench-template`, and `frozen-title-sci-fi-cockpit-template` as template asset ids, not as separate skills.
-- Template implementations must follow `$report-prototype-template-management` `references/template-operation-flow.md`: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name selected independent block layout Vue files. Custom ECharts chart work must become a standalone 组件内容区模板 before it fills a `3 componentArea` slot.
+- Template implementations must follow `$report-prototype-template-management` `references/template-operation-flow.md`, `references/template-step-operation-cards.md`, and `references/template-build-packet-contract.md`: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name selected independent block layout Vue files. Custom ECharts chart work must become a standalone 组件内容区模板 before it fills a `3 componentArea` slot. Source edits must consume Template Build Packet rows rather than scattered PRD prose.
 
 - Report is a content form, not a template decision. A "报告/报表/复盘/诊断" request can use any template after judging content volume and usage.
 - Use `topbar-light-scroll-dashboard-template` for a compact focused office-readable report and detail/query-heavy handoff pages.
@@ -121,7 +121,8 @@ Implementation must:
 - Render rate/change/completion labels with `%` in Chinese UI. Use positive-red-up / negative-green-down SVG/icon semantics for change-rate indicators only when inherited company, finance, market, or explicit business convention requires it; otherwise pair signed values with brand/neutral emphasis and reserve red/green/orange for documented status or direction semantics.
 - Use stable IDs for filters, interactions, and mock records.
 - Implement the data/filter/component linkage contract in the template config before visual polish.
-- Implement block slots through independent 分块布局模板 Vue files and 组件内容区模板. `componentSlots` under `3 componentArea` must not carry title, pill, additional information, unit, summary, or explanation content; those stay on block template areas `1-1`, `1-2`, `2-1`, `2-2`, and `4`.
+- Implement block slots through independent 分块布局模板 Vue files and registered 组件内容区模板. `componentSlots` under `3 componentArea` must carry a registered `componentContentAreaTemplateId`, standalone Vue file, copy source/target, sample evidence, props/data/state contract, and data binding; they must not carry title, pill, additional information, unit, summary, explanation content, text placeholders, or visualType-only fills. Those supporting areas stay on block template areas `1-1`, `1-2`, `2-1`, `2-2`, and `4`.
+- Template controls must be visibly placed before runtime acceptance: `filterSurfaceMap`, `toolbarActionMap`, `pillAreaConfig`, and `interactionBehaviorMap` must cover page filters, business switches, date/period controls, block pills, drilldown, jump, modal, drawer, popup, refresh, export, and fullscreen behavior when present.
 - Run the template `validate:dashboard` script or equivalent custom checks to block unbound widgets, missing filter contracts, invalid action configs, and unsafe radar chart options.
 - Avoid naked native `<select>` in primary filters; use Element Plus `ElSelect`/`ElTreeSelect`/`ElCascader`/`ElDatePicker` or project design-system equivalents. Fully styled native select is allowed only for baseline non-final prototypes.
 - For funnel, flow, Sankey, graph, tree, decomposition, lineage, DuPont, and process-chain visuals, reserve stage/rail, node, label, gutter, value, and edge-bend space before drawing.

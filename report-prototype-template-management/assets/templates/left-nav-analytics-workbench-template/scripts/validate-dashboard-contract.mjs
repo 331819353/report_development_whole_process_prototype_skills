@@ -174,10 +174,71 @@ const collectFilterIds = () => {
   return Array.from(new Set(filterIds));
 };
 
+const validateFilterDefinitions = () => {
+  let filterArrayCount = 0;
+
+  const visit = (node) => {
+    if (ts.isPropertyAssignment(node) && getName(node.name) === 'filters' && isArray(node.initializer)) {
+      filterArrayCount += 1;
+
+      if (node.initializer.elements.length === 0) {
+        errors.push('filters[]: template-native filter surface must declare at least one visible filter or documented filter-surface decision.');
+      }
+
+      node.initializer.elements.forEach((filterNode, filterIndex) => {
+        const location = `filters[${filterIndex}]`;
+
+        if (!isObject(filterNode)) {
+          errors.push(`${location}: filter definition must be an object.`);
+          return;
+        }
+
+        ['id', 'label', 'defaultValue'].forEach((field) => {
+          if (!hasNonEmptyStringProperty(filterNode, field)) {
+            errors.push(`${location}: filter must declare non-empty ${field}.`);
+          }
+        });
+
+        const optionsNode = getProperty(filterNode, 'options');
+
+        if (!isArray(optionsNode) || optionsNode.elements.length === 0) {
+          errors.push(`${location}: filter must declare visible options[].`);
+          return;
+        }
+
+        optionsNode.elements.forEach((optionNode, optionIndex) => {
+          const optionLocation = `${location}.options[${optionIndex}]`;
+
+          if (!isObject(optionNode)) {
+            errors.push(`${optionLocation}: option must be an object.`);
+            return;
+          }
+
+          ['id', 'label'].forEach((field) => {
+            if (!hasNonEmptyStringProperty(optionNode, field)) {
+              errors.push(`${optionLocation}: option must declare non-empty ${field}.`);
+            }
+          });
+        });
+      });
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  visit(sourceFile);
+
+  if (filterArrayCount === 0) {
+    errors.push('dashboard.config.ts: missing template-native filters[] surface.');
+  }
+};
+
 const filterIds = collectFilterIds();
+validateFilterDefinitions();
 const gridConfigs = collectGridConfigs();
 const requiredGridColumns = 12;
 const visibleGridRows = 8;
+const minimumLayoutRows = visibleGridRows;
 const minimumSpanColumns = 2;
 const minimumSpanRows = 2;
 const rowHeightTolerance = 1;
@@ -362,10 +423,20 @@ const buildLayoutBlockSpans = (rowsToBuild, location) => {
   const cells = new Map();
   const spans = new Map();
 
+  if (rowsToBuild.length < minimumLayoutRows) {
+    errors.push(
+      `${location}: 12*N page layout must include at least ${minimumLayoutRows} rows; received ${rowsToBuild.length}.`,
+    );
+  }
+
   rowsToBuild.forEach((row, rowIndex) => {
     const rowLabels = Array.from(row);
 
-    if (rowLabels.length !== requiredGridColumns) {
+    if (rowLabels.length > requiredGridColumns) {
+      errors.push(
+        `${location}[${rowIndex}]: layoutRows must not exceed ${requiredGridColumns} columns; received ${rowLabels.length}.`,
+      );
+    } else if (rowLabels.length < requiredGridColumns) {
       errors.push(`${location}[${rowIndex}]: layoutRows must use ${requiredGridColumns} columns; received ${rowLabels.length}.`);
     }
 
@@ -642,6 +713,90 @@ const validateActions = (actionsNode, location) => {
     }
 
     validateActionObject(actionValue, actionLocation);
+  });
+};
+
+const getComponentContentAreaTemplateId = (slotNode) =>
+  getStringValue(getProperty(slotNode, 'componentContentAreaTemplateId')) ||
+  getStringValue(getProperty(slotNode, 'componentSampleId'));
+
+const validateComponentSlotFills = (slotFillsNode, location) => {
+  if (!slotFillsNode) {
+    return;
+  }
+
+  if (!isArray(slotFillsNode)) {
+    errors.push(`${location}: component slotFills must be an array.`);
+    return;
+  }
+
+  slotFillsNode.elements.forEach((slotFillNode, index) => {
+    const slotFillLocation = `${location}[${index}]`;
+
+    if (!isObject(slotFillNode)) {
+      errors.push(`${slotFillLocation}: component slotFill must be an object.`);
+      return;
+    }
+
+    const slotId = getStringValue(getProperty(slotFillNode, 'slotId'));
+
+    if (slotId !== 'componentArea') {
+      errors.push(
+        `${slotFillLocation}: component slot fills may only target 3 componentArea; move title/pill/aux/unit/summary content to the parent block layout template.`,
+      );
+    }
+
+    if (
+      hasProperty(slotFillNode, 'text') ||
+      hasProperty(slotFillNode, 'pills') ||
+      hasProperty(slotFillNode, 'metrics') ||
+      hasProperty(slotFillNode, 'unit')
+    ) {
+      errors.push(
+        `${slotFillLocation}: componentArea slotFills may pass props only. Text, pills, metrics, and units are block-layout supporting-area content, not component template content.`,
+      );
+    }
+  });
+};
+
+const validateComponentContentAreaSlots = (widgetNode, location) => {
+  const propsNode = getProperty(widgetNode, 'props');
+  const componentSlotsNode = getFirstProperty([propsNode, widgetNode], ['componentSlots']);
+
+  if (!componentSlotsNode) {
+    return;
+  }
+
+  if (!isArray(componentSlotsNode)) {
+    errors.push(`${location}.componentSlots: componentSlots must be an array.`);
+    return;
+  }
+
+  if (componentSlotsNode.elements.length === 0) {
+    errors.push(`${location}.componentSlots: componentSlots is configured but empty; every 3 componentArea slot must name a registered component content area template.`);
+  }
+
+  componentSlotsNode.elements.forEach((slotNode, index) => {
+    const slotLocation = `${location}.componentSlots[${index}]`;
+
+    if (!isObject(slotNode)) {
+      errors.push(`${slotLocation}: component slot must be an object.`);
+      return;
+    }
+
+    const templateId = getComponentContentAreaTemplateId(slotNode);
+
+    if (!templateId || /^TBD\b|TBD\(|GAP-COMPONENT-TEMPLATE/i.test(templateId)) {
+      errors.push(
+        `${slotLocation}: component slot must declare a registered componentContentAreaTemplateId. Text/prose placeholders, visualType-only slots, and inline widget fills are not valid component content area templates.`,
+      );
+    }
+
+    if (hasProperty(slotNode, 'text') || hasProperty(slotNode, 'bodySummary')) {
+      errors.push(`${slotLocation}: text/bodySummary cannot fill 3 componentArea; use a registered text-summary component template plus conclusionRuleId.`);
+    }
+
+    validateComponentSlotFills(getProperty(slotNode, 'slotFills'), `${slotLocation}.slotFills`);
   });
 };
 
@@ -974,6 +1129,7 @@ const validateWidget = (widgetNode, location, span) => {
 
   validateListGeometryContract(widgetNode, location, span, widgetType, visualType);
   validateAxisChartGeometryContract(widgetNode, location, span, visualType);
+  validateComponentContentAreaSlots(widgetNode, location);
 
   if (dataNode) {
     const dataSourceId = getStringValue(getProperty(dataNode, 'id'));

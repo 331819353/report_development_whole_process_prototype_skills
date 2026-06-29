@@ -86,8 +86,11 @@ const getBlockWidget = (block: ReportBlueprintBlock, context: ReportAssetResolut
   getAssetById(context.componentContentAreaTemplates, block.componentContentAreaTemplateId ?? block.componentSampleId)?.widget ??
   getBlockGenericTemplate(block, context)?.widget;
 
+const getComponentSlotTemplateId = (slot: ReportBlueprintComponentSlot) =>
+  slot.componentContentAreaTemplateId ?? slot.componentSampleId;
+
 const getComponentSlotWidget = (slot: ReportBlueprintComponentSlot, context: ReportAssetResolutionContext) =>
-  slot.widget ?? getAssetById(context.componentContentAreaTemplates, slot.componentContentAreaTemplateId ?? slot.componentSampleId)?.widget;
+  getAssetById(context.componentContentAreaTemplates, getComponentSlotTemplateId(slot))?.widget ?? slot.widget;
 
 const getWidgetVisualType = (widget?: RegisteredWidgetConfig): WidgetVisualType | undefined => widget?.visualType;
 
@@ -360,14 +363,22 @@ const validateComponentSlots = (
 
   slots.forEach((slot, slotIndex) => {
     const slotPath = `${path}.componentSlots[${slotIndex}]`;
-    const componentContentAreaTemplateId = slot.componentContentAreaTemplateId ?? slot.componentSampleId;
+    const componentContentAreaTemplateId = getComponentSlotTemplateId(slot);
     const componentSample = getAssetById(context.componentContentAreaTemplates, componentContentAreaTemplateId);
     const widget = getComponentSlotWidget(slot, context);
     const visualType = getWidgetVisualType(widget);
     const slotContract = findSlotContract(slot, slotContracts, slotIndex);
     const effectiveSize = slot.size ?? slotContract?.minSize;
 
-    if (componentContentAreaTemplateId && !componentSample) {
+    if (!componentContentAreaTemplateId) {
+      pushFinding(
+        findings,
+        'error',
+        'RPT-COMPONENT-SLOT-TEMPLATE-ID-MISSING',
+        `Component slot "${slot.id}" must declare a registered componentContentAreaTemplateId; text/prose/inline widget fills are not valid component content area templates.`,
+        `${slotPath}.componentContentAreaTemplateId`,
+      );
+    } else if (!componentSample) {
       pushFinding(
         findings,
         'error',
@@ -447,12 +458,12 @@ export const validateReportBlueprint = (
     const pagePath = `pages[${pageIndex}]`;
     const rows = normalizeLayoutRows(page.layoutRows);
 
-    if (pageLayout && rows.length > pageLayout.gridRows) {
+    if (pageLayout && rows.length < pageLayout.gridRows) {
       pushFinding(
         findings,
         'error',
-        'RPT-LAYOUT-ROW-COUNT',
-        `Page "${page.id}" uses ${rows.length} rows, but layout "${pageLayout.id}" allows ${pageLayout.gridRows}.`,
+        'RPT-LAYOUT-MIN-ROW-COUNT',
+        `Page "${page.id}" uses ${rows.length} rows; 12*N layout "${pageLayout.id}" requires at least ${pageLayout.gridRows} visible-grid rows.`,
         `${pagePath}.layoutRows`,
       );
     }
@@ -460,7 +471,15 @@ export const validateReportBlueprint = (
     rows.forEach((row, rowIndex) => {
       const width = Array.from(row).length;
 
-      if (pageLayout && width !== pageLayout.gridColumns) {
+      if (pageLayout && width > pageLayout.gridColumns) {
+        pushFinding(
+          findings,
+          'error',
+          'RPT-LAYOUT-COLUMN-OVERFLOW',
+          `layoutRows[${rowIndex}] uses ${width} columns; row width must not exceed ${pageLayout.gridColumns}.`,
+          `${pagePath}.layoutRows[${rowIndex}]`,
+        );
+      } else if (pageLayout && width < pageLayout.gridColumns) {
         pushFinding(
           findings,
           'error',

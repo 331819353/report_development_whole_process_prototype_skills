@@ -104,6 +104,15 @@ Use this interaction matrix:
 | Interaction ID | 操作 | 触发位置 | 输入 | 系统响应 | 影响范围 | API/Data refresh | URL/state sync | Loading/empty/error | Permission rule |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
+Also output these named maps for template-based report prototypes:
+
+| Map | Required fields |
+| --- | --- |
+| `filterSurfaceMap` | Template filter id, visible label, control type, option source, default, affected blocks/components, query params, permission scope, reset behavior, loading/empty/error behavior. |
+| `pillAreaConfig` | Block id, pill id, label, default active value, display position `1-2 pillArea`, affected metric/component/API params, state reset, response, or `null` plus `notNeededReason`. |
+| `toolbarActionMap` | Action id, label/icon, template toolbar slot, permission, payload, target, export/fullscreen/refresh behavior, success/failure behavior. |
+| `interactionBehaviorMap` | Trigger, owner, source page/block/slot/template id, target type, payload fields, context inheritance, state sync, close/back behavior, permission rule, QA case. |
+
 Add this self-developed interaction contract for every 下钻, 跳转, 弹窗/抽屉/modal, or component-owned deep interaction. Keep the exact field names because template validators use these names:
 
 | PRD meaning | Required config field | Required value |

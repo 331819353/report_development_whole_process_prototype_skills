@@ -62,7 +62,7 @@ Usage flow:
 5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise leave it unconfigured.
 6. Decide whether `2-1 auxMetricArea` is needed; configure it with suitable additional information and even distribution when needed, otherwise leave it unconfigured.
 7. Decide whether `2-2 unitArea` is needed; configure unit text when needed, otherwise leave it unconfigured.
-8. Fill `componentSlots` inside `3 componentArea` only with standalone component content area templates. Do not place filters, controls, additional information, units, title pills, descriptions, explanations, or summaries inside `componentSlots`. If there is only one component slot, the component content area title strip must be hidden.
+8. Fill `componentSlots` inside `3 componentArea` only with registered standalone component content area templates. Every slot must have `componentContentAreaTemplateId`, standalone Vue file/sample evidence, props/data/state contract, and data binding. Do not place filters, controls, additional information, units, title pills, descriptions, explanations, summaries, text placeholders, or visualType-only fills inside `componentSlots`. If there is only one component slot, the component content area title strip must be hidden.
 9. Configure `4 summaryArea`: if the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block has a conclusion card/component, leave it unconfigured or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
 10. Register any new widget in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 11. Mount it in `src/config/dashboard.config.ts`.

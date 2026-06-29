@@ -149,6 +149,7 @@ Minimum columns:
 - Reset/stale behavior when selected object leaves scope.
 - Export/download behavior.
 - Validation cases.
+- Template Build Packet export fields when template-based: target packet section, packet row id, component slot fill row, data/API row, filter/action row, interaction row, conclusion rule row, self-development exception row, and implementation file plan row.
 
 ## Data Accuracy Rules
 

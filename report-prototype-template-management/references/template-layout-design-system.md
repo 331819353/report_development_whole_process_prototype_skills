@@ -19,7 +19,7 @@ Use these generic names consistently in report development:
 | 框架模板 | `assets/templates/<template-id>/`, `screen`, shell components | The report page shell: navigation, global filters, toolbar, theme, logo, and runtime stack. |
 | 页面布局配置 | `nav[].layoutRows`, `page.layoutRows`, `widgets` | The page-level grid configuration that places rectangular blocks on the 12-column canvas. |
 | 分块布局模板 | Independent Vue entries such as `Span04x03SingleSlotLayout`, plus derived `componentRegionPattern`, `componentSlotContracts`, block `slotFills` | A reusable block template with size plus standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`. Generic `SpanCCxRRLayout` files are size bases for creating selectable entries; `componentRegionPattern` is not a selectable template by itself. |
-| 组件内容区模板 | Standalone Vue file mapped by `componentSlots[].content` or `componentContentAreaTemplateId` | The implemented component's internal content area only. It can fill slots inside `3 componentArea`; do not include filters, controls, additional information, units, title pills, descriptions, explanations, or summary copy. It renders as a rounded rectangle without border lines, and may reserve only a removable `20px` centered title strip with `3px` top padding; parent single-slot block layouts hide that strip. |
+| 组件内容区模板 | Standalone Vue file mapped by a registered `componentContentAreaTemplateId` | The implemented component's internal content area only. It can fill slots inside `3 componentArea`; do not include filters, controls, additional information, units, title pills, descriptions, explanations, or summary copy. It renders as a rounded rectangle without border lines, and may reserve only a removable `20px` centered title strip with `3px` top padding; parent single-slot block layouts hide that strip. Text/prose or `componentSlots[].content` alone is not a valid slot fill. |
 
 ### Report Implementation Flow
 
@@ -28,16 +28,16 @@ Use `template-operation-flow.md` for the complete operation checklist and readin
 Use this order for report implementation:
 
 1. Select the 框架模板.
-2. Design the 页面布局配置.
+2. Design the 页面布局配置. `layoutRows` must be `12 * N`, every row exactly 12 cells, no row longer than 12 cells, and `N >= 8`.
 3. Based on the 页面布局配置, select the independent 分块布局模板 Vue file for each block.
 4. Configure `1-1 titleArea`: title and title style.
-5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise record it as not configured.
+5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise record `pillAreaConfig: null` with `notNeededReason`.
 6. Decide whether `2-1 auxMetricArea` is needed; configure additional information and distribute items evenly when needed, otherwise record it as not configured.
 7. Decide whether `2-2 unitArea` is needed; configure unit text when needed, otherwise record it as not configured.
-8. Based on the selected 分块布局模板 slot configuration, choose suitable 组件内容区模板 for `3 componentArea`; when no suitable template exists, self-develop a new ECharts-backed standalone Vue component content area template.
+8. Based on the selected 分块布局模板 slot configuration, inspect `references/component-content-area-template-map.md` and choose suitable 组件内容区模板 for `3 componentArea`; when no suitable template exists, self-develop a new ECharts-backed standalone Vue component content area template.
 9. Configure `4 summaryArea`: when no conclusion card/component exists, add text-only/narrative conclusion, note, caveat, or explanation when needed. When a conclusion card/component exists, record `summaryAreaConfig: null` or use `4 summaryArea` only for non-conclusion content such as scope, source, caveat, definition, or action note.
 
-Required chain: `frameworkTemplateId -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name the independent block layout Vue file for every selectable block and record SingleSlot/MultiSlot rationale. Only `1-1 titleArea` and `3 componentArea` are always required; optional supporting areas can be omitted or marked not configured when not needed.
+Required chain: `frameworkTemplateId -> pageLayoutConfig -> filterSurfaceMap -> toolbarActionMap -> interactionBehaviorMap -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. `blockLayoutTemplateMap` must name the independent block layout Vue file for every selectable block and record SingleSlot/MultiSlot rationale. Only `1-1 titleArea` and `3 componentArea` are always required; optional supporting areas can be omitted or marked not configured when not needed.
 
 ### Standard Block Layout Template Areas
 
@@ -59,7 +59,7 @@ All template families use the same conceptual layers:
 1. Design frame: fixed design width/height, normally `1920 * 1080`.
 2. Shell frame: topbar, left-nav, or frozen title/header area.
 3. Content canvas: vertical region bounded by `screen.grid.contentStartY` and `screen.grid.contentEndY`, or by row count and `rowHeight` when the page scrolls.
-4. Content block grid: `layoutRows` characters resolve into rectangular blocks on a 12-column grid; column width comes from `(visibleWidth - menuOrSidebarWidth) / 12`, rowHeight comes from `(visibleHeight - menuOrHeaderHeight) / 8`, and long pages reuse the same rowHeight for `N` rows.
+4. Content block grid: `layoutRows` characters resolve into rectangular blocks on a 12-column grid; each row has exactly 12 cells, pages have at least 8 rows, column width comes from `(visibleWidth - menuOrSidebarWidth) / 12`, rowHeight comes from `(visibleHeight - menuOrHeaderHeight) / 8`, and long pages reuse the same rowHeight for `N` rows.
 5. Block frame: `.placeholder-cell` reserves `cellPadding` around the block.
 6. Block card: `.placeholder-cell-inner` owns the visible card/frame surface, body viewport, radius, shadow, and theme surface.
 7. Widget viewport: `.placeholder-cell-body > .widget-renderer` fills the card body and gives the business component or composite parent widget a stable `100% * 100%` viewport.

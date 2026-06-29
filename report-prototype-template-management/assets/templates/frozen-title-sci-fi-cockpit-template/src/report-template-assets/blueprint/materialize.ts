@@ -45,8 +45,11 @@ const getBlockWidget = (block: ReportBlueprintBlock, context: ReportAssetResolut
   getAssetById(context.componentContentAreaTemplates, block.componentContentAreaTemplateId ?? block.componentSampleId)?.widget ??
   getBlockGenericTemplate(block, context)?.widget;
 
+const getComponentSlotTemplateId = (slot: ReportBlueprintComponentSlot) =>
+  slot.componentContentAreaTemplateId ?? slot.componentSampleId;
+
 const getComponentSlotWidget = (slot: ReportBlueprintComponentSlot, context: ReportAssetResolutionContext) =>
-  slot.widget ?? getAssetById(context.componentContentAreaTemplates, slot.componentContentAreaTemplateId ?? slot.componentSampleId)?.widget;
+  getAssetById(context.componentContentAreaTemplates, getComponentSlotTemplateId(slot))?.widget ?? slot.widget;
 
 const getUnitMetric = (slotFill: ReportTemplateSlotFill): WidgetAuxMetric | undefined => {
   if (!slotFill.unit) {

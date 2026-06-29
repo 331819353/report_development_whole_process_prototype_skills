@@ -13,6 +13,8 @@ All report content display areas must start from the fixed `1920x1080` prototype
 - For a left-nav page with a 256px vertical menu/sidebar and no horizontal menu/header, `colWidth = (1920 - 256) / 12 ~= 138.67px` and `rowHeight = (1080 - 0) / 8 = 135px`.
 - Every top-level content block occupies one or more complete page-grid cells and acts as a parent block.
 - Every top-level content block's occupied area must be rectangular.
+- When a PRD exists, derive the grid from the PRD section 4C reader-facing page preview first. The preview names filters, toolbar actions, major blocks, business content, and interaction entries; `layoutRows` is the machine-checkable execution form of that preview, not a separate layout invention.
+- Implementation handoff must include a machine-checkable row audit: every `layoutRows` string is exactly 12 cells wide, no `layoutRows` string exceeds 12 cells, total row count `N >= 8`, every block letter is rectangular, every block has `colStart`, `colSpan`, `rowStart`, `rowSpan`, and every block id maps to one downstream block layout template.
 - A top-level parent block may contain multiple internal sub-blocks, and each sub-block may contain one component or a tightly related micro-group. Internal sub-blocks do not count as page-grid blocks. See `block-composition.md`.
 - Internal sub-block layouts always reserve `5px` from the parent block body edge and `5px` between sibling sub-blocks.
 - Major sections may occupy full-width 12-column rows.
@@ -22,6 +24,7 @@ All report content display areas must start from the fixed `1920x1080` prototype
 - Drawers and modals are overlays and do not count as content-grid blocks.
 
 Do not use masonry, staggered, diagonal, floating, or irregular component shapes.
+Do not use prose-only layout such as "8+4", "three columns", or "upper/middle/lower" as the final handoff. Convert the reader-facing preview into 12-character `layoutRows` before template implementation. Reject any row with more than 12 characters, any page with fewer than 8 rows, and any grid that contradicts the PRD section 4C page preview.
 
 After choosing a default span, calculate its actual pixel size with `block-size-constraints.md` at `1920x1080`. Keep `3 * 2` when the content fits; enrich sparse content, split, or move detail content only when the size check fails.
 
