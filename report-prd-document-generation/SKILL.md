@@ -9,23 +9,24 @@ description: "[原型阶段] 独立生成报表、驾驶舱、管理看板、分
 
 Classification: 原型阶段.
 
-Use this skill to create the independent implementation-ready PRD for report development. The output is the required prerequisite for downstream report prototype workflows, template configuration, technical solution, backend/API, frontend integration, and testing workflows.
+Use this agent-neutral capability to create the independent implementation-ready PRD for report development. This repository packages the capability as a skill for one distribution format, but the contract is for any capable agent or workflow runner, including Claude, Hermes, Codex, or internal automation. The output is the required prerequisite for downstream report prototype workflows, template configuration, technical solution, backend/API, frontend integration, and testing workflows.
 
 Do not jump to code or mock implementation. Convert user needs into stable scope, layout, metric, data, API, interaction, permission, and acceptance contracts first.
 
 ## Positioning
 
-Use this as the focused PRD-writing skill after or alongside requirement clarification. It is stricter than a generic requirement summary:
+Use this as the focused PRD-writing capability after or alongside requirement clarification. It is stricter than a generic requirement summary:
 
 - The PRD must be readable before it is exhaustive. Write a short, visual, business-readable main document first, then put IDs, matrices, formulas, API fields, and workflow execution details in appendices.
-- The PRD output must be a parent/child PRD bundle when it will feed downstream work: the main PRD is for humans, while child PRDs are for AI execution in 原型、前端、后端、技术方案、测试. The main PRD must state each child PRD's purpose, consumed parent sections, downstream stage, and sync rule.
+- The PRD output must be a parent/child PRD bundle for every report-development PRD. A main PRD alone is invalid. The main PRD is for humans, while child PRDs are for AI execution in 原型、前端、后端、技术方案、测试. The main PRD must state each child PRD's purpose, consumed parent sections, downstream stage, and sync rule.
+- Outputting only the child PRD registry, final stage map, links, or "see appendix" text does not satisfy the child PRD requirement. The final answer/file must include the full body of all five child PRDs, or explicitly write the five child files when file output is requested.
 - Do not make raw codes such as `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `BLK-*`, or `SLOT-*` the primary language of the main PRD. Pair any required ID with a readable Chinese name, and move dense ID tables to the execution appendix.
 - Every navigation page must include a Markdown preview before technical layout tables. The preview must show filters, toolbar actions, major page blocks, business content, interaction entry points, and the intended reading path.
 - Report prototype workflows must consume this PRD; they do not own complete PRD generation.
 - The PRD must explain why the report exists, who uses it, what management problem it solves, and what phase one includes/excludes.
 - The PRD must define the report-type implementation path before layout: how this report should be read, why that path fits the role and management problem, and how each path step maps to page blocks and block layout templates.
 - For management-facing reports, the PRD must include an executive satisfaction auxiliary design gate: decision profile, 3-second answer, 30-second cause path, 3-minute action, priority/severity, closure, trust/source, meeting/export reuse, and acceptance checklist.
-- The page layout section must be concrete enough for current configurable report templates: framework template, shell configuration, page `layoutRows` with 12-column row evidence, block layout template, standard block areas, component slots, and real component content area templates.
+- The page layout section must be concrete enough for current configurable report templates: framework template, shell configuration, page `layoutRows` with 12-column row evidence, readable layout coordinates, block layout template, standard block areas, component slots, and real component content area templates.
 - Report development is template-only except for two explicit extension surfaces: self-developed interaction behavior and self-developed component content area templates. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, and export surfaces must use configurable templates.
 - For prototype handoff, the PRD must default runnable output to `outputArtifact: vueTemplatePrototype` and `implementationMode: copyTemplateProject`: downstream workflows copy the selected bundled template project first, then preserve `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios`; add AntV S2 only for pivot/cross/wide analytical tables. HTML in attachments, copied source, screenshots, source files, or PRD text is requirement evidence only and must not become `htmlPrototype`. A blank/new Vue3 project is allowed only as `implementationMode: newVue3Project` for a documented self-developed/non-template exception where no copyable template route works.
 - Metrics must include definitions, formulas, denominators, null rules, source, refresh cadence, and direction. Metric names alone are not acceptable.
@@ -33,10 +34,12 @@ Use this as the focused PRD-writing skill after or alongside requirement clarifi
 - Summary areas, conclusion cards, and analysis insight components must be data-driven. The PRD must define `conclusionRuleMap` rows that tell frontend how to derive the conclusion from metrics/API fields, filters, thresholds, priorities, and empty-state rules; a fixed one-sentence conclusion is not acceptable.
 - Data/API and interaction sections must be implementable, not prose-only.
 - Section 8 data/API requirements must be detailed enough for the prototype workflow to generate `docs/prototype-data-summary.md` after implementation, including data objects, fields, metrics, generated conclusion inputs, component bindings, filter semantics, interaction payloads, backend API/model suggestions, and gaps.
-- The PRD must include a PRD-to-workflow execution matrix so every PRD section has a downstream owning skill, execution artifact, and blocking rule.
+- The PRD must include a PRD-to-workflow execution matrix so every PRD section has a downstream owning capability/workflow, execution artifact, and blocking rule.
 - Parent PRD changes must propagate to child PRDs in the same delivery. If an affected child PRD cannot be updated, mark it `stale` and record the blocking `GAP-*`.
 
 ## Reference Loading
+
+Capability references are agent-neutral. Names such as `report-prototype-template-management` identify the required capability contract, not a platform-specific invocation style; older `$`-prefixed notation means the same capability ID. Any agent must map the capability ID to its equivalent prompt, tool, workflow, or documentation bundle before executing the step.
 
 Load references only as needed, but read the first six before finalizing a PRD:
 
@@ -48,13 +51,13 @@ Load references only as needed, but read the first six before finalizing a PRD:
 - Read `references/template-layout-prd-contract.md` before writing the page layout section for any report/dashboard/cockpit PRD.
 - Read `references/metric-api-interaction-matrices.md` before writing metric lists, metric mounting, API requirements, or interaction logic.
 - Read `references/prototype-workflow-execution-map.md` before finalizing the PRD or handing it to any prototype workflow.
-- Read `$report-prototype-template-management` `references/template-build-packet-contract.md` when the PRD will feed template implementation; include a Template Build Packet seed in the execution appendix.
-- Use `$report-prototype-template-management` when exact bundled template behavior, template operation flow, or runtime template validation affects the PRD.
-- Use `$report-info-component-mapping` when business questions must be mapped to charts, KPI cards, lists, tables, conclusion cards, drilldowns, or component content templates.
-- Use `$report-design-system-governance` when report decision quality, metric story, visual density, export/readability, or management cockpit design rules matter.
-- Use `$metric-number-display-contract` when the PRD defines numeric units, percentage precision, rounding, tooltip/export values, denominator display, or null/zero behavior.
-- Use `$delivery-artifact-template-management` when the PRD must align with downstream API, data model, permission matrix, test case, or delivery index templates.
-- If the user input is very vague, use `$report-requirement-structure-extraction` first to separate confirmed facts, assumptions, and gaps, then return here to produce the PRD.
+- Read capability `report-prototype-template-management` `references/template-build-packet-contract.md` when the PRD will feed template implementation; include a Template Build Packet seed in the execution appendix.
+- Use capability `report-prototype-template-management` when exact bundled template behavior, template operation flow, or runtime template validation affects the PRD.
+- Use capability `report-info-component-mapping` when business questions must be mapped to charts, KPI cards, lists, tables, conclusion cards, drilldowns, or component content templates.
+- Use capability `report-design-system-governance` when report decision quality, metric story, visual density, export/readability, or management cockpit design rules matter.
+- Use capability `metric-number-display-contract` when the PRD defines numeric units, percentage precision, rounding, tooltip/export values, denominator display, or null/zero behavior.
+- Use capability `delivery-artifact-template-management` when the PRD must align with downstream API, data model, permission matrix, test case, or delivery index templates.
+- If the user input is very vague, use capability `report-requirement-structure-extraction` first to separate confirmed facts, assumptions, and gaps, then return here to produce the PRD.
 
 ## Workflow
 
@@ -84,10 +87,11 @@ Load references only as needed, but read the first six before finalizing a PRD:
    Select the framework template only from the bundled template families. Configure existing shell-owned title, filter, navigation, toolbar, export, and permission surfaces; do not self-develop or duplicate these surfaces in the report development flow. For each page block, choose a selectable independent block layout template from the section 4A path mapping and section 4B executive satisfaction IDs, then fill the standard areas:
    `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
    `layoutRows` must be machine-checkable: every page has at least 8 rows, every row is exactly 12 columns, no row may exceed 12 cells, every visible block is rectangular, every block id maps to one `blockLayoutTemplateMap` row, and every row/column span is recorded before component slots are filled.
+   Add a readable `layoutCoordinateMap` for every page. Use `R-B-S` format for component slots: `R` = page reading row/region number, `B` = block order inside that row, `S` = slot order inside the selected block layout template. Example: if page row 1 has two `6*3` blocks, the second block is `1-2`, and its first component slot is `1-2-1`. Standard block areas use `blockCoordinate + areaName` such as `1-2:titleArea`; do not use the third digit for title/pill/aux/unit/summary areas.
    Output a visible shell/filter/control design: `filterSurfaceMap` for template-native page filters, `pillAreaConfig` for every block, `toolbarActionMap`, and a display decision for each business switch/control. Do not omit filters, pills, or action entry points just because the user did not specify visual placement.
 
 6. Fill every component slot.
-   For each `3 componentArea` slot, name the registered component content area template ID from the component content area template mapping table, standalone Vue file, sample/example source, visual type, metric/data binding, slot role, props/state contract, and fallback. Do not put title, filters, controls, aux metrics, units, descriptions, or summaries inside component content area templates.
+   For each `3 componentArea` slot, name its readable `slotCoordinate` such as `1-2-1`, then name the registered component content area template ID from the component content area template mapping table, standalone Vue file, sample/example source, visual type, metric/data binding, slot role, props/state contract, and fallback. Do not put title, filters, controls, aux metrics, units, descriptions, or summaries inside component content area templates.
    If the slot renders a conclusion card or analysis insight, bind it to `conclusionRuleId` instead of writing final static copy.
 
 7. Create metric contracts.
@@ -109,19 +113,20 @@ Load references only as needed, but read the first six before finalizing a PRD:
     State what evidence will prove the PRD is ready: every page block mapped, every component slot filled, every metric defined and mounted, every API tied to data objects, and every interaction has response logic. List blockers separately.
 
 12. Build the PRD-to-workflow execution matrix.
-    Map every PRD section to the downstream workflow step, owning skill, required artifact, executable input IDs, and blocker rule. No PRD section may remain "for reference only" unless it is explicitly out of scope.
+    Map every PRD section to the downstream workflow step, owning capability/workflow, required artifact, executable input IDs, and blocker rule. No PRD section may remain "for reference only" unless it is explicitly out of scope.
 
 12A. Build the child PRD bundle.
-    Follow `references/child-prd-bundle-contract.md`. In the main PRD, output the child PRD registry and final stage map for 原型、前端、后端、技术方案、测试. In appendices or child files, output `CHILD-PRD-PROTOTYPE`, `CHILD-PRD-FRONTEND`, `CHILD-PRD-BACKEND`, `CHILD-PRD-TECHNICAL-SOLUTION`, and `CHILD-PRD-TESTING` with parent version, consumed parent sections, sync status, blocking gaps, and stage-specific execution inputs. If a child PRD is not needed in the current phase, still list it in the main registry as `not-needed` with a reason.
+    Follow `references/child-prd-bundle-contract.md`. In the main PRD, output the child PRD registry and final stage map for 原型、前端、后端、技术方案、测试. Then output the full body of `CHILD-PRD-PROTOTYPE`, `CHILD-PRD-FRONTEND`, `CHILD-PRD-BACKEND`, `CHILD-PRD-TECHNICAL-SOLUTION`, and `CHILD-PRD-TESTING`. In a single Markdown PRD, these must appear as Appendix H-L with visible headings. In a file-based delivery, create `children/prd-child-prototype.md`, `children/prd-child-frontend.md`, `children/prd-child-backend.md`, `children/prd-child-technical-solution.md`, and `children/prd-child-testing.md`, and list their paths in the main PRD. If a child PRD is not needed in the current phase, still create that child PRD body with the common header, `sync status: not-needed`, reason, future trigger, and affected downstream stage.
 
 13. Create the Template Build Packet seed for template-based implementation.
-    In the PRD execution appendix, normalize framework choice, page previews, `layoutRows`, block maps, standard block areas, component slot fills, data/API, filters/actions, interactions, dynamic conclusion rules, self-development exceptions, target files, and validations into the fixed sections from `$report-prototype-template-management` `references/template-build-packet-contract.md`. Mark unknown implementation-critical values as `TBD(GAP-*)`.
+    In the PRD execution appendix, normalize framework choice, page previews, `layoutRows`, block maps, standard block areas, component slot fills, data/API, filters/actions, interactions, dynamic conclusion rules, self-development exceptions, target files, and validations into the fixed sections from capability `report-prototype-template-management` `references/template-build-packet-contract.md`. Mark unknown implementation-critical values as `TBD(GAP-*)`.
 
 ## Required Output
 
 Return a complete PRD document in Markdown unless the user asks for another format. The PRD must include:
 
 - Two-layer parent/child structure from `references/readable-prd-main-body.md` and `references/child-prd-bundle-contract.md`: a concise reader-facing main PRD, then AI-executable child PRDs/appendices. The main document must be understandable without reading raw ID matrices.
+- Full child PRD bodies, not only a child registry. A valid output has all five visible child PRD headings: `CHILD-PRD-PROTOTYPE`, `CHILD-PRD-FRONTEND`, `CHILD-PRD-BACKEND`, `CHILD-PRD-TECHNICAL-SOLUTION`, and `CHILD-PRD-TESTING`. Each child body must include the common child header, parent sections consumed, sync status, stage-specific execution inputs, blocker gaps, and downstream start gate.
 - Main PRD child registry: for 原型、前端、后端、技术方案、测试, state the child PRD ID, purpose, consumed main PRD sections, downstream artifact, current sync status, and when it must be updated after main PRD changes.
 - Final output stage map: explicitly state which child PRD each downstream stage must use, what else it must read, and what blocks the stage from starting.
 - Navigation and page previews: Markdown/mermaid preview for every navigation page, showing filters, toolbar actions, page blocks, business content, interaction entries, and how the reader moves from conclusion to evidence/action/detail.
@@ -133,9 +138,9 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - 页面内容.
 - 报表类型实现思路与分块布局映射: attachment evidence intake, user-supplied thought validation, selected `RTP-*` pattern, reading path, first-viewport plan, and path-step-to-block-layout mapping.
 - 管理层满意度辅助设计: `ESG-*` decision profile, first-viewport answer quality, management metric wording, `SEV-*` priority/severity, `ACT-*` closure, `TRUST-*` trust/source, `MEET-*` review/export, and satisfaction checklist when management-facing.
-- 页面布局配置 with framework template, shell configuration, page `layoutRows` 12-column audit, block layout template map, standard area configuration, component slot map, and component content area template map.
+- 页面布局配置 with framework template, shell configuration, page `layoutRows` 12-column audit, `layoutCoordinateMap` using `R-B-S` coordinates, block layout template map, standard area configuration, component slot map, and component content area template map.
 - Template reuse constraint: explicitly state that all non-interaction and non-component-content-template surfaces use existing templates; list only interaction IDs and component content area template IDs in the self-development exception map.
-- Layout/control readiness: include page `layoutRows` exact-12-column and minimum-8-row audit, `filterSurfaceMap`, `toolbarActionMap`, and block-level `pillAreaConfig` decisions with visible placement and binding scope.
+- Layout/control readiness: include page `layoutRows` exact-12-column and minimum-8-row audit, `layoutCoordinateMap`, `filterSurfaceMap`, `toolbarActionMap`, and block-level `pillAreaConfig` decisions with visible placement and binding scope.
 - Component content area template index: registered template ID, standalone Vue file, copy path, visual type, use case, and required binding evidence for each selected or fallback component content area template.
 - Dynamic conclusion rule map: `conclusionRuleMap` for every summary-area conclusion, conclusion card, and analysis insight component, proving the frontend generates conclusions from data instead of fixed copy.
 - Output artifact and implementation mode rule: default downstream runnable prototypes to `vueTemplatePrototype` with `implementationMode: copyTemplateProject`, copied template path, and `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` stack preservation; any `htmlPrototype` exception must cite the latest explicit user request, and any `newVue3Project` exception must cite a self-developed/non-template reason and rejected copy candidates.
@@ -149,10 +154,12 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - 验收标准 and PRD readiness/gap list.
 - PRD-to-workflow execution matrix that proves every PRD section has a downstream owner and executable artifact.
 - Child PRD bundle: `CHILD-PRD-PROTOTYPE`, `CHILD-PRD-FRONTEND`, `CHILD-PRD-BACKEND`, `CHILD-PRD-TECHNICAL-SOLUTION`, and `CHILD-PRD-TESTING`, or equivalent appendices, each with parent version, parent sections consumed, sync status, blocking gaps, and stage-specific execution inputs.
-- Template Build Packet seed for downstream template implementation, aligned to `$report-prototype-template-management` `references/template-build-packet-contract.md`.
+- Template Build Packet seed for downstream template implementation, aligned to capability `report-prototype-template-management` `references/template-build-packet-contract.md`.
 
 ## Quality Gate
 
+- If the final PRD lacks any one of the five child PRD bodies, do not call the PRD complete. Continue writing the missing child PRD body or mark the whole PRD `blocked` with `GAP-CHILD-PRD-MISSING`.
+- Do not treat section 0A, the child registry, the final stage map, or a list of child filenames as a substitute for the full child PRD body.
 - Do not produce a main PRD that is dominated by raw codes or opaque ID tables. Raw IDs are execution handles, not the reading experience.
 - Do not mark a PRD bundle ready when the main PRD lacks the child PRD registry or when the final output does not state which child PRD is used by 原型、前端、后端、技术方案、测试.
 - Do not update a parent PRD section without updating affected child PRDs in the same delivery, or marking the affected child PRDs `stale` with a `GAP-*` and clear impact.
@@ -166,6 +173,7 @@ Return a complete PRD document in Markdown unless the user asks for another form
 - Do not let section 5 introduce page blocks that do not trace back to section 4A path steps unless they are explicitly marked as support/source/export/permission blocks.
 - Do not mark a PRD ready when `layoutRows` rows are not exactly 12 columns, block letters are not rectangular, block ids do not map one-to-one to `blockLayoutTemplateMap`, or row/column spans cannot be validated as the page-level `12 * N` grid.
 - Do not mark a PRD ready when any `layoutRows` row is shorter or longer than exactly 12 cells, or when total page rows are fewer than 8. `12 * N` means N >= 8.
+- Do not mark a PRD ready when any visible block lacks a readable `blockCoordinate` such as `1-2`, any component slot lacks a readable `slotCoordinate` such as `1-2-1`, or the coordinate order contradicts the page preview, `layoutRows`, `blockMap`, or selected block layout template slot order.
 - Do not mark a PRD ready when template-native filters, business switches, date/period controls, block pills, toolbar actions, or component-owned drilldown/jump/modal/drawer/popup events are missing visible placement, ownership, affected data/API parameters, and refresh/state response. If a control is not needed, write an explicit `notNeededReason`.
 - Do not treat `componentRegionPattern` as the selected template. It is compatibility metadata derived from selected block layout slots.
 - Do not mark a PRD ready if it asks for self-developed framework shell, page layout, block layout template, title/pill/aux/unit/summary area, navigation, filter surface, toolbar, or export surface. Only interaction behavior and component content area templates may be self-developed, and both must remain inside the template contract.

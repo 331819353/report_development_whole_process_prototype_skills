@@ -8,7 +8,7 @@ Before choosing a mode, enforce the trigger gate. Do not let adjacent words such
 
 Template-only report development gate: within this workflow, `pageShellPath` must be `template`. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must be configured through templates. The only self-developed surfaces are interaction behavior and component content area templates.
 
-Before implementation, also choose exactly one `pageShellPath`, exactly one `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`: `haierEnterprise`, `sampleRestore`, or `sciFiCockpit`. When `pageShellPath: template`, also declare the nine-step template chain from `$report-prototype-template-management` `references/template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. Also create or validate the Template Build Packet from `$report-prototype-template-management` `references/template-build-packet-contract.md`; source edits cannot start until the packet has ready or deferred rows for the target page, block, slot, control, data/API, conclusion rule, self-development exception, target file, and validation command. These are blocking decisions, not later polish choices.
+Before implementation, also choose exactly one `pageShellPath`, exactly one `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`: `haierEnterprise`, `sampleRestore`, or `sciFiCockpit`. When `pageShellPath: template`, also declare the nine-step template chain from `report-prototype-template-management` `references/template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, and `summaryAreaConfig`. Also create or validate the Template Build Packet from `report-prototype-template-management` `references/template-build-packet-contract.md`; source edits cannot start until the packet has ready or deferred rows for the target page, block, slot, control, data/API, conclusion rule, self-development exception, target file, and validation command. These are blocking decisions, not later polish choices.
 
 Source-material intake gate:
 
@@ -16,7 +16,7 @@ Source-material intake gate:
 - Convert source materials into confirmed facts, inferred assumptions, missing gaps, component/data/filter/interaction constraints, and acceptance checks as PRD evidence before choosing shell, template, output format, or implementation target.
 - Source file format is not output-format authority. Provided HTML/MD/source files do not by themselves mean `htmlPrototype` or any custom shell/layout path.
 - Declare exactly one `outputArtifact` and one `implementationMode`: default `vueTemplatePrototype` plus `copyTemplateProject`; use `htmlPrototype` only when the user explicitly asks for HTML/static/single-file HTML output or exact static HTML preservation, and use `newVue3Project` only for a documented self-developed/non-template exception.
-- Before any prototype workflow continues, a PRD from `$report-prd-document-generation` must exist or be generated. The PRD must include the PRD-to-workflow execution matrix from `$report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
+- Before any prototype workflow continues, a PRD from `report-prd-document-generation` must exist or be generated. The PRD must include the PRD-to-workflow execution matrix from `report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
 
 ### 1. Prototype-Oriented Design Mode
 
@@ -96,7 +96,7 @@ Clarify or infer:
 - Which of the six display themes is primary: 明细、汇总统计、经营看板、分析探索、管理报告/专题报告, or 监控告警?
 - Is the expected output text, specification, code, or both?
 - Which standard inputs are present: PRD/需求文档, 指标清单, optional screenshot/image, optional HTML源码, optional Markdown/MD, optional copied source/code, optional data/config files?
-- Does a `$report-prd-document-generation` PRD exist, and does it include the PRD-to-workflow execution matrix?
+- Does a `report-prd-document-generation` PRD exist, and does it include the PRD-to-workflow execution matrix?
 - Which PRD rows are `ready`, `draft`, `blocked`, or `deferred-out-of-scope` for this workflow?
 - What is the source-material requirement matrix: each source artifact, extracted facts, inferred assumptions, missing gaps, affected requirement areas, and whether it is explicit output-format authority?
 - Which `outputArtifact` and `implementationMode` are required: default `vueTemplatePrototype` plus `copyTemplateProject`, `htmlPrototype` only with explicit HTML/static-output wording, or `newVue3Project` only with a self-developed/non-template exception?
@@ -112,7 +112,7 @@ Do not block if missing details can be safely assumed.
 
 ### Stage 0.5: Default General Prototype Design Thinking
 
-Use `$report-prototype-design-thinking` before display theme, report type, component mapping, layout, template selection, or implementation.
+Use `report-prototype-design-thinking` before display theme, report type, component mapping, layout, template selection, or implementation.
 
 This stage is only the generic/default thinking layer for the original workflow. Do not branch into 自助分析、指标看板、分析报告、or 明细报表 here; those are separate prototype workflow skills.
 
@@ -230,11 +230,11 @@ Hard rules:
 
 ### Stage 1: PRD Prerequisite And Requirement Evidence
 
-Use `$report-prd-document-generation`.
+Use `report-prd-document-generation`.
 
-Run this stage before display theme, report type, component mapping, layout, template, or implementation. Skip only when the user already provides a complete PRD that passes `$report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
+Run this stage before display theme, report type, component mapping, layout, template, or implementation. Skip only when the user already provides a complete PRD that passes `report-prd-document-generation` `references/prototype-workflow-execution-map.md`.
 
-Use `$report-requirement-structure-extraction` only as a feeder when evidence is unclear, conflicting, or scattered. Feed the extracted facts, assumptions, and gaps back into the PRD before continuing.
+Use `report-requirement-structure-extraction` only as a feeder when evidence is unclear, conflicting, or scattered. Feed the extracted facts, assumptions, and gaps back into the PRD before continuing.
 
 Output must include:
 
@@ -245,7 +245,7 @@ Output must include:
 - Blocking PRD gaps that prevent prototype design, layout, template configuration, component mapping, data/API handoff, interaction design, or QA.
 - Explicit reason if a supplied PRD is accepted as complete.
 
-Do not use this stage to rewrite the PRD inside the workflow. If the PRD changes, return to `$report-prd-document-generation` and update the PRD artifact first.
+Do not use this stage to rewrite the PRD inside the workflow. If the PRD changes, return to `report-prd-document-generation` and update the PRD artifact first.
 
 ### Stage 1.5: Display Theme And Pattern Routing
 
@@ -261,7 +261,7 @@ Output must include:
 
 Rules:
 
-- Display theme is a page-form decision; it does not replace the primary report type from `$report-type-design`.
+- Display theme is a page-form decision; it does not replace the primary report type from `report-type-design`.
 - Use 3-7 pattern cards for a design proposal and 5-12 for an implementation-ready spec or runnable page.
 - Each selected pattern must map to at least one binding matrix row, data/API requirement, or validation case before implementation.
 
@@ -331,7 +331,7 @@ This is the bridge from business thinking to implementable page structure.
 
 ### Stage 5: Data Design
 
-Use `$report-info-component-mapping` when prototype data, demo data, or chart-ready data is needed. Let the child skill decide which internal data-modeling reference to load.
+Use `report-info-component-mapping` when prototype data, demo data, or chart-ready data is needed. Let the child skill decide which internal data-modeling reference to load.
 
 Output must include:
 
@@ -349,7 +349,7 @@ Skip only for pure methodology answers where no prototype or example data is nee
 
 ### Stage 6: Filter Design
 
-Use `$report-info-component-mapping` when report scope can change by time, organization, status, object, owner, source, or keyword. Let the child skill decide which internal filter reference to load.
+Use `report-info-component-mapping` when report scope can change by time, organization, status, object, owner, source, or keyword. Let the child skill decide which internal filter reference to load.
 
 Output must include:
 
@@ -391,7 +391,7 @@ Rules:
 
 ### Stage 7: Data Interaction Design
 
-Use `$report-info-component-mapping` when any data object is clickable or navigable. Let the child skill decide which internal interaction reference to load.
+Use `report-info-component-mapping` when any data object is clickable or navigable. Let the child skill decide which internal interaction reference to load.
 
 Output must include:
 

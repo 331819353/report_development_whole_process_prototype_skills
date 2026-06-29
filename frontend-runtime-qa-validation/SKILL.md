@@ -29,8 +29,8 @@ It is not a test-case design skill. For test matrices use `integration-test-case
 | Focused visual regression, screenshot diff, component crops, and `VIS-*` findings | `$visual-browser-regression-check` |
 | Readiness and cross-stage gate | `$quality-gate-validation` |
 | Haier/company application UI baseline | `$haier-enterprise-app-ui-design-spec` for Haier/enterprise Web surfaces, including report/dashboard pages |
-| Report/dashboard baseline and anti-AI/report-decision gates | `$report-design-system-governance` relevant references |
-| Modern SaaS / BI Dashboard / UI Kit runtime style contract | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested or claimed |
+| Report/dashboard baseline and anti-AI/report-decision gates | `report-design-system-governance` relevant references |
+| Modern SaaS / BI Dashboard / UI Kit runtime style contract | `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested or claimed |
 
 ## Workflow
 

@@ -54,7 +54,7 @@ Required behavior:
 
 ## Interaction Types
 
-When an overlay, drawer, modal, action sheet, notification, navigation drawer, or detail panel is reusable, choose `overlayPanelPattern` from `$report-component-style-design` `references/08a-overlay-drawer-modal-patterns.md` and include the trigger payload, inherited filters, close behavior, mask behavior, focus behavior, scroll behavior, and stale-state rule in the mapping.
+When an overlay, drawer, modal, action sheet, notification, navigation drawer, or detail panel is reusable, choose `overlayPanelPattern` from `report-component-style-design` `references/08a-overlay-drawer-modal-patterns.md` and include the trigger payload, inherited filters, close behavior, mask behavior, focus behavior, scroll behavior, and stale-state rule in the mapping.
 
 ### Tooltip / Popover
 

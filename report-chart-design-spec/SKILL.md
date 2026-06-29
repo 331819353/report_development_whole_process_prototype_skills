@@ -13,26 +13,26 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 ## Positioning
 
-Use this as the direct front door for chart-family design standards and chart readability. It promotes chart references that were previously reachable only through `$report-component-style-design`.
+Use this as the direct front door for chart-family design standards and chart readability. It promotes chart references that were previously reachable only through `report-component-style-design`.
 
 When chart references come from screenshots or visual samples, route them through the shared style generalization goal first: the chart must map to a controlled chart pattern, a valid composed card pattern, or a documented extension gap before it becomes implementation guidance.
 
-Use `$report-component-style-design` when the task covers mixed component families; use this skill when the task is clearly about chart choice, chart anatomy, ECharts option fidelity, label/legend/tooltip density, or chart placement.
+Use `report-component-style-design` when the task covers mixed component families; use this skill when the task is clearly about chart choice, chart anatomy, ECharts option fidelity, label/legend/tooltip density, or chart placement.
 
 ## Reference Map
 
 | Need | Read |
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
-| Screenshot/sample-derived chart style generalization | `$report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
-| Low-noise high-density visual baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when chart polish, high-end BI style, chart color discipline, tooltip clarity, or outside/general chart guidance is in scope |
+| Screenshot/sample-derived chart style generalization | `report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Low-noise high-density visual baseline | `report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when chart polish, high-end BI style, chart color discipline, tooltip clarity, or outside/general chart guidance is in scope |
 | Chart source map and exact placement files | `references/01-chart-reference-map.md` |
-| Shared chart visual rules | `$report-component-style-design` `references/05-echarts-charts.md` |
-| Spatial / map / geographic analysis cards | `$report-component-design-spec` `references/06-spatial-analysis-map-card-standard.md` when the map is packaged with KPI rails, Top lists, local controls, coverage, trend, structure, point, or migration evidence |
-| Reusable relationship analysis chart-card patterns | `$report-component-style-design` `references/09b-relationship-analysis-card-patterns.md` when the chart answers 看关系, 相关性, 关联, 影响因素, or 关系网络 before routing to the exact chart family |
-| Report chart/table format baseline | `$report-design-system-governance` `references/05-report-charts-tables-format-guidelines.md` |
-| Modern SaaS / BI Dashboard / UI Kit chart-lightness contract | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
-| Placement and dense acceptance | `$report-component-style-design` references: `12-internal-placement-algorithms.md`, `12-component-acceptance-gates.md` |
+| Shared chart visual rules | `report-component-style-design` `references/05-echarts-charts.md` |
+| Spatial / map / geographic analysis cards | `report-component-design-spec` `references/06-spatial-analysis-map-card-standard.md` when the map is packaged with KPI rails, Top lists, local controls, coverage, trend, structure, point, or migration evidence |
+| Reusable relationship analysis chart-card patterns | `report-component-style-design` `references/09b-relationship-analysis-card-patterns.md` when the chart answers 看关系, 相关性, 关联, 影响因素, or 关系网络 before routing to the exact chart family |
+| Report chart/table format baseline | `report-design-system-governance` `references/05-report-charts-tables-format-guidelines.md` |
+| Modern SaaS / BI Dashboard / UI Kit chart-lightness contract | `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
+| Placement and dense acceptance | `report-component-style-design` references: `12-internal-placement-algorithms.md`, `12-component-acceptance-gates.md` |
 
 ## Anti-Laziness Gate
 

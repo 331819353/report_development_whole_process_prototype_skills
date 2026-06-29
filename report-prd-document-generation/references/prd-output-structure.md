@@ -8,7 +8,7 @@ The PRD must have two layers plus a child-PRD bundle:
 
 1. Reader-facing main document: short, visual, and understandable by product, business, and management readers.
 2. Development execution appendix: IDs, matrices, `layoutRows`, metric formulas, API fields, workflow execution rows, and validation details.
-3. Child PRDs for AI execution: stage-specific appendices/files for 原型、前端、后端、技术方案、测试.
+3. Full child PRDs for AI execution: stage-specific appendices/files for 原型、前端、后端、技术方案、测试. A registry or stage map alone is not enough.
 
 Rules:
 
@@ -19,6 +19,7 @@ Rules:
 - Keep the main document focused on the part the reader needs at that step; move exhaustive technical matrices to appendices.
 - The main document must include a child PRD registry and final stage map. It must state which child PRD is used by 原型、前端、后端、技术方案、测试, each child PRD's purpose, consumed parent sections, downstream artifact, sync status, and update trigger.
 - Child PRDs are allowed to be AI-oriented and ID-heavy; they must still declare parent PRD version, consumed parent sections, sync status, owner workflow, and blocking gaps.
+- The final PRD must include the full body of all five child PRDs. If output is one Markdown document, include Appendix H-L. If output is file-based, create the five child files and list their paths. Do not replace child bodies with a table of filenames.
 
 ## Appendix ID Rules
 
@@ -72,6 +73,7 @@ Rules:
 - The main PRD explains the child PRD purpose and sync rule; full child PRD details go to section 14 or separate child files.
 - Every child PRD must declare parent PRD version and `sync status`.
 - If a child PRD is not needed for the current phase, still list it as `not-needed` with a reason.
+- The child registry does not satisfy section 14. It only tells people which child PRDs exist.
 
 ### 0. 文档元信息
 
@@ -317,6 +319,7 @@ Follow `template-layout-prd-contract.md`. This section must include:
 - Existing shell configuration: title, filters, navigation, toolbar/export, permission entry.
 - Reader-facing page preview summary from section 4C before any technical table.
 - Page `layoutRows` or equivalent block map, with exact-12-column audit, over-12 rejection, minimum-8-row audit, and block rectangle proof.
+- `layoutCoordinateMap`: readable coordinates for page blocks and slots. Use `R-B` for a block and `R-B-S` for a component slot, where `R` is the page reading row/region, `B` is the block order inside that row, and `S` is the slot order inside `3 componentArea`. Example: first page row has two `6*3` blocks; the second block is `1-2`, and its first slot is `1-2-1`.
 - `filterSurfaceMap` and `toolbarActionMap` with visible placement, owner, default state, option/action source, affected blocks, query params, and refresh behavior.
 - Block layout template map traced to section 4A `PATH-*` steps and section 4B `ESG-*` / `SEV-*` / `ACT-*` / `TRUST-*` / `MEET-*` IDs when applicable.
 - Standard area config for every block.
@@ -407,9 +410,10 @@ Readiness rules:
 - The PRD cannot be `ready-for-review` for a management-facing report when section 4B lacks `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*` severity, required `ACT-*` closure, `TRUST-*` source/freshness, or required `MEET-*` review/export behavior.
 - The PRD cannot be `ready-for-review` when section 4C lacks a Markdown/mermaid preview for every retained navigation page, or when the preview does not show filters, toolbar actions, major blocks, block business content, and interaction entry points.
 - The PRD cannot be `ready-for-review` when any `summaryArea`, conclusion card, or analysis insight component displays a business conclusion without a `RULE-*` row and frontend generation rule.
+- The PRD cannot be `ready-for-review` when any visible block lacks a readable `blockCoordinate` such as `1-2`, any `3 componentArea` slot lacks a readable `slotCoordinate` such as `1-2-1`, or the coordinate order conflicts with the page preview, `layoutRows`, `blockMap`, or selected block layout template slot order.
 - The PRD cannot be `ready-for-review` when it implies HTML/static prototype generation from PRD wording, attachments, screenshots, copied source, or HTML source samples. Downstream runnable prototype output must stay `vueTemplatePrototype` with the bundled Vue/TypeScript/ECharts stack unless the latest explicit user request is the HTML/static-output authority.
 - The PRD cannot be `ready-for-review` when it implies `newVue3Project` as the normal path. Downstream runnable prototype implementation must default to `copyTemplateProject`; a new Vue3 project requires a self-developed/non-template exception, rejected template candidates, owner, and readiness impact.
-- The PRD cannot be `ready-for-review` when section 0A child PRD registry is missing, section 14 child PRD bundle is missing, the final stage map does not name the child PRD used by 原型、前端、后端、技术方案、测试, or any affected child PRD is stale after a main PRD change without a `GAP-*` impact note.
+- The PRD cannot be `ready-for-review` when section 0A child PRD registry is missing, section 14 child PRD bundle is missing, any one of the five child PRD bodies is missing or replaced by a path/index only, the final stage map does not name the child PRD used by 原型、前端、后端、技术方案、测试, or any affected child PRD is stale after a main PRD change without a `GAP-*` impact note.
 
 ### 12. PRD-to-workflow 执行矩阵
 
@@ -431,7 +435,7 @@ Rules:
 
 ### 13. Template Build Packet Seed
 
-Follow `$report-prototype-template-management` `references/template-build-packet-contract.md`. This section is required when the PRD will feed a template-based runnable prototype.
+Follow `report-prototype-template-management` `references/template-build-packet-contract.md`. This section is required when the PRD will feed a template-based runnable prototype.
 
 Create a seed that downstream workflows can copy into `docs/template-build-packet.md` after the target project is created:
 
@@ -441,10 +445,10 @@ Create a seed that downstream workflows can copy into `docs/template-build-packe
 | 1. Source Authority | sections 0, 3 | source materials and what they are allowed/not allowed to decide | ready/draft/blocked |
 | 2. Framework And Shell | section 5 | framework template, copy source, title, nav/filter/toolbar surfaces, permission scope | ready/draft/blocked |
 | 3. Page Registry | sections 4, 4C | every nav/page, page purpose, reader preview ref, first viewport question | ready/draft/blocked |
-| 4. Page Layout Rows | section 5 | every page `layoutRows` audit with exact 12 cells and N >= 8 | ready/draft/blocked |
-| 5. Block Map | sections 4A, 4B, 5 | block span, selected block layout template, selected Vue file, slot count | ready/draft/blocked |
-| 6. Standard Block Areas | section 5 | title/pill/aux/unit/summary configs or null reasons | ready/draft/blocked |
-| 7. Component Slot Fills | sections 5, 7 | registered component content area template IDs, standalone Vue files, copy paths, bindings | ready/draft/blocked |
+| 4. Page Layout Rows | section 5 | every page `layoutRows` audit with exact 12 cells and N >= 8, plus reading row/region order used by coordinates | ready/draft/blocked |
+| 5. Block Map | sections 4A, 4B, 5 | `blockCoordinate` (`R-B`), block span, selected block layout template, selected Vue file, slot count | ready/draft/blocked |
+| 6. Standard Block Areas | section 5 | `blockCoordinate + areaName` location, title/pill/aux/unit/summary configs or null reasons | ready/draft/blocked |
+| 7. Component Slot Fills | sections 5, 7 | `slotCoordinate` (`R-B-S`), registered component content area template IDs, standalone Vue files, copy paths, bindings | ready/draft/blocked |
 | 8. Data, API, Filters, And Interactions | sections 8, 9 | data/API rows, filter/action maps, interaction behavior rows | ready/draft/blocked |
 | 9. Dynamic Conclusion Rules | section 5A | rule rows for summary/conclusion/insight targets | ready/draft/blocked |
 | 10. Self-Development Exception Map | sections 3, 5, 9 | only interaction behavior and component content area template exceptions | ready/draft/blocked |
@@ -459,7 +463,7 @@ Rules:
 
 ### 14. Child PRD Bundle For Downstream AI Execution
 
-Follow `child-prd-bundle-contract.md`. This section may be split into child files, but the final PRD output must list the files/sections and their sync status.
+Follow `child-prd-bundle-contract.md`. This section is mandatory. It may be split into child files, but the final PRD output must include the full child PRD bodies or the actual child files, and must list the files/sections and their sync status. A bundle index, child registry, or final stage map alone is not section 14.
 
 Use this bundle index:
 
@@ -485,5 +489,7 @@ Rules:
 
 - Each child PRD must start with the common child header from `child-prd-bundle-contract.md`.
 - The child PRD content must be stage-specific. Do not copy the full main PRD into every child PRD.
+- Each child PRD must include a parent-section consumption table, stage execution input table, stage-specific contract, relevant data/API/interaction/conclusion/permission inputs, blocking gaps, sync status, and downstream start gate.
 - When any parent section changes, update affected child PRDs or mark them `stale` with a `GAP-*`.
 - Do not mark the PRD bundle `ready-for-review` unless section 0A and section 14 agree on child PRD IDs, stage purpose, and sync status.
+- Do not stop after the section 14 bundle index. Continue writing Appendix H-L child bodies in single-document output.

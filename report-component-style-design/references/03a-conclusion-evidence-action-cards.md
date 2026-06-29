@@ -7,7 +7,7 @@ This is an Analysis & Insight pattern. Pair it with:
 - `03-text-summary.md` for Analysis & Insight copy, state, and subtype rules.
 - `04a-kpi-card-patterns.md` for the embedded KPI evidence strip.
 - `12b-placement-insight-kpi.md` for conclusion and KPI placement budgets.
-- `$report-component-design-spec` when this must become a reusable component-family standard.
+- `report-component-design-spec` when this must become a reusable component-family standard.
 
 ## Pattern Identity
 

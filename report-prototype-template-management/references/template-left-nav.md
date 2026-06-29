@@ -12,7 +12,7 @@ Use `assets/templates/left-nav-analytics-workbench-template` for multi-page ente
 - Each nav page has its own `layoutRows` and `widgets`.
 - Each nav page uses a scrollable content grid with 12 columns, 8-row sizing basis, and N report rows.
 - Right content area scrolls vertically when grid height exceeds the active viewport.
-- Expanded 1920 pages use about `1664px` of content width and the `1920x1080` left-nav preset from `$report-visual-layout-design`.
+- Expanded 1920 pages use about `1664px` of content width and the `1920x1080` left-nav preset from `report-visual-layout-design`.
 
 ## Core Config
 
@@ -74,7 +74,7 @@ filters: [],
 - Avoid a second top navigation layer unless there is a real sub-view need.
 - Use the template filter popover for global and scoped filters.
 - Use `filters[].source` for data-bearing filters and `filters[].options` for stable enums.
-- Before committing a page `layoutRows`, verify block spans with `$report-visual-layout-design`, especially for tables and composite widgets.
+- Before committing a page `layoutRows`, verify block spans with `report-visual-layout-design`, especially for tables and composite widgets.
 - Add rows for long report content; do not force every page into the first 1920*1080 viewport.
 
 ## Best Use Cases

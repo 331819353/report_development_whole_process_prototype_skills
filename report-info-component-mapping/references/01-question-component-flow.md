@@ -4,7 +4,7 @@ Use this reference when deciding how a business question becomes answer atoms, c
 
 Before this step, classify the request with `00-analysis-perspective-card-taxonomy.md` when the user uses viewing intents such as 看现状, 看目标, 看趋势, 看排名, 看原因, 看行动, 看质量, or 看明细. The perspective is the stable routing layer; answer atoms and component bundles are the implementation layer.
 
-Also apply `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when the input is a broad report topic, a metric list, or a requirement document with proposed charts/components. A good mapping starts from one primary decision question and then creates the shortest answer path.
+Also apply `report-prototype-design-thinking` `references/02-good-report-decision-path.md` when the input is a broad report topic, a metric list, or a requirement document with proposed charts/components. A good mapping starts from one primary decision question and then creates the shortest answer path.
 
 ## Good Report Mapping Path
 

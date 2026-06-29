@@ -25,13 +25,13 @@ Use `filter-linkage-completeness-test` when the task is runtime testing; use thi
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Filter source map | `references/01-filter-reference-map.md` |
-| Screenshot/sample-derived style generalization target | `$report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
-| Low-noise high-density visual baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when filter polish, weak-presence filters, hidden complexity, advanced-filter disclosure, or outside/general filter guidance is in scope |
+| Screenshot/sample-derived style generalization target | `report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Low-noise high-density visual baseline | `report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when filter polish, weak-presence filters, hidden complexity, advanced-filter disclosure, or outside/general filter guidance is in scope |
 | Filter selector patterns from visual samples | `references/02-filter-selector-patterns.md` |
-| Page/global filter visuals | `$report-component-style-design` `references/02-filter-controls.md` |
-| Component-local controls | `$report-component-style-design` `references/10-in-component-controls.md` |
-| Local-filter geometry | `$report-component-style-design` `references/12a-placement-foundation-controls.md` |
-| Report filter/states acceptance baseline | `$report-design-system-governance` `references/06-report-filters-states-engineering-acceptance.md` |
+| Page/global filter visuals | `report-component-style-design` `references/02-filter-controls.md` |
+| Component-local controls | `report-component-style-design` `references/10-in-component-controls.md` |
+| Local-filter geometry | `report-component-style-design` `references/12a-placement-foundation-controls.md` |
+| Report filter/states acceptance baseline | `report-design-system-governance` `references/06-report-filters-states-engineering-acceptance.md` |
 
 ## Anti-Laziness Gate
 

@@ -10,8 +10,8 @@ The source images are reusable inspiration, not durable assets. Durable knowledg
 - Analysis perspective: `analysisPerspective: reviewImpact`.
 - Applicable pages: campaign review, product experiment review, release review, operation action review, conversion optimization review, and management report sections that compare before/after or impacted/control evidence.
 - Source hierarchy: company UI baseline -> report design system -> Modern SaaS BI style contract when requested -> this review-impact standard -> project-specific experiment, event, or metric contract.
-- Primary mapping references: `$report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `$report-info-component-mapping` `references/06-binding-implementation-contract.md`, `$report-info-component-mapping` `references/08-generation-stability.md`, and `$report-info-component-mapping` `references/09-component-mapping-gates.md`.
-- Supporting style references: `$report-component-style-design` `references/04a-kpi-card-patterns.md`, `$report-component-style-design` `references/05d-basic-chart-card-patterns.md`, `$report-component-style-design` `references/10-in-component-controls.md`, `$report-component-style-design` `references/12b-placement-insight-kpi.md`, and `$report-component-style-design` `references/12-component-acceptance-gates.md`.
+- Primary mapping references: `report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `report-info-component-mapping` `references/06-binding-implementation-contract.md`, `report-info-component-mapping` `references/08-generation-stability.md`, and `report-info-component-mapping` `references/09-component-mapping-gates.md`.
+- Supporting style references: `report-component-style-design` `references/04a-kpi-card-patterns.md`, `report-component-style-design` `references/05d-basic-chart-card-patterns.md`, `report-component-style-design` `references/10-in-component-controls.md`, `report-component-style-design` `references/12b-placement-insight-kpi.md`, and `report-component-style-design` `references/12-component-acceptance-gates.md`.
 - Renderers: project card components for the shell, Element Plus/project controls for tabs/dropdowns/tooltips/drawers, ECharts for trend/bar/funnel evidence, and table/list renderer for exact audit rows.
 - Supported viewports: standard wide card `720x220+`; trend/funnel/segment evidence `760x260+`; compact conclusion card `560x180+`; mobile collapses to stacked event identity -> evidence -> conclusion.
 - Owner/version/status: report-component-design-spec / v1 / ready for reusable spec adoption.
@@ -196,7 +196,7 @@ Style generalization contract:
 styleGeneralization: {
   sourceRole: 'reusable-inspiration',
   generalizationStatus: 'requires-pattern-extension',
-  canonicalPatternRef: '$report-component-design-spec/references/14-review-impact-card-standard.md',
+  canonicalPatternRef: 'report-component-design-spec/references/14-review-impact-card-standard.md',
   patternFields: ['reviewImpactCardPattern', 'reviewImpactEvidenceMode', 'reviewImpactEvidenceBinding'],
   componentFamily: 'review-impact-card',
   businessTrigger: '看复盘 / event or activity impact review',

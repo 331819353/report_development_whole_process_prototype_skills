@@ -19,7 +19,7 @@ For the user-provided sample universe, the standard aims for `100% routable cove
 
 1. Classify the business decision: state, target gap, trend, structure, ranking, process, cause, anomaly, detail, action, evidence, or data trust.
 2. Choose the component family: KPI, target/actual card, chart card, table card, filter, ranking, list/status, overlay, conclusion card, or flow/hierarchy diagram.
-3. If the sample defines parent block title chrome, component-container background, or "先选分块样式再填内容" behavior, select `blockChromePattern` through `$report-visual-layout-design` before selecting body component patterns.
+3. If the sample defines parent block title chrome, component-container background, or "先选分块样式再填内容" behavior, select `blockChromePattern` through `report-visual-layout-design` before selecting body component patterns.
 4. Select a controlled pattern field from the binding contract, such as `blockChromePattern`, `kpiCardPattern`, `actionRecommendationCardPattern`, `basicChartCardPattern`, `tableCardPattern`, `filterControlPattern`, or `overlayPanelPattern`.
 5. Fill the adaptive variables: container size tier, title zone, value zone, plot/table/body zone, legend/control positions, item counts, density limits, tokens, and responsive fallback.
 6. Bind data and interaction: grain, primary key, required fields, formulas, numeric format, controls, filters, tooltip/detail/export path, and loading/empty/error/no-permission states.

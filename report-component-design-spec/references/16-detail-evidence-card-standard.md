@@ -10,8 +10,8 @@ The supplied images are reusable inspiration, not durable assets. The durable kn
 - Analysis perspective: `analysisPerspective: detailEvidence`.
 - Applicable pages: detail reports, KPI dashboards with drilldown proof, operating ledgers, order/customer/product detail pages, sample/testing reports, audit/security/log pages, task scheduling reports, and card galleries for 明细分析视角.
 - Source hierarchy: company UI baseline -> report design system -> Modern SaaS BI style contract when requested -> table/list/detail placement rules -> this detail-evidence standard -> project data/API contract.
-- Supporting mapping references: `$report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `$report-info-component-mapping` `references/06-binding-implementation-contract.md`, `$report-info-component-mapping` `references/08-generation-stability.md`, and `$report-info-component-mapping` `references/09-component-mapping-gates.md`.
-- Supporting style references: `$report-component-style-design` `references/06-analytical-tables.md`, `$report-component-style-design` `references/06c-table-card-patterns.md`, `$report-component-style-design` `references/07-cards-lists-tasks.md`, `$report-component-style-design` `references/07b-operational-list-status-patterns.md`, `$report-component-style-design` `references/10-in-component-controls.md`, `$report-component-style-design` `references/12f4-placement-detail-table.md`, `$report-component-style-design` `references/12-component-acceptance-gates.md`, and `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md`.
+- Supporting mapping references: `report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `report-info-component-mapping` `references/06-binding-implementation-contract.md`, `report-info-component-mapping` `references/08-generation-stability.md`, and `report-info-component-mapping` `references/09-component-mapping-gates.md`.
+- Supporting style references: `report-component-style-design` `references/06-analytical-tables.md`, `report-component-style-design` `references/06c-table-card-patterns.md`, `report-component-style-design` `references/07-cards-lists-tasks.md`, `report-component-style-design` `references/07b-operational-list-status-patterns.md`, `report-component-style-design` `references/10-in-component-controls.md`, `report-component-style-design` `references/12f4-placement-detail-table.md`, `report-component-style-design` `references/12-component-acceptance-gates.md`, and `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md`.
 - Renderers: project card shell, Element Plus/project table for ordinary row-level detail, AntV S2 only for pivot/cross/wide analytical detail, ECharts only for bounded metric trend or composition evidence, project list/timeline components for compact rows, and drawer/fullscreen/detail route for full evidence.
 - Supported viewports: compact row/list preview `360x220+`; standard detail table card `640x300+`; metric/trend detail card `720x300+`; hierarchy drilldown card `720x320+`; sample/log card `640x300+`; task timeline/detail card `720x360+`.
 - Owner/version/status: report-component-design-spec / v1 / ready for reusable spec adoption.
@@ -201,7 +201,7 @@ Style generalization contract:
 styleGeneralization: {
   sourceRole: 'reusable-inspiration',
   generalizationStatus: 'covered-by-composed-patterns',
-  canonicalPatternRef: '$report-component-design-spec/references/16-detail-evidence-card-standard.md',
+  canonicalPatternRef: 'report-component-design-spec/references/16-detail-evidence-card-standard.md',
   patternFields: ['detailEvidenceCardPattern', 'detailEvidenceBinding', 'tableCardPattern', 'listStatusPattern'],
   componentFamily: 'detail-evidence-card',
   businessTrigger: '看明细 / inspect exact records, samples, logs, and drilldown proof',

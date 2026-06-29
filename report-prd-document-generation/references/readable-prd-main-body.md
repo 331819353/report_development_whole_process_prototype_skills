@@ -4,7 +4,7 @@ Use this reference before writing the final PRD. The PRD has two layers plus a c
 
 1. Reader-facing main document: short, visual, and business-readable.
 2. Development execution appendix: IDs, matrices, template maps, API fields, and validation gates.
-3. Child PRD bundle: AI-executable child PRDs for 原型、前端、后端、技术方案、测试.
+3. Child PRD bundle: AI-executable child PRDs for 原型、前端、后端、技术方案、测试. The main document stays concise, but the final PRD output must still include the full child PRD bodies in appendices/files.
 
 Do not mix both layers into one long table-heavy document.
 
@@ -18,6 +18,7 @@ Do not mix both layers into one long table-heavy document.
 - Every page and navigation tab must have a Markdown preview before the technical layout table.
 - The main document must include a child PRD registry that explains which child PRD is used by 原型、前端、后端、技术方案、测试, what each child PRD does, which main PRD sections it consumes, and when it must be updated.
 - Child PRDs may be ID-heavy and AI-oriented, but they must declare parent PRD version and sync status.
+- Do not confuse the child PRD registry with the child PRDs themselves. The registry belongs in the main document; the child PRD bodies belong in Appendix H-L or child files.
 
 ## Recommended PRD Shape
 
@@ -121,10 +122,11 @@ For each page, keep the reader-facing layout short:
 - Framework template: name and reason.
 - Page preview: already shown in section 5.
 - 12-column grid proof: total rows and row audit summary.
+- Layout coordinate explanation: use `R-B` for a block and `R-B-S` for a component slot. Example: if the first page row has two `6*3` blocks, the second block is `1-2` and its first slot is `1-2-1`.
 - Block layout choice: readable block name, span, block layout template, reason.
 - Standard block areas: title, pill, auxiliary info, unit, component area, summary.
 
-Put the full `layoutRows`, block IDs, slot IDs, and raw template maps in Appendix A.
+Put the full `layoutRows`, `layoutCoordinateMap`, block IDs, slot IDs, and raw template maps in Appendix A.
 
 ### 7. 指标与口径
 
@@ -155,18 +157,20 @@ The appendix is required but must not dominate the main document.
 
 Use these appendices:
 
-- Appendix A: Template execution contract, including IDs, `layoutRows`, block layout template map, component slot map, component content area template map.
+- Appendix A: Template execution contract, including IDs, `layoutRows`, `layoutCoordinateMap`, block layout template map, component slot map, component content area template map.
 - Appendix B: Metric dictionary and metric mounting matrix.
 - Appendix C: Data object and API field contracts.
 - Appendix D: Filter, pill, toolbar, and interaction maps.
 - Appendix E: Dynamic conclusion rules.
 - Appendix F: PRD-to-workflow execution matrix.
-- Appendix G: Template Build Packet seed, using the fixed sections from `$report-prototype-template-management` `references/template-build-packet-contract.md` so downstream implementation can create `docs/template-build-packet.md` without rereading the whole PRD.
+- Appendix G: Template Build Packet seed, using the fixed sections from `report-prototype-template-management` `references/template-build-packet-contract.md` so downstream implementation can create `docs/template-build-packet.md` without rereading the whole PRD.
 - Appendix H: `CHILD-PRD-PROTOTYPE`, the AI-executable prototype PRD.
 - Appendix I: `CHILD-PRD-FRONTEND`, the AI-executable frontend PRD.
 - Appendix J: `CHILD-PRD-BACKEND`, the AI-executable backend/API PRD.
 - Appendix K: `CHILD-PRD-TECHNICAL-SOLUTION`, the AI-executable technical-solution PRD.
 - Appendix L: `CHILD-PRD-TESTING`, the AI-executable testing PRD.
+
+Appendix H-L are mandatory in single-document output. If the user requests file output, create the five child files instead and list them in the main PRD. Do not end the PRD at Appendix G.
 
 ## Length Guard
 
@@ -175,3 +179,4 @@ Use these appendices:
 - Do not make the reader-facing PRD a wall of IDs.
 - The main document must be understandable without reading the appendices.
 - The child PRD registry belongs in the main document; child PRD details belong in appendices/files.
+- Length pressure is not a reason to omit child PRDs. When space is tight, keep each child PRD concise but include its header, consumed parent sections, execution inputs, blockers, sync status, and downstream start gate.

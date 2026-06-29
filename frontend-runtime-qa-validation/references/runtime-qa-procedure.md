@@ -10,7 +10,7 @@ Detailed runtime QA procedure moved out of `SKILL.md`. Load this before executin
 
 2. Classify the runtime UI baseline.
    Determine whether the page is Haier/enterprise Web app, report/dashboard, or mixed. For Haier/enterprise report pages, load and apply both `$haier-enterprise-app-ui-design-spec` as the inherited company application baseline and report-specific baselines before judging visual/runtime defects, even when the user only asked for QA or URL验收.
-   When modern SaaS / BI Dashboard / UI Kit style is requested or claimed, load `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` and add style-contract probes for source hierarchy, light page canvas, white-card surfaces, borders, radius, shadow, hierarchy, component pileup, and chart lightness.
+   When modern SaaS / BI Dashboard / UI Kit style is requested or claimed, load `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` and add style-contract probes for source hierarchy, light page canvas, white-card surfaces, borders, radius, shadow, hierarchy, component pileup, and chart lightness.
 
 3. Open the target page.
    Use a local verified URL. Check that the page loads without blocking runtime errors and that core layout appears.

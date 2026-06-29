@@ -24,14 +24,16 @@ Hard rule: every step in the nine-step implementation sequence must use `templat
 
 Hard rule: PRD-driven or multi-step template implementation must create or validate the Template Build Packet from `template-build-packet-contract.md` before source edits. The packet is the single construction plan; do not implement from scattered PRD prose, screenshots, chat memory, or partial matrices when packet rows are missing.
 
+Hard rule: every visible block and component slot must carry readable layout coordinates from the PRD/Template Build Packet. `blockCoordinate` uses `R-B`; `slotCoordinate` uses `R-B-S`; standard block areas use `blockCoordinate + areaName` such as `1-2:titleArea`. The third number is only for `3 componentArea` slots, not for title/pill/aux/unit/summary areas. Do not confuse these page coordinates with the block template's internal area codes such as `1-1 titleArea` and `1-2 pillArea`.
+
 ## Canonical Terms
 
 | Term | Owns | Required output |
 | --- | --- | --- |
 | 框架模板 | Page shell, runtime stack, navigation, global filters, toolbar, theme, and template project structure. | `frameworkTemplateId`, template reason, preserved shell slots, stack contract. |
-| 页面布局配置 | Page-level `12 * N` grid, `layoutRows`, stable block ids, nav/page widget wiring, first-viewport and scroll behavior. | `pageLayoutConfig`, `layoutRows`, block id map, block span map, nav/page content plan. |
-| 分块布局模板 | One parent block's size plus standard areas and component slots. Every selectable template resolves to an independent Vue entry file that may reuse a shared base renderer. `componentRegionPattern` is only an internal/compatibility descriptor derived from the selected template, not the selectable template itself. | `blockLayoutTemplateMap`, selected block layout Vue file, `componentSlotContracts`, supporting-area config, optional derived `componentRegionPattern`. |
-| 组件内容区模板 | The implemented component internal content area only. Every reusable template must resolve to a standalone Vue file that can be copied or mounted; registered ids must map back to that file. | `componentContentAreaTemplateMap`, selected standalone Vue file and `componentContentAreaTemplateId`, slot props/data contract. |
+| 页面布局配置 | Page-level `12 * N` grid, `layoutRows`, stable block ids, readable block coordinates, nav/page widget wiring, first-viewport and scroll behavior. | `pageLayoutConfig`, `layoutRows`, `layoutCoordinateMap`, block id map, block span map, nav/page content plan. |
+| 分块布局模板 | One parent block's size plus standard areas and component slots. Every selectable template resolves to an independent Vue entry file that may reuse a shared base renderer. `componentRegionPattern` is only an internal/compatibility descriptor derived from the selected template, not the selectable template itself. | `blockLayoutTemplateMap`, `blockCoordinate`, selected block layout Vue file, `componentSlotContracts`, supporting-area config, optional derived `componentRegionPattern`. |
+| 组件内容区模板 | The implemented component internal content area only. Every reusable template must resolve to a standalone Vue file that can be copied or mounted; registered ids must map back to that file. | `componentContentAreaTemplateMap`, `slotCoordinate`, selected standalone Vue file and `componentContentAreaTemplateId`, slot props/data contract. |
 
 ## Nine-Step Implementation Sequence
 
@@ -44,10 +46,11 @@ Before each step below, apply the matching card from `template-step-operation-ca
    - Preserve PRD section 4A `RTP-*` / `PATH-*` sources and applicable section 4B gate IDs for every visible block.
    - Create `layoutRows`, stable block ids, widget ids, nav/page wiring, and the first-viewport reading path.
    - Audit the `12 * N` grid: every `layoutRows` row is exactly 12 cells, no row is longer than 12 cells, total row count `N >= 8`, every block is rectangular, every block id maps to one widget and one block layout template row, and every span records `colStart`, `colSpan`, `rowStart`, and `rowSpan`.
-   - Output `pageLayoutConfig`.
+   - Assign `blockCoordinate` values by reading row/region and block order, then output `pageLayoutConfig` and `layoutCoordinateMap`.
 3. Select the independent 分块布局模板 Vue file based on 页面布局配置.
    - Start from PRD section 4A and applicable section 4B gates. Each block must preserve its selected `RTP-*` / `PATH-*` reading step and applicable `ESG-*` / `SEV-*` / `ACT-*` / `TRUST-*` / `MEET-*` IDs in `blockLayoutTemplateMap`.
    - For every block id, choose a size-compatible independent block layout Vue file, such as `Span04x03SingleSlotLayout.vue` or `Span06x03DoubleSlotLayout.vue`, and record its standard areas.
+   - Derive the block's `slotCoordinate` values from the selected template's component slot order.
    - Use generic `SpanCCxRRLayout.vue` only as the size base when creating a new selectable block layout template.
    - Decide SingleSlot vs MultiSlot from requirement analysis, not template availability. Use SingleSlot for one dominant conclusion card/component. Use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups.
    - In MultiSlot templates, place the conclusion card or primary conclusion component in the first component position when the requirement uses componentized conclusions; use later slots for evidence, drivers, details, actions, or trust/source support. Text-only or narrative conclusions belong to `4 summaryArea` only when the same block has no conclusion card/component. Every conclusion target must reference `conclusionRuleId`.
@@ -67,7 +70,7 @@ Before each step below, apply the matching card from `template-step-operation-ca
    - If not needed, record `unitAreaConfig: null`.
 8. Fill `3 componentArea` slots from 组件内容区模板.
    - Inspect `references/component-content-area-template-map.md`, then inspect `src/widgets/templates/component-content-areas/` and its README/catalog before selecting.
-   - Select an existing standalone Vue component content area template first and record `componentContentAreaTemplateId`, standalone Vue file, copy source/target, sample/source evidence, props/data/state contract, and data binding.
+   - Select an existing standalone Vue component content area template first and record `slotCoordinate`, `componentContentAreaTemplateId`, standalone Vue file, copy source/target, sample/source evidence, props/data/state contract, and data binding.
    - If no suitable template fits, self-develop a new standalone Vue component content area template. Use ECharts for standard chart needs, then register it before filling the slot.
    - This fallback may not change the framework shell, page layout, block layout template, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, or permission surfaces.
    - The component content area may render only the optional removable title strip and the component body. Do not add local filters, extra controls, additional information, unit labels, summary, explanation, or description bands.
@@ -113,14 +116,14 @@ Required-area policy: only `1-1 titleArea` and `3 componentArea` are always requ
 - Template Build Packet path/status, packet sections consumed, blocked/draft row list, and proof that every implementation target file maps back to packet section 11.
 - `frameworkTemplateId` and shell preservation proof.
 - Output artifact proof: `outputArtifact: vueTemplatePrototype`, `implementationMode: copyTemplateProject`, copied template path, bundled Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof, and latest explicit user-request authority for any `htmlPrototype` or documented self-developed/non-template authority for any `newVue3Project` exception.
-- `pageLayoutConfig` with `layoutRows`, exact-12-column row audit, over-12 rejection, minimum-8-row audit, block ids, block spans, nav/page wiring, and first-viewport plan.
+- `pageLayoutConfig` with `layoutRows`, exact-12-column row audit, over-12 rejection, minimum-8-row audit, `layoutCoordinateMap`, block ids, block spans, nav/page wiring, and first-viewport plan.
 - `filterSurfaceMap`, `toolbarActionMap`, and `interactionBehaviorMap` with visible placement, owner, affected params, refresh scope, and state response.
-- `blockLayoutTemplateMap` with one entry per block id, including PRD `RTP-*` / `PATH-*` source, applicable section 4B gate IDs, selected independent block layout Vue file, selected standard areas, component slot contracts, and supporting-area config. `componentRegionPattern` may be recorded only as a derived compatibility descriptor.
+- `blockLayoutTemplateMap` with one entry per block id, including `blockCoordinate`, PRD `RTP-*` / `PATH-*` source, applicable section 4B gate IDs, selected independent block layout Vue file, selected standard areas, component slot contracts, and supporting-area config. `componentRegionPattern` may be recorded only as a derived compatibility descriptor.
 - `titleAreaConfig` for every block.
 - `pillAreaConfig` for every block, or explicit `null` plus `notNeededReason` when pill buttons are not needed.
 - `auxMetricAreaConfig` with evenly distributed additional information, or explicit `null` when auxiliary information is not needed.
 - `unitAreaConfig` for every block, or explicit `null` when no unit is needed.
-- `componentContentAreaTemplateMap` with one entry per `componentArea` slot, including registered component content area template ID, selected standalone Vue template file, copy source/target path, sample/source evidence, copied or mounted path, props, data source, and state coverage.
+- `componentContentAreaTemplateMap` with one entry per `componentArea` slot, including `slotCoordinate`, registered component content area template ID, selected standalone Vue template file, copy source/target path, sample/source evidence, copied or mounted path, props, data source, and state coverage.
 - `conclusionRuleMap` consumed by every summary-area conclusion, conclusion card, or analysis insight component, including input metrics/API fields, trigger state, rule logic, fallback, and QA case.
 - Component content area title-strip decision for every slot: title text or hidden, removable flag, single-slot hide proof, rounded root, and no border line.
 - `selfDevelopmentExceptionMap` component content area entries for every custom fallback, including component content area template ID, renderer, chart option ownership, lifecycle proof, and registration/copy path.
@@ -138,6 +141,7 @@ The prototype is not ready when any of these are true:
 - Step operation checkpoints from `template-step-operation-cards.md` are missing for any step from 1 through 9.
 - The Template Build Packet is missing, blocked, stale, or lacks rows for implemented pages, blocks, component slots, filters/actions, interactions, data/API, conclusion rules, self-development exceptions, target files, or validation commands.
 - `pageLayoutConfig.layoutRows` does not pass the exact-12-column row audit, over-12 rejection, minimum-8-row audit, block rectangle audit, or block id to widget/template map audit.
+- `layoutCoordinateMap`, `blockCoordinate`, or `slotCoordinate` is missing, duplicated, or inconsistent with the page preview, `layoutRows`, block spans, selected block layout template, metric mounting, conclusion rules, or interaction sources.
 - Filters, pills, toolbar actions, or interaction triggers that affect data/query/navigation/export/drilldown/modal/drawer/popup state are missing from `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, or `interactionBehaviorMap`.
 - The implementation chooses HTML/static output because the PRD, attachments, screenshots, copied source, or source files mention HTML, rather than because the latest explicit user instruction requests HTML/static output.
 - The implementation starts from a new Vue3/Vite project while a bundled template could have been copied, or lacks rejected template candidates and a documented self-developed/non-template exception.

@@ -28,15 +28,15 @@ Primary shared gates:
 - `references/production-closed-loop-readiness.md`
 - `references/visual-multimodal-browser-check.md`, then `$visual-browser-regression-check` for screenshot, baseline diff, multimodal visual review, and `VIS-*` findings.
 - `references/human-ai-readable-artifact-standard.md`, then `$artifact-readability-standard` for human-readable and AI-extractable artifact structure.
-- `references/report-delivery-pipeline-contract.md`, then `$report-delivery-pipeline-governance` for cross-stage handoff and delivery-chain contracts.
+- `references/report-delivery-pipeline-contract.md`, then `report-delivery-pipeline-governance` for cross-stage handoff and delivery-chain contracts.
 - `references/environment-profile-contract.md`, then `$environment-profile-contract` for test/production profile separation and runtime config handoff.
 - `references/shared-quality-gate-blockers.md`
 - `$code-change-ledger-management` when frontend/backend/prototype code changed.
 - `$haier-enterprise-app-ui-design-spec` when judging Haier/enterprise Web UI readiness, including report/dashboard pages that inherit company-level application UI rules.
 - `$metric-number-display-contract` when judging numeric unit, precision, rounding, percent, tooltip/export, or formatter ownership.
-- `$report-design-system-governance` relevant references when judging report/dashboard/BI/data-screen readiness.
-- `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when modern SaaS / BI Dashboard / UI Kit style is requested or claimed.
-- `$report-prototype-design-thinking` `references/02-good-report-decision-path.md` when judging whether a report/dashboard/BI prototype can help the reader make the intended decision.
+- `report-design-system-governance` relevant references when judging report/dashboard/BI/data-screen readiness.
+- `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when modern SaaS / BI Dashboard / UI Kit style is requested or claimed.
+- `report-prototype-design-thinking` `references/02-good-report-decision-path.md` when judging whether a report/dashboard/BI prototype can help the reader make the intended decision.
 
 ## Gate Types
 

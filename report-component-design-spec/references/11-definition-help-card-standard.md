@@ -10,8 +10,8 @@ The source screenshots are temporary visual evidence. The durable knowledge is t
 - Analysis perspective: `analysisPerspective: definitionHelp`.
 - Applicable pages: KPI dashboards, management reports, BI metric dictionaries, detail reports, cockpit cards, business review pages, and self-service analysis surfaces.
 - Source hierarchy: company UI baseline -> report design system -> Analysis & Insight rules -> this definition-help standard -> project-specific metric dictionary.
-- Primary style reference: `$report-component-style-design` `references/03b-definition-help-card-patterns.md`.
-- Supporting references: `$report-component-style-design` `references/03-text-summary.md`, `$report-component-style-design` `references/04-kpi-metric-cards.md`, `$report-component-style-design` `references/10-in-component-controls.md`, `$report-component-style-design` `references/12b-placement-insight-kpi.md`, and `$report-component-style-design` `references/12-component-acceptance-gates.md`.
+- Primary style reference: `report-component-style-design` `references/03b-definition-help-card-patterns.md`.
+- Supporting references: `report-component-style-design` `references/03-text-summary.md`, `report-component-style-design` `references/04-kpi-metric-cards.md`, `report-component-style-design` `references/10-in-component-controls.md`, `report-component-style-design` `references/12b-placement-insight-kpi.md`, and `report-component-style-design` `references/12-component-acceptance-gates.md`.
 - Renderers: project UI/card components, Element Plus Tooltip/Popover/Drawer/Segmented/Select where available; ECharts only when the definition card includes a real trend/share body.
 - Supported viewports: basic definition `320x200+`; comparison/formula/trend/share/filter/example `420x240+`; scope lists `420x260+`.
 - Owner/version/status: report component design spec / v1 / ready for routing and implementation handoff.
@@ -236,7 +236,7 @@ For screenshot-derived reusable standards, include:
 styleGeneralization: {
   sourceRole: 'reusable-inspiration';
   generalizationStatus: 'covered-by-composed-patterns';
-  canonicalPatternRef: '$report-component-design-spec references/11-definition-help-card-standard.md';
+  canonicalPatternRef: 'report-component-design-spec references/11-definition-help-card-standard.md';
   patternFields: ['definitionHelpCardPattern'];
   componentFamily: 'Analysis & Insight / Definition Help';
   businessTrigger: '用户需要理解指标含义、算法、口径、条件或示例';

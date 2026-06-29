@@ -27,7 +27,7 @@ Do not solve fit problems by simply shrinking typography below readability.
 
 ### Default Span And Fit Rules
 
-When the page uses a `12 * N` grid, use `$report-visual-layout-design` for default span distribution and block-size constraints, then check whether the assigned body viewport remains readable after padding, title, legend, axes, controls, table headers, and footer are reserved.
+When the page uses a `12 * N` grid, use `report-visual-layout-design` for default span distribution and block-size constraints, then check whether the assigned body viewport remains readable after padding, title, legend, axes, controls, table headers, and footer are reserved.
 
 Ordinary chart blocks default to `3*2` and must not exceed `4*3`; conclusion cards are the exception when a wider reading strip is needed.
 

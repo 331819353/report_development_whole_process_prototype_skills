@@ -7,17 +7,25 @@ Use this reference when the PRD will feed multiple downstream stages. The PRD bu
 
 Do not make the main PRD carry every execution table. Do not make child PRDs replace the main PRD's business authority.
 
+Hard rule: a child PRD registry is only an index, not the child PRD bundle. A valid PRD bundle must include the full body of all five child PRDs, either as Appendix H-L in the same Markdown file or as five child files. If any child body is missing, the whole PRD remains incomplete.
+
 ## Required Bundle Files Or Sections
 
 When output is a single Markdown file, use these as major appendices. When output is a folder, use these filenames.
 
 | Child PRD ID | Recommended file/section | Stage | Purpose | Primary consumers |
 | --- | --- | --- | --- | --- |
-| `CHILD-PRD-PROTOTYPE` | `children/prd-child-prototype.md` or Appendix H | 原型 | Drive report prototype workflow, template layout, component mapping, Template Build Packet seed, and runnable prototype handoff. | `$report-design-workflow`, typed prototype workflows, `$report-visual-layout-design`, `$report-info-component-mapping`, `$report-prototype-template-management` |
-| `CHILD-PRD-FRONTEND` | `children/prd-child-frontend.md` or Appendix I | 前端 | Drive production/frontend integration after prototype: routes, page/component contracts, API adapters, state, permissions, rendering, runtime QA, and data consistency. | `frontend-development-workflow`, `$frontend-runtime-qa-validation`, `$environment-profile-contract` |
-| `CHILD-PRD-BACKEND` | `children/prd-child-backend.md` or Appendix J | 后端 | Drive API/data-service design and implementation: data objects, source mapping, metric computation, query parameters, permissions, cache, export, and errors. | `backend-development-workflow`, API/documentation/data-service workflows, `$delivery-artifact-template-management` |
-| `CHILD-PRD-TECHNICAL-SOLUTION` | `children/prd-child-technical-solution.md` or Appendix K | 技术方案 | Drive architecture and implementation planning: system boundary, frontend/backend/data split, ADRs, NFRs, environments, deployment, observability, risks, and delivery plan. | `technical-solution-workflow`, `$report-delivery-pipeline-governance`, `$environment-profile-contract` |
-| `CHILD-PRD-TESTING` | `children/prd-child-testing.md` or Appendix L | 测试 | Drive test design and acceptance: scenario cases, UI/API/data consistency, permission, export, errors, performance, regression, and evidence expectations. | `testing-integration-workflow`, `$frontend-runtime-qa-validation`, `$runtime-url-smoke-test`, delivery QA skills |
+| `CHILD-PRD-PROTOTYPE` | `children/prd-child-prototype.md` or Appendix H | 原型 | Drive report prototype workflow, template layout, component mapping, Template Build Packet seed, and runnable prototype handoff. | `report-design-workflow`, typed prototype workflows, `report-visual-layout-design`, `report-info-component-mapping`, `report-prototype-template-management` |
+| `CHILD-PRD-FRONTEND` | `children/prd-child-frontend.md` or Appendix I | 前端 | Drive production/frontend integration after prototype: routes, page/component contracts, API adapters, state, permissions, rendering, runtime QA, and data consistency. | `frontend-development-workflow`, `frontend-runtime-qa-validation`, `environment-profile-contract` |
+| `CHILD-PRD-BACKEND` | `children/prd-child-backend.md` or Appendix J | 后端 | Drive API/data-service design and implementation: data objects, source mapping, metric computation, query parameters, permissions, cache, export, and errors. | `backend-development-workflow`, API/documentation/data-service workflows, `delivery-artifact-template-management` |
+| `CHILD-PRD-TECHNICAL-SOLUTION` | `children/prd-child-technical-solution.md` or Appendix K | 技术方案 | Drive architecture and implementation planning: system boundary, frontend/backend/data split, ADRs, NFRs, environments, deployment, observability, risks, and delivery plan. | `technical-solution-workflow`, `report-delivery-pipeline-governance`, `environment-profile-contract` |
+| `CHILD-PRD-TESTING` | `children/prd-child-testing.md` or Appendix L | 测试 | Drive test design and acceptance: scenario cases, UI/API/data consistency, permission, export, errors, performance, regression, and evidence expectations. | `testing-integration-workflow`, `frontend-runtime-qa-validation`, `runtime-url-smoke-test`, delivery QA skills |
+
+Rules:
+
+- In chat/single-document output, do not stop after the table above. Continue with full Appendix H-L child PRD bodies.
+- In file output, create all five child files and list them in the main PRD. A path without file content is not enough.
+- `not-needed` is a child PRD sync status, not permission to omit the child PRD. The child body must still include the common header, reason, future trigger, and downstream impact.
 
 ## Main PRD Child Registry
 
@@ -49,6 +57,20 @@ Every child PRD must start with this header:
 | Required upstream artifacts | For example prototype data summary, API inventory, frontend route map, backend model, or test environment. |
 | Blocking gaps | `GAP-*` rows that block this stage. |
 
+## Minimum Child PRD Body Template
+
+Every child PRD body must contain these sections. Keep them concise, but do not omit them:
+
+1. Common child header.
+2. Parent-section consumption table: exact parent sections, IDs, and why the child needs them.
+3. Stage execution input table: the minimum rows the downstream workflow needs to start.
+4. Stage-specific contract: use the requirements below for the matching `CHILD-PRD-*`.
+5. Data/API/interaction/conclusion/permission inputs relevant to that stage, or `none` with a reason.
+6. Blocking gaps and sync status: `synced`, `draft`, `stale`, `blocked`, or `not-needed`.
+7. Downstream start gate: what must be true before the stage can start.
+
+If the source information is thin, use `TBD(GAP-*)` inside the child PRD rather than omitting the child PRD.
+
 ## Child PRD Content Requirements
 
 ### `CHILD-PRD-PROTOTYPE`
@@ -58,8 +80,8 @@ Include only what the prototype/design AI needs:
 - Report type implementation path: selected `RTP-*`, `PATH-*`, first-viewport plan, and block intent.
 - Executive satisfaction gates: required `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*` rows.
 - Page previews: section 4C readable preview references.
-- Template layout contract: framework template, shell config, `layoutRows`, block layout template map, standard block area configs.
-- Component slot contract: component content area template IDs, Vue files, sample evidence, data binding, and fallback template registrations.
+- Template layout contract: framework template, shell config, `layoutRows`, `layoutCoordinateMap`, block layout template map, standard block area configs.
+- Component slot contract: readable `slotCoordinate` (`R-B-S`), component content area template IDs, Vue files, sample evidence, data binding, and fallback template registrations.
 - Dynamic conclusion rules: `RULE-*` rows used by summary areas, conclusion cards, and analysis insight components.
 - Data/API and interaction rows required for prototype data, filters, drilldown, jump, modal/drawer, export, and state behavior.
 - Template Build Packet seed and validation plan.
@@ -141,6 +163,7 @@ Every final PRD output must include this stage map in the main document and agai
 ## Quality Gates
 
 - Do not mark the PRD bundle `ready-for-review` when the main PRD lacks the child PRD registry.
+- Do not mark the PRD bundle `ready-for-review` when any of the five child PRD bodies is missing, reduced to a filename, or replaced by the registry/stage map.
 - Do not mark the PRD bundle `ready-for-review` when the final output does not state which child PRD is used by 原型、前端、后端、技术方案、测试.
 - Do not let child PRDs drift silently. Each child PRD must declare `Generated from parent version` and `Sync status`.
 - Do not update a parent PRD section without either updating affected child PRDs or marking them `stale` with a `GAP-*`.

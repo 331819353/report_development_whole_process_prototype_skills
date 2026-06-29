@@ -5,8 +5,8 @@ Use this reference when screenshots or visual samples show drawers, modals, acti
 Pair with:
 
 - `08-drawers-detail-panels.md` for generic drawer/detail rules.
-- `$report-info-component-mapping` `references/05-interaction-state-flow.md` for interaction choice and parameter passing.
-- `$report-filter-control-design-spec` `references/02-filter-selector-patterns.md` when the overlay contains filters.
+- `report-info-component-mapping` `references/05-interaction-state-flow.md` for interaction choice and parameter passing.
+- `report-filter-control-design-spec` `references/02-filter-selector-patterns.md` when the overlay contains filters.
 - `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` when converting visual samples into text-only contracts.
 
 ## Pattern Identity

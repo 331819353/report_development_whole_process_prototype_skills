@@ -15,9 +15,9 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill for report page-level layout: shell, navigation, header/filter/control surface, toolbar, brand placement, `1920x1080` review viewport, content-area `12 * 8` first-viewport sizing grid, scrollable `12 * N` parent-block grid, parent-block sizing, internal sub-block composition, first-viewport hierarchy, viewport fit, and layout defect repair.
 
-It owns page规范. Component internals go to `$report-component-style-design`; reusable component standards go to `$report-component-design-spec`; full design-system governance goes to `$report-design-system-governance`; runnable templates go to `$report-prototype-template-management`.
+It owns page规范. Component internals go to `report-component-style-design`; reusable component standards go to `report-component-design-spec`; full design-system governance goes to `report-design-system-governance`; runnable templates go to `report-prototype-template-management`.
 
-For Haier/enterprise Web surfaces, including report/dashboard/BI/data-screen layouts, load `$haier-enterprise-app-ui-design-spec` for company-level color, typography, spacing, base controls, states, and brand/logo rules. Also load `$report-design-system-governance` report guideline references before final report layout decisions. These baselines are inherited together; they are not alternatives.
+For Haier/enterprise Web surfaces, including report/dashboard/BI/data-screen layouts, load `$haier-enterprise-app-ui-design-spec` for company-level color, typography, spacing, base controls, states, and brand/logo rules. Also load `report-design-system-governance` report guideline references before final report layout decisions. These baselines are inherited together; they are not alternatives.
 
 ## Reference Loading
 
@@ -25,24 +25,24 @@ For Haier/enterprise Web surfaces, including report/dashboard/BI/data-screen lay
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Page shell and layout mode | `references/page-layout-modes.md` |
-| PRD readable page previews | `$report-prd-document-generation` `references/readable-prd-main-body.md` and `references/prd-output-structure.md` section 4C when layout is PRD-driven |
+| PRD readable page previews | `report-prd-document-generation` `references/readable-prd-main-body.md` and `references/prd-output-structure.md` section 4C when layout is PRD-driven |
 | Brand and Haier placement | `references/brand-style.md` |
 | `1920x1080` / `12 * 8` visible grid and `12 * N` parent containers | `references/grid-containers.md` |
-| Low-noise high-density component/page baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when external/general design guidance, 高级感, 好看, 好用, 易懂, 降噪, or UI Kit/SaaS/BI style is used as inspiration |
+| Low-noise high-density component/page baseline | `report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when external/general design guidance, 高级感, 好看, 好用, 易懂, 降噪, or UI Kit/SaaS/BI style is used as inspiration |
 | Block sizing and viewport constraints | `references/block-size-constraints.md` |
 | Anti-squeeze row-group expansion, full-row vacancy reflow, and typography/component floors | `references/block-size-constraints-05-anti-squeeze-reflow.md` when a block is crowded, moved to full row, or needs height expansion |
-| Direct block-size front door | `$report-layout-size-constraint-spec` |
+| Direct block-size front door | `report-layout-size-constraint-spec` |
 | Parent block and internal sub-block composition | `references/block-composition.md` |
-| KPI dashboard metric drilldown loop placement | `$report-info-component-mapping` `references/10-metric-drilldown-contract.md` when laying out result -> diagnosis -> process -> action dashboards |
+| KPI dashboard metric drilldown loop placement | `report-info-component-mapping` `references/10-metric-drilldown-contract.md` when laying out result -> diagnosis -> process -> action dashboards |
 | Block title/body chrome style selection | `references/block-chrome-style-patterns.md` |
 | Toolbar, drawer, modal, responsive interactions | `references/components-interactions.md` |
 | Output checklist | `references/output-checklist.md` |
 | Detailed layout acceptance gates | `references/layout-acceptance-gates.md` |
-| Report layout baseline and decision gates | `$report-design-system-governance` relevant guideline references |
-| Modern SaaS / BI Dashboard / UI Kit positive style contract | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
-| Template layout tokens | `$report-prototype-template-management` `references/template-layout-design-system.md` when template-based |
-| Template operation flow | `$report-prototype-template-management` `references/template-operation-flow.md` when the layout will feed a bundled-template implementation |
-| Template Build Packet layout sections | `$report-prototype-template-management` `references/template-build-packet-contract.md` when layout will feed bundled-template source edits |
+| Report layout baseline and decision gates | `report-design-system-governance` relevant guideline references |
+| Modern SaaS / BI Dashboard / UI Kit positive style contract | `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
+| Template layout tokens | `report-prototype-template-management` `references/template-layout-design-system.md` when template-based |
+| Template operation flow | `report-prototype-template-management` `references/template-operation-flow.md` when the layout will feed a bundled-template implementation |
+| Template Build Packet layout sections | `report-prototype-template-management` `references/template-build-packet-contract.md` when layout will feed bundled-template source edits |
 
 ## Anti-Laziness Gate
 
@@ -61,9 +61,9 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 9. Declare the page rhythm: `information-flow report`, `KPI dashboard`, `detail/query report`, `analysis narrative`, or `cockpit/status monitor`. Default to information flow unless the central question is current-state monitoring. KPI dashboards must place the metric drilldown loop as result -> diagnosis -> process -> action, not only a KPI card grid. Use typography, spacing, section rhythm, and subtle dividers before uniform card borders; reserve KPI/card grids for justified status-overview needs.
 10. Lay out top-level parent blocks in legal spans on the content-area grid: 12 equal columns after menu/sidebar width is deducted, and rowHeight from 8 visible row units after menu/header height is deducted. Row count is `N` and is not capped by the grid rule. Then decide whether each block contains one component or composed internal sub-blocks.
 11. Before filling detailed body content, choose or explicitly inherit one `blockChromePattern` for each top-level parent block through `references/block-chrome-style-patterns.md`. The block title/body chrome is chosen from business role, density, evidence type, and template family, then the internal content is placed inside the reserved body viewport.
-12. When the layout feeds a template implementation, consume the PRD section 4C Markdown/mermaid page previews first, then output `pageLayoutConfig` and Template Build Packet layout fragments for `$report-prototype-template-management`: packet sections 3 page registry, 4 page layout rows, 5 block map, and the layout-facing part of 6 standard block areas. Include `readerPreview` consumption proof, `layoutRows`, stable block ids, block spans, nav/page wiring, first-viewport plan, and the intended component-area count per block. Do not fill component slots here.
+12. When the layout feeds a template implementation, consume the PRD section 4C Markdown/mermaid page previews first, then output `pageLayoutConfig` and Template Build Packet layout fragments for `report-prototype-template-management`: packet sections 3 page registry, 4 page layout rows, 5 block map, and the layout-facing part of 6 standard block areas. Include `readerPreview` consumption proof, `layoutRows`, stable block ids, block spans, nav/page wiring, first-viewport plan, and the intended component-area count per block. Do not fill component slots here.
     - The intended component-area count must be requirement-driven: use one slot for a single dominant conclusion card/component; use multiple slots only for parallel evidence, comparisons, or conclusion-card plus directly related support. In multi-slot handoff, reserve the first position for the conclusion card or primary conclusion component when componentized conclusions are needed; text-only/narrative conclusions go to the summary/description area only when that block has no conclusion card. If a conclusion card exists, the summary/description area is omitted or used only for non-conclusion notes such as scope, source, caveat, definition, or action note.
-13. Size blocks and sub-blocks from content needs: KPI, summary, chart, table, complex diagram, task list, evidence panel, drawer/detail, or action area. Use `$report-layout-size-constraint-spec` when the task is mainly block size, height budget, overflow, or viewport fit. When any block is crowded, requires a taller row, or moves to a wider/full row, apply `block-size-constraints-05-anti-squeeze-reflow.md` before accepting the new layout.
+13. Size blocks and sub-blocks from content needs: KPI, summary, chart, table, complex diagram, task list, evidence panel, drawer/detail, or action area. Use `report-layout-size-constraint-spec` when the task is mainly block size, height budget, overflow, or viewport fit. When any block is crowded, requires a taller row, or moves to a wider/full row, apply `block-size-constraints-05-anti-squeeze-reflow.md` before accepting the new layout.
 14. Define layout states, vertical scroll behavior, and overflow fallback for parent blocks and sub-blocks at `1920x1080`.
 15. Use `layout-acceptance-gates.md` before accepting implementation-ready layout or repairing overlap/cropping defects.
 
@@ -93,7 +93,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Layout must be driven by task, data density, business priority, state coverage, and next action, not decorative polish.
 - Do not accept a layout where uniform bordered cards are the main information separator. Prefer typographic hierarchy, whitespace, section rhythm, and subtle dividers; card frames are justified only for independent objects, repeated items, or template-owned surfaces.
 - Do not fill business content into styled parent blocks before the block title/body chrome pattern is selected or an explicit inherited default such as `template-default` is recorded. The chrome decision must preserve component-owned title/control ownership and measurable body viewport floors.
-- Do not mark a template-based layout implementation-ready unless `pageLayoutConfig` can be handed to `$report-prototype-template-management` without guesswork: block ids are stable, spans are legal, nav/page wiring is named, and each block's component-area slot need is explicit.
+- Do not mark a template-based layout implementation-ready unless `pageLayoutConfig` can be handed to `report-prototype-template-management` without guesswork: block ids are stable, spans are legal, nav/page wiring is named, and each block's component-area slot need is explicit.
 - Do not mark a PRD-driven template layout ready when section 4C Markdown/mermaid previews are missing for retained navigation pages or when `pageLayoutConfig` contradicts those previews.
 - Do not mark a template layout ready when Template Build Packet sections 3, 4, 5, and layout-facing section 6 cannot be produced from the layout without guesswork.
 - Do not choose a multi-slot block layout by default. Multi-slot selection must be justified by the user's analytical need, and the first component position should carry the block's conclusion card or primary conclusion component whenever the requirement uses componentized conclusions.

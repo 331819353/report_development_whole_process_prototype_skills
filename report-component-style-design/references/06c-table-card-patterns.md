@@ -7,7 +7,7 @@ Pair with:
 - `06-analytical-tables.md` for base Detail Table, Pivot Table, grouped header, S2, row density, column width, status, and state rules.
 - `10-in-component-controls.md` when the table owns local filters, date ranges, export, column settings, metric switches, or display-mode controls.
 - `12f2-placement-grouped-table-header.md`, `12f3-placement-pivot-table.md`, `12f4-placement-detail-table.md`, and `12f5-placement-table-acceptance-checks.md` when implementation-ready geometry is required.
-- `$report-table-design-spec` as the table front door.
+- `report-table-design-spec` as the table front door.
 - `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` when converting visual samples into text-only contracts.
 
 ## Pattern Identity

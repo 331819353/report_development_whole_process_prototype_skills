@@ -10,9 +10,9 @@ The source screenshots are temporary visual evidence. The durable knowledge is t
 - Analysis perspective: `analysisPerspective: conclusionInsight`.
 - Applicable pages: KPI dashboards, management reports, BI analysis pages, review reports, business diagnosis pages, and prototype card galleries that answer "这组数据说明了什么".
 - Source hierarchy: company UI baseline -> report design system -> Analysis & Insight rules -> this conclusion-insight standard -> project-specific metric/data contract.
-- Primary style reference: `$report-component-style-design` `references/03a-conclusion-evidence-action-cards.md`.
-- Supporting references: `$report-component-style-design` `references/03-text-summary.md`, `$report-component-style-design` `references/04a-kpi-card-patterns.md`, `$report-component-style-design` `references/12b-placement-insight-kpi.md`, and `$report-component-style-design` `references/12-component-acceptance-gates.md`.
-- Mapping references: `$report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `$report-info-component-mapping` `references/06-binding-implementation-contract.md`, `$report-info-component-mapping` `references/08-generation-stability.md`, and `$report-info-component-mapping` `references/09-component-mapping-gates.md`.
+- Primary style reference: `report-component-style-design` `references/03a-conclusion-evidence-action-cards.md`.
+- Supporting references: `report-component-style-design` `references/03-text-summary.md`, `report-component-style-design` `references/04a-kpi-card-patterns.md`, `report-component-style-design` `references/12b-placement-insight-kpi.md`, and `report-component-style-design` `references/12-component-acceptance-gates.md`.
+- Mapping references: `report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `report-info-component-mapping` `references/06-binding-implementation-contract.md`, `report-info-component-mapping` `references/08-generation-stability.md`, and `report-info-component-mapping` `references/09-component-mapping-gates.md`.
 - Renderers: project card/text components, Element Plus Tabs/Segmented/Tooltip/Popover/Drawer where available; ECharts only when the evidence body contains a real chart.
 - Supported viewports: compact `320x120+`; standard row card `720x168+`; wide interpretation row `960x180+`; gallery tile `360x240+`; full conclusion/evidence/action card `560x420+`.
 - Owner/version/status: report component design spec / v1 / ready for routing and implementation handoff.
@@ -296,4 +296,4 @@ Before marking ready:
 - Evidence body fields are declared for the selected mode.
 - Source/freshness/detail or exact-value path is visible or discoverable.
 - Loading, empty, insufficient, missing comparison, missing denominator/formula, no-permission, stale, long-copy, and contradictory-evidence states are defined.
-- The card passes `$report-component-style-design` `references/03-text-summary.md`, `$report-component-style-design` `references/03a-conclusion-evidence-action-cards.md`, `$report-component-style-design` `references/12b-placement-insight-kpi.md`, and `$report-component-style-design` `references/12-component-acceptance-gates.md`.
+- The card passes `report-component-style-design` `references/03-text-summary.md`, `report-component-style-design` `references/03a-conclusion-evidence-action-cards.md`, `report-component-style-design` `references/12b-placement-insight-kpi.md`, and `report-component-style-design` `references/12-component-acceptance-gates.md`.

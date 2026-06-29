@@ -101,7 +101,7 @@ Style generalization contract:
 styleGeneralization: {
   sourceRole: 'reusable-inspiration',
   generalizationStatus: 'covered-by-existing-pattern',
-  canonicalPatternRef: '$report-component-design-spec/references/13-action-recommendation-card-standard.md',
+  canonicalPatternRef: 'report-component-design-spec/references/13-action-recommendation-card-standard.md',
   patternFields: ['actionRecommendationCardPattern', 'actionEvidenceBodyMode', 'actionRecommendationEvidenceBinding'],
   componentFamily: 'action-recommendation-card',
   businessTrigger: '看行动 / next-step recommendation after metric diagnosis',

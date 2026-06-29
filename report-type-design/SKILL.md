@@ -47,7 +47,7 @@ Load only the reference files for the selected primary type:
 - `operational-execution`: `references/operational-execution-pattern-examples-and-acceptance.md`, `references/operational-execution-subtype-selection-and-execution-patterns.md`
 - `reconciliation-traceability`: `references/reconciliation-traceability-pattern-examples-and-acceptance.md`
 
-For any output that will feed a report prototype, dashboard, BI page, business-analysis page, cockpit, or report designer, also apply `$report-design-system-governance` `references/09-report-decision-anti-ai-gate.md` at the business-design level. Use it to prevent generic metric shells and to require metric口径, metric tree/driver path, data story, drilldown/action, trust details, and industry vocabulary.
+For any output that will feed a report prototype, dashboard, BI page, business-analysis page, cockpit, or report designer, also apply `report-design-system-governance` `references/09-report-decision-anti-ai-gate.md` at the business-design level. Use it to prevent generic metric shells and to require metric口径, metric tree/driver path, data story, drilldown/action, trust details, and industry vocabulary.
 
 ## Anti-Laziness Gate
 

@@ -15,7 +15,7 @@ Use this file for common adjustments and final verification after changing a tem
 
 1. Read `template-build-packet-contract.md` before PRD-driven or multi-step template implementation.
 2. Create or update `docs/template-build-packet.md` in the copied project, or maintain an equivalent workflow packet before source edits.
-3. Fill the packet sections for framework/shell, pages, `layoutRows`, block map, standard block areas, component slots, data/API, filters/actions, interactions, dynamic conclusion rules, self-development exceptions, implementation file plan, and validation plan.
+3. Fill the packet sections for framework/shell, pages, `layoutRows`, `layoutCoordinateMap`, block map, standard block areas, component slots, data/API, filters/actions, interactions, dynamic conclusion rules, self-development exceptions, implementation file plan, and validation plan.
 4. Mark each row `ready`, `draft`, `blocked`, or `deferred`.
 5. Do not edit a target source file unless the packet section 11 row names that file and the page/block/slot/control/data/conclusion rows it consumes.
 
@@ -38,13 +38,14 @@ Use this file for common adjustments and final verification after changing a tem
 1. Edit `layoutRows`.
 2. Keep 12 columns per row and normally provide at least 8 visible row units for the first `1920x1080` content viewport.
    Record a row audit: each `layoutRows` string has exactly 12 cells, no row exceeds 12 cells, total row count is at least 8, every block letter is rectangular, every block id has one widget and one `blockLayoutTemplateMap` row, and every span records `colStart`, `colSpan`, `rowStart`, and `rowSpan`.
+   Assign readable `blockCoordinate` values (`R-B`) by page reading row/region and block order.
 3. Keep repeated characters rectangular.
 4. Read `template-layout-design-system.md` when changing `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, or content range.
-5. Calculate the actual block width/height with `$report-visual-layout-design`.
+5. Calculate the actual block width/height with `report-visual-layout-design`.
 6. Verify each span can hold its chart/table/KPI/composite content at the target viewport size.
 7. Keep or add vertical scrolling when the report needs more rows than the first viewport can show.
 8. Rename widget keys to match changed block ids.
-9. Update the Template Build Packet and the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockLayoutTemplateMap` with selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap`, `summaryAreaConfig`, and any `selfDevelopmentExceptionMap` component content area fallback.
+9. Update the Template Build Packet and the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `pageLayoutConfig` plus `layoutCoordinateMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockLayoutTemplateMap` with `blockCoordinate` and selected independent block layout Vue files, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap` with `slotCoordinate`, `summaryAreaConfig`, and any `selfDevelopmentExceptionMap` component content area fallback.
 10. Append the config ledger entry with changed layout ranges and affected widget/filter contracts.
 11. Run `npm run validate:dashboard`.
 
@@ -56,7 +57,7 @@ Use this file for common adjustments and final verification after changing a tem
 3. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured.
 4. Decide whether `2-1 auxMetricArea` is needed. Configure it when needed and keep the items evenly distributed; otherwise record it as not configured.
 5. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
-6. For every `3 componentArea` slot, inspect `references/component-content-area-template-map.md`, then inspect `src/widgets/templates/component-content-areas/` and its README/catalog, then select an existing 组件内容区模板 first.
+6. For every `3 componentArea` slot, assign/verify `slotCoordinate` (`R-B-S`), inspect `references/component-content-area-template-map.md`, then inspect `src/widgets/templates/component-content-areas/` and its README/catalog, then select an existing 组件内容区模板 first.
 7. If no suitable component content area template exists, create a standalone Vue component content area template, use ECharts for standard chart needs, register/copy it, and record it in `selfDevelopmentExceptionMap` with `type: componentContentAreaTemplate`.
 8. For every selected 组件内容区模板, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块布局模板 has one slot or when `showContentTitle: false`.
 9. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件内容区模板 slots. Those belong to 分块布局模板 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
@@ -140,9 +141,9 @@ Use this file for common adjustments and final verification after changing a tem
 - Affecting filters are bound through `filterFields`, `requiredFilters`, API params, or resolver params; `ignoredFilters` is used only for intentionally invariant widgets and each ignored filter has `ignoredFilterReasons`.
 - Non-default primary filter states visibly change affected widget data in JSON/API/resolver mode, or the widget is clearly labeled static/invariant.
 - Non-default perspective states update metric names, titles/summaries, table dimensions/headers, component set, specialty metrics, and口径 when specified by `componentSchemaImpact`; value-only changes are not enough.
-- Block spans match the size and component-count constraints from `$report-visual-layout-design`.
+- Block spans match the size and component-count constraints from `report-visual-layout-design`.
 - Layout tokens match the selected template family or deviations are documented: content range, `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, and component-owned title/control handoff.
-- Outer block validation does not replace component-internal fit checks. Composite widgets must be reviewed with `$report-component-style-design` for summary columns, nested KPI grids, text wrapping, min-height, and no critical nowrap/ellipsis clipping.
+- Outer block validation does not replace component-internal fit checks. Composite widgets must be reviewed with `report-component-style-design` for summary columns, nested KPI grids, text wrapping, min-height, and no critical nowrap/ellipsis clipping.
 - Composite widget no-data masks are scoped by child data states: if all child sub-blocks are no-data, show one parent-block mask; if only some child sub-blocks are no-data, mask only those sub-blocks and include their title/control area plus component body.
 - `1920 * 1080` is used as the prototype viewport check, not a total report height cap.
 - Layout blocks do not clip titles, legends, charts, tables, empty states, or controls.

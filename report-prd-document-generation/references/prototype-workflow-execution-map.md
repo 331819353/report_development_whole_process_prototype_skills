@@ -2,9 +2,11 @@
 
 Use this reference when finalizing a PRD and when a prototype workflow starts from an existing PRD. The PRD is not merely background reading; it is the executable input contract for report prototype workflows.
 
+Capability references in this file are platform-neutral. Names such as `report-prd-document-generation`, `report-prototype-template-management`, or legacy `report-prd-document-generation` are capability IDs, not Codex-only skill invocations. Claude, Hermes, Codex, and other agents must map each capability ID to their own available prompt, tool, workflow, or documentation bundle before execution.
+
 ## Hard Rule
 
-All report prototype workflows must start from a PRD produced or validated by `$report-prd-document-generation`.
+All report prototype workflows must start from a PRD produced or validated by capability `report-prd-document-generation`.
 
 If the user asks for prototype work without a PRD, create a draft PRD first. If the user provides a PRD, validate it against this execution map before design, layout, template, component, or runtime work begins.
 
@@ -22,7 +24,9 @@ Report-type implementation paths are binding. Prototype workflows must consume P
 
 Executive satisfaction design gates are binding for management-facing reports. Prototype workflows must consume PRD section 4B `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` rows before layout, component mapping, template selection, export design, or readiness acceptance. These IDs decide the first-viewport answer, cause path, action route, severity ordering, trust/source disclosure, and meeting/export reuse.
 
-Reader-facing page previews are binding. Prototype workflows must consume PRD section 4C previews before page layout and template work: every retained navigation page must show filters, toolbar actions, first-viewport blocks, business content, and drilldown/jump/modal/drawer/popup entry points. The preview is the human-readable target; `layoutRows` and slot maps are the execution appendix.
+Reader-facing page previews are binding. Prototype workflows must consume PRD section 4C previews before page layout and template work: every retained navigation page must show filters, toolbar actions, first-viewport blocks, business content, and drilldown/jump/modal/drawer/popup entry points. The preview is the human-readable target; `layoutRows`, `layoutCoordinateMap`, and slot maps are the execution appendix.
+
+Readable layout coordinates are binding. Prototype workflows must preserve `blockCoordinate` and `slotCoordinate` from PRD section 5 and the Template Build Packet: `R-B` identifies the block by page reading row/region and block order, and `R-B-S` identifies the component slot inside the selected block layout template. Example: first page row has two `6*3` blocks; the second block is `1-2`, and its first slot is `1-2-1`. Standard block areas use `blockCoordinate + areaName`, such as `1-2:titleArea`, so the third number remains reserved for component slots.
 
 Template Build Packet rows are binding for implementation. Prototype workflows must turn the PRD appendix seed into a current Template Build Packet before editing copied template source files, then implement row by row from that packet.
 
@@ -31,20 +35,20 @@ Child PRD rows are binding for stage routing. The PRD final output must state wh
 Prototype workflows must not recreate complete PRD content internally. They may only:
 
 - Consume PRD sections as execution inputs.
-- Ask `$report-requirement-structure-extraction` to clarify evidence or gaps.
-- Return to `$report-prd-document-generation` to update missing or conflicting PRD sections.
+- Ask capability `report-requirement-structure-extraction` or an equivalent requirement-clarification agent to clarify evidence or gaps.
+- Return to capability `report-prd-document-generation` or an equivalent PRD-generation agent to update missing or conflicting PRD sections.
 
 ## Required PRD Execution Matrix
 
 Add this matrix to every PRD:
 
-| PRD section | Executable IDs | Downstream owner skill/workflow | Execution artifact | Blocking rule | Status |
+| PRD section | Executable IDs | Downstream owner capability/workflow | Execution artifact | Blocking rule | Status |
 | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - `Executable IDs` must reference actual IDs from the PRD, such as `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RTP-*`, `PATH-*`, `RULE-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `CHILD-PRD-*`, and `GAP-*`.
-- `Downstream owner skill/workflow` must name the workflow or atomic skill that will consume the section.
+- `Downstream owner capability/workflow` must name the workflow, atomic capability, or equivalent agent function that will consume the section.
 - `Execution artifact` must be concrete: binding matrix, pageLayoutConfig, blockLayoutTemplateMap, API contract, interaction contract, permission matrix, runtime QA case, etc.
 - `Blocking rule` must say whether missing data blocks prototype start, only blocks implementation, or is explicitly out of scope.
 - `Status` must be `ready`, `draft`, `blocked`, or `deferred-out-of-scope`.
@@ -53,25 +57,25 @@ Rules:
 
 | PRD section | Required execution | Primary downstream owner |
 | --- | --- | --- |
-| 0A. PRD child registry and stage map | Identify the required child PRD for each downstream stage, especially `CHILD-PRD-PROTOTYPE` for prototype work, and verify child sync status. | `$report-prd-document-generation`, target prototype workflow, `$report-delivery-pipeline-governance` |
-| 0. 文档元信息 / facts / assumptions / gaps | Set workflow mode, source authority, gap ownership, readiness status, and handoff version. | `$quality-gate-validation`, `$delivery-version-management`, target prototype workflow |
-| 1. 需求背景与目标 | Produce prototype story, primary management question, report type, first-viewport answer, and success criteria. | target prototype workflow, `$report-type-design`, `$report-prototype-design-thinking` when generic |
-| 2. 用户角色与使用场景 | Produce role-specific user path, permission scope, navigation visibility, export scope, and scenario acceptance cases. | target prototype workflow, `$report-info-component-mapping`, `$report-filter-control-design-spec` |
-| 3. 开发范围边界 | Lock phase-one scope, out-of-scope exclusions, `outputArtifact`, template-only constraint, self-development exception map, deferred items, and blockers. | target prototype workflow, `$report-delivery-pipeline-governance`, `$quality-gate-validation` |
-| 4. 页面内容 | Produce visible business module inventory, result-content boundary, component bundle plan, and nav/page content plan. | target prototype workflow, `$report-info-component-mapping`, `$report-design-system-governance` |
-| 4A. 报表类型实现思路与分块布局映射 | Produce attachment evidence intake, user-thought validation, primary `RTP-*` pattern, `PATH-*` reading path, first-viewport plan, and path-step-to-block-layout mapping. | `$report-prd-document-generation`, target prototype workflow, `$report-prototype-template-management` |
-| 4B. 管理层满意度辅助设计 | Produce `ESG-*` executive decision profiles, first-viewport 3-second answer, 30-second cause path, 3-minute action, management metric wording, `SEV-*` priority/severity, `ACT-*` closure, `TRUST-*` source/freshness/coverage, `MEET-*` review/export, and satisfaction checklist. | `$report-prd-document-generation`, target prototype workflow, `$report-info-component-mapping`, `$report-prototype-template-management` |
-| 4C. 导航页与页面预览 | Produce Markdown/mermaid previews for every retained navigation page, including filters, toolbar actions, first-viewport blocks, block business content, reading path, and interaction entries. | `$report-prd-document-generation`, `$report-visual-layout-design`, `$report-prototype-template-management` |
-| 5. 页面布局配置 | Produce `frameworkTemplateId`, shell config, `pageLayoutConfig`, exact-12-column and minimum-8-row `layoutRows` audit, `filterSurfaceMap`, `toolbarActionMap`, `blockLayoutTemplateMap`, standard area configs, component slot map, component content area template index/map with copy paths, and section 4B ID traces where applicable. | `$report-visual-layout-design`, `$report-prototype-template-management` |
-| 5A. Dynamic conclusion generation rules | Produce `conclusionRuleMap`, summaryArea conclusion bindings, conclusion-card/analysisInsight rule bindings, affected API/filter/interaction refresh behavior, fallback text, and QA cases. | `$report-info-component-mapping`, `$report-prototype-template-management`, `$frontend-runtime-qa-validation` |
-| 6. 指标清单 | Produce metric dictionary, KPI scope boundary, display precision, formula validation, source/freshness, denominator/null behavior, and tooltip/export metadata. | `$metric-number-display-contract`, `$report-info-component-mapping`, target prototype workflow |
-| 7. 指标挂载矩阵 | Produce component/data/filter/control/interaction binding matrix and slot-level metric binding. | `$report-info-component-mapping`, `$report-prototype-template-management` |
-| 8. 数据与 API 需求 | Produce data object contracts, API request/response contracts, mock/data-source contract, permission filtering, cache/freshness, `docs/prototype-data-summary.md`, and technical-solution handoff. | `$report-info-component-mapping`, `$report-prototype-template-management`, `$delivery-artifact-template-management`, downstream technical/backend workflows |
-| 9. 交互逻辑 | Produce `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, and `interactionBehaviorMap` for filters, period switch, metric switch, ranking click, drilldown, jump, drawer/modal, export, loading/empty/error/no-permission states. Self-developed interactions must remain component-owned or template action-hook behavior and must not create custom shell/layout/filter/nav/toolbar surfaces. | `$report-info-component-mapping`, `$report-filter-control-design-spec`, `$report-prototype-template-management`, `$frontend-runtime-qa-validation` |
-| 10. 权限、安全、导出与异常状态 | Produce role/data-scope matrix, masking/export/audit behavior, state cases, and QA probes. | `$quality-gate-validation`, `$frontend-runtime-qa-validation`, downstream testing workflow |
-| 11. 验收标准与待确认问题 | Produce readiness gates, test/QA matrix, unresolved blocker list, and downstream handoff conditions. | `$quality-gate-validation`, `$report-delivery-pipeline-governance`, `$frontend-runtime-qa-validation` |
-| 13. Template Build Packet Seed | Produce or update `docs/template-build-packet.md` / equivalent workflow packet with fixed rows for framework, shell, pages, layout rows, blocks, standard areas, component slots, data/API, filters/actions, interactions, conclusion rules, exceptions, target files, and validations. | `$report-design-workflow`, `$report-visual-layout-design`, `$report-info-component-mapping`, `$report-prototype-template-management` |
-| 14. Child PRD Bundle | Produce stage-specific child PRDs for 原型、前端、后端、技术方案、测试; prototype workflow consumes `CHILD-PRD-PROTOTYPE` and records child sync status in readiness proof. | `$report-prd-document-generation`, `$report-design-workflow`, typed prototype workflows, downstream delivery workflows |
+| 0A. PRD child registry and stage map | Identify the required child PRD for each downstream stage, especially `CHILD-PRD-PROTOTYPE` for prototype work, and verify child sync status. | `report-prd-document-generation`, target prototype workflow, `report-delivery-pipeline-governance` |
+| 0. 文档元信息 / facts / assumptions / gaps | Set workflow mode, source authority, gap ownership, readiness status, and handoff version. | `quality-gate-validation`, `delivery-version-management`, target prototype workflow |
+| 1. 需求背景与目标 | Produce prototype story, primary management question, report type, first-viewport answer, and success criteria. | target prototype workflow, `report-type-design`, `report-prototype-design-thinking` when generic |
+| 2. 用户角色与使用场景 | Produce role-specific user path, permission scope, navigation visibility, export scope, and scenario acceptance cases. | target prototype workflow, `report-info-component-mapping`, `report-filter-control-design-spec` |
+| 3. 开发范围边界 | Lock phase-one scope, out-of-scope exclusions, `outputArtifact`, template-only constraint, self-development exception map, deferred items, and blockers. | target prototype workflow, `report-delivery-pipeline-governance`, `quality-gate-validation` |
+| 4. 页面内容 | Produce visible business module inventory, result-content boundary, component bundle plan, and nav/page content plan. | target prototype workflow, `report-info-component-mapping`, `report-design-system-governance` |
+| 4A. 报表类型实现思路与分块布局映射 | Produce attachment evidence intake, user-thought validation, primary `RTP-*` pattern, `PATH-*` reading path, first-viewport plan, and path-step-to-block-layout mapping. | `report-prd-document-generation`, target prototype workflow, `report-prototype-template-management` |
+| 4B. 管理层满意度辅助设计 | Produce `ESG-*` executive decision profiles, first-viewport 3-second answer, 30-second cause path, 3-minute action, management metric wording, `SEV-*` priority/severity, `ACT-*` closure, `TRUST-*` source/freshness/coverage, `MEET-*` review/export, and satisfaction checklist. | `report-prd-document-generation`, target prototype workflow, `report-info-component-mapping`, `report-prototype-template-management` |
+| 4C. 导航页与页面预览 | Produce Markdown/mermaid previews for every retained navigation page, including filters, toolbar actions, first-viewport blocks, block business content, reading path, and interaction entries. | `report-prd-document-generation`, `report-visual-layout-design`, `report-prototype-template-management` |
+| 5. 页面布局配置 | Produce `frameworkTemplateId`, shell config, `pageLayoutConfig`, exact-12-column and minimum-8-row `layoutRows` audit, `layoutCoordinateMap`, `filterSurfaceMap`, `toolbarActionMap`, `blockLayoutTemplateMap`, standard area configs, component slot map, component content area template index/map with copy paths, and section 4B ID traces where applicable. | `report-visual-layout-design`, `report-prototype-template-management` |
+| 5A. Dynamic conclusion generation rules | Produce `conclusionRuleMap`, summaryArea conclusion bindings, conclusion-card/analysisInsight rule bindings, affected API/filter/interaction refresh behavior, fallback text, and QA cases. | `report-info-component-mapping`, `report-prototype-template-management`, `frontend-runtime-qa-validation` |
+| 6. 指标清单 | Produce metric dictionary, KPI scope boundary, display precision, formula validation, source/freshness, denominator/null behavior, and tooltip/export metadata. | `metric-number-display-contract`, `report-info-component-mapping`, target prototype workflow |
+| 7. 指标挂载矩阵 | Produce component/data/filter/control/interaction binding matrix and slot-level metric binding. | `report-info-component-mapping`, `report-prototype-template-management` |
+| 8. 数据与 API 需求 | Produce data object contracts, API request/response contracts, mock/data-source contract, permission filtering, cache/freshness, `docs/prototype-data-summary.md`, and technical-solution handoff. | `report-info-component-mapping`, `report-prototype-template-management`, `delivery-artifact-template-management`, downstream technical/backend workflows |
+| 9. 交互逻辑 | Produce `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, and `interactionBehaviorMap` for filters, period switch, metric switch, ranking click, drilldown, jump, drawer/modal, export, loading/empty/error/no-permission states. Self-developed interactions must remain component-owned or template action-hook behavior and must not create custom shell/layout/filter/nav/toolbar surfaces. | `report-info-component-mapping`, `report-filter-control-design-spec`, `report-prototype-template-management`, `frontend-runtime-qa-validation` |
+| 10. 权限、安全、导出与异常状态 | Produce role/data-scope matrix, masking/export/audit behavior, state cases, and QA probes. | `quality-gate-validation`, `frontend-runtime-qa-validation`, downstream testing workflow |
+| 11. 验收标准与待确认问题 | Produce readiness gates, test/QA matrix, unresolved blocker list, and downstream handoff conditions. | `quality-gate-validation`, `report-delivery-pipeline-governance`, `frontend-runtime-qa-validation` |
+| 13. Template Build Packet Seed | Produce or update `docs/template-build-packet.md` / equivalent workflow packet with fixed rows for framework, shell, pages, layout rows, blocks, standard areas, component slots, data/API, filters/actions, interactions, conclusion rules, exceptions, target files, and validations. | `report-design-workflow`, `report-visual-layout-design`, `report-info-component-mapping`, `report-prototype-template-management` |
+| 14. Child PRD Bundle | Produce stage-specific child PRDs for 原型、前端、后端、技术方案、测试; prototype workflow consumes `CHILD-PRD-PROTOTYPE` and records child sync status in readiness proof. | `report-prd-document-generation`, `report-design-workflow`, typed prototype workflows, downstream delivery workflows |
 
 ## Prototype Workflow Start Gate
 
@@ -86,6 +90,7 @@ Before any prototype workflow continues past preflight, require:
 - Section 4A declares a primary `RTP-*` pattern, `PATH-*` reading path, first-viewport plan, and path-to-block layout mapping; if user attachments or user-supplied thinking exist, section 4A records their intake/validation.
 - Management-facing reports include section 4B rows for `ESG-*` decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required `SEV-*`, `ACT-*`, `TRUST-*`, and required `MEET-*` behavior.
 - Section 4C contains a Markdown/mermaid preview for every retained navigation page, and each preview shows visible filters, toolbar actions, major blocks, block business content, and interaction entry points.
+- Section 5 contains `layoutCoordinateMap`: every visible block has `blockCoordinate` (`R-B`), every `3 componentArea` slot has `slotCoordinate` (`R-B-S`), and coordinates match the preview, `layoutRows`, `blockMap`, and selected block layout slot order.
 - The PRD execution appendix includes a Template Build Packet seed, and the workflow has created or will create a current Template Build Packet before source edits.
 - The final stage map states that 原型 uses `CHILD-PRD-PROTOTYPE`, 前端 uses `CHILD-PRD-FRONTEND`, 后端 uses `CHILD-PRD-BACKEND`, 技术方案 uses `CHILD-PRD-TECHNICAL-SOLUTION`, and 测试 uses `CHILD-PRD-TESTING`.
 - Every displayed metric in sections 6 and 7 has a mount path.
@@ -102,7 +107,7 @@ If these conditions fail, update the PRD first instead of continuing inside the 
 
 A workflow may mark a prototype stage `ready` only when every PRD execution matrix row is one of:
 
-- `ready`: consumed by the named workflow/skill and materialized into the required artifact.
+- `ready`: consumed by the named workflow/capability and materialized into the required artifact.
 - `deferred-out-of-scope`: explicitly excluded by PRD section 3 and not required for the current phase.
 
 Rows with `draft` or `blocked` status keep the prototype stage `partial` or `blocked`. Do not hide incomplete PRD sections inside assumptions, mock data, or visual placeholders.
@@ -113,7 +118,7 @@ Executive satisfaction rows are not optional for management-facing reports. A wo
 
 Navigation/page preview rows are not optional. A workflow cannot mark the stage `ready` while a retained nav page has no consumed section 4C preview or while the implementation contradicts the preview's filters, toolbar actions, major blocks, business content, or interaction entries.
 
-Template Build Packet rows are not optional for implementation. A workflow cannot edit copied template source or mark implementation `ready` while packet sections for the edited page/block/slot/control/data/conclusion/target file are missing, blank, stale, or blocked.
+Template Build Packet rows are not optional for implementation. A workflow cannot edit copied template source or mark implementation `ready` while packet sections for the edited page/block/slot/control/data/conclusion/target file are missing, blank, stale, blocked, or missing the required readable coordinate for that block or slot.
 
 Child PRD rows are not optional for cross-stage handoff. A workflow cannot mark prototype readiness for downstream 前端、后端、技术方案、测试 when the final stage map is missing, when `CHILD-PRD-PROTOTYPE` is stale, or when affected downstream child PRDs are missing/stale without explicit `GAP-*` impact.
 

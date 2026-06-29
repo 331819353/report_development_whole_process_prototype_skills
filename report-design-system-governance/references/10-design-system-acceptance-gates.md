@@ -19,7 +19,7 @@ Detailed governance gates moved out of `SKILL.md`. Load this before accepting a 
 - Do not accept report standards that only define dashboard surfaces and chart/card styling while omitting metric口径, metric tree/driver path, realistic dirty data, drilldown/detail/action, trust metadata, and industry-specific vocabulary.
 - Do not accept a report designer/editor standard that only defines the three-panel shell without data source binding, aggregation, calculated fields, filters, permissions, validation, versioning, preview, and publish behavior.
 - Do not duplicate Haier enterprise UI values when `$haier-enterprise-app-ui-design-spec` is the source. Reference inherited values and only define report-specific extensions.
-- Do not let template layout tokens drift from `$report-prototype-template-management` when bundled templates are the implementation target.
+- Do not let template layout tokens drift from `report-prototype-template-management` when bundled templates are the implementation target.
 - Do not mark a rule `stable` unless it has scope, owner/source, usage guidance, acceptance criteria, and migration impact.
 - Do not accept a design system without loading, empty, error, no-permission, stale-data, and disabled states.
 - Do not accept chart/table rules without metric display semantics, exact-value access, overflow policy, and screenshot/regression check.

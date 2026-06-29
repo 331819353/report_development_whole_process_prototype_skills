@@ -17,20 +17,20 @@ Use this as the direct front door for analytical table standards. It makes table
 
 When table references come from screenshots or visual samples, route them through the shared style generalization goal first: the table must map to a controlled table pattern, a valid composed table/card pattern, or a documented extension gap before it becomes implementation guidance.
 
-Use `$report-component-style-design` for mixed components; use this skill when the task is mainly table anatomy, column/header structure, S2/pivot behavior, row density, scrolling, pagination, or table acceptance.
+Use `report-component-style-design` for mixed components; use this skill when the task is mainly table anatomy, column/header structure, S2/pivot behavior, row density, scrolling, pagination, or table acceptance.
 
 ## Reference Map
 
 | Need | Read |
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
-| Screenshot/sample-derived table style generalization | `$report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
-| Low-noise high-density visual baseline | `$report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when table polish, operation clutter, status color noise, or outside/general table guidance is in scope |
+| Screenshot/sample-derived table style generalization | `report-component-style-design` `references/00a-style-generalization-goal.md` and `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` |
+| Low-noise high-density visual baseline | `report-component-style-design` `references/00b-low-noise-high-density-baseline.md` when table polish, operation clutter, status color noise, or outside/general table guidance is in scope |
 | Table source map and exact placement files | `references/01-table-reference-map.md` |
-| Analytical table visual/content rules | `$report-component-style-design` `references/06-analytical-tables.md` |
-| Report chart/table format baseline | `$report-design-system-governance` `references/05-report-charts-tables-format-guidelines.md` |
-| Table/composite placement routing | `$report-component-style-design` `references/12f-placement-composite-tables.md` |
-| Dense table acceptance | `$report-component-style-design` `references/12-component-acceptance-gates.md` |
+| Analytical table visual/content rules | `report-component-style-design` `references/06-analytical-tables.md` |
+| Report chart/table format baseline | `report-design-system-governance` `references/05-report-charts-tables-format-guidelines.md` |
+| Table/composite placement routing | `report-component-style-design` `references/12f-placement-composite-tables.md` |
+| Dense table acceptance | `report-component-style-design` `references/12-component-acceptance-gates.md` |
 
 ## Anti-Laziness Gate
 

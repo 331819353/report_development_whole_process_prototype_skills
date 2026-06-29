@@ -49,7 +49,7 @@ Recommended chart mapping:
 
 Do not use these patterns to add visual complexity. They are valid only when flow, hierarchy, relationship, or ordered path is the decision evidence. Use bar, line, pie/donut, table, or ordinary list patterns when the question is simple ranking, time trend, small composition, or exact row audit.
 
-Process, step, node, and bottleneck cards use `$report-component-design-spec` `references/04-process-bottleneck-analysis-card-standard.md` as the component-family contract. They may reuse this file's `flowHierarchyDiagramCardPattern` values only for the actual diagram body, such as funnel, path, tree, graph, or Sankey. Do not create near-synonym flow-hierarchy values for stepper, node, or bottleneck variants; set `processAnalysisCardPattern` instead.
+Process, step, node, and bottleneck cards use `report-component-design-spec` `references/04-process-bottleneck-analysis-card-standard.md` as the component-family contract. They may reuse this file's `flowHierarchyDiagramCardPattern` values only for the actual diagram body, such as funnel, path, tree, graph, or Sankey. Do not create near-synonym flow-hierarchy values for stepper, node, or bottleneck variants; set `processAnalysisCardPattern` instead.
 
 ## Why These Designs Feel Strong
 

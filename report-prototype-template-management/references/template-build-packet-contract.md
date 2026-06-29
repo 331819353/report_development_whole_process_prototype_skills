@@ -24,6 +24,9 @@ The packet may live in the PRD appendix, a workflow handoff document, or `docs/t
 
 - One field, one value. Avoid sentences that hide multiple decisions.
 - Use fixed field names exactly as written below.
+- Use readable layout coordinates for every block and component slot: `blockCoordinate` is `R-B`; `slotCoordinate` is `R-B-S`. Example: if page reading row 1 has two `6*3` blocks, the second block is `1-2`, and its first component slot is `1-2-1`.
+- Standard block areas use `blockCoordinate + areaName`, such as `1-2:titleArea`; the third number is reserved for component slots only.
+- Do not confuse page coordinates with block-layout internal area codes such as `1-1 titleArea` and `1-2 pillArea`. A standard area row should keep `blockCoordinate`, `areaCode`, and `areaCoordinate` distinct when needed.
 - Use `TBD(GAP-*)` for missing implementation-critical values.
 - Use `none` only when the value is truly not applicable.
 - Do not infer from a nearby section when a required packet field is empty.
@@ -84,8 +87,8 @@ Rules:
 
 One table per page.
 
-| Page ID | Row index | `layoutRow` | Column count | Over-12 check | Block letters | Status |
-| --- | --- | --- | --- | --- | --- | --- |
+| Page ID | Reading row/region | Row index | `layoutRow` | Column count | Over-12 check | Block letters | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
@@ -93,59 +96,63 @@ Rules:
 - No row may exceed 12 cells.
 - Each page has at least 8 rows.
 - Every block letter forms a rectangle.
+- `Reading row/region` defines the `R` part of `R-B` and `R-B-S`; it is the visual/business row, not every raw grid line.
 
 ### 5. Block Map
 
 One row per visible block.
 
-| Block ID | Page ID | Business name | Reading path source | Gate source | Row start | Row span | Col start | Col span | Block layout template | Block layout Vue file | Slot count | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | Page ID | Business name | Reading path source | Gate source | Row start | Row span | Col start | Col span | Block layout template | Block layout Vue file | Slot count | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - `Block layout Vue file` must be an independent selectable block layout file.
 - `componentRegionPattern` may appear only as derived compatibility metadata, not as the selected template.
+- `Block coordinate` must be unique on the page and must match the page preview, reading row/region, and left-to-right block order.
 
 ### 6. Standard Block Areas
 
 One row per block.
 
-| Block ID | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` | Status |
-| --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - `titleAreaConfig` is required.
 - Optional areas must be configured or set to `null` with `notNeededReason`.
 - Business conclusions in `summaryAreaConfig` must reference a `conclusionRuleId`.
+- Each standard area target must be addressable as `blockCoordinate + areaName`, for example `1-2:pillArea` or `1-2:summaryArea`.
 
 ### 7. Component Slot Fills
 
 One row per `3 componentArea` slot.
 
-| Slot ID | Block ID | Slot role | Component content area template ID | Standalone Vue file | Copy source | Copy target | Visual type | Metric IDs | Data object/API | Props/state contract | `conclusionRuleId` | Fallback |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot role | Component content area template ID | Standalone Vue file | Copy source | Copy target | Visual type | Metric IDs | Data object/API | Props/state contract | `conclusionRuleId` | Fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - Text, prose, placeholder copy, and `visualType` alone do not fill a slot.
+- `Slot coordinate` must follow the selected block layout template slot order. A SingleSlot block has only `R-B-1`; a DoubleSlot block has `R-B-1` and `R-B-2`.
 - If no existing component content area template fits, create a `selfDevelopmentExceptionMap` row with `type: componentContentAreaTemplate`, then register the new standalone Vue file before treating the slot as filled.
 
 ### 8. Data, API, Filters, And Interactions
 
 #### Data/API
 
-| Data/API ID | Type | Grain | Required fields | Metrics/conclusion inputs | Source file/API | Used by slots | Status |
+| Data/API ID | Type | Grain | Required fields | Metrics/conclusion inputs | Source file/API | Used by slot coordinates | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 
 #### Filters And Actions
 
-| Control ID | Owner | Visible surface | Label | Type | Default | Query/API params | Affected pages/blocks/slots | Reset/refresh behavior | Status |
+| Control ID | Owner | Visible surface | Label | Type | Default | Query/API params | Affected pages/blocks/slot coordinates | Reset/refresh behavior | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 #### Interaction Behavior
 
-| Interaction ID | Trigger owner | Source page/block/slot | Trigger | Target type | Payload fields | Context inheritance | Close/back behavior | Permission rule | QA case | Status |
+| Interaction ID | Trigger owner | Source page/block/slot coordinate | Trigger | Target type | Payload fields | Context inheritance | Close/back behavior | Permission rule | QA case | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
@@ -197,6 +204,7 @@ All other custom shell/page/block/supporting-area work is blocked or out of scop
 | `VAL-BUILD` | `npm run build` | preview/readiness |
 | `VAL-GEOMETRY` | `npm run visual:geometry -- --url <url>` when URL exists | visual readiness |
 | `VAL-DATA-SUMMARY` | `docs/prototype-data-summary.md` current with data/config/widgets/filters/interactions | backend-facing handoff |
+| `VAL-COORDINATES` | Coordinates are unique and consistent across page preview, `layoutRows`, block map, standard areas, component slots, metric mounting, conclusion rules, and interactions | source edits/readiness |
 
 ## Execution Loop
 
@@ -221,6 +229,7 @@ Template implementation is not ready when:
 - Any required field uses prose instead of a fixed ID/path/value.
 - Any page lacks a 4C reader preview ref.
 - Any `layoutRow` is not exactly 12 cells or the page has fewer than 8 rows.
+- Any visible block lacks `blockCoordinate`, any component slot lacks `slotCoordinate`, or coordinates conflict across packet sections.
 - Any block lacks a block layout Vue file.
 - Any component slot lacks a registered component content area template ID and standalone Vue file.
 - Any dynamic conclusion lacks a rule row.

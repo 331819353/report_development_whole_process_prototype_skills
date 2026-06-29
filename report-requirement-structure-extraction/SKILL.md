@@ -1,6 +1,6 @@
 ---
 name: report-requirement-structure-extraction
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于在完整 PRD 生成前，把模糊想法、业务口述、截图、会议纪要、指标草表或零散资料拆成事实、假设、缺口和下游路由证据。用户提到需求分析、需求梳理、需求拆解、需求澄清、业务问题转开发需求、范围/对象/指标/数据源/权限/验收标准不清、下一步该进哪个流程时触发；完整 PRD/产品需求文档必须转交 `$report-prd-document-generation`，本 skill 不直接产出完整 PRD、API 文档、代码或测试结果。"
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于在完整 PRD 生成前，把模糊想法、业务口述、截图、会议纪要、指标草表或零散资料拆成事实、假设、缺口和下游路由证据。用户提到需求分析、需求梳理、需求拆解、需求澄清、业务问题转开发需求、范围/对象/指标/数据源/权限/验收标准不清、下一步该进哪个流程时触发；完整 PRD/产品需求文档必须转交 `report-prd-document-generation`，本 skill 不直接产出完整 PRD、API 文档、代码或测试结果。"
 ---
 
 # Requirement Transformation Analysis
@@ -41,14 +41,14 @@ Load references only when their scenario is relevant. Do not bulk-load every ref
 - Read `references/data-governance-permission-playbook.md` whenever data source credibility,口径, lineage, reconciliation, masking, audit, or permission design matters.
 - Read `references/object-model-and-acceptance.md` when object fields, acceptance criteria, or implementation task lists need more detail than the core output skeleton.
 - Read `references/output-skeleton-and-gates.md` before finalizing the requirement package, output structure, quality checklist, or avoid-list.
-- Use `$report-prd-document-generation` when the user asks for a complete PRD/产品需求文档, especially when the output must include report background, role scenes, scope boundary, page content, template-backed page layout, metric口径 list, metric mounting matrix, data/API requirements, and interaction logic.
+- Use `report-prd-document-generation` when the user asks for a complete PRD/产品需求文档, especially when the output must include report background, role scenes, scope boundary, page content, template-backed page layout, metric口径 list, metric mounting matrix, data/API requirements, and interaction logic.
 - Use `$artifact-readability-standard` when the requirement package must be reviewed by humans and consumed by downstream AI/workflows.
-- Use `$report-delivery-pipeline-governance` when routing the requirement package into prototype, technical solution, backend, frontend, testing, release, or retest stages.
+- Use `report-delivery-pipeline-governance` when routing the requirement package into prototype, technical solution, backend, frontend, testing, release, or retest stages.
 - Use `$metric-number-display-contract` when requirements include units, percentages, rates, precision, rounding, tooltip/export values, or numeric consistency expectations.
 - Route to `change-impact-analysis` immediately when the input is a change to an existing metric,口径, filter, permission, API, page, field, model, test case, or delivery document.
 - Route to `metric-governance-lineage`, `permission-matrix-validation`, `data-quality-validation`, `$delivery-version-management`, or `production-observability-feedback` when those concerns are the primary deliverable rather than just supporting context.
 - Use `$haier-enterprise-app-ui-design-spec` as the Haier/enterprise application UI baseline when the requirement includes forms, lists, detail pages, tables, navigation, dialogs, empty/error/feedback states, workbench pages, cross-platform app adaptation, or Haier/enterprise report applications.
-- Use `$report-design-system-governance` as the report development/design baseline when the requirement includes reports, dashboards, cockpits, BI, data screens, business analysis, detail queries, topic analysis, KPI, charts, tables, filters, metric口径, export, performance, or acceptance.
+- Use `report-design-system-governance` as the report development/design baseline when the requirement includes reports, dashboards, cockpits, BI, data screens, business analysis, detail queries, topic analysis, KPI, charts, tables, filters, metric口径, export, performance, or acceptance.
 
 ## Input Adaptation
 
@@ -115,4 +115,4 @@ Use this sequence for every requirement transformation:
     Recommend the next skill/workflow only after the requirement package is clear enough for that skill to act.
 
     Include governance routes when relevant: `metric-governance-lineage` for指标口径, `permission-matrix-validation` for multi-role/data-scope rules, `data-quality-validation` for real data trust, `$delivery-version-management` for artifact versions, and `production-observability-feedback` for上线后闭环.
-    Use `$report-delivery-pipeline-governance` to state next-stage entry conditions and handoff blockers.
+    Use `report-delivery-pipeline-governance` to state next-stage entry conditions and handoff blockers.

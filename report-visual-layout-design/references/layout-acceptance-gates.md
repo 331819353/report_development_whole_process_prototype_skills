@@ -68,10 +68,10 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Chart + table/list cards must allocate both zones before acceptance: chart plot floor plus at least `3` visible table/list rows. A table/list preview may not squeeze the chart into a thin band above it.
 - KPI time-series analysis cards must allocate a real temporal evidence zone before acceptance. A compact trend/change/YoY-MoM/cycle/volatility/forecast card needs outer size `>=360x240`, time-series evidence zone `>=112px`, axis plot height `>=86px` when axes are visible, sparkline `>=160x64px` when axes are hidden, forecast future region `>=40px` when forecast is visible, and footer evidence `44-72px`; otherwise split the evidence to a full chart/table instead of squeezing it.
 - Gauge blocks must reserve title/local-filter, center value/unit, arc, min/max ticks, target marker, threshold/status labels, and state-message zones; keep `gaugeAreaH >= CH * 0.50` or enlarge/split/collapse optional labels before accepting the layout.
-- Hover/focus effects in fixed `12 * N` blocks must not move, scale, or visually escape components. Prefer in-bounds border glow/inset glow and route component-level motion details to `$report-component-style-design`.
+- Hover/focus effects in fixed `12 * N` blocks must not move, scale, or visually escape components. Prefer in-bounds border glow/inset glow and route component-level motion details to `report-component-style-design`.
 - Complex diagrams need diagram-owned title/label bands and at least 16px safe spacing between titles, nodes, labels, and connectors.
 - Main filter controls must use the project design system or Element Plus-style controls; naked native selects are not final visual surfaces unless a baseline prototype exception is explicitly scoped and downgraded from final readiness.
-- Haier-branded pages must reserve a visible logo slot and use a correct light/dark logo asset supplied by the project or `$report-prototype-template-management`.
+- Haier-branded pages must reserve a visible logo slot and use a correct light/dark logo asset supplied by the project or `report-prototype-template-management`.
 
 ## Required Output
 
@@ -83,7 +83,7 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Header/navigation/filter/toolbar structure.
 - Perspective navigation density and DOM no-clipping check plan for `1920x1080`.
 - Fixed-height navigation/card height budget: declared height, padding, explicit line heights, row count, gaps, footer/status heights, and pass/fail calculation.
-- Block title/function handoff: title text, required component-local controls, local-filter needs, and downstream owner (`business widget` or `$report-component-style-design`). Do not design or render the title area in page layout.
+- Block title/function handoff: title text, required component-local controls, local-filter needs, and downstream owner (`business widget` or `report-component-style-design`). Do not design or render the title area in page layout.
 - Block chrome style matrix: `blockChromePattern`, source/inheritance reason, title-stage geometry, body background relation, density, fallback, implementation proof hook, and downstream owner for every styled parent block.
 - Filter surface mapping: template-native page/global filter trigger/panel/popover/drawer, custom page/global filter bar, component-local filter handoff, or explicit redesign exception.
 - Modern BI style proof when requested: source hierarchy, page/card token mapping, first-viewport priority, component-pileup scan, and chart-lightness layout scan.
@@ -142,5 +142,5 @@ Detailed layout rules moved out of `SKILL.md`. Load this for implementation-read
 - Spatial-map diagnostic KPI cards that are allocated as ordinary KPI strips, squeezed below `460x320`, stretched, missing projection fit, or have a map viewport shorter side below `180px` are layout failures unless the design explicitly routes to ranked bar/table or a full map block.
 - Paired comparison diagnostic KPI cards that are allocated as two unrelated KPI tiles, squeezed below `420x260`, have pane width below `140px`, or hide the conclusion strip are layout failures unless the design explicitly degrades to a single metric card or splits to a comparison chart/table.
 - Hover/focus states for cards, blocks, navigation, and toolbar controls preserve geometry and are not clipped at block edges.
-- Template-based layout tokens follow `$report-prototype-template-management` `template-layout-design-system.md`; deviations are deliberate and documented.
-- Template engineering details are routed to `$report-prototype-template-management`, not embedded here.
+- Template-based layout tokens follow `report-prototype-template-management` `template-layout-design-system.md`; deviations are deliberate and documented.
+- Template engineering details are routed to `report-prototype-template-management`, not embedded here.

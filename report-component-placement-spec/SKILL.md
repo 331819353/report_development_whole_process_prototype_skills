@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this as the direct front door for implementation-ready component-internal placement. It turns the former deep placement references into a predictable trigger surface.
 
-Use `$report-layout-size-constraint-spec` for parent block size; use this skill for slots inside one component after the parent container is known.
+Use `report-layout-size-constraint-spec` for parent block size; use this skill for slots inside one component after the parent container is known.
 
 ## Reference Map
 
@@ -23,10 +23,10 @@ Use `$report-layout-size-constraint-spec` for parent block size; use this skill 
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Placement source map | `references/01-placement-reference-map.md` |
-| Placement routing index | `$report-component-style-design` `references/12-internal-placement-algorithms.md` |
-| Coordinate variables and local-filter geometry | `$report-component-style-design` `references/12a-placement-foundation-controls.md` |
-| Anti-squeeze fit contract and minimum typography/component floors | `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when slot geometry is crowded or a parent span is smaller than the component floor |
-| Component acceptance gates | `$report-component-style-design` `references/12-component-acceptance-gates.md` |
+| Placement routing index | `report-component-style-design` `references/12-internal-placement-algorithms.md` |
+| Coordinate variables and local-filter geometry | `report-component-style-design` `references/12a-placement-foundation-controls.md` |
+| Anti-squeeze fit contract and minimum typography/component floors | `report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when slot geometry is crowded or a parent span is smaller than the component floor |
+| Component acceptance gates | `report-component-style-design` `references/12-component-acceptance-gates.md` |
 
 ## Anti-Laziness Gate
 
@@ -38,7 +38,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 2. Confirm parent container width/height, padding, component family, data density, local controls, state set, and any upstream `layoutFitContract`.
 3. Load `references/01-placement-reference-map.md`, then load only the exact placement file for that component family.
 4. Define container variables, slot rectangles, title/filter/legend/metric/plot/table/body/footer coordinates, alignment, typography and slot floors, responsive degradation, and state geometry.
-5. Pair placement with the visual/content skill for the component family, such as `$report-chart-design-spec`, `$report-table-design-spec`, or `$report-filter-control-design-spec`.
+5. Pair placement with the visual/content skill for the component family, such as `report-chart-design-spec`, `report-table-design-spec`, or `report-filter-control-design-spec`.
 6. Convert coordinates into proof obligations when implementation or URL exists: selectors/semantic roles, slot rectangles, measured bounding boxes, overlap/overflow assertions, responsive tier evidence, and state-mask geometry.
 7. Run acceptance gates before marking implementation-ready placement as ready.
 

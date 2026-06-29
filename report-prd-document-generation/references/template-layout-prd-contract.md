@@ -19,6 +19,25 @@ Use these terms exactly:
 
 Do not use `componentRegionPattern` as the selected template. It is derived compatibility metadata.
 
+## Layout Coordinate Notation
+
+Use readable coordinates before raw block letters or slot IDs. The coordinate helps humans and weak models locate the exact implementation target.
+
+| Coordinate | Meaning | Example |
+| --- | --- | --- |
+| `R-B` | Block coordinate. `R` is the page reading row/region number, and `B` is the block order inside that row, left-to-right then top-to-bottom. | `1-2` = first page region row, second block in that row. |
+| `R-B-S` | Component slot coordinate. `S` is the slot order inside the selected block layout template's `3 componentArea`. | `1-2-1` = first slot inside block `1-2`. |
+| `R-B:areaName` | Standard block area coordinate. Use this for title/pill/aux/unit/summary areas so they do not consume the component slot digit. | `1-2:titleArea`, `1-2:summaryArea`. |
+
+Rules:
+
+- `R` is the report reading row/region, not every raw `layoutRows` grid line. A `6*3` block that spans three raw grid rows still belongs to one reading row.
+- `B` follows visible block order within the reading row. If row 1 has two `6*3` blocks, the left block is `1-1` and the right block is `1-2`.
+- `S` follows the selected block layout template slot order. SingleSlot blocks have only `R-B-1`; DoubleSlot blocks use `R-B-1` and `R-B-2`.
+- Do not use opaque letters such as `A/B/C` or `BLK-*` as the only locator. They may remain technical IDs, but every block and component slot also needs the readable coordinate.
+- Coordinates must be stable across `blockMap`, `blockLayoutTemplateMap`, standard area configs, `componentContentAreaTemplateMap`, metric mounting rows, conclusion rules, and interaction sources.
+- Do not confuse page coordinates with block-layout internal area codes. `1-2` can mean the second block in page row 1 when it appears as `blockCoordinate`; `1-2 pillArea` remains the internal block area code for the pill area. When targeting a standard block area, write both clearly, for example `blockCoordinate: 1-2`, `areaCode: 1-2 pillArea`, `areaCoordinate: 1-2:pillArea`.
+
 ## Framework Template Selection
 
 Select one of the current bundled framework templates. In the report development flow, custom framework shells, custom page layouts, custom block layout surfaces, and custom title/filter/nav/toolbar/export surfaces are out of scope. Only interaction behavior and component content area templates may be self-developed, and both must stay inside the selected template contracts:
@@ -71,6 +90,7 @@ For each page, provide:
 | `layoutRowsAudit` | For every row: row index, raw row string, column count exactly `12`, over-12 check, block letters used, and pass/fail. |
 | `visibleRows` | First-screen rows `8`, total rows `N`, and proof that `N >= 8`. |
 | `blockMap` | Block ID, row/column span, business purpose. |
+| `layoutCoordinateMap` | Human-readable block and slot coordinates: `blockCoordinate` as `R-B`, `slotCoordinate` as `R-B-S`, and standard area coordinates as `R-B:areaName`. |
 | `scrollPolicy` | Fixed first screen, vertical scroll, or nav split. |
 | `responsivePolicy` | Usually fixed 1920 design frame unless otherwise requested. |
 
@@ -93,6 +113,7 @@ Acceptance rules:
 - Every block letter forms one rectangle. Disconnected, L-shaped, staggered, or masonry blocks are invalid.
 - Every non-empty block letter has exactly one `blockMap` row and one `blockLayoutTemplateMap` row.
 - Every `blockMap` row records `colStart`, `colSpan`, `rowStart`, `rowSpan`, and selected block layout template size.
+- Every visible block has exactly one `blockCoordinate` such as `1-2`, and every component slot has exactly one `slotCoordinate` such as `1-2-1`.
 - `componentSlots` are filled only after the selected block layout template and standard areas are configured.
 
 ## Block Layout Template Map
@@ -101,8 +122,8 @@ In the PRD, name this table `blockLayoutTemplateMap`.
 
 For every page block, create:
 
-| Block ID | `PATH-*` source | 4B gate IDs | 业务内容 | Span | Selected 分块布局模板 | Slot pattern | Single/Multi rationale | `componentRegionPattern` |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | `PATH-*` source | 4B gate IDs | 业务内容 | Span | Selected 分块布局模板 | Slot pattern | Single/Multi rationale | `componentRegionPattern` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Current selectable examples include:
 
@@ -134,10 +155,10 @@ For every block, write the six areas:
 
 Block area table:
 
-| Block ID | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` |
-| --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` |
+| --- | --- | --- | --- | --- | --- | --- |
 
-`pillAreaConfig` is not a throwaway optional note. For every block, write either configured pills or `null` with `notNeededReason`. Configured pills need: pill id, label, default active value, affected metric/component/API params, state reset rule, display position `1-2 pillArea`, and interaction response. Do not hide metric switches, period switches, or local mode choices as prose.
+`pillAreaConfig` is not a throwaway optional note. For every block, write either configured pills or `null` with `notNeededReason`. Configured pills need: pill id, label, default active value, affected metric/component/API params, state reset rule, template area code `1-2 pillArea`, area coordinate such as `1-2:pillArea`, and interaction response. Do not hide metric switches, period switches, or local mode choices as prose.
 
 ## Filter And Interaction Surface Map
 
@@ -155,8 +176,8 @@ Shell/page filters must use the selected template's native filter surface. Block
 
 For every `3 componentArea` slot:
 
-| Slot ID | Block ID | Slot role | Region key | Component content area template ID | Standalone Vue file | Sample/source evidence | Visual type | Metric IDs | Data object/API | Props/state contract | Fallback |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot role | Region key | Component content area template ID | Standalone Vue file | Sample/source evidence | Visual type | Metric IDs | Data object/API | Props/state contract | Fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Component content area template examples from current assets. Use the registered ID exactly; the same file path exists under each copied framework template's `src/widgets/templates/component-content-areas/` directory:
 
@@ -213,6 +234,7 @@ If the requested self-developed item is not in one of these categories, mark it 
 - Every page has a framework template and shell configuration.
 - Every retained navigation page has a reader-facing Markdown/mermaid preview before the technical layout table.
 - Every page block has an ID, purpose, span, and selected block layout template.
+- Every page block has a readable `blockCoordinate`; every `3 componentArea` slot has a readable `slotCoordinate`; and standard block areas are addressed as `blockCoordinate + areaName`, for example `1-2:titleArea`.
 - Every visible page block traces to a PRD section 4A `PATH-*` reading step, or is explicitly marked as support/source/export/permission-only.
 - Management-facing blocks trace to section 4B `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` IDs when they implement first-viewport answers, severity, closure, trust/source, or review/export behavior.
 - The first viewport implements the first one or two steps of the selected `RTP-*` report-type implementation path.

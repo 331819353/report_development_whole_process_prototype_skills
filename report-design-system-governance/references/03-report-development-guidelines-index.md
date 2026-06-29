@@ -26,11 +26,11 @@ This report guideline is for PC Web reports, business analysis dashboards, detai
 
 Use with:
 
-- `$report-design-workflow` for generic report prototype/design orchestration, or the specialized prototype workflow when the user explicitly asks for 自助分析、指标看板、分析报告、or 明细报表.
-- `$report-design-system-governance` for reusable report UI standards and governance.
-- `$report-info-component-mapping` for business question to component/data/filter/interaction contracts.
-- `$report-visual-layout-design` for page structure, first viewport, card grid, filter region, and layout fit.
-- `$report-component-style-design` for KPI cards, charts, tables, filters, states, and component readability.
+- `report-design-workflow` for generic report prototype/design orchestration, or the specialized prototype workflow when the user explicitly asks for 自助分析、指标看板、分析报告、or 明细报表.
+- `report-design-system-governance` for reusable report UI standards and governance.
+- `report-info-component-mapping` for business question to component/data/filter/interaction contracts.
+- `report-visual-layout-design` for page structure, first viewport, card grid, filter region, and layout fit.
+- `report-component-style-design` for KPI cards, charts, tables, filters, states, and component readability.
 - `$frontend-development-workflow`, `$api-*`, `$data-*`, and `$testing-*` skills when the guideline moves into implementation, contracts, data consistency, and acceptance verification.
 
 Do not use `$haier-enterprise-app-ui-design-spec` as the primary analytical report guideline. That skill supplies the inherited Haier enterprise application UI baseline and remains required for Haier/enterprise report pages unless an explicit non-Haier/native/neutral exception exists. This distilled report standard owns report-specific hierarchy, visualization, tables, filters, metric display, engineering handoff, and acceptance.
@@ -54,5 +54,5 @@ Load only the smallest reference needed. Do not load all report guideline refere
 ## Conflict Policy
 
 - If this report standard and Haier application UI disagree, first separate ownership: Haier owns company tokens, typography, color, spacing, radius, shadows, base controls, states, brand/logo, and cross-platform behavior; report-specific rules own analytical hierarchy, chart/table/filter geometry, metric display, density, and acceptance. Override inherited Haier rules only with a named report-specific reason and recorded exception.
-- If this report standard and bundled template tokens disagree, record a template adoption decision in `$report-design-system-governance`; do not silently override template assets.
+- If this report standard and bundled template tokens disagree, record a template adoption decision in `report-design-system-governance`; do not silently override template assets.
 - If a project must deviate from this distilled standard, record the exception owner, affected surface, reason, expiry or review date, and regression evidence.

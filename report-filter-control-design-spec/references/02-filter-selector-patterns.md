@@ -4,9 +4,9 @@ Use this reference when screenshot or design-sample inspired filter controls nee
 
 Pair with:
 
-- `$report-component-style-design` `references/02-filter-controls.md` for page/global filter rules.
-- `$report-component-style-design` `references/10-in-component-controls.md` for component-local controls.
-- `$report-component-style-design` `references/12a-placement-foundation-controls.md` for header-right/local placement.
+- `report-component-style-design` `references/02-filter-controls.md` for page/global filter rules.
+- `report-component-style-design` `references/10-in-component-controls.md` for component-local controls.
+- `report-component-style-design` `references/12a-placement-foundation-controls.md` for header-right/local placement.
 - `$artifact-readability-standard` `references/visual-source-abstraction-standard.md` when converting image samples into text-only contracts.
 
 ## Pattern Identity

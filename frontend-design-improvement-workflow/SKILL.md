@@ -26,13 +26,13 @@ For runnable report/page prototype improvement, preserve the prototype route: `i
 | Trigger and routing rules | `references/01-trigger-routing.md` |
 | Preflight understanding gate | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Design-improvement checklist | `references/02-design-improvement-checklist.md` |
-| Report/dashboard design-system baseline | `$report-design-system-governance` |
-| Modern SaaS / BI Dashboard / UI Kit positive style contract | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when the user asks for this design language |
-| Report page layout/page规范 | `$report-visual-layout-design` |
-| Report block size and viewport fit | `$report-layout-size-constraint-spec` |
-| Report component design/组件规范 | `$report-component-design-spec` and `$report-component-style-design` |
-| Chart/table/filter-specific component standards | `$report-chart-design-spec`, `$report-table-design-spec`, `$report-filter-control-design-spec` |
-| Implementation-ready component placement | `$report-component-placement-spec` |
+| Report/dashboard design-system baseline | `report-design-system-governance` |
+| Modern SaaS / BI Dashboard / UI Kit positive style contract | `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when the user asks for this design language |
+| Report page layout/page规范 | `report-visual-layout-design` |
+| Report block size and viewport fit | `report-layout-size-constraint-spec` |
+| Report component design/组件规范 | `report-component-design-spec` and `report-component-style-design` |
+| Chart/table/filter-specific component standards | `report-chart-design-spec`, `report-table-design-spec`, `report-filter-control-design-spec` |
+| Implementation-ready component placement | `report-component-placement-spec` |
 | Common enterprise app UI baseline | `$haier-enterprise-app-ui-design-spec` |
 | Runtime visual/browser QA | `$frontend-runtime-qa-validation` |
 | Implementation or repair | `frontend-development-workflow` |
@@ -46,9 +46,9 @@ For runnable report/page prototype improvement, preserve the prototype route: `i
 4. Load the correct baseline: Haier enterprise UI as the company-level application baseline for Haier/enterprise Web surfaces, including reports; report design system as the additional report-specific baseline for report/dashboard/BI/data-screen surfaces. Load both for Haier/enterprise report surfaces unless an explicit non-Haier/native/neutral exception exists.
 5. If the requested language is modern SaaS Dashboard / BI Dashboard / UI Kit, load the positive style contract and route its page/card tokens, hierarchy, component-pileup, and chart-lightness checks to the owning skills.
    Regardless of the requested style language, carry the report visual constraints forward: reduce uniform card borders, do not KPI-ize every module, inherit brand/product color before status colors, lower default green/red dependence, use typography/spacing/dividers for separation, and design information flow rather than a generic dashboard collage.
-6. Route page shell, navigation, grid, header/filter area, responsive, and overlap work to `$report-visual-layout-design`; route block size, height budget, fixed-card clipping, and viewport fit to `$report-layout-size-constraint-spec`.
-7. Route reusable component standards to `$report-component-design-spec`; route chart, table, and filter-specific standards to `$report-chart-design-spec`, `$report-table-design-spec`, and `$report-filter-control-design-spec`.
-8. Route implementation-ready x/y/slot/alignment work to `$report-component-placement-spec`; route mixed single-component review/repair to `$report-component-style-design`.
+6. Route page shell, navigation, grid, header/filter area, responsive, and overlap work to `report-visual-layout-design`; route block size, height budget, fixed-card clipping, and viewport fit to `report-layout-size-constraint-spec`.
+7. Route reusable component standards to `report-component-design-spec`; route chart, table, and filter-specific standards to `report-chart-design-spec`, `report-table-design-spec`, and `report-filter-control-design-spec`.
+8. Route implementation-ready x/y/slot/alignment work to `report-component-placement-spec`; route mixed single-component review/repair to `report-component-style-design`.
 9. For runnable/report UI work, build a shared proof-obligation list before implementation or acceptance: KPI X/Y alignment and CSS cascade, template/component control ownership, fixed-height overflow/clipping, chart/table option evidence, contract-to-DOM/CSS/renderer mapping, modern BI page/card token evidence, component-pileup and chart-lightness proof, screenshot/crop coverage, and non-default state checks.
    Include `outputArtifact: vueTemplatePrototype`, `implementationMode: copyTemplateProject`, copied-template path, and Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof in that list unless the latest explicit user request is the HTML/static-output authority or a documented self-developed/non-template exception requires `newVue3Project`.
 10. When code or a live URL exists, require runtime screenshot/DOM/interaction evidence through `$frontend-runtime-qa-validation` before marking visual work ready.

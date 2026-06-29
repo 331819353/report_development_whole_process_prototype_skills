@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill when metric-bearing artifacts need stable numeric semantics across requirements, data model, API, backend, frontend, chart/table/KPI display, tooltips, export, testing, and QA.
 
-Use `$report-design-system-governance` for full report design-system standards, and use this skill only for number/unit/precision/display contracts.
+Use `report-design-system-governance` for full report design-system standards, and use this skill only for number/unit/precision/display contracts.
 
 ## Reference Loading
 

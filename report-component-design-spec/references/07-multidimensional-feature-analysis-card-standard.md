@@ -192,7 +192,7 @@ Default slot budgets:
 - `P`: `16-24px`; dense cards may use `12px` only when text and controls still pass fit.
 - `headerH`: `40-56px`; title left, one local control or action right.
 - `identityH`: `0`, `64-96px` when one object identity is visible.
-- `primaryBodyH`: at least `50%` of `CH`; radar body follows `$report-component-style-design` `references/12d1-placement-radar.md` and should not drop below `CH * 0.50`.
+- `primaryBodyH`: at least `50%` of `CH`; radar body follows `report-component-style-design` `references/12d1-placement-radar.md` and should not drop below `CH * 0.50`.
 - `supportStripH`: `44-72px`; support facts stay `2-4`.
 - `footerH`: `16-36px`; source/freshness/detail link only.
 - Local controls: title-right capsule/dropdown by default; under-title row only when title remains readable and body floor still passes.
@@ -292,7 +292,7 @@ Use failure IDs:
 - `analysisPerspective` is `multiDimensionalProfile`.
 - `multiDimensionalFeatureCardPattern` is one of the controlled values above.
 - `multiDimensionalFeatureEvidenceBinding` declares task, object/dimension/tag fields, scale policy, density/label rules, tooltip payload, exact-value route, renderer owner, fallback, and validation cases.
-- Radar cards satisfy `$report-component-style-design` `references/12d1-placement-radar.md`: dimensions `5-8` preferred, `<=10`, series `<=3`, circular geometry, label ring, tooltip values, and resize proof when implemented.
+- Radar cards satisfy `report-component-style-design` `references/12d1-placement-radar.md`: dimensions `5-8` preferred, `<=10`, series `<=3`, circular geometry, label ring, tooltip values, and resize proof when implemented.
 - Tag cards keep visible tags bounded, label readable, colors semantic, status labeled, and tag rule/source/freshness available.
 - Profile summary cards show object identity from real fields and expose enough detail/source context to avoid a decorative persona card.
 - Comparison cards prove comparable subject grain, shared metric/unit/grain/filter scope, and exact values.

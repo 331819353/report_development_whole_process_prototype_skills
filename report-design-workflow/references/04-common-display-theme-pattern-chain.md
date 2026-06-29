@@ -7,7 +7,7 @@ This reference is derived from:
 - `报表开发原型设计指南_通用展示主题版.docx`
 - `报表原型设计模式库_120条.xlsx`
 
-It complements `$report-type-design`. Do not replace the existing business report type with a display theme. The display theme answers "what kind of page form is this"; the business report type answers "what decision is the user making".
+It complements `report-type-design`. Do not replace the existing business report type with a display theme. The display theme answers "what kind of page form is this"; the business report type answers "what decision is the user making".
 
 ## Dual-Axis Routing
 
@@ -16,7 +16,7 @@ Every prototype should carry both axes when the output is a design proposal, spe
 | Axis | Values | Owns |
 | --- | --- | --- |
 | `displayTheme` | `detail-table`, `summary-stat`, `business-dashboard`, `exploratory-analysis`, `management-report`, `monitoring-alert` | Page form, default structure, reusable pattern cards, component families, export/interaction emphasis. |
-| `primaryReportType` | Existing `$report-type-design` values such as `status-overview`, `analysis-diagnostic`, `detail-query`, `review-recap`, `anomaly-monitoring` | Decision question, answer model, evidence logic, business acceptance. |
+| `primaryReportType` | Existing `report-type-design` values such as `status-overview`, `analysis-diagnostic`, `detail-query`, `review-recap`, `anomaly-monitoring` | Decision question, answer model, evidence logic, business acceptance. |
 
 Routing rules:
 
@@ -43,7 +43,7 @@ Routing rules:
 
 ## Modern SaaS BI Baseline
 
-When `displayTheme: business-dashboard`, `summary-stat`, or `exploratory-analysis` is paired with an explicit modern SaaS / BI Dashboard / UI Kit style request, also load `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md`.
+When `displayTheme: business-dashboard`, `summary-stat`, or `exploratory-analysis` is paired with an explicit modern SaaS / BI Dashboard / UI Kit style request, also load `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md`.
 
 Required effects:
 

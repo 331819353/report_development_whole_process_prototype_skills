@@ -8,7 +8,7 @@ This is a pivot-table card composition pattern. Pair it with:
 - `10-in-component-controls.md` for component-local period, dimension, metric, and display controls.
 - `12f3-placement-pivot-table.md` for pivot area, row hierarchy, header, subtotal, and grand-total geometry.
 - `12f2-placement-grouped-table-header.md` when amount/share or multi-level measure headers appear.
-- `$report-table-design-spec` when the task is mainly table anatomy, pivot behavior, S2/project renderer, width, height, scroll, or acceptance.
+- `report-table-design-spec` when the task is mainly table anatomy, pivot behavior, S2/project renderer, width, height, scroll, or acceptance.
 
 ## Pattern Identity
 
@@ -349,4 +349,4 @@ Before marking ready:
 - Header, body, subtotal rows, grand total row, footer definitions, tooltip, fullscreen, and export share the same active filters, period, dimensions, and metric selector.
 - The renderer owns grouped headers, row hierarchy, expand/collapse, scroll, fixed header/row dimension, tooltip, and state geometry.
 - Loading, empty, filter-empty, missing comparison, missing target, missing share denominator, denominator-zero, no-permission, aggregation-error, too-many-rows, and too-many-columns states are defined.
-- The table passes `12f3-placement-pivot-table.md`, `12f2-placement-grouped-table-header.md`, and `$report-table-design-spec` fit rules for pivot body height, visible rows, header depth, row/column density, and overflow.
+- The table passes `12f3-placement-pivot-table.md`, `12f2-placement-grouped-table-header.md`, and `report-table-design-spec` fit rules for pivot body height, visible rows, header depth, row/column density, and overflow.

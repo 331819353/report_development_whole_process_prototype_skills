@@ -13,9 +13,9 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 ## Positioning
 
-Use this as the direct front door for page/block sizing and viewport fit. It promotes the layout sizing reference that was previously nested under `$report-visual-layout-design`.
+Use this as the direct front door for page/block sizing and viewport fit. It promotes the layout sizing reference that was previously nested under `report-visual-layout-design`.
 
-Use `$report-visual-layout-design` for full page layout decisions; use this skill for block size budgets, fixed-height risk, parent/child container fit, and `1920x1080` overflow checks.
+Use `report-visual-layout-design` for full page layout decisions; use this skill for block size budgets, fixed-height risk, parent/child container fit, and `1920x1080` overflow checks.
 
 ## Reference Map
 
@@ -23,11 +23,11 @@ Use `$report-visual-layout-design` for full page layout decisions; use this skil
 | --- | --- |
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Size source map | `references/01-size-reference-map.md` |
-| Parent layout references | `$report-visual-layout-design` references: `block-size-constraints.md`, `grid-containers.md`, `block-composition.md`, `layout-acceptance-gates.md` |
-| Anti-squeeze row expansion, full-row vacancy reflow, and minimum typography/component floors | `$report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` |
-| Modern SaaS / BI Dashboard / UI Kit pileup and hierarchy constraints | `$report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
-| KPI time-series card minimums for trend/change/YoY-MoM/cycle/volatility/forecast cards | `$report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
-| Component minimums for KPI overview cards, single-indicator KPI cards, KPI judgment cards, KPI goal execution / target attainment / gap / progress / milestone cards, KPI comparison analysis / comparison / group comparison / competitor / benchmark / variance cards, ranking / leaderboard / Top N / Pareto cards, composition / share / structure / market-share cards, decomposition / attribution / contribution / hierarchy cards, distribution / interval / density / quantile / boxplot cards, horizontal KPI cards, axis-line diagnostic KPI cards, axis-bar diagnostic KPI cards, axis-scatter diagnostic KPI cards, spatial-map diagnostic KPI cards, paired comparison diagnostic KPI cards, Composite Panel, Micro Dashboard Card, state feedback, dense tables/charts | `$report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
+| Parent layout references | `report-visual-layout-design` references: `block-size-constraints.md`, `grid-containers.md`, `block-composition.md`, `layout-acceptance-gates.md` |
+| Anti-squeeze row expansion, full-row vacancy reflow, and minimum typography/component floors | `report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` |
+| Modern SaaS / BI Dashboard / UI Kit pileup and hierarchy constraints | `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
+| KPI time-series card minimums for trend/change/YoY-MoM/cycle/volatility/forecast cards | `report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
+| Component minimums for KPI overview cards, single-indicator KPI cards, KPI judgment cards, KPI goal execution / target attainment / gap / progress / milestone cards, KPI comparison analysis / comparison / group comparison / competitor / benchmark / variance cards, ranking / leaderboard / Top N / Pareto cards, composition / share / structure / market-share cards, decomposition / attribution / contribution / hierarchy cards, distribution / interval / density / quantile / boxplot cards, horizontal KPI cards, axis-line diagnostic KPI cards, axis-bar diagnostic KPI cards, axis-scatter diagnostic KPI cards, spatial-map diagnostic KPI cards, paired comparison diagnostic KPI cards, Composite Panel, Micro Dashboard Card, state feedback, dense tables/charts | `report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
 
 ## Anti-Laziness Gate
 

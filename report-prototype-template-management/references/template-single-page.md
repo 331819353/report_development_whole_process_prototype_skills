@@ -14,7 +14,7 @@ Use these assets for standalone, compact, single-theme reports:
 - One widget map: `page.widgets`.
 - Page height may exceed the first viewport and must scroll vertically.
 - This template family is not fixed to 1920*1080; 1920*1080 is only a planning viewport baseline.
-- Default planning uses the full-width `1920x1080` preset from `$report-visual-layout-design`.
+- Default planning uses the full-width `1920x1080` preset from `report-visual-layout-design`.
 
 ## Core Config
 
@@ -61,7 +61,7 @@ filters: [],
 - Edit `page.layoutRows`; widget keys in `page.widgets` must match block characters.
 - Keep `screen.grid.rowHeight` equal to the 8-row visible split. With `topbarHeight/contentStartY = 160`, use `115px`.
 - Add rows when the report needs more content; do not shrink the page to one screen.
-- Before placing charts, tables, or composite widgets, verify the chosen span with `$report-visual-layout-design`.
+- Before placing charts, tables, or composite widgets, verify the chosen span with `report-visual-layout-design`.
 
 ## Best Use Cases
 

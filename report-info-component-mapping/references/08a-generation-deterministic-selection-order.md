@@ -41,7 +41,7 @@ When several components are plausible, choose in this order:
 
 If two components answer the same atom, keep the one earlier in this order unless the later one provides necessary evidence or action.
 
-For screenshot/sample-derived style generation, first run the shared style generalization target from `$report-component-style-design` `references/00a-style-generalization-goal.md`:
+For screenshot/sample-derived style generation, first run the shared style generalization target from `report-component-style-design` `references/00a-style-generalization-goal.md`:
 
 1. Choose `covered-by-existing-pattern` when one controlled pattern field matches the business task, data shape, and component family.
 2. Choose `covered-by-composed-patterns` when the desired design is a valid composition, such as KPI headline + chart card + local filter + bottom evidence strip, and every child pattern remains valid.
@@ -50,7 +50,7 @@ For screenshot/sample-derived style generation, first run the shared style gener
 
 Preserve the selected status, `canonicalPatternRef`, and `patternFields` across runs unless the business question, data shape, template capability, or user instruction changes.
 
-For conclusion/evidence/action cards, keep `componentType: text-summary`, `visualType: text-summary`, set `analysisPerspective: conclusionInsight`, set `analysisInsightContract.subtype: conclusion-card`, choose `conclusionCardPattern`, choose `conclusionEvidenceBodyMode`, and declare `conclusionEvidenceBinding` from `$report-component-style-design` `references/03a-conclusion-evidence-action-cards.md` and `$report-component-design-spec` `references/12-conclusion-insight-card-standard.md`:
+For conclusion/evidence/action cards, keep `componentType: text-summary`, `visualType: text-summary`, set `analysisPerspective: conclusionInsight`, set `analysisInsightContract.subtype: conclusion-card`, choose `conclusionCardPattern`, choose `conclusionEvidenceBodyMode`, and declare `conclusionEvidenceBinding` from `report-component-style-design` `references/03a-conclusion-evidence-action-cards.md` and `report-component-design-spec` `references/12-conclusion-insight-card-standard.md`:
 
 1. `metric-evidence-conclusion` when the card is a standalone executive conclusion with visible KPI evidence, findings, and actions.
 2. `finding-action-conclusion` when KPI/chart/table evidence already exists nearby and the card should focus on interpretation and next steps.
@@ -62,7 +62,7 @@ For conclusion/evidence/action cards, keep `componentType: text-summary`, `visua
 8. Use `kpi-strip-sparkline` for first-read status summaries with `2-4` core metrics and one compact movement signal.
 9. Use `findings-action-list` when evidence is already nearby and the card should focus on findings/actions.
 
-For review impact cards, keep `analysisPerspective: reviewImpact`, choose `reviewImpactCardPattern`, choose `reviewImpactEvidenceMode`, and declare `reviewImpactEvidenceBinding` from `$report-component-design-spec` `references/14-review-impact-card-standard.md`:
+For review impact cards, keep `analysisPerspective: reviewImpact`, choose `reviewImpactCardPattern`, choose `reviewImpactEvidenceMode`, and declare `reviewImpactEvidenceBinding` from `report-component-design-spec` `references/14-review-impact-card-standard.md`:
 
 1. Use `event-kpi-overview-card` with `before-after-kpi-strip` when the question is "活动前后核心指标变化" and the card can show `2-5` ordered metrics with before/after/control and delta fields.
 2. Use `event-trend-lift-card` with `event-annotated-trend` when the claim depends on a launch date, event marker, treatment/control series, baseline series, or post-launch trend break.
@@ -73,7 +73,7 @@ For review impact cards, keep `analysisPerspective: reviewImpact`, choose `revie
 7. Keep `visualType` as the real evidence family (`metric-card`, `line`, `bar`, `table`, or `text-summary`), while `reviewImpactCardPattern` owns event context, baseline semantics, conclusion band, and fallback.
 8. Do not use `reviewImpact` for ordinary trends, ordinary comparisons, or generic conclusions when event/action/activity identity is missing; route to `trendMovement`, `comparisonDifference`, or `conclusionInsight` according to the surviving evidence.
 
-For KPI cards, choose the stable `kpiCardPattern` from `$report-component-style-design` `references/04a-kpi-card-patterns.md`:
+For KPI cards, choose the stable `kpiCardPattern` from `report-component-style-design` `references/04a-kpi-card-patterns.md`:
 
 1. When one card judges status, health, score, rating, risk, progress, or gauge state, set `kpiJudgmentCardPattern` before treating it as an ordinary KPI. Use `semantic-status-icon-card` for categorical states, `progress-status-ring-card` for completion/progress, `health-score-ring-card` for bounded health scores, `health-threshold-bullet-card` for multi-band thresholds, `health-dimension-breakdown-card` for dimension health, `rating-score-summary-card` for score/level summaries, `rating-distribution-card` for rating buckets, and `semicircle-gauge-target-card` for bounded gauge targets. Require `W >= 360px`, `H >= 240px`, status/range/threshold semantics, exactly one hero visual, comparison strip fields, and footer evidence.
 2. When one card manages target attainment, target gap, plan-vs-actual progress, remaining work, deadline, or milestone state, set `kpiGoalExecutionCardPattern` before treating it as an ordinary gauge, progress bar, timeline, or target/actual chart. Use attainment patterns for "达成率/超额达成", gap patterns for "差距/缺口/落后/超支", progress patterns for "计划进度 vs 实际进度", and milestone patterns for "阶段/节点/倒计时/里程碑". Require `W >= 360px`, `H >= 240px`, `kpiEvidenceBinding.goalExecution`, actual/target fields, formula/denominator behavior, one execution hero visual, comparison strip fields, and footer evidence.
@@ -100,45 +100,45 @@ For KPI cards, choose the stable `kpiCardPattern` from `$report-component-style-
 23. Use `mini-bar-trend` when recent period volatility is supporting evidence inside a peer KPI card.
 24. Use `plain-metric` when the card only needs current value, comparison, and compact status.
 
-For target/actual comparison cards, keep `visualType: bar`, set `chartSubtype: target-actual-comparison`, and choose `targetActualCardPattern` from `$report-component-style-design` `references/04b-target-actual-comparison-cards.md`:
+For target/actual comparison cards, keep `visualType: bar`, set `chartSubtype: target-actual-comparison`, and choose `targetActualCardPattern` from `report-component-style-design` `references/04b-target-actual-comparison-cards.md`:
 
 1. `emphasis-header-summary` when one comparison card is the lead first-read object.
 2. `standard-summary-panel` when enterprise audit clarity or bottom reconciliation is most important.
 3. `soft-chip-summary` when the card is secondary, mobile-friendly, or intentionally softer.
 
-For target/actual trend cards, keep `visualType: line`, set `chartSubtype: target-actual-trend`, and choose `targetActualTrendCardPattern` from `$report-component-style-design` `references/04c-target-actual-trend-cards.md`:
+For target/actual trend cards, keep `visualType: line`, set `chartSubtype: target-actual-trend`, and choose `targetActualTrendCardPattern` from `report-component-style-design` `references/04c-target-actual-trend-cards.md`:
 
 1. `emphasis-wave-trend` when one trend card is the lead first-read object and brand emphasis is allowed.
 2. `standard-summary-trend` when enterprise audit clarity, target reconciliation, or dense dashboard rhythm is most important.
 3. `soft-chip-trend` when the card is secondary, mobile-friendly, or intentionally softer.
 
-For target/actual radar cards, keep `visualType: radar`, set `chartSubtype: target-actual-radar`, and choose `targetActualRadarCardPattern` from `$report-component-style-design` `references/04d-target-actual-radar-cards.md`:
+For target/actual radar cards, keep `visualType: radar`, set `chartSubtype: target-actual-radar`, and choose `targetActualRadarCardPattern` from `report-component-style-design` `references/04d-target-actual-radar-cards.md`:
 
 1. `emphasis-wave-radar` when one radar card is the lead first-read object and brand emphasis is allowed.
 2. `standard-action-radar` when enterprise audit clarity, detail action, or multi-card consistency is more important.
 
-For target/actual donut cards, keep `visualType: pie`, set `chartSubtype: target-actual-donut`, and choose `targetActualDonutCardPattern` from `$report-component-style-design` `references/04e-target-actual-donut-cards.md`:
+For target/actual donut cards, keep `visualType: pie`, set `chartSubtype: target-actual-donut`, and choose `targetActualDonutCardPattern` from `report-component-style-design` `references/04e-target-actual-donut-cards.md`:
 
 1. `emphasis-filter-donut` when one composition card is the lead first-read object and brand emphasis is allowed.
 2. `standard-filter-donut` when enterprise audit clarity, local period switching, or multi-card consistency is more important.
 
-For target/actual scatter cards, keep `visualType: scatter`, set `chartSubtype: target-actual-scatter`, and choose `targetActualScatterCardPattern` from `$report-component-style-design` `references/04f-target-actual-scatter-cards.md`:
+For target/actual scatter cards, keep `visualType: scatter`, set `chartSubtype: target-actual-scatter`, and choose `targetActualScatterCardPattern` from `report-component-style-design` `references/04f-target-actual-scatter-cards.md`:
 
 1. `emphasis-filter-scatter` when one relationship/distribution card is the lead first-read object and brand emphasis is allowed.
 2. `standard-filter-scatter` when enterprise audit clarity, local period switching, or multi-card consistency is more important.
 
-For target/actual detail table cards, keep `componentType: table`, `visualType: table`, set `tableSubtype: target-actual-detail`, and choose `targetActualTablePattern` from `$report-component-style-design` `references/06a-target-actual-detail-tables.md`:
+For target/actual detail table cards, keep `componentType: table`, `visualType: table`, set `tableSubtype: target-actual-detail`, and choose `targetActualTablePattern` from `report-component-style-design` `references/06a-target-actual-detail-tables.md`:
 
 1. `standard-audit-table` when exact ranked row evidence, target reconciliation, total row, export, or audit clarity is the main task.
 2. `compact-audit-table` when the card is narrow, mobile, embedded, or only a Top N evidence preview.
 
-For target/actual pivot table cards, keep `componentType: table`, `visualType: pivot`, set `tableSubtype: target-actual-pivot`, and choose `targetActualPivotTablePattern` from `$report-component-style-design` `references/06b-target-actual-pivot-tables.md`:
+For target/actual pivot table cards, keep `componentType: table`, `visualType: pivot`, set `tableSubtype: target-actual-pivot`, and choose `targetActualPivotTablePattern` from `report-component-style-design` `references/06b-target-actual-pivot-tables.md`:
 
 1. `standard-hierarchy-pivot` when a clean two-dimension target/actual pivot with subtotals and grand total is the main task.
 2. `share-matrix-pivot` when amount plus share/contribution columns are required under comparison, actual, or target groups.
 3. `tree-expand-pivot` when compact row hierarchy, expand/collapse, or many row groups are required.
 
-For reusable table card patterns, keep `componentType: table`, keep `visualType` as `table` or `pivot`, and choose `tableCardPattern` from `$report-component-style-design` `references/06c-table-card-patterns.md`:
+For reusable table card patterns, keep `componentType: table`, keep `visualType` as `table` or `pivot`, and choose `tableCardPattern` from `report-component-style-design` `references/06c-table-card-patterns.md`:
 
 1. `plain-detail-ledger-table` when row-level audit, order ledger, customer list, transaction list, or exact detail evidence is primary.
 2. `filtered-operational-status-table` when local filters, status badges, row detail, export, or operational scanning are primary.
@@ -149,7 +149,7 @@ For reusable table card patterns, keep `componentType: table`, keep `visualType`
 7. `grouped-subtotal-summary-table` when grouped rows, subtotals, and grand-total reconciliation are primary.
 8. `tree-hierarchy-table` when parent-child rows, expandable hierarchy, and row-level metrics are primary.
 
-For ranking, leaderboard, and Top N cards, keep `componentType: card`, `visualType: ranking-list`, choose `rankingCardPattern` from `$report-component-style-design` `references/07a-top-ranking-cards.md`, and declare `rankingEvidenceBinding`:
+For ranking, leaderboard, and Top N cards, keep `componentType: card`, `visualType: ranking-list`, choose `rankingCardPattern` from `report-component-style-design` `references/07a-top-ranking-cards.md`, and declare `rankingEvidenceBinding`:
 
 1. `basic-rank-list-card` for the cleanest Top 5 rows with rank, object, secondary label, and value.
 2. `trend-delta-rank-list-card` or `topn-sparkline-rank-list-card` when ranking movement or per-row trend proof is visible.
@@ -227,7 +227,7 @@ For anomaly, risk, warning, and outlier analysis cards, keep `componentType: car
 7. Use `anomaly-impact-assessment-card` when affected users/orders/services, loss, duration, or impact score is the answer.
 8. Use `anomaly-relation-influence-card`, `anomaly-geographic-distribution-card`, or `outlier-scatter-card` only when relation, geography, or outlier point fields are present and density/fallback rules are declared.
 
-For matrix decision, quadrant, priority, and strategy-layer cards, set `analysisPerspective: matrixDecision`, keep `componentType: card`, `visualType: matrix-decision-card`, choose `matrixDecisionCardPattern` from `$report-component-design-spec` `references/09-matrix-decision-card-standard.md`, and declare `matrixDecisionEvidenceBinding`:
+For matrix decision, quadrant, priority, and strategy-layer cards, set `analysisPerspective: matrixDecision`, keep `componentType: card`, `visualType: matrix-decision-card`, choose `matrixDecisionCardPattern` from `report-component-design-spec` `references/09-matrix-decision-card-standard.md`, and declare `matrixDecisionEvidenceBinding`:
 
 1. Use `quadrant-segmentation-card` when two numeric metrics and x/y thresholds classify objects into zones.
 2. Use `quadrant-kpi-grid-card` when the four zones need compact KPI summaries rather than point-level scatter.
@@ -240,7 +240,7 @@ For matrix decision, quadrant, priority, and strategy-layer cards, set `analysis
 9. Keep `visualType` as a real chart/table family only when the component is standalone evidence without card-level matrix decision packaging.
 10. Reject or downgrade the card when axes, dimensions, priority/layer fields, thresholds, deterministic classification rule, exact-value route, or density/fallback rules are missing.
 
-For market movement, quote, K-line, breadth, watchlist, and volatility cards, set `analysisPerspective: marketMovement`, keep `componentType: card`, `visualType: market-analysis-card`, choose `marketAnalysisCardPattern` from `$report-component-design-spec` `references/10-market-analysis-card-standard.md`, and declare `marketAnalysisEvidenceBinding`:
+For market movement, quote, K-line, breadth, watchlist, and volatility cards, set `analysisPerspective: marketMovement`, keep `componentType: card`, `visualType: market-analysis-card`, choose `marketAnalysisCardPattern` from `report-component-design-spec` `references/10-market-analysis-card-standard.md`, and declare `marketAnalysisEvidenceBinding`:
 
 1. Use `quote-price-snapshot-card`, `quote-price-indicator-card`, `quote-sparkline-range-card`, or `quote-multi-period-compare-card` when instrument identity, current quote, change, change rate, unit/currency, source/freshness, and local period/range fields are the first-read evidence.
 2. Use `kline-basic-card`, `kline-volume-card`, `kline-moving-average-card`, or `kline-technical-indicator-card` only when ordered valid OHLC rows exist; add volume, MA, MACD, RSI, or other indicators only when their fields and chart height budget exist.
@@ -251,7 +251,7 @@ For market movement, quote, K-line, breadth, watchlist, and volatility cards, se
 7. Keep `visualType` as a real chart/table family only when the evidence is standalone without quote identity, local controls, freshness/status, and market card packaging.
 8. Reject or downgrade the card when instrument identity, quote/OHLC/breadth/volatility fields, color convention, source/freshness, exact-value route, or dense-data fallback are missing.
 
-For population, object, customer segmentation, and object detail cards, set `analysisPerspective: populationObject`, choose `populationObjectCardPattern` from `$report-component-design-spec` `references/08-population-object-analysis-card-standard.md`, and declare `populationObjectEvidenceBinding`:
+For population, object, customer segmentation, and object detail cards, set `analysisPerspective: populationObject`, choose `populationObjectCardPattern` from `report-component-design-spec` `references/08-population-object-analysis-card-standard.md`, and declare `populationObjectEvidenceBinding`:
 
 1. `population-profile-overview-card` when a user/customer/member/cohort needs identity, tags/status, `2-5` facts, source/freshness, and one compact evidence mode.
 2. `population-segment-composition-card` when segment count/share and denominator are the primary evidence.
@@ -265,7 +265,7 @@ For population, object, customer segmentation, and object detail cards, set `ana
 10. Use the `object-*` patterns when a selected business object owns the card: basic identity, key metrics, structure distribution, geographic coverage, relationship network, behavior timeline, value score, or risk alert.
 11. Keep `visualType` as the real evidence family such as `metric-card`, `composition-card`, `spatial-map-card`, `graph`, `operational-list`, `anomaly-card`, `table`, or `other`; `other` is allowed only for a data-driven custom population/object component with declared renderer ownership and fallback.
 
-For basic chart cards, keep `componentType: chart`, keep `visualType` as the real chart family, and choose `basicChartCardPattern` from `$report-component-style-design` `references/05d-basic-chart-card-patterns.md`:
+For basic chart cards, keep `componentType: chart`, keep `visualType` as the real chart family, and choose `basicChartCardPattern` from `report-component-style-design` `references/05d-basic-chart-card-patterns.md`:
 
 1. `single-series-bar-card` when one metric compares a small set of categories.
 2. `comparison-line-trend-card` when two or more comparable series share one time grain.
@@ -278,7 +278,7 @@ For basic chart cards, keep `componentType: chart`, keep `visualType` as the rea
 9. `filtered-bar-card` when a simple bar comparison owns a compact local period/range selector.
 10. `tooltip-line-trend-card` when dense daily/rolling trend values should be inspected through tooltip focus.
 
-For specialized chart cards, keep `componentType: chart`, keep `visualType` as the real chart family, and choose `specializedChartCardPattern` from `$report-component-style-design` `references/05e-specialized-chart-card-patterns.md`:
+For specialized chart cards, keep `componentType: chart`, keep `visualType` as the real chart family, and choose `specializedChartCardPattern` from `report-component-style-design` `references/05e-specialized-chart-card-patterns.md`:
 
 1. `gauge-progress-card` when one bounded progress, completion, or status metric needs range and target judgment.
 2. `choropleth-ranking-map-card` when geography is the decision dimension and a side ranking helps exact Top regions.
@@ -288,7 +288,7 @@ For specialized chart cards, keep `componentType: chart`, keep `visualType` as t
 6. `parallel-profile-card` when `3+` metrics describe object profiles and users need similarity, anomaly, or multi-factor screening.
 7. `bubble-opportunity-card` when x/y relationship plus non-negative size metric is the primary opportunity or portfolio question.
 
-For flow/hierarchy diagram cards, keep `componentType: chart`, keep `visualType` as the real diagram family, and choose `flowHierarchyDiagramCardPattern` from `$report-component-style-design` `references/09a-flow-hierarchy-diagram-card-patterns.md`:
+For flow/hierarchy diagram cards, keep `componentType: chart`, keep `visualType` as the real diagram family, and choose `flowHierarchyDiagramCardPattern` from `report-component-style-design` `references/09a-flow-hierarchy-diagram-card-patterns.md`:
 
 1. `conversion-funnel-card` when ordered stages, shared population/cohort, conversion, drop, or retention are primary.
 2. `multi-stage-sankey-card` when source-target-value links distribute across multiple stages or outcomes.
@@ -299,7 +299,7 @@ For flow/hierarchy diagram cards, keep `componentType: chart`, keep `visualType`
 7. `treemap-composition-card` when hierarchy contribution and relative area comparison are primary.
 8. `path-conversion-flow-card` when start-to-end branches, edge ratios, and terminal success/loss outcomes are primary.
 
-For process, step, node, and bottleneck analysis cards, set `analysisPerspective: processBottleneck`, choose `processAnalysisCardPattern` from `$report-component-design-spec` `references/04-process-bottleneck-analysis-card-standard.md`, and declare `processAnalysisEvidenceBinding`:
+For process, step, node, and bottleneck analysis cards, set `analysisPerspective: processBottleneck`, choose `processAnalysisCardPattern` from `report-component-design-spec` `references/04-process-bottleneck-analysis-card-standard.md`, and declare `processAnalysisEvidenceBinding`:
 
 1. Use the process-flow group (`linear-process-flow-card`, `ring-process-flow-card`, `timeline-process-flow-card`, `stage-card-process-flow-card`, `branch-process-flow-card`, `funnel-process-flow-card`, `cycle-process-flow-card`, `map-path-process-flow-card`) when the whole process path, branch, loop, or topology is the evidence.
 2. Use the step-progress group (`horizontal-stepper-card`, `icon-stepper-card`, `number-stepper-card`, `segmented-stepper-card`, `vertical-stepper-card`, `timeline-stepper-card`, `cycle-stepper-card`, `stepper-metric-card`) when current step, completed/in-progress/pending state, remaining steps, or stage progress is the evidence.
@@ -307,7 +307,7 @@ For process, step, node, and bottleneck analysis cards, set `analysisPerspective
 4. Use the bottleneck-diagnosis group (`bottleneck-stage-highlight-card`, `bottleneck-ranking-card`, `bottleneck-gauge-card`, `bottleneck-heatmap-card`, `bottleneck-waterfall-card`, `bottleneck-bubble-card`, `bottleneck-trend-card`, `bottleneck-cause-donut-card`) when duration, queue, throughput, pass rate, timeout, rework, threshold breach, impact, root cause, or optimization priority is the evidence.
 5. Keep `visualType` as the real evidence family such as `path`, `funnel`, `tree`, `graph`, `gauge`, `bar`, `line`, `heatmap`, `table`, `operational-list`, `anomaly-card`, `metric-card`, or `other`; `other` is allowed only for a data-driven custom process diagram with declared renderer ownership and fallback.
 
-For conversion, retention, loss, and stage conversion analysis cards, set `analysisPerspective: conversionRetention`, choose `conversionRetentionCardPattern` from `$report-component-design-spec` `references/05-conversion-retention-analysis-card-standard.md`, and declare `conversionRetentionEvidenceBinding`:
+For conversion, retention, loss, and stage conversion analysis cards, set `analysisPerspective: conversionRetention`, choose `conversionRetentionCardPattern` from `report-component-design-spec` `references/05-conversion-retention-analysis-card-standard.md`, and declare `conversionRetentionEvidenceBinding`:
 
 1. Use the conversion overview group (`conversion-overview-card`, `conversion-quality-overview-card`) when total conversion, converted count, entered population, target, quality, or prior-period comparison is the evidence.
 2. Use the stage conversion group (`standard-conversion-funnel-card`, `stage-rate-matrix-card`, `stage-conversion-overview-card`) when ordered stages, shared cohort, step conversion, and drop-off are the evidence.
@@ -317,7 +317,7 @@ For conversion, retention, loss, and stage conversion analysis cards, set `analy
 6. Use the stage path group (`conversion-path-card`, `stage-leakage-waterfall-card`, `stage-conversion-path-card`) when transition links, branch paths, or accumulated leakage are the evidence.
 7. Keep `visualType` as the real evidence family such as `metric-card`, `funnel`, `line`, `bar`, `heatmap`, `sankey`, `path`, `pie`, `table`, `operational-list`, or `other`; `other` is allowed only for a data-driven custom conversion diagram with declared renderer ownership and fallback.
 
-For operational lists, keep `visualType: operational-list` and choose `listStatusPattern` from `$report-component-style-design` `references/07b-operational-list-status-patterns.md`:
+For operational lists, keep `visualType: operational-list` and choose `listStatusPattern` from `report-component-style-design` `references/07b-operational-list-status-patterns.md`:
 
 1. `simple-info-list` when ordinary records need title/name, owner, status, update time, and a trailing action.
 2. `progress-task-list` when task closure, owner/deadline, status, and completion percent are the main evidence.
@@ -328,7 +328,7 @@ For operational lists, keep `visualType: operational-list` and choose `listStatu
 7. `user-object-list` when people, members, owners, customers, or contacts require avatar/identity and availability status.
 8. `mixed-info-list` when work items combine title, subtitle, status, priority, owner, and update time but do not require a full table.
 
-For visible filter controls, choose `filterControlPattern` from `$report-filter-control-design-spec` `references/02-filter-selector-patterns.md`:
+For visible filter controls, choose `filterControlPattern` from `report-filter-control-design-spec` `references/02-filter-selector-patterns.md`:
 
 1. `single-select-dropdown` for ordinary one-value dimensions with small or medium option sets.
 2. `multi-tag-select` when selected multiple values should remain visible as removable tags.
@@ -338,7 +338,7 @@ For visible filter controls, choose `filterControlPattern` from `$report-filter-
 6. `advanced-filter-drawer` when multiple low-frequency or expensive conditions should be grouped behind one trigger.
 7. `combined-filter-chipbar` when the surface should summarize active filters and open the full filter set on click.
 
-For reusable overlays, keep `visualType: overlay-panel` and choose `overlayPanelPattern` from `$report-component-style-design` `references/08a-overlay-drawer-modal-patterns.md`:
+For reusable overlays, keep `visualType: overlay-panel` and choose `overlayPanelPattern` from `report-component-style-design` `references/08a-overlay-drawer-modal-patterns.md`:
 
 1. `right-filter-drawer` when multiple table/report filters need a right-side configuration surface.
 2. `bottom-action-sheet` when a small operation menu should slide from the bottom.
@@ -349,7 +349,7 @@ For reusable overlays, keep `visualType: overlay-panel` and choose `overlayPanel
 7. `side-detail-drawer` when a selected row/card needs compact detail while the source list stays visible.
 8. `large-detail-side-panel` when analytical detail requires KPI, tabs, chart/table evidence, and a wide side panel.
 
-For Micro Dashboard Cards, keep `componentType: custom`, set `visualType: micro-dashboard`, and choose `microDashboardCardPattern` from `$report-component-style-design` `references/12f6-placement-micro-dashboard-card.md`:
+For Micro Dashboard Cards, keep `componentType: custom`, set `visualType: micro-dashboard`, and choose `microDashboardCardPattern` from `report-component-style-design` `references/12f6-placement-micro-dashboard-card.md`:
 
 1. `sales-fresh-analysis-board` when sales, revenue, orders, target attainment, channel mix, region ranking, and Top object detail are the shared topic.
 2. `user-operations-purple-board` when user acquisition, active users, retention, conversion, funnel, heatmap, and product-operation signals are the shared topic.
@@ -358,7 +358,7 @@ For Micro Dashboard Cards, keep `componentType: custom`, set `visualType: micro-
 
 Use `micro-dashboard` only when the parent can meet `680x620` minimum and every visible child meets its declared minimum. Otherwise choose a normal `composite-panel`, split blocks, tabs, drawer, or fullscreen.
 
-For state feedback components, keep `componentType: custom`, set `visualType: state-feedback`, and choose `stateFeedbackPattern` from `$report-component-style-design` `references/13-state-feedback-patterns.md`:
+For state feedback components, keep `componentType: custom`, set `visualType: state-feedback`, and choose `stateFeedbackPattern` from `report-component-style-design` `references/13-state-feedback-patterns.md`:
 
 1. `fresh-line-state-set` for default professional report states.
 2. `minimal-line-state-set` for dense admin, audit, or low-distraction states.

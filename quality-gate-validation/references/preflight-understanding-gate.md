@@ -68,22 +68,22 @@ For report/dashboard/BI/data-screen work, classify the affected surface before e
 | Surface or risk | Required owning skill |
 | --- | --- |
 | Haier-branded or enterprise Web application baseline, including report/dashboard apps | `$haier-enterprise-app-ui-design-spec` for color, typography, spacing, radius, shadows, base controls, states, brand/logo, and cross-platform rules |
-| Whole report baseline, reusable rules, anti-AI/report-decision gate | `$report-design-system-governance` for report-specific hierarchy, visualization, metric, chart/table/filter, state, and engineering acceptance rules |
-| Page shell, navigation, global filters, first viewport, `12 * N` grid | `$report-visual-layout-design` |
-| Parent block/container height, width, overflow, viewport fit | `$report-layout-size-constraint-spec` |
-| Chart type, ECharts option fidelity, legend, axis, labels, tooltip, plot budget | `$report-chart-design-spec` |
-| Detail/pivot/grouped tables, column width, alignment, row height, pagination, fixed columns | `$report-table-design-spec` |
-| Page/global or component-local filter semantics and placement | `$report-filter-control-design-spec` |
-| Implementation-ready component slots, x/y/width/height, collision geometry | `$report-component-placement-spec` |
-| Reusable component-family standard or component library rule | `$report-component-design-spec` |
+| Whole report baseline, reusable rules, anti-AI/report-decision gate | `report-design-system-governance` for report-specific hierarchy, visualization, metric, chart/table/filter, state, and engineering acceptance rules |
+| Page shell, navigation, global filters, first viewport, `12 * N` grid | `report-visual-layout-design` |
+| Parent block/container height, width, overflow, viewport fit | `report-layout-size-constraint-spec` |
+| Chart type, ECharts option fidelity, legend, axis, labels, tooltip, plot budget | `report-chart-design-spec` |
+| Detail/pivot/grouped tables, column width, alignment, row height, pagination, fixed columns | `report-table-design-spec` |
+| Page/global or component-local filter semantics and placement | `report-filter-control-design-spec` |
+| Implementation-ready component slots, x/y/width/height, collision geometry | `report-component-placement-spec` |
+| Reusable component-family standard or component library rule | `report-component-design-spec` |
 | Common enterprise app forms/lists/details/dialogs/workbench | `$haier-enterprise-app-ui-design-spec` |
 | Runnable visual/browser evidence, DOM overlap/overflow, component crops | `$frontend-runtime-qa-validation` |
 
 If a defect mentions a chart, table, filter, or component-internal overlap, do not route only to a broad workflow or page layout skill. Load the specific front-door skill and its required references before repair or acceptance.
 
-When the input includes HTML/source samples, classify each chart-like SVG/canvas/DOM structure as visual evidence, data/config evidence, or an explicitly approved custom diagram. For standard report charts, copied HTML/SVG chart marks are not an implementation authority; route to `$report-chart-design-spec` and rebuild the chart as an ECharts/data-driven component.
+When the input includes HTML/source samples, classify each chart-like SVG/canvas/DOM structure as visual evidence, data/config evidence, or an explicitly approved custom diagram. For standard report charts, copied HTML/SVG chart marks are not an implementation authority; route to `report-chart-design-spec` and rebuild the chart as an ECharts/data-driven component.
 
-For Haier or enterprise report/dashboard/BI/data-screen work, do not treat `$haier-enterprise-app-ui-design-spec` and `$report-design-system-governance` as alternatives. Load both unless the user explicitly requests a non-Haier/native sample/neutral brand. Haier owns the application-level UI baseline; report skills own report-specific analytical rules.
+For Haier or enterprise report/dashboard/BI/data-screen work, do not treat `$haier-enterprise-app-ui-design-spec` and `report-design-system-governance` as alternatives. Load both unless the user explicitly requests a non-Haier/native sample/neutral brand. Haier owns the application-level UI baseline; report skills own report-specific analytical rules.
 
 ## Start Decision Rules
 

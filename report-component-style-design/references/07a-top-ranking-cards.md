@@ -7,8 +7,8 @@ Pair with:
 - `07-cards-lists-tasks.md` for generic list/card overflow and interaction rules.
 - `10-in-component-controls.md` when the card owns a local period, scope, metric, ranking mode, or layout switch.
 - `03-text-summary.md` when the ranking card contains a conclusion strip or recommendation.
-- `05a-echarts-foundation-bars-lines.md`, `05b-echarts-combo-pie-radar-gauge.md`, `05c-echarts-specialized-and-flow.md`, or `$report-chart-design-spec` when the card contains a chart body such as donut, radar, map, bubble, Pareto bar-line, or micro trend.
-- `$report-info-component-mapping` `references/06-binding-implementation-contract.md` for `rankingCardPattern`, `paretoCardPattern`, field binding, and source-side Top N/Pareto rules.
+- `05a-echarts-foundation-bars-lines.md`, `05b-echarts-combo-pie-radar-gauge.md`, `05c-echarts-specialized-and-flow.md`, or `report-chart-design-spec` when the card contains a chart body such as donut, radar, map, bubble, Pareto bar-line, or micro trend.
+- `report-info-component-mapping` `references/06-binding-implementation-contract.md` for `rankingCardPattern`, `paretoCardPattern`, field binding, and source-side Top N/Pareto rules.
 
 ## Pattern Identity
 

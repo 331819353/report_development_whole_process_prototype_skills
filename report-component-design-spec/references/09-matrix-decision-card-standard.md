@@ -185,7 +185,7 @@ plotH = bodyH - xAxisLabelH
 
 Heatmap/matrix geometry:
 
-- Follow `$report-component-style-design` `references/12d8-placement-heatmap-matrix.md`.
+- Follow `report-component-style-design` `references/12d8-placement-heatmap-matrix.md`.
 - Cell size must be `>=12px` for color-only cells and `>=28px` for permanent value labels.
 - Missing cells and zero cells must look different.
 - Row/column labels may sample, rotate, or collapse, but exact labels remain in tooltip/detail.

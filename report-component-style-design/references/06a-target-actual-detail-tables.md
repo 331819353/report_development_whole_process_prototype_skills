@@ -7,7 +7,7 @@ This is a table-card composition pattern. Pair it with:
 - `06-analytical-tables.md` for Detail Table rules.
 - `10-in-component-controls.md` for the local `实时 / 月累 / 年累` style switch.
 - `12f4-placement-detail-table.md` for table title, header, body, summary row, pagination, and state geometry.
-- `$report-table-design-spec` when the task is mainly table column width, row density, fixed header, scrolling, or export behavior.
+- `report-table-design-spec` when the task is mainly table column width, row density, fixed header, scrolling, or export behavior.
 
 ## Pattern Identity
 
@@ -292,4 +292,4 @@ Before marking ready:
 - The total row reconciles with the declared visible, filtered, or API total scope.
 - The local period switch, legend, table values, total row, footer definitions, detail, and export share the same active context.
 - Loading, empty, filter-empty, missing comparison, missing target, denominator-zero, no-permission, stale, too-many-rows, and too-many-columns states are defined.
-- The table passes `12f4-placement-detail-table.md` and `$report-table-design-spec` fit rules for body height, visible rows, header, summary row, and overflow.
+- The table passes `12f4-placement-detail-table.md` and `report-table-design-spec` fit rules for body height, visible rows, header, summary row, and overflow.

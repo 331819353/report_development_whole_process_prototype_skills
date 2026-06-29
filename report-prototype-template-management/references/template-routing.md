@@ -45,7 +45,7 @@ When a report prototype workflow supplies `displayTheme` and selected pattern ca
 
 ## Report Decision Routing Guard
 
-Before choosing a template for a report surface, verify the template can carry the report decision anti-AI requirements from `$report-design-system-governance` `references/09-report-decision-anti-ai-gate.md`.
+Before choosing a template for a report surface, verify the template can carry the report decision anti-AI requirements from `report-design-system-governance` `references/09-report-decision-anti-ai-gate.md`.
 
 - Do not choose a template because it visually resembles a dashboard. Choose it because it can express the metric tree, diagnostic path, detail/action areas, trust metadata, realistic data states, and required interaction density.
 - `topbar-light-scroll-dashboard-template` is the default for office decision reports that need readability, tables, detail drawers, and handoff clarity.

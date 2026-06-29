@@ -10,8 +10,8 @@ The supplied images are reusable inspiration, not durable assets. The durable kn
 - Analysis perspective: `analysisPerspective: dataQualityTrust`.
 - Applicable pages: quality dashboards, BI trust panels, data governance reports, source-table audit pages, metric validation pages, ETL/batch monitoring pages, and report sections that must prove data credibility before business interpretation.
 - Source hierarchy: company UI baseline -> report design system -> Modern SaaS BI style contract when requested -> this data-quality trust standard -> project data-quality rule catalog.
-- Primary mapping references: `$report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `$report-info-component-mapping` `references/06-binding-implementation-contract.md`, `$report-info-component-mapping` `references/08-generation-stability.md`, and `$report-info-component-mapping` `references/09-component-mapping-gates.md`.
-- Supporting style references: `$report-component-style-design` `references/04a-kpi-card-patterns.md`, `$report-component-style-design` `references/05d-basic-chart-card-patterns.md`, `$report-component-style-design` `references/07c-composition-share-cards.md`, `$report-component-style-design` `references/07f-anomaly-risk-warning-outlier-cards.md`, `$report-component-style-design` `references/06c-table-card-patterns.md`, `$report-component-style-design` `references/10-in-component-controls.md`, and `$report-component-style-design` `references/12-component-acceptance-gates.md`.
+- Primary mapping references: `report-info-component-mapping` `references/00-analysis-perspective-card-taxonomy.md`, `report-info-component-mapping` `references/06-binding-implementation-contract.md`, `report-info-component-mapping` `references/08-generation-stability.md`, and `report-info-component-mapping` `references/09-component-mapping-gates.md`.
+- Supporting style references: `report-component-style-design` `references/04a-kpi-card-patterns.md`, `report-component-style-design` `references/05d-basic-chart-card-patterns.md`, `report-component-style-design` `references/07c-composition-share-cards.md`, `report-component-style-design` `references/07f-anomaly-risk-warning-outlier-cards.md`, `report-component-style-design` `references/06c-table-card-patterns.md`, `report-component-style-design` `references/10-in-component-controls.md`, and `report-component-style-design` `references/12-component-acceptance-gates.md`.
 - Renderers: project card components for the shell, Element Plus/project controls for segmented controls/dropdowns/tooltips/drawers, ECharts for trend/donut/radar/bar evidence, and project table/S2 renderer for issue samples, rules, fields, and source audits.
 - Supported viewports: summary score card `360x240+`; trend/composition card `520x300+`; dimension/rule table `640x320+`; exception sample table `720x340+`; key-field grid `680x300+`.
 - Owner/version/status: report-component-design-spec / v1 / ready for reusable spec adoption.
@@ -250,7 +250,7 @@ Style generalization contract:
 styleGeneralization: {
   sourceRole: 'reusable-inspiration',
   generalizationStatus: 'covered-by-composed-patterns',
-  canonicalPatternRef: '$report-component-design-spec/references/15-data-quality-trust-card-standard.md',
+  canonicalPatternRef: 'report-component-design-spec/references/15-data-quality-trust-card-standard.md',
   patternFields: ['dataQualityTrustCardPattern', 'dataQualityEvidenceBinding'],
   componentFamily: 'data-quality-trust-card',
   businessTrigger: '看质量 / data trust before analysis',
