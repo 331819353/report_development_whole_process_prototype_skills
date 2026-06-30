@@ -25,7 +25,7 @@ Generic "premium dashboard" specs are useful as a checklist, but they commonly m
 The target is `低噪声 + 高信息密度`, not empty minimalism.
 
 - Use neutral hierarchy, brand emphasis, and restrained status color to reduce noise.
-- Keep the page and component content substantial; avoid large blank zones unless a component's geometry, reading path, or state genuinely requires breathing room.
+- Keep the page and component body substantial; avoid large blank zones unless a component's geometry, reading path, or state genuinely requires breathing room.
 - If a block looks empty, first enrich it with relevant evidence, context, source/freshness, comparison, drilldown, or action. Do not fill it with decoration.
 - If a block looks crowded, reduce visible density through grouping, Top N, collapse, tooltip, drawer, fullscreen, pagination, or table fallback. Do not shrink fonts below readable floors.
 

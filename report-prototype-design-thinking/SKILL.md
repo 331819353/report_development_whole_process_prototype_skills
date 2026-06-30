@@ -15,13 +15,14 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill before report prototype layout, chart selection, component mapping, template selection, or implementation. It owns the product-manager thinking layer: what story the prototype must make clear, who uses the report, in what scenario, and what decision or action the user should take.
 
-Default policy: this is the generic thinking layer used by the original `report-design-workflow`. Four specialized prototype workflows exist separately and should be triggered directly when the user asks for 自助分析、指标看板、分析报告、或明细报表.
+Default policy: this is the thinking layer used during `report-prd-document-generation` to decide report content, story, reading path, and page structure before a specialized prototype workflow starts. Four specialized prototype workflows exist separately for 自助分析、指标看板、分析报告、或明细报表 and should consume the generated PRD bundle instead of recreating the thinking step from scratch.
 
 ## Reference Loading
 
 - Prototype story method: `references/00-prototype-story-design-thinking.md`
 - Report decision method: `references/01-general-prototype-design-thinking.md`
 - Good report decision-path gate: `references/02-good-report-decision-path.md`
+- Configurable template zero-to-one flow: `report-prototype-template-management` `references/configurable-zero-to-one-flow.md` when the thinking output feeds a runnable template project
 
 ## Anti-Laziness Gate
 
@@ -44,7 +45,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 13. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
 14. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
 15. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, result-content boundary decisions, and unresolved gaps.
-16. Hand off the design-thinking output to `report-type-design`, `report-info-component-mapping`, `report-visual-layout-design`, and `report-prototype-template-management`.
+16. Hand off the design-thinking output to `report-type-design`, `report-info-component-mapping`, `report-visual-layout-design`, and `report-prototype-template-management`. When the target is a runnable configurable template, the handoff must explicitly preserve the chain `frameworkTemplateId -> pageLayoutConfig -> blockAreaConfigMap -> componentSlotConfigMap -> componentExampleConfigMap`.
 
 ## Required Output
 
@@ -62,6 +63,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Component/chart choice rationale tied to the question it answers.
 - Filter, drilldown, export, save/share, permission, refresh, and state requirements.
 - Downstream handoff notes for report type, component mapping, layout, template, data/API, and testing.
+- Configurable-template handoff when applicable: candidate framework/template family, page/block intent, slot intent, and component-example gaps to resolve through the latest zero-to-one flow.
 
 ## Quality Gate
 

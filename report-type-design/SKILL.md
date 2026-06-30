@@ -49,6 +49,8 @@ Load only the reference files for the selected primary type:
 
 For any output that will feed a report prototype, dashboard, BI page, business-analysis page, cockpit, or report designer, also apply `report-design-system-governance` `references/09-report-decision-anti-ai-gate.md` at the business-design level. Use it to prevent generic metric shells and to require metric口径, metric tree/driver path, data story, drilldown/action, trust details, and industry vocabulary.
 
+For any output that will feed a bundled configurable template project, also use `report-prototype-template-management` `references/configurable-zero-to-one-flow.md` as the downstream handoff contract. Business report type output should name candidate pages, blocks, and component purposes, then defer implementation to `frameworkTemplateId -> pageLayoutConfig -> blockAreaConfigMap -> componentSlotConfigMap -> componentExampleConfigMap`.
+
 ## Anti-Laziness Gate
 
 For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness-execution-gate.md` before final output, handoff, or readiness. Do not mark the result ready while `LAZY-*` findings remain open, when available local evidence was not inspected, when owning skills were skipped, or when proof is limited to generic statements such as "checked", "optimized", "looks good", or "implemented".
@@ -60,7 +62,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 3. Answer the five decision questions from the report decision anti-AI gate: who uses it, what decision is made, how metrics are calculated, how abnormalities are located, and what drilldown/action exists.
 4. Define the report's answer model: conclusion, metrics, dimensions, grain, baseline, threshold, evidence, and action.
 5. Build a metric tree or driver path when the report is not purely static/detail lookup. Generic KPIs such as revenue/users/growth/conversion require domain-specific formula, denominator, period, source, owner, and drill path.
-6. Propose components only at the business-design level: KPI, chart, table, list, flow, detail drawer, action block, audit evidence, or narrative block.
+6. Propose components only at the business-design level: KPI, chart, table, list, flow, detail drawer, action block, audit evidence, or narrative block. When the output feeds a configurable template, mark each proposal as a future block purpose or future `3 componentArea` slot purpose, not as a concrete component implementation.
 7. Define filters, drilldowns, interactions, permissions, exports, and acceptance criteria at a contract level.
 8. Record assumptions and missing facts without inventing fields, formulas, thresholds, owners, or source systems.
 
@@ -71,6 +73,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Five decision-question answers and `reportDecisionRisk` when the output feeds prototype/frontend work.
 - Metric, dimension, grain, baseline, threshold, evidence model, and metric tree/driver path when applicable.
 - Component/content block proposal with business purpose.
+- Configurable-template handoff when applicable: candidate page purpose, block purpose, slot purpose, and component-example needs to be resolved later by template management.
 - Filter, drilldown, interaction, permission, export, and return-path notes.
 - Acceptance criteria, open questions, and downstream handoff notes.
 
@@ -80,6 +83,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - The report is not a generic metric shell: primary metrics have formula/denominator, grain, period, source/freshness, owner, and business-specific vocabulary when possible.
 - The report has a data story path from state to baseline/target, driver, abnormality, detail, and action when the decision scenario requires diagnosis.
 - Every component answers a named question or supports a required action.
+- Output that feeds a configurable template must not bypass the template-management chain; it may propose business blocks and component needs, but implementation readiness belongs to `pageLayoutConfig`, `blockAreaConfigMap`, and registered component examples.
 - Metrics have grain, comparison basis, and business owner when possible.
 - Missing口径, thresholds, source fields, permissions, and action ownership are visible.
 - Output can be consumed by component mapping, visual layout, API/model planning, or test design without rereading the original conversation.

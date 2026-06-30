@@ -113,7 +113,7 @@ Required questions:
 ## Layout Mapping Rules
 
 - Map every `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` item to `PATH-*` and `BLK-*` rows.
-- First-viewport `ESG-*` rows must influence block order and block layout template selection.
+- First-viewport `ESG-*` rows must influence block order and block area config selection.
 - `SEV-*` rows influence ranking, status tags, warning blocks, ordering, and action entry behavior.
 - `ACT-*` rows influence action list, owner/status block, drawer, jump, export, or phase-one handoff note.
 - `TRUST-*` rows influence auxiliary information, summary notes, tooltip/detail, source blocks, and export metadata.
@@ -131,4 +131,4 @@ Do not mark a PRD or prototype `ready` when:
 - Problems are raised without `ACT-*` owner/action/closure route or an explicit phase-one exclusion plus handoff.
 - Source, freshness, sample/coverage, and permission/masking are missing for decision-critical metrics.
 - A meeting/review/export scenario is required but `MEET-*` export/review behavior is absent.
-- Section 5 page layout and block layout templates do not trace the 4B IDs to blocks, slots, summary areas, interactions, or export behavior.
+- Section 5 page layout and block area configs do not trace the 4B IDs to blocks, slots, summary areas, interactions, or export behavior.

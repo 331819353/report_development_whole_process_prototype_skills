@@ -1,140 +1,145 @@
 # Template Asset Construction Contract
 
-Use this reference before a PRD or workflow claims it understands how to build a report template. The goal is to turn actual bundled template assets into fixed PRD/workflow rows instead of letting an agent infer from prose.
+Use this reference before a PRD, workflow, or implementation claims it understands how to build a bundled report template.
+
+This contract follows `configurable-zero-to-one-flow.md`. It replaces the older fixed block-template and legacy slot-fill asset contract.
 
 ## Source Of Truth
 
-Inspect the selected framework template asset before writing final layout or implementation rows:
+Inspect the selected framework template asset before writing final layout or implementation rows.
 
 | Asset layer | Source path inside `assets/templates/<template-id>/` | What to extract |
 | --- | --- | --- |
-| Framework shell | `src/config/dashboard.config.ts` | `screen`, title/logo/theme, `page` or `nav[]`, `filters[]`, `actions`, toolbar/export/fullscreen surfaces. |
-| Runtime catalog | `src/report-template-assets/index.ts` | Exported framework, page-layout, block-layout, component-content-area, blueprint, and validator libraries. |
-| Page layout library | `src/report-template-assets/libraries/page-layouts.ts` | `pageLayoutId`, design width/height, grid columns, first-screen row count. |
-| Block layout library | `src/widgets/templates/block-spans/README.md`, `catalog.ts`, `index.ts` | Legal block spans, direct selectable slot templates, size-only base wrappers, slot pattern rules. |
-| Component content area library | `src/widgets/templates/component-content-areas/README.md`, `index.ts` | Registered component content area template files and their use cases. |
-| Blueprint contracts | `src/report-template-assets/blueprint/*.ts` | Slot contracts, visual-type size compatibility, self-development exception types, and compatibility validation. |
-| Data/action extension points | `src/data/dashboard.dataset.json`, `src/dataSources/registry.ts`, `src/actions/registry.ts` | Dataset/API/filter/action hooks that the prototype may configure. |
+| Framework shell | `src/config/dashboard.config.ts` | `screen`, title/logo/theme, `page` or `nav[]`, filters, actions, toolbar/export/fullscreen surfaces. |
+| Page config source | `src/report-template-assets/business-report-pages.ts` | `layoutRows`, pages/nav, `createBlockAreaConfig`, `blockAreaConfigMap`, slot helpers, component example bindings. |
+| Block area runtime | `src/widgets/templates/block-spans/BaseLayoutSpan.vue` | Runtime block area implementation, slot grid, component example resolution. |
+| Block area types | `src/widgets/templates/block-spans/types.ts` | `componentSlots`, `componentSlotContracts`, `componentExampleId`, props/config/data policy shape. |
+| Component example catalog | `src/widgets/templates/component-examples/config.ts` | Registered `componentExampleId` values, widget type, visual type, config sections, required data props. |
+| Component example exports | `src/widgets/templates/component-examples/index.ts` | Vue component exports available for mounting. |
+| Widget registry | `src/widgets/registry.ts` | Registered component type to Vue component mapping. |
+| Validator | `src/report-template-assets/blueprint/compatibility.ts`, `scripts/validate-dashboard-contract.mjs` | Contract validation, slot checks, layout checks, component example checks. |
+| Data/action extension points | `src/data/dashboard.dataset.json`, `src/dataSources/registry.ts`, `src/actions/registry.ts` | Dataset/API/filter/action hooks. |
 
-The three bundled framework templates share the same block span and component-content-area sample shape unless a future diff proves otherwise:
+Bundled framework templates:
 
 - `topbar-light-scroll-dashboard-template`
 - `left-nav-analytics-workbench-template`
 - `frozen-title-sci-fi-cockpit-template`
 
-## Required PRD/Workflow Artifact
+## Required Artifact
 
-Before `blockLayoutTemplateMap` or `componentContentAreaTemplateMap`, create a `templateAssetUnderstandingMap`.
+Before `blockAreaConfigMap` or `componentExampleConfigMap`, create `templateAssetUnderstandingMap`.
 
 | Field | Required value |
 | --- | --- |
-| `frameworkTemplateId` | One selected bundled template id. |
+| `frameworkTemplateId` | One bundled template id. |
 | `assetRoot` | `report-prototype-template-management/assets/templates/<template-id>/`. |
-| `shellConfigSource` | Usually `src/config/dashboard.config.ts`; list title/nav/filter/action fields to configure. |
-| `pageLayoutId` | Current default is `12x8-1920x1080`. |
-| `gridContract` | `12` columns, minimum first-screen `8` rows, legal page layout `12*N` with `N >= 8`. |
-| `blockSpanContract` | Minimum block span `2x2`; legal block spans satisfy `M >= N`; every block must be rectangular. |
-| `blockLayoutLibrarySource` | `src/widgets/templates/block-spans/`. |
-| `componentContentAreaLibrarySource` | `src/widgets/templates/component-content-areas/`. |
-| `widgetSchemaSource` | `src/report-template-assets/blueprint/widget-config-schemas.ts`. |
+| `shellConfigSource` | `src/config/dashboard.config.ts`; list title/nav/filter/action fields to configure. |
+| `pageConfigSource` | `src/report-template-assets/business-report-pages.ts`. |
+| `gridContract` | 12 columns, first-screen minimum 8 rows, total `N >= 8`. |
+| `dynamicBlockRuntimeSource` | `src/widgets/templates/block-spans/BaseLayoutSpan.vue`. |
+| `dynamicBlockCreationApi` | `createBlockAreaConfig`. |
+| `dynamicBlockCollectionExport` | `blockAreaConfigMap`. |
+| `slotTypeSource` | `src/widgets/templates/block-spans/types.ts`. |
+| `componentExampleCatalogSource` | `src/widgets/templates/component-examples/config.ts`. |
+| `componentExampleExportSource` | `src/widgets/templates/component-examples/index.ts`. |
+| `widgetRegistrySource` | `src/widgets/registry.ts`. |
 | `validatorSource` | `src/report-template-assets/blueprint/compatibility.ts` and `scripts/validate-dashboard-contract.mjs`. |
-| `assetInspectionStatus` | `ready`, `draft`, or `blocked`; use `blocked` when the selected template files are not available. |
+| `assetInspectionStatus` | `ready`, `draft`, or `blocked`. |
 
-## Block Layout Selection
+## Block Area Construction
 
-Separate direct selectable block layout templates from size-only base wrappers.
+Block areas are not selected from fixed size catalogs. Build them from page layout plus slot config.
 
-| Type | Meaning | PRD/workflow rule |
-| --- | --- | --- |
-| Direct selectable slot template | Independent Vue file with size plus `componentRegionPattern`, such as `Span04x03SingleSlotLayout.vue`. | May be selected directly in `blockLayoutTemplateMap`. |
-| Size-only base wrapper | File such as `Span04x03Layout.vue` that sets only `span-id`. | May be used only as a base for an already registered selectable template or template backlog; do not treat it as a complete slot-bearing block template. |
-| Runtime/generated pattern option | Pattern generated by `component-region-patterns.ts`, such as `AABBCC`. | Useful for validation and backlog design; report implementation still needs a selected/registerable block layout template file. |
+For every visible block:
 
-Current direct selectable examples:
+- `layoutRows` determines block `cols/rows`.
+- `createBlockAreaConfig` creates the widget config.
+- `componentRegionPattern` defines slot geometry inside `3 componentArea`.
+- `componentSlotContracts` declares slot order, role, and required status.
+- `componentSlots` fills each slot with `componentExampleId` plus props/config/data policy.
 
-| File | Size | Pattern | Slot count | Typical use |
-| --- | --- | --- | --- | --- |
-| `Span04x03SingleSlotLayout.vue` | `4x3` | `AAAA` | 1 | One compact KPI, chart, list, or conclusion component. |
-| `Span04x03DoubleSlotLayout.vue` | `4x3` | `AABB` | 2 | Two tightly related values/components. |
-| `Span04x03CompactTripleSlotLayout.vue` | `4x3` | `AABC` | 3 | One primary short item plus two narrow supporting items. |
-| `Span06x03SingleSlotLayout.vue` | `6x3` | `AAAAAA` | 1 | One wider chart/table/list/conclusion component. |
-| `Span06x03DoubleSlotLayout.vue` | `6x3` | `AAABBB` | 2 | Main evidence plus comparison, driver, or detail. |
-| `Span06x03TripleSlotLayout.vue` | `6x3` | `AABBCC` | 3 | Three same-grain indicators or tightly related evidence components. |
+Required block row fields:
 
-If the PRD wants a span/pattern that has no direct selectable slot template, do one of these:
-
-- Prefer a supported direct selectable template that still serves the report story.
-- Mark `TBD(GAP-BLOCK-LAYOUT-TEMPLATE-*)` and keep implementation `blocked` or `partial`.
-- Route a template-library backlog item outside the report-development implementation path. Do not silently create custom block layout templates during report development.
-
-## Component Slot Pattern Rules
-
-`componentSlotPattern` describes the internal `3 componentArea` split, not page `layoutRows`.
-
-| Pattern example | Meaning |
+| Field | Meaning |
 | --- | --- |
-| `AAAA` / `AAAAAA` | One component slot. |
-| `AABB` / `AAABBB` | Two slots, usually primary + secondary or comparison. |
-| `AABC` | Three slots where A is wider than B/C. |
-| `AABBCC` | Three grouped slots with equal width. |
+| `blockId` | Stable page block id. |
+| `blockCoordinate` | Readable `R-B` coordinate. |
+| `layoutRowsSpan` | row/column span derived from `layoutRows`. |
+| `componentRegionPattern` | Slot geometry such as `A`, `AB`, `ABC`, `AAB|CCD`. |
+| `slotCount` | Distinct slot letters. |
+| `componentSlotPattern` | Same as or derived from `componentRegionPattern`. |
+| `slotCoordinateList` | `R-B-S` values for all slots. |
+| `titleAreaConfig` | Required. |
+| `pillAreaConfig` | Config or `null` with reason. |
+| `auxMetricAreaConfig` | Config or `null`. |
+| `unitAreaConfig` | Config or `null`. |
+| `summaryAreaConfig` | Config or `null`. |
 
-For every block:
-
-- `slotCount` equals the count of distinct letters in the pattern.
-- `slotCoordinateList` enumerates each slot in selected template order, such as `2-2-1`, `2-2-2`, `2-2-3`.
-- `slotPatternCode` in `componentContentAreaTemplateMap` is the pattern letter for that slot, such as `A`, `B`, or `C`.
-- `slotRole` should follow the selected template contract: first slot `primary`, second `secondary`, later slots `supporting` unless the PRD explains otherwise.
-
-## Component Content Area Selection
+## Component Example Selection
 
 A component slot is filled only after all checks pass:
 
-1. The slot appears in the parent block's `slotCoordinateList`.
-2. The selected component content area template id exists in `component-content-areas/README.md` or `references/component-content-area-template-map.md`.
-3. The selected visual type is compatible with the slot size.
-4. The row records metric IDs, data/API object, fields, filters, state contract, and sample/source evidence.
-5. If no existing template fits, the fallback is a new standalone component content area template with `selfDevelopmentExceptionMap.type = componentContentAreaTemplate`.
+1. The slot appears in `slotCoordinateList`.
+2. `componentExampleId` exists in `component-examples/config.ts`.
+3. The component type is exported from `component-examples/index.ts`.
+4. The component type is registered in `widgets/registry.ts`.
+5. The row records visual type, props/config/data, metric IDs, filter behavior, state contract, and sample/source evidence.
+6. Custom ECharts work is registered before the slot is considered filled.
 
-Useful current registered component content area ids include `component-library:A` through `component-library:N`; use `references/component-content-area-template-map.md` for the full map and binding evidence.
+Common component example ids:
 
-## Visual-Type Size Compatibility
-
-Before selecting a component template, check `src/report-template-assets/blueprint/widget-config-schemas.ts`.
-
-| Visual type group | Allowed sizes from current schema |
+| Component example id | Typical use |
 | --- | --- |
-| `metric-card` | `2x2`, `3x2` |
-| `text-summary` | `2x2`, `3x2`, `4x2`, `6x2`, `8x2`, `12x2` |
-| Axis charts: `line`, `bar`, `combo` | `3x2`, `4x2`, `3x3`, `4x3` |
-| Analytical/radial charts: `pie`, `radar`, `scatter`, `heatmap`, `funnel`, etc. | `3x2`, `4x2`, `3x3`, `4x3` |
-| Lists: `operational-list`, `action-recommendation-card`, `ranking-list` | `3x2`, `4x2`, `3x3`, `4x3`, `6x2`, `6x3` |
-| `table` | `3x2`, `4x2`, `6x2`, `8x2`, `12x2`, `4x3`, `6x3`, `8x3`, `12x3`, `6x4`, `8x4`, `12x4` |
-| `pivot` | `4x3`, `6x3`, `8x3`, `12x3`, `6x4`, `8x4`, `12x4`, `6x5`, `8x5`, `12x5` |
+| `component-example-catalog:kpi-metric-card` | KPI/metric card. |
+| `component-example-catalog:target-progress-card` | Target progress. |
+| `component-example-catalog:line-chart-card` | Trend line chart. |
+| `component-example-catalog:bar-chart-card` | Bar chart. |
+| `component-example-catalog:combo-chart-card` | Bar/line combo chart. |
+| `component-example-catalog:proportion-chart-card` | Pie/donut/proportion chart. |
+| `component-example-catalog:heatmap-chart-card` | Heatmap matrix. |
+| `component-example-catalog:radar-chart-card` | Radar chart. |
+| `component-example-catalog:rounded-funnel-chart-card` | Funnel chart. |
+| `component-example-catalog:ranking-list-card` | Ranking list. |
+| `component-example-catalog:action-list-card` | Action list. |
+| `component-example-catalog:conclusion-card` | Conclusion card. |
+| `component-example-catalog:detail-table-card` | Detail table. |
+| `component-example-catalog:complex-table-card` | Complex table. |
+| `component-example-catalog:custom-echart-component-template` | Self-developed ECharts fallback. |
 
-If a visual type is not allowed in the slot size, change the block span/template, change the visual type, or mark a gap. Do not force a chart into an undersized slot by shrinking fonts or hiding overflow.
+## Custom Component Example Rules
 
-## Template Build Order
+When no existing component example fits:
 
-Use this build order in PRDs, workflow packets, and implementation:
+1. Add the Vue file under `src/widgets/templates/component-examples/`.
+2. Export it from `component-examples/index.ts`.
+3. Add schema in `component-examples/config.ts`.
+4. Register it in `widgets/registry.ts`.
+5. Bind it through `componentSlots[].componentExampleId`.
 
-1. Select `frameworkTemplateId` and record actual asset root.
+Do not create a custom shell, page layout, block runtime, fixed block wrapper, duplicate filter, duplicate toolbar, or duplicate navigation.
+
+## Build Order
+
+1. Select `frameworkTemplateId`.
 2. Record `templateAssetUnderstandingMap`.
-3. Configure shell-owned title, logo, nav/page, filters, toolbar/actions, export, and permission surfaces.
+3. Configure shell title, logo, nav/page, filters, toolbar/actions, export, permission.
 4. Create page previews and `layoutSectionMap`.
-5. Create exact `12*N` `layoutRows` and block spans.
-6. For each block, select a direct block layout template file or mark a block-layout gap.
-7. Derive `componentSlotPattern`, `slotCount`, `slotCoordinateList`, and slot roles.
-8. Configure `titleArea`, `pillArea`, `auxMetricArea`, `unitArea`, and `summaryArea` on the block layout template.
-9. For each declared slot, choose a component content area template by use case plus visual-type size compatibility.
-10. Bind data/API/filter/interactions/conclusion rules.
-11. Generate or update `docs/prototype-data-summary.md`.
-12. Run `npm run ledger:check`, `npm run validate:dashboard`, build, and visual geometry checks when a URL exists.
+5. Create exact `12*N` `layoutRows`.
+6. Create `blockAreaConfigMap`.
+7. Configure block areas.
+8. Declare `componentSlotConfigMap`.
+9. Bind registered component examples.
+10. Register custom ECharts examples only when needed.
+11. Bind data/API/filter/interactions/conclusion rules.
+12. Generate or update `docs/prototype-data-summary.md`.
+13. Run `npm run ledger:check`, `npm run validate:dashboard`, `npm run build:test`, and runtime checks when a URL exists.
 
 ## Hard Stops
 
 - Do not write PRD layout tables without `templateAssetUnderstandingMap`.
-- Do not select a size-only base wrapper as a complete block layout template.
-- Do not choose component content area templates before slot size and visual-type compatibility are checked.
-- Do not treat `componentRegionPattern` as the selected template file.
-- Do not put title, pills, filters, auxiliary metrics, unit, summary, or explanation copy inside component content area slots.
-- Do not self-develop framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, or permission surfaces inside report development.
+- Do not select retired fixed-size wrappers as report blocks.
+- Do not use legacy slot-fill maps as active slot fill contracts.
+- Do not put title, pills, filters, auxiliary metrics, unit, summary, or explanation copy inside component slots.
+- Do not treat `componentRegionPattern` as a component example.
+- Do not mark a slot filled before its `componentExampleId` resolves through schema, export, and registry.

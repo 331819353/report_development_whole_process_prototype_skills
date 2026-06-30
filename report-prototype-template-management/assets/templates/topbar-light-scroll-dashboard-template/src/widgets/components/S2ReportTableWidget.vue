@@ -660,12 +660,34 @@ const stateMessage = computed(() => {
   return null;
 });
 
-const columnWidthMap = computed(() =>
-  Object.fromEntries(visibleLeafColumns.value.map((column) => [
-    getColumnField(column),
-    Math.max(64, column.width ?? column.minWidth ?? (column.formatter === 'operation' ? 68 : 92)),
-  ])),
-);
+const getBaseColumnWidth = (column: S2ReportColumn) =>
+  Math.max(64, column.width ?? column.minWidth ?? (column.formatter === 'operation' ? 68 : 92));
+
+const columnWidthMap = computed(() => {
+  const tableColumns = visibleLeafColumns.value;
+  const baseWidths = tableColumns.map(getBaseColumnWidth);
+  const totalBaseWidth = baseWidths.reduce((total, width) => total + width, 0);
+  const targetWidth = Math.max(0, Math.floor(sheetSize.value.width) - 2);
+
+  if (!tableColumns.length || targetWidth <= totalBaseWidth) {
+    return Object.fromEntries(tableColumns.map((column, index) => [
+      getColumnField(column),
+      baseWidths[index],
+    ]));
+  }
+
+  let remainingWidth = targetWidth;
+
+  return Object.fromEntries(tableColumns.map((column, index) => {
+    const isLast = index === tableColumns.length - 1;
+    const nextWidth = isLast
+      ? Math.max(baseWidths[index], remainingWidth)
+      : Math.max(baseWidths[index], Math.floor(baseWidths[index] / totalBaseWidth * targetWidth));
+
+    remainingWidth -= nextWidth;
+    return [getColumnField(column), nextWidth];
+  }));
+});
 
 const s2Meta = computed(() =>
   visibleLeafColumns.value.map((column) => ({

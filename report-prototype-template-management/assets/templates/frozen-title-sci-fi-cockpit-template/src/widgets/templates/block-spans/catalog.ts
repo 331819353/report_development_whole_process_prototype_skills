@@ -1,60 +1,4 @@
-export type LayoutSpanId =
-  | '02x02'
-  | '03x02'
-  | '04x02'
-  | '05x02'
-  | '06x02'
-  | '07x02'
-  | '08x02'
-  | '09x02'
-  | '10x02'
-  | '11x02'
-  | '12x02'
-  | '03x03'
-  | '04x03'
-  | '05x03'
-  | '06x03'
-  | '07x03'
-  | '08x03'
-  | '09x03'
-  | '10x03'
-  | '11x03'
-  | '12x03'
-  | '04x04'
-  | '05x04'
-  | '06x04'
-  | '07x04'
-  | '08x04'
-  | '09x04'
-  | '10x04'
-  | '11x04'
-  | '12x04'
-  | '05x05'
-  | '06x05'
-  | '07x05'
-  | '08x05'
-  | '09x05'
-  | '10x05'
-  | '11x05'
-  | '12x05'
-  | '06x06'
-  | '07x06'
-  | '08x06'
-  | '09x06'
-  | '10x06'
-  | '11x06'
-  | '12x06'
-  | '07x07'
-  | '08x07'
-  | '09x07'
-  | '10x07'
-  | '11x07'
-  | '12x07'
-  | '08x08'
-  | '09x08'
-  | '10x08'
-  | '11x08'
-  | '12x08';
+export type LayoutSpanId = `${number}x${number}`;
 
 export type LayoutDensityBand = 'compact' | 'standard' | 'roomy' | 'workspace';
 export type LayoutOrientation = 'balanced' | 'wide' | 'full-width';
@@ -91,8 +35,6 @@ export const layoutGridContract = {
   cellPadding: 3,
   requireColumnsGteRows: true,
 };
-
-export const layoutSpanIds = ['02x02', '03x02', '04x02', '05x02', '06x02', '07x02', '08x02', '09x02', '10x02', '11x02', '12x02', '03x03', '04x03', '05x03', '06x03', '07x03', '08x03', '09x03', '10x03', '11x03', '12x03', '04x04', '05x04', '06x04', '07x04', '08x04', '09x04', '10x04', '11x04', '12x04', '05x05', '06x05', '07x05', '08x05', '09x05', '10x05', '11x05', '12x05', '06x06', '07x06', '08x06', '09x06', '10x06', '11x06', '12x06', '07x07', '08x07', '09x07', '10x07', '11x07', '12x07', '08x08', '09x08', '10x08', '11x08', '12x08'] as const satisfies readonly LayoutSpanId[];
 
 const round = (value: number) => Math.round(value * 10) / 10;
 
@@ -200,7 +142,7 @@ const getRecommendedZoneCount = (mode: LayoutMode) => {
 
 export const createLayoutSpanSpec = (cols: number, rows: number): LayoutSpanSpec => {
   assertLegalSpan(cols, rows);
-  const id = (String(cols).padStart(2, '0') + 'x' + String(rows).padStart(2, '0')) as LayoutSpanId;
+  const id = `${cols}x${rows}` as LayoutSpanId;
   const contentWidth = layoutGridContract.contentWidth / layoutGridContract.columns;
   const widthPx = round(contentWidth * cols - layoutGridContract.cellPadding * 2);
   const heightPx = round(layoutGridContract.rowHeight * rows - layoutGridContract.cellPadding * 2);
@@ -225,14 +167,3 @@ export const createLayoutSpanSpec = (cols: number, rows: number): LayoutSpanSpec
     fitRule: getFitRule(cols, rows, mode),
   };
 };
-
-export const layoutSpanSpecs: LayoutSpanSpec[] = Array.from({ length: layoutGridContract.visibleRows - layoutGridContract.minRows + 1 }, (_, rowIndex) => {
-  const rows = rowIndex + layoutGridContract.minRows;
-  return Array.from({ length: layoutGridContract.columns - rows + 1 }, (_, colIndex) =>
-    createLayoutSpanSpec(colIndex + rows, rows),
-  );
-}).flat();
-
-export const layoutSpanSpecMap = Object.fromEntries(layoutSpanSpecs.map((spec) => [spec.id, spec])) as Record<LayoutSpanId, LayoutSpanSpec>;
-
-export const getLayoutSpanSpec = (id: LayoutSpanId) => layoutSpanSpecMap[id];

@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill when runtime delivery depends on explicit test and production environment contracts across frontend, backend, data source, auth, proxy/CORS, build, startup, smoke testing, and release acceptance.
 
-Use `frontend-env-deployment-verification` for concrete frontend env/proxy/build repair. Use `$runtime-url-smoke-test` for reachability only.
+Use `frontend-runtime-qa-validation` plus this environment profile contract for concrete frontend env/proxy/build repair. Use `$runtime-url-smoke-test` for reachability only.
 
 ## Reference Loading
 

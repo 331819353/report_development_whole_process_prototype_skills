@@ -182,7 +182,7 @@ const gridBase = computed(() => ({
   right: chartScale.value.gridRight,
   bottom: chartScale.value.gridBottom,
   left: chartScale.value.gridLeft,
-  containLabel: true,
+  containLabel: false,
 }));
 
 const axisBase = computed(() => ({

@@ -1,1460 +1,535 @@
-import type { NavItem } from '../types/dashboard';
-import type { RegisteredWidgetConfig, TemplateCarriedWidgetTone, WidgetMap } from '../widgets/types';
+import type { DashboardPageConfig } from '../types/dashboard';
+import type { RegisteredWidgetConfig, WidgetMap, WidgetTitlePillOption, WidgetVisualType } from '../widgets/types';
+import type { LayoutSpanTemplateProps } from '../widgets/templates/block-spans/types';
+import type { ReportTemplateNav } from './types';
 
-export const businessReportLayoutRows = [
-  'AAABBBCCCDDD',
-  'AAABBBCCCDDD',
-  'EEEEFFFFGGGG',
-  'EEEEFFFFGGGG',
-  'HHHHIIIIJJJJ',
-  'HHHHIIIIJJJJ',
-  'KKKKLLLLMMMM',
-  'KKKKLLLLMMMM',
-];
+const componentExampleId = (id: string) => `component-example-catalog:${id}`;
+type ProjectReportComponentSlot = NonNullable<LayoutSpanTemplateProps['componentSlots']>[number];
 
-export const multiSlotTemplateLayoutRows = [
-  'AAAABBBBBBBB',
-  'AAAABBBBBBBB',
-  'AAAABBBBBBBB',
-  'CCCCCDDDDDDD',
-  'CCCCCDDDDDDD',
-  'CCCCCDDDDDDD',
-  'EEEFFFFGGGGG',
-  'EEEFFFFGGGGG',
-];
+type SlotRole = 'primary' | 'secondary' | 'supporting' | 'reference';
 
-export const componentContentAreaTemplateLayoutRows = [
-  ...businessReportLayoutRows,
-  'NNNNNNNNNNNN',
-  'NNNNNNNNNNNN',
-];
+interface ProjectReportSlot {
+  id: string;
+  label: string;
+  regionKey: string;
+  role: SlotRole;
+  widthUnits: number;
+  componentExampleId: string;
+  widget: RegisteredWidgetConfig;
+}
 
-export const launchScenarioLayoutRows = [
-  'AAAABBBBCCCC',
-  'AAAABBBBCCCC',
-  'AAAABBBBCCCC',
-  'DDDDDDEEEEEE',
-  'DDDDDDEEEEEE',
-  'DDDDDDEEEEEE',
-  'FFFFFFGGGGGG',
-  'FFFFFFGGGGGG',
-  'FFFFFFGGGGGG',
-];
+interface ProjectReportBlockOptions {
+  title: string;
+  note: string;
+  bodySummary?: string;
+  titlePills?: WidgetTitlePillOption[];
+  componentRegionPattern: string;
+  slots: ProjectReportSlot[];
+}
 
-export const riskClosureLayoutRows = [
-  'AAAABBBBCCCC',
-  'AAAABBBBCCCC',
-  'AAAABBBBCCCC',
-  'DDDDDDEEEEEE',
-  'DDDDDDEEEEEE',
-  'DDDDDDEEEEEE',
-  'FFFFFFGGGGGG',
-  'FFFFFFGGGGGG',
-  'FFFFFFGGGGGG',
-];
-
-const businessReportWidgets: WidgetMap = {
-  A: {
-    type: 'MetricValueWidget',
-    visualType: 'metric-card',
-    dataPolicy: 'static',
-    displayTitle: '营业收入',
-    titlePills: [
-      { id: 'month', label: '本月' },
-      { id: 'target', label: '目标' },
-      { id: 'yoy', label: '同比' },
-    ],
-    bodySummary: '结论：收入保持稳健增长，线上直营和华东区域贡献最突出。',
-    auxMetrics: [
-      { label: '上期', value: '119,860,000' },
-      { label: '目标', value: '135,000,000' },
-      { label: '单位', value: '元' },
-    ],
-    props: {
-      value: 128063459,
-      unit: '元',
-      yearOverYear: '+12.6%',
-      monthOverMonth: '+4.8%',
-      maxDecimals: 0,
-    },
-  },
-  B: {
-    type: 'MetricValueWidget',
-    visualType: 'metric-card',
-    dataPolicy: 'static',
-    displayTitle: '经营利润',
-    titlePills: [
-      { id: 'profit', label: '利润' },
-      { id: 'margin', label: '毛利' },
-      { id: 'cost', label: '费用' },
-    ],
-    bodySummary: '结论：利润增速高于收入增速，费用率下降带动盈利改善。',
-    auxMetrics: [
-      { label: '上期', value: '21,940,000' },
-      { label: '目标', value: '26,000,000' },
-      { label: '单位', value: '元' },
-    ],
-    props: {
-      value: 24860000,
-      unit: '元',
-      yearOverYear: '+15.2%',
-      monthOverMonth: '+6.1%',
-      maxDecimals: 0,
-    },
-  },
-  C: {
-    type: 'UniversalCardWidget',
-    visualType: 'text-summary',
-    dataPolicy: 'static',
-    displayTitle: '目标达成',
-    titlePills: [
-      { id: 'actual', label: '实际' },
-      { id: 'target', label: '目标' },
-      { id: 'gap', label: '差距' },
-    ],
-    bodySummary: '结论：整体达成率为86%，利润达成较好，收入端仍有冲刺空间。',
-    props: {
-      cardKind: 'target',
-      value: '86',
-      unit: '%',
-      target: '135,000,000元',
-      status: '128,063,459元',
-      gap: '6,936,541元',
-      rows: [
-        { label: '目标', value: '1.35亿' },
-        { label: '当前', value: '1.28亿' },
-        { label: '差距', value: '693.65万', tone: 'warning' },
-      ],
-      displayBudget: {
-        rowHeightPx: 32,
-        visibleRowCount: 3,
-        maxVisibleItems: 3,
-        overflowStrategy: 'show target, current, gap and achievement progress in one compact report card',
-      },
-    },
-  },
-  D: {
-    type: 'RankingCardWidget',
-    visualType: 'ranking-list',
-    dataPolicy: 'static',
-    displayTitle: '区域收入排名',
-    titlePills: [
-      { id: 'region', label: '区域' },
-      { id: 'amount', label: '收入' },
-      { id: 'growth', label: '增速' },
-    ],
-    bodySummary: '结论：华东保持第一，海外市场增速最快，华北需要补齐转化缺口。',
-    auxMetrics: [
-      { label: 'Top1', value: '25.5%' },
-      { label: '对象', value: '5' },
-      { label: '单位', value: '元' },
-    ],
-    props: {
-      valueUnit: '元',
-      displayBudget: {
-        rowHeightPx: 32,
-        visibleRowCount: 5,
-        maxVisibleItems: 5,
-        overflowStrategy: 'show top 5 operating regions with medal rank colors',
-      },
-      items: [
-        { rank: 1, label: '华东大区', value: 32680000 },
-        { rank: 2, label: '线上渠道', value: 28460000 },
-        { rank: 3, label: '华南大区', value: 21930000 },
-        { rank: 4, label: '海外市场', value: 18750000 },
-        { rank: 5, label: '华北大区', value: 15320000 },
-      ],
-    },
-  },
-  E: {
-    type: 'TemplateEChartWidget',
-    visualType: 'line',
-    dataPolicy: 'static',
-    displayTitle: '收入利润趋势',
-    titlePills: [
-      { id: 'revenue', label: '收入' },
-      { id: 'profit', label: '利润' },
-      { id: 'forecast', label: '预测' },
-    ],
-    bodySummary: '结论：近6个月收入持续上行，利润曲线稳定改善。',
-    auxMetrics: [
-      { label: '峰值', value: '12806' },
-      { label: '低值', value: '8740' },
-      { label: '单位', value: '万元' },
-    ],
-    props: {
-      chartKind: 'line',
-      seriesName: '营业收入',
-      unit: '万元',
-      categories: ['1月', '2月', '3月', '4月', '5月', '6月'],
-      values: [8740, 9320, 10180, 10890, 11986, 12806],
-      tone: 'primary',
-    },
-  },
-  F: {
-    type: 'TemplateEChartWidget',
-    visualType: 'pie',
-    dataPolicy: 'static',
-    displayTitle: '渠道收入结构',
-    titlePills: [
-      { id: 'channel', label: '渠道' },
-      { id: 'share', label: '占比' },
-      { id: 'growth', label: '增长' },
-    ],
-    bodySummary: '结论：线上直营占比最高，经销渠道保持稳定，门店增长恢复。',
-    auxMetrics: [
-      { label: '最大', value: '42%' },
-      { label: '渠道', value: '4' },
-      { label: '单位', value: '%' },
-    ],
-    props: {
-      chartKind: 'pie',
-      seriesName: '渠道收入',
-      unit: '%',
-      pieData: [
-        { name: '线上直营', value: 42 },
-        { name: '门店零售', value: 31 },
-        { name: '经销渠道', value: 18 },
-        { name: '工程客户', value: 9 },
-      ],
-      tone: 'primary',
-    },
-  },
-  G: {
-    type: 'TemplateEChartWidget',
-    visualType: 'scatter',
-    dataPolicy: 'static',
-    displayTitle: '客户价值象限',
-    titlePills: [
-      { id: 'value', label: '价值' },
-      { id: 'growth', label: '成长' },
-      { id: 'risk', label: '风险' },
-    ],
-    bodySummary: '结论：高价值高成长客户集中在右上象限，需优先保障供给和服务。',
-    auxMetrics: [
-      { label: '样本', value: '6' },
-      { label: '重点', value: '3' },
-      { label: '单位', value: '分' },
-    ],
-    props: {
-      chartKind: 'scatter',
-      seriesName: '客户分群',
-      unit: '分',
-      points: [
-        { name: '战略客户', value: [86, 88, 30] },
-        { name: '成长客户', value: [72, 81, 24] },
-        { name: '效率客户', value: [68, 62, 18] },
-        { name: '观察客户', value: [45, 48, 12] },
-        { name: '潜力客户', value: [57, 74, 20] },
-        { name: '风险客户', value: [52, 31, 14] },
-      ],
-      tone: 'primary',
-    },
-  },
-  H: {
-    type: 'AdvancedEChartWidget',
-    visualType: 'heatmap',
-    dataPolicy: 'static',
-    displayTitle: '费用与利润热力',
-    titlePills: [
-      { id: 'quarter', label: '季度' },
-      { id: 'cost', label: '费用' },
-      { id: 'profit', label: '利润' },
-    ],
-    bodySummary: '结论：Q3费用压力最高，Q4利润热度回升，需要继续压降营销投放偏差。',
-    auxMetrics: [
-      { label: '峰值', value: '91' },
-      { label: '异常', value: '1' },
-      { label: '单位', value: '分' },
-    ],
-    props: {
-      chartKind: 'heatmap',
-      seriesName: '经营热力',
-      unit: '分',
-    },
-  },
-  I: {
-    type: 'AdvancedEChartWidget',
-    visualType: 'radar',
-    dataPolicy: 'static',
-    displayTitle: '经营健康度',
-    titlePills: [
-      { id: 'health', label: '健康' },
-      { id: 'ability', label: '能力' },
-      { id: 'risk', label: '风险' },
-    ],
-    bodySummary: '结论：增长、盈利和现金表现较好，库存周转仍是主要短板。',
-    auxMetrics: [
-      { label: '最高', value: '91' },
-      { label: '最低', value: '64' },
-      { label: '单位', value: '分' },
-    ],
-    props: {
-      chartKind: 'radar',
-      seriesName: '经营健康度',
-      unit: '分',
-      radarIndicators: [
-        { name: '增长', max: 100 },
-        { name: '盈利', max: 100 },
-        { name: '现金', max: 100 },
-        { name: '库存', max: 100 },
-        { name: '风险', max: 100 },
-      ],
-      radarValues: [88, 91, 83, 64, 72],
-    },
-  },
-  J: {
-    type: 'UniversalCardWidget',
-    visualType: 'text-summary',
-    dataPolicy: 'static',
-    displayTitle: '异常预警',
-    titlePills: [
-      { id: 'risk', label: '风险' },
-      { id: 'reason', label: '原因' },
-      { id: 'owner', label: '责任' },
-    ],
-    bodySummary: '结论：逾期金额超过预警上限，需要本周完成客户回款复核。',
-    props: {
-      cardKind: 'warning',
-      riskLevel: '高风险',
-      metricName: '逾期金额',
-      value: '245',
-      unit: '万',
-      target: '150万',
-      gap: '+63%',
-      status: '163%',
-      rows: [
-        { label: '较上月', value: '+63%', tone: 'danger' },
-        { label: '预警上限', value: '150万' },
-        { label: '触发规则', value: '超过上限', tone: 'danger' },
-      ],
-      displayBudget: {
-        rowHeightPx: 32,
-        visibleRowCount: 3,
-        maxVisibleItems: 3,
-        overflowStrategy: 'show high risk level, overdue amount, explanation metrics and over-limit progress',
-      },
-    },
-  },
-  K: {
-    type: 'StatusRowsWidget',
-    visualType: 'operational-list',
-    dataPolicy: 'static',
-    displayTitle: '重点行动清单',
-    titlePills: [
-      { id: 'all', label: '全部' },
-      { id: 'doing', label: '推进' },
-      { id: 'risk', label: '风险' },
-    ],
-    bodySummary: '结论：四项关键动作已明确责任人，回款和库存动作优先级最高。',
-    props: {
-      tone: 'primary',
-      displayBudget: {
-        rowHeightPx: 32,
-        visibleRowCount: 5,
-        maxVisibleItems: 5,
-        overflowStrategy: 'show top 5 operating actions with compact adaptive rows',
-      },
-      items: [
-        { label: '逾期客户回款复核', value: '今日闭环', status: 'danger' },
-        { label: '华北门店转化提升', value: '推进中', status: 'warning' },
-        { label: '高毛利新品补货', value: '已排产', status: 'success' },
-        { label: '费用投放复盘', value: '本周完成', status: 'primary' },
-        { label: '重点客户满意度回访', value: '已启动', status: 'success' },
-      ],
-    },
-  },
-  L: {
-    type: 'UniversalCardWidget',
-    visualType: 'funnel',
-    dataPolicy: 'static',
-    displayTitle: '商机转化漏斗',
-    titlePills: [
-      { id: 'lead', label: '线索' },
-      { id: 'opp', label: '商机' },
-      { id: 'deal', label: '成交' },
-    ],
-    bodySummary: '结论：线索到商机转化稳定，成交转化仍有约8个百分点提升空间。',
-    auxMetrics: [
-      { label: '转化', value: '33%' },
-      { label: '流失', value: '440' },
-      { label: '单位', value: '个' },
-    ],
-    props: {
-      cardKind: 'funnel',
-      rows: [
-        { label: '有效线索', value: '1,280', percent: 100 },
-        { label: '确认商机', value: '860', percent: 67 },
-        { label: '成交订单', value: '420', percent: 33 },
-      ],
-      displayBudget: {
-        rowHeightPx: 32,
-        visibleRowCount: 3,
-        maxVisibleItems: 3,
-        overflowStrategy: 'show three key conversion stages with adaptive funnel chart',
-      },
-    },
-  },
-  M: {
-    type: 'UniversalCardWidget',
-    visualType: 'text-summary',
-    dataPolicy: 'static',
-    displayTitle: '经营结论',
-    titlePills: [
-      { id: 'summary', label: '结论' },
-      { id: 'proof', label: '依据' },
-      { id: 'action', label: '动作' },
-    ],
-    props: {
-      cardKind: 'summary',
-      headline: '经营质量',
-      value: '稳中向好',
-      unit: '',
-      rows: [
-        { label: '收入同比提升', value: '12.6%', tone: 'primary' },
-        { label: '利润率继续改善', value: '1.8pct', tone: 'primary' },
-        { label: '回款风险需跟进', value: '本周闭环', tone: 'warning' },
-      ],
-      displayBudget: {
-        rowHeightPx: 32,
-        visibleRowCount: 3,
-        maxVisibleItems: 3,
-        overflowStrategy: 'show executive conclusion and three evidence/action bullets',
-      },
-    },
-  },
-};
-
-const componentContentAreaTemplateLibraryNavId = 'component-library';
-
-const createComponentContentAreaTemplateWidget = (
+const componentWidget = (
   type: RegisteredWidgetConfig['type'],
-  visualType: RegisteredWidgetConfig['visualType'],
-  metricName: string,
-  templateFile: string,
+  visualType: WidgetVisualType,
+  title: string,
+  props: Record<string, unknown>,
 ): RegisteredWidgetConfig =>
   ({
     type,
     visualType,
     dataPolicy: 'static',
-    metricName,
+    displayTitle: title,
     props: {
-      templateFile,
-      contentAreaTitle: metricName,
-      showContentTitle: true,
+      title,
+      ...props,
     },
   }) as RegisteredWidgetConfig;
 
-const componentContentAreaTemplateWidgets: WidgetMap = {
-  A: createComponentContentAreaTemplateWidget(
-    'OperatingRevenueMetricContentAreaTemplate',
-    'metric-card',
-    '营业收入',
-    'src/widgets/templates/component-content-areas/OperatingRevenueMetricContentAreaTemplate.vue',
-  ),
-  B: createComponentContentAreaTemplateWidget(
-    'OperatingProfitMetricContentAreaTemplate',
-    'metric-card',
-    '经营利润',
-    'src/widgets/templates/component-content-areas/OperatingProfitMetricContentAreaTemplate.vue',
-  ),
-  C: createComponentContentAreaTemplateWidget(
-    'TargetAchievementContentAreaTemplate',
-    'text-summary',
-    '目标达成',
-    'src/widgets/templates/component-content-areas/TargetAchievementContentAreaTemplate.vue',
-  ),
-  D: createComponentContentAreaTemplateWidget(
-    'RegionalRevenueRankingContentAreaTemplate',
-    'ranking-list',
-    '区域收入排名',
-    'src/widgets/templates/component-content-areas/RegionalRevenueRankingContentAreaTemplate.vue',
-  ),
-  E: createComponentContentAreaTemplateWidget(
-    'RevenueProfitTrendContentAreaTemplate',
-    'line',
-    '收入利润趋势',
-    'src/widgets/templates/component-content-areas/RevenueProfitTrendContentAreaTemplate.vue',
-  ),
-  F: createComponentContentAreaTemplateWidget(
-    'ChannelRevenueStructureContentAreaTemplate',
-    'pie',
-    '渠道收入结构',
-    'src/widgets/templates/component-content-areas/ChannelRevenueStructureContentAreaTemplate.vue',
-  ),
-  G: createComponentContentAreaTemplateWidget(
-    'CustomerValueScatterContentAreaTemplate',
-    'scatter',
-    '客户价值象限',
-    'src/widgets/templates/component-content-areas/CustomerValueScatterContentAreaTemplate.vue',
-  ),
-  H: createComponentContentAreaTemplateWidget(
-    'CostProfitHeatmapContentAreaTemplate',
-    'heatmap',
-    '费用与利润热力',
-    'src/widgets/templates/component-content-areas/CostProfitHeatmapContentAreaTemplate.vue',
-  ),
-  I: createComponentContentAreaTemplateWidget(
-    'OperatingHealthRadarContentAreaTemplate',
-    'radar',
-    '经营健康度',
-    'src/widgets/templates/component-content-areas/OperatingHealthRadarContentAreaTemplate.vue',
-  ),
-  J: createComponentContentAreaTemplateWidget(
-    'ExceptionWarningContentAreaTemplate',
-    'text-summary',
-    '异常预警',
-    'src/widgets/templates/component-content-areas/ExceptionWarningContentAreaTemplate.vue',
-  ),
-  K: createComponentContentAreaTemplateWidget(
-    'KeyActionListContentAreaTemplate',
-    'operational-list',
-    '重点行动清单',
-    'src/widgets/templates/component-content-areas/KeyActionListContentAreaTemplate.vue',
-  ),
-  L: createComponentContentAreaTemplateWidget(
-    'OpportunityFunnelContentAreaTemplate',
-    'funnel',
-    '商机转化漏斗',
-    'src/widgets/templates/component-content-areas/OpportunityFunnelContentAreaTemplate.vue',
-  ),
-  M: createComponentContentAreaTemplateWidget(
-    'OperatingConclusionContentAreaTemplate',
-    'text-summary',
-    '经营结论',
-    'src/widgets/templates/component-content-areas/OperatingConclusionContentAreaTemplate.vue',
-  ),
-  N: createComponentContentAreaTemplateWidget(
-    'LaunchConversionWaterfallContentAreaTemplate',
-    'bar',
-    '新品铺货转化路径',
-    'src/widgets/templates/component-content-areas/LaunchConversionWaterfallContentAreaTemplate.vue',
-  ),
-};
+const slot = (
+  id: string,
+  label: string,
+  exampleId: string,
+  widget: RegisteredWidgetConfig,
+  widthUnits = 1,
+  role: SlotRole = 'supporting',
+): ProjectReportSlot => ({
+  id,
+  label,
+  regionKey: id,
+  role,
+  widthUnits,
+  componentExampleId: componentExampleId(exampleId),
+  widget,
+});
 
-type TemplateSlotRole = 'primary' | 'secondary' | 'supporting';
-type ComponentContentAreaTemplateBlockId =
-  | 'A'
-  | 'B'
-  | 'C'
-  | 'D'
-  | 'E'
-  | 'F'
-  | 'G'
-  | 'H'
-  | 'I'
-  | 'J'
-  | 'K'
-  | 'L'
-  | 'M'
-  | 'N';
-
-interface ScenarioComponentSlot {
-  id: string;
-  label: string;
-  regionKey: string;
-  widthUnits: number;
-  role: TemplateSlotRole;
-  componentTemplateBlockId: ComponentContentAreaTemplateBlockId;
-}
-
-interface ScenarioBlockTemplateOptions {
-  type: RegisteredWidgetConfig['type'];
-  title: string;
-  pattern: string;
-  slots: ScenarioComponentSlot[];
-  rows: number;
-  auxMetrics: Array<{ label: string; value: string }>;
-  titlePills: Array<{ id: string; label: string }>;
-  summary: string;
-  note: string;
-}
-
-const blockLayoutTemplateTypeByPattern: Record<string, RegisteredWidgetConfig['type']> = {
-  '04x03:AAAA': 'Span04x03SingleSlotLayout',
-  '04x03:AABB': 'Span04x03DoubleSlotLayout',
-  '04x03:AABC': 'Span04x03CompactTripleSlotLayout',
-  '06x03:AAAAAA': 'Span06x03SingleSlotLayout',
-  '06x03:AAABBB': 'Span06x03DoubleSlotLayout',
-  '06x03:AABBCC': 'Span06x03TripleSlotLayout',
-};
-
-const getBlockLayoutTemplateType = (
-  type: RegisteredWidgetConfig['type'],
-  pattern: string,
-): RegisteredWidgetConfig['type'] => {
-  const match = /^Span(\d{2}x\d{2})Layout$/.exec(type);
-
-  return match ? blockLayoutTemplateTypeByPattern[`${match[1]}:${pattern}`] ?? type : type;
-};
-
-interface TemplateKpiSlot {
-  id: string;
-  label: string;
-  widthUnits: number;
-  role: TemplateSlotRole;
-  value: string;
-  unit: string;
-  delta: string;
-  tone: TemplateCarriedWidgetTone;
-}
-
-interface BlockTemplateWidgetOptions {
-  type: RegisteredWidgetConfig['type'];
-  title: string;
-  pattern: string;
-  slots: TemplateKpiSlot[];
-  cols: number;
-  rows: number;
-  summary: string;
-  auxMode: string;
-  note: string;
-}
-
-const kpiComponentContentAreaTemplateId = 'kpi-metric-widget-content-area';
-
-const createKpiComponentContentWidget = (slot: TemplateKpiSlot): RegisteredWidgetConfig => ({
-  type: 'KpiMetricWidget',
-  visualType: 'metric-card',
-  dataPolicy: 'static',
-  displayTitle: slot.label,
-  props: {
-    label: slot.label,
-    value: slot.value,
-    unit: slot.unit,
-    delta: slot.delta,
-    tone: slot.tone,
-  },
-} as RegisteredWidgetConfig);
-
-const createComponentSlotContracts = (slots: TemplateKpiSlot[], rows: number) =>
-  slots.map((slot, index) => ({
-    id: slot.id,
-    label: `${slot.id} ${slot.label}`,
-    regionKey: slot.id,
-    role: slot.role,
+const createSlotContracts = (slots: ProjectReportSlot[]): LayoutSpanTemplateProps['componentSlotContracts'] =>
+  slots.map((item, index) => ({
+    id: item.id,
+    label: `${item.id} ${item.label}`,
+    regionKey: item.regionKey,
+    role: item.role,
     order: index + 1,
-    widthUnits: slot.widthUnits,
-    heightUnits: rows,
-    minSize: `${slot.widthUnits}x${rows}`,
+    widthUnits: item.widthUnits,
+    heightUnits: 3,
+    minSize: `${item.widthUnits}x3`,
     required: true,
   }));
 
-const createScenarioComponentSlotContracts = (slots: ScenarioComponentSlot[], rows: number) =>
-  slots.map((slot, index) => ({
-    id: slot.id,
-    label: `${slot.id} ${slot.label}`,
-    regionKey: slot.regionKey,
-    role: slot.role,
-    order: index + 1,
-    widthUnits: slot.widthUnits,
-    heightUnits: rows,
-    minSize: `${slot.widthUnits}x${rows}`,
-    required: true,
+const createComponentSlots = (slots: ProjectReportSlot[]): ProjectReportComponentSlot[] =>
+  slots.map((item) => ({
+    id: item.id,
+    label: item.label,
+    regionKey: item.regionKey,
+    role: item.role,
+    componentExampleId: item.componentExampleId,
+    dataPolicy: item.widget.dataPolicy,
+    props: item.widget.props as Record<string, unknown>,
   }));
 
-const createComponentSlots = (slots: TemplateKpiSlot[]) =>
-  slots.map((slot) => ({
-    id: slot.id,
-    templateSlotId: slot.id,
-    label: `${slot.id} ${slot.label}`,
-    regionKey: slot.id,
-    role: slot.role,
-    componentContentAreaTemplateId: kpiComponentContentAreaTemplateId,
-    widget: createKpiComponentContentWidget(slot),
-    content: {
-      type: 'kpi' as const,
-      label: slot.label,
-      value: slot.value,
-      unit: slot.unit,
-      delta: slot.delta,
-      tone: slot.tone,
+export const createBlockAreaConfig = ({
+  title,
+  note,
+  bodySummary,
+  titlePills,
+  componentRegionPattern,
+  slots,
+}: ProjectReportBlockOptions): RegisteredWidgetConfig =>
+  ({
+    type: 'BaseLayoutSpan',
+    visualType: 'other',
+    dataPolicy: 'static',
+    displayTitle: title,
+    titlePills,
+    bodySummary,
+    props: {
+      title,
+      note,
+      showChrome: false,
+      showFooter: false,
+      density: 'auto',
+      placeholder: '经营分析组件槽位',
+      componentRegionPattern,
+      autoComponentSlots: true,
+      componentAreaPaddingPx: 2,
+      componentSlotGapPx: 10,
+      componentSlotContracts: createSlotContracts(slots),
+      componentSlots: createComponentSlots(slots),
+      showSummary: Boolean(bodySummary),
     },
-  }));
+  }) as RegisteredWidgetConfig;
 
-const createScenarioComponentSlots = (slots: ScenarioComponentSlot[]) =>
-  slots.map((slot) => {
-    const widget = componentContentAreaTemplateWidgets[slot.componentTemplateBlockId];
+const projectBlock = createBlockAreaConfig;
 
-    return {
-      id: slot.id,
-      templateSlotId: slot.id,
-      label: `${slot.id} ${slot.label}`,
-      regionKey: slot.regionKey,
-      role: slot.role,
-      componentContentAreaTemplateId: `${componentContentAreaTemplateLibraryNavId}:${slot.componentTemplateBlockId}`,
-      widget,
-    };
+const projectLayoutRows = [
+  'AAAABBBBCCCC',
+  'AAAABBBBCCCC',
+  'DDDDEEEEFFFF',
+  'DDDDEEEEFFFF',
+  'DDDDEEEEFFFF',
+  'GGGGHHHHIIII',
+  'GGGGHHHHIIII',
+  'GGGGHHHHIIII',
+];
+
+const kpi = (
+  title: string,
+  value: number | string,
+  unit: string,
+  tone: 'primary' | 'success' | 'warning' | 'danger' | 'neutral',
+  accessoryMetrics: Array<{ label: string; value: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral'; icon?: 'trend' | 'target' | 'clock' }>,
+  sparkValues: number[],
+) =>
+  componentWidget('KpiMetricExampleCard', 'metric-card', title, {
+    value,
+    unit,
+    tone,
+    accessoryMetrics,
+    sparkValues,
   });
 
-const createBlockTemplateWidget = ({
-  type,
-  title,
-  pattern,
-  slots,
-  cols,
-  rows,
-  summary,
-  auxMode,
-  note,
-}: BlockTemplateWidgetOptions): RegisteredWidgetConfig => ({
-  type: getBlockLayoutTemplateType(type, pattern),
-  visualType: 'other',
-  dataPolicy: 'static',
-  displayTitle: title,
-  titlePills: [
-    { id: 'pattern', label: pattern },
-    { id: 'slots', label: `${slots.length}槽位` },
-    { id: 'size', label: `${cols}*${rows}` },
-  ],
-  bodySummary: summary,
-  auxMetrics: [
-    { label: '2-1 附加信息区', value: auxMode },
-    { label: '3 组件区', value: slots.map((slot) => slot.id).join('/') },
-    { label: '单位', value: '2-2' },
-  ],
-  props: {
-    title,
-    note,
-    showChrome: false,
-    showFooter: false,
-    secondary: false,
-    density: 'roomy',
-    placeholder: '3 组件区',
-    componentRegionPattern: pattern,
-    componentSlotContracts: createComponentSlotContracts(slots, rows),
-    componentSlots: createComponentSlots(slots),
-  },
-} as RegisteredWidgetConfig);
+const target = (
+  title: string,
+  value: number,
+  targetValue: number,
+  currentValue: number,
+  gapValue: number,
+  tone: 'primary' | 'success' | 'warning' | 'danger' | 'neutral',
+) =>
+  componentWidget('TargetProgressExampleCard', 'metric-card', title, {
+    value,
+    valueSuffix: '%',
+    targetValue,
+    currentValue,
+    gapValue,
+    tone,
+    details: [
+      { label: '年度目标', value: `${targetValue}%`, icon: 'target' },
+      { label: '当前达成', value: `${currentValue}%`, icon: 'current' },
+      { label: '缺口', value: `${gapValue}%`, icon: 'gap' },
+    ],
+  });
 
-const createScenarioBlockTemplateWidget = ({
-  type,
-  title,
-  pattern,
-  slots,
-  rows,
-  auxMetrics,
-  titlePills,
-  summary,
-  note,
-}: ScenarioBlockTemplateOptions): RegisteredWidgetConfig => ({
-  type: getBlockLayoutTemplateType(type, pattern),
-  visualType: 'other',
-  dataPolicy: 'static',
-  displayTitle: title,
-  titlePills,
-  bodySummary: summary,
-  auxMetrics,
-  props: {
-    title,
-    note,
-    showChrome: false,
-    showFooter: false,
-    secondary: false,
-    density: 'roomy',
-    placeholder: '3 组件区',
-    componentRegionPattern: pattern,
-    componentSlotContracts: createScenarioComponentSlotContracts(slots, rows),
-    componentSlots: createScenarioComponentSlots(slots),
-  },
-} as RegisteredWidgetConfig);
+const line = (
+  title: string,
+  unit: string,
+  categories: string[],
+  series: Array<{ name: string; values: number[]; smooth?: boolean; areaVisible?: boolean }>,
+  auxMetrics: Array<{ label: string; value: string | number; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' }> = [],
+) =>
+  componentWidget('LineChartExampleCard', 'line', title, {
+    unit,
+    categories,
+    series,
+    auxMetrics,
+  });
 
-const launchScenarioWidgets: WidgetMap = {
-  A: createScenarioBlockTemplateWidget({
-    type: 'Span04x03SingleSlotLayout',
-    title: '新品首月达成',
-    pattern: 'AAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'launch', label: '上市月' },
-      { id: 'target', label: '目标' },
-      { id: 'gap', label: '差距' },
-    ],
-    auxMetrics: [
-      { label: '计划', value: '1,500万' },
-      { label: '达成', value: '86%' },
-      { label: '单位', value: '%' },
-    ],
-    summary: '结论：上市首月达成率 86%，主推渠道已完成铺货，仍需补齐复购转化。',
-    note: '流程 3：4*3 A 单槽分块布局模板；流程 8：选择目标达成组件内容区模板。',
-    slots: [
-      { id: 'A', label: '达成进度', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'C' },
-    ],
-  }),
-  B: createScenarioBlockTemplateWidget({
-    type: 'Span04x03SingleSlotLayout',
-    title: '首月GMV',
-    pattern: 'AAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'gmv', label: 'GMV' },
-      { id: 'yoy', label: '同比' },
-      { id: 'mom', label: '环比' },
-    ],
-    auxMetrics: [
-      { label: '上期', value: '1,198万' },
-      { label: '目标', value: '1,500万' },
-      { label: '单位', value: '元' },
-    ],
-    summary: '结论：新品 GMV 已进入放量区间，直播和门店联动贡献最明显。',
-    note: '流程 8：复用营业收入指标值组件内容区模板。',
-    slots: [
-      { id: 'A', label: 'GMV 指标', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'A' },
-    ],
-  }),
-  C: createScenarioBlockTemplateWidget({
-    type: 'Span04x03SingleSlotLayout',
-    title: '毛利贡献',
-    pattern: 'AAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'profit', label: '毛利' },
-      { id: 'cost', label: '费用' },
-      { id: 'roi', label: 'ROI' },
-    ],
-    auxMetrics: [
-      { label: '毛利率', value: '21.4%' },
-      { label: '费用率', value: '8.6%' },
-      { label: '单位', value: '元' },
-    ],
-    summary: '结论：新品毛利贡献高于预期，费用投放仍需按渠道继续压降。',
-    note: '流程 8：复用经营利润指标值组件内容区模板。',
-    slots: [
-      { id: 'A', label: '利润指标', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'B' },
-    ],
-  }),
-  D: createScenarioBlockTemplateWidget({
-    type: 'Span06x03DoubleSlotLayout',
-    title: '渠道铺货结构',
-    pattern: 'AAABBB',
-    rows: 3,
-    titlePills: [
-      { id: 'channel', label: '渠道' },
-      { id: 'region', label: '区域' },
-      { id: 'mix', label: '结构' },
-    ],
-    auxMetrics: [
-      { label: '覆盖渠道', value: '4' },
-      { label: 'Top 区域', value: '华东' },
-      { label: '单位', value: '%' },
-    ],
-    summary: '结论：线上直营承担声量，门店零售承担转化，华东和华南优先补货。',
-    note: '流程 3：6*3 AB 双槽分块布局模板；流程 8：复用饼图与排名两个组件内容区模板。',
-    slots: [
-      { id: 'A', label: '渠道结构', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'F' },
-      { id: 'B', label: '区域排名', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'D' },
-    ],
-  }),
-  E: createScenarioBlockTemplateWidget({
-    type: 'Span06x03SingleSlotLayout',
-    title: '铺货到成交转化',
-    pattern: 'AAAAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'coverage', label: '铺货' },
-      { id: 'sellout', label: '动销' },
-      { id: 'repeat', label: '复购' },
-    ],
-    auxMetrics: [
-      { label: '覆盖门店', value: '1,260' },
-      { label: '高频门店', value: '426' },
-      { label: '单位', value: '家' },
-    ],
-    summary: '结论：现有模板没有铺货转化路径图，因此按流程使用 ECharts 自开发新的组件内容区模板。',
-    note: '流程 8 兜底：无合适组件内容区模板 -> 自开发 ECharts 独立 Vue 模板。',
-    slots: [
-      { id: 'A', label: '转化路径', regionKey: 'A', widthUnits: 6, role: 'primary', componentTemplateBlockId: 'N' },
-    ],
-  }),
-  F: createScenarioBlockTemplateWidget({
-    type: 'Span06x03DoubleSlotLayout',
-    title: '客群与经营健康',
-    pattern: 'AAABBB',
-    rows: 3,
-    titlePills: [
-      { id: 'customer', label: '客群' },
-      { id: 'health', label: '健康' },
-      { id: 'priority', label: '优先级' },
-    ],
-    auxMetrics: [
-      { label: '重点客群', value: '3' },
-      { label: '健康短板', value: '库存' },
-      { label: '单位', value: '分' },
-    ],
-    summary: '结论：高价值客群已聚拢，库存周转和高频复购是下一轮经营重点。',
-    note: '流程 8：复用散点象限与雷达健康度组件内容区模板。',
-    slots: [
-      { id: 'A', label: '客群象限', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'G' },
-      { id: 'B', label: '健康雷达', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'I' },
-    ],
-  }),
-  G: createScenarioBlockTemplateWidget({
-    type: 'Span06x03DoubleSlotLayout',
-    title: '风险与行动闭环',
-    pattern: 'AAABBB',
-    rows: 3,
-    titlePills: [
-      { id: 'risk', label: '风险' },
-      { id: 'action', label: '行动' },
-      { id: 'owner', label: '责任' },
-    ],
-    auxMetrics: [
-      { label: '高风险', value: '1' },
-      { label: '行动项', value: '5' },
-      { label: '单位', value: '项' },
-    ],
-    summary: '结论：风险集中在回款和库存，行动清单已经按日闭环推进。',
-    note: '流程 8：复用异常预警与行动清单组件内容区模板。',
-    slots: [
-      { id: 'A', label: '异常预警', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'J' },
-      { id: 'B', label: '行动清单', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'K' },
-    ],
-  }),
-};
+const combo = (
+  title: string,
+  categories: string[],
+  series: Array<{ name: string; type: 'bar' | 'line'; values: number[] }>,
+  auxMetrics: Array<{ label: string; value: string | number; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' }> = [],
+) =>
+  componentWidget('ComboChartExampleCard', 'combo', title, {
+    categories,
+    series,
+    auxMetrics,
+  });
 
-const riskClosureWidgets: WidgetMap = {
-  A: createScenarioBlockTemplateWidget({
-    type: 'Span04x03SingleSlotLayout',
-    title: '预警总览',
-    pattern: 'AAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'risk', label: '风险' },
-      { id: 'rule', label: '规则' },
-      { id: 'owner', label: '责任' },
-    ],
+const bar = (title: string, categories: string[], values: number[], unit: string) =>
+  componentWidget('BarChartExampleCard', 'bar', title, { categories, values, unit });
+
+const proportion = (title: string, items: Array<{ name: string; value: number }>) =>
+  componentWidget('ProportionChartExampleCard', 'pie', title, { items });
+
+const ranking = (
+  title: string,
+  items: Array<{ name: string; value: number; delta?: string }>,
+  valueUnit: string,
+) => componentWidget('RankingListExampleCard', 'ranking-list', title, { items, valueUnit });
+
+const heatmap = (
+  title: string,
+  rows: string[],
+  columns: string[],
+  cells: number[][],
+) => componentWidget('HeatmapChartExampleCard', 'heatmap', title, { rows, columns, cells });
+
+const radar = (title: string, indicators: string[], values: number[]) =>
+  componentWidget('RadarChartExampleCard', 'radar', title, { indicators, values });
+
+const quadrant = (
+  title: string,
+  points: Array<{ name: string; x: number; y: number; value?: number }>,
+) =>
+  componentWidget('QuadrantChartExampleCard', 'scatter', title, {
+    xAxisName: '增长率',
+    yAxisName: '毛利率',
+    points,
+  });
+
+const funnel = (title: string, stages: Array<{ name: string; value: number }>) =>
+  componentWidget('RoundedFunnelChartExampleCard', 'funnel', title, { stages });
+
+const conclusion = (
+  title: string,
+  text: string,
+  emphasis: string,
+  statusTone: 'primary' | 'success' | 'warning' | 'danger' | 'neutral',
+  evidenceItems: Array<{ label: string; value: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' }>,
+  actionItems: Array<{ label: string; value: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' }>,
+) =>
+  componentWidget('ConclusionExampleCard', 'text-summary', title, {
+    conclusion: text,
+    emphasis,
+    statusLabel: '经营判断',
+    statusTone,
+    evidenceItems,
+    actionItems,
+  });
+
+const actions = (
+  title: string,
+  items: Array<{ label: string; status: string; owner: string; due: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral'; done?: boolean }>,
+) => componentWidget('ActionListExampleCard', 'action-recommendation-card', title, { items });
+
+const detailTable = (
+  title: string,
+  rows: Record<string, unknown>[],
+  columns: Array<Record<string, unknown>>,
+) =>
+  componentWidget('DetailTableExampleCard', 'table', title, {
+    rowKey: 'id',
+    rows,
+    columns,
     auxMetrics: [
-      { label: '高风险', value: '1' },
-      { label: '触发规则', value: '3' },
-      { label: '单位', value: '项' },
+      { label: '明细行数', value: rows.length, tone: 'primary' },
+      { label: '可下钻', value: '项目/区域', tone: 'success' },
     ],
-    summary: '结论：回款逾期和库存周转是本轮预警主因，需要在本周形成责任闭环。',
-    note: '流程 3：选择 4*3 A 单槽分块布局模板；流程 8：复用异常预警组件内容区模板，单槽隐藏组件内容区标题。',
-    slots: [
-      { id: 'A', label: '异常预警', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'J' },
-    ],
-  }),
-  B: createScenarioBlockTemplateWidget({
-    type: 'Span04x03SingleSlotLayout',
-    title: '行动闭环',
-    pattern: 'AAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'today', label: '今日' },
-      { id: 'week', label: '本周' },
-      { id: 'owner', label: '责任人' },
-    ],
+  });
+
+const complexTable = (
+  title: string,
+  rows: Record<string, unknown>[],
+  columnTree: Array<Record<string, unknown>>,
+) =>
+  componentWidget('ComplexTableExampleCard', 'table', title, {
+    rowKey: 'id',
+    rows,
+    columnTree,
     auxMetrics: [
-      { label: '动作', value: '5' },
-      { label: '逾期', value: '1' },
-      { label: '单位', value: '项' },
+      { label: '分组表头', value: '经营表现/风险/动作', tone: 'primary' },
+      { label: '数据粒度', value: '区域-渠道', tone: 'neutral' },
     ],
-    summary: '结论：五项动作已拆到责任人，逾期客户复核必须今日完成。',
-    note: '流程 4-7：标题、胶囊、附加信息和单位均配置在分块布局模板；流程 8：槽位只挂行动清单内容区。',
-    slots: [
-      { id: 'A', label: '行动清单', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'K' },
-    ],
-  }),
-  C: createScenarioBlockTemplateWidget({
-    type: 'Span04x03SingleSlotLayout',
-    title: '健康短板',
-    pattern: 'AAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'health', label: '健康' },
-      { id: 'weakness', label: '短板' },
-      { id: 'trend', label: '趋势' },
-    ],
+  });
+
+const customEChart = (title: string) =>
+  componentWidget('CustomEChartComponentTemplate', 'other', title, {
+    categories: ['立项', '签约', '交付', '验收', '回款'],
+    values: [42, 36, 31, 26, 21],
     auxMetrics: [
-      { label: '最低项', value: '库存' },
-      { label: '健康分', value: '72' },
-      { label: '单位', value: '分' },
+      { label: '当前阶段', value: '交付推进' },
+      { label: '阻塞节点', value: '验收材料' },
     ],
-    summary: '结论：库存周转拖累整体健康度，需和新品补货、滞销清理联动处理。',
-    note: '流程 8：复用经营健康雷达组件内容区模板；辅助信息不下发到组件槽位。',
-    slots: [
-      { id: 'A', label: '健康雷达', regionKey: 'A', widthUnits: 4, role: 'primary', componentTemplateBlockId: 'I' },
-    ],
-  }),
-  D: createScenarioBlockTemplateWidget({
-    type: 'Span06x03DoubleSlotLayout',
-    title: '收入利润联动',
-    pattern: 'AAABBB',
-    rows: 3,
-    titlePills: [
-      { id: 'trend', label: '趋势' },
-      { id: 'mix', label: '结构' },
-      { id: 'gap', label: '缺口' },
-    ],
-    auxMetrics: [
-      { label: '收入峰值', value: '12806' },
-      { label: '渠道数', value: '4' },
-      { label: '单位', value: '万元/%' },
-    ],
-    summary: '结论：收入保持上行，但结构侧仍依赖线上直营，利润改善需要继续压费用。',
-    note: '流程 3：选择 6*3 AB 双槽分块布局模板；流程 8：A 槽复用趋势图，B 槽复用渠道结构图。',
-    slots: [
-      { id: 'A', label: '收入利润趋势', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'E' },
-      { id: 'B', label: '渠道结构', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'F' },
-    ],
-  }),
-  E: createScenarioBlockTemplateWidget({
-    type: 'Span06x03DoubleSlotLayout',
-    title: '区域客户定位',
-    pattern: 'AAABBB',
-    rows: 3,
-    titlePills: [
-      { id: 'region', label: '区域' },
-      { id: 'customer', label: '客户' },
-      { id: 'priority', label: '优先级' },
-    ],
-    auxMetrics: [
-      { label: 'Top区域', value: '华东' },
-      { label: '重点客群', value: '3' },
-      { label: '单位', value: '个' },
-    ],
-    summary: '结论：华东贡献稳定，高价值客户集中在右上象限，需优先保障服务和供给。',
-    note: '流程 8：A/B 两个槽位分别选择区域排名和客户价值散点组件内容区模板。',
-    slots: [
-      { id: 'A', label: '区域排名', regionKey: 'A', widthUnits: 3, role: 'primary', componentTemplateBlockId: 'D' },
-      { id: 'B', label: '客户象限', regionKey: 'B', widthUnits: 3, role: 'secondary', componentTemplateBlockId: 'G' },
-    ],
-  }),
-  F: createScenarioBlockTemplateWidget({
-    type: 'Span06x03SingleSlotLayout',
-    title: '转化漏斗复核',
-    pattern: 'AAAAAA',
-    rows: 3,
-    titlePills: [
-      { id: 'lead', label: '线索' },
-      { id: 'deal', label: '成交' },
-      { id: 'loss', label: '流失' },
-    ],
-    auxMetrics: [
-      { label: '转化', value: '33%' },
-      { label: '流失', value: '440' },
-      { label: '单位', value: '个' },
-    ],
-    summary: '结论：成交转化仍有约 8 个百分点提升空间，需把商机跟进动作绑定到责任人。',
-    note: '流程 8：现有漏斗组件内容区模板适配，无需新增 ECharts 自开发模板。',
-    slots: [
-      { id: 'A', label: '商机漏斗', regionKey: 'A', widthUnits: 6, role: 'primary', componentTemplateBlockId: 'L' },
-    ],
-  }),
-  G: createScenarioBlockTemplateWidget({
-    type: 'Span06x03SingleSlotLayout',
-    title: '闭环结论',
-    pattern: 'AAAAAA',
-    rows: 3,
-    titlePills: [],
-    auxMetrics: [
-      { label: '流程字段', value: '9/9' },
-      { label: '组件槽位', value: '仅3区' },
-    ],
-    summary: '结论：本页完成框架、页面布局、分块模板、支撑区域、组件槽位和说明区的全链路配置。',
-    note: '流程 5/7/9：本块不配置胶囊和单位区；说明留在 4 summaryArea，组件槽位只挂经营结论内容区。',
-    slots: [
-      { id: 'A', label: '经营结论', regionKey: 'A', widthUnits: 6, role: 'primary', componentTemplateBlockId: 'M' },
-    ],
-  }),
-};
+  });
 
-const multiSlotTemplateWidgets: WidgetMap = {
-  A: {
-    type: 'UniversalCardWidget',
-    visualType: 'text-summary',
-    dataPolicy: 'static',
-    displayTitle: '分块模板实现路径',
-    titlePills: [
-      { id: 'framework', label: '框架模板' },
-      { id: 'page-layout', label: '页面布局' },
-      { id: 'block-template', label: '分块模板' },
-    ],
-    bodySummary: '结论：先选框架模板、页面布局和分块布局模板，再配置标题、胶囊、附加信息与单位；随后填充组件内容区模板，最后配置说明区。',
-    auxMetrics: [
-      { label: '路径', value: '9步' },
-      { label: '标准区', value: '6' },
-      { label: '单位', value: '区' },
-    ],
-    props: {
-      cardKind: 'summary',
-      headline: '最新流程',
-      value: '9',
-      unit: '步',
-      rows: [
-        { label: '1 框架模板', value: '先定运行壳层' },
-        { label: '2-3 布局/分块', value: '页面布局 -> 分块模板' },
-        { label: '4-7 支撑区域', value: '标题/胶囊/附加/单位' },
-        { label: '8-9 组件/说明', value: '组件内容区模板 -> 说明区', tone: 'primary' },
-      ],
-      displayBudget: {
-        rowHeightPx: 28,
-        visibleRowCount: 4,
-        maxVisibleItems: 4,
-        overflowStrategy: 'show the current report template implementation path in four compact rows',
-      },
-    },
-  },
-  B: {
-    ...createBlockTemplateWidget({
-      type: 'Span06x03DoubleSlotLayout',
-      title: '6*3 AB 双槽分块模板',
-      pattern: 'AAABBB',
-      cols: 6,
-      rows: 3,
-      auxMode: '等分',
-      summary: '4 说明区：A/B 两个槽位只接组件内容区模板；标题、胶囊、附加信息和单位都留在父级分块模板。',
-      note: '3 组件区：A/B 两个组件内容槽位，适合主指标 + 对比指标。',
-      slots: [
-        { id: 'A', label: '主指标', widthUnits: 3, role: 'primary', value: '12806', unit: '万', delta: '+12.6%', tone: 'primary' },
-        { id: 'B', label: '对比指标', widthUnits: 3, role: 'secondary', value: '86.4', unit: '%', delta: '达成率', tone: 'warning' },
-      ],
-    }),
-  },
-  C: {
-    ...createBlockTemplateWidget({
-      type: 'Span06x03TripleSlotLayout',
-      title: '6*3 ABC 三槽分块模板',
-      pattern: 'AABBCC',
-      cols: 6,
-      rows: 3,
-      auxMode: '均分',
-      summary: '4 说明区：三个组件内容槽位并列展示，附加信息区只在分块模板层配置，不随槽位下发。',
-      note: '3 组件区：A/B/C 三个组件内容槽位，适合同口径指标组。',
-      slots: [
-        { id: 'A', label: '收入', widthUnits: 2, role: 'primary', value: '1.28', unit: '亿', delta: '同比+', tone: 'primary' },
-        { id: 'B', label: '利润', widthUnits: 2, role: 'secondary', value: '2486', unit: '万', delta: '环比+', tone: 'success' },
-        { id: 'C', label: '风险', widthUnits: 2, role: 'supporting', value: '7', unit: '项', delta: '待处理', tone: 'danger' },
-      ],
-    }),
-  },
-  D: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x03SingleSlotLayout',
-      title: '4*3 A 单槽分块模板',
-      pattern: 'AAAA',
-      cols: 4,
-      rows: 3,
-      auxMode: '单焦点',
-      summary: '4 说明区：单槽模板用于一个强指标或组件；说明区承载结论，组件槽只承载组件内容。',
-      note: '3 组件区：一个组件内容区占满组件区域。',
-      slots: [
-        { id: 'A', label: '核心KPI', widthUnits: 4, role: 'primary', value: '92.8', unit: '%', delta: '稳定', tone: 'primary' },
-      ],
-    }),
-  },
-  E: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x03DoubleSlotLayout',
-      title: '4*3 AB 双槽分块模板',
-      pattern: 'AABB',
-      cols: 4,
-      rows: 3,
-      auxMode: '主辅',
-      summary: '4 说明区：双槽模板适合主指标与附加信息并排；单位仍属于 2-2 区域。',
-      note: '3 组件区：A/B 两个组件内容槽位，保持分块层和组件内容层分离。',
-      slots: [
-        { id: 'A', label: '实际', widthUnits: 2, role: 'primary', value: '86', unit: '%', delta: '当前', tone: 'primary' },
-        { id: 'B', label: '目标', widthUnits: 2, role: 'secondary', value: '95', unit: '%', delta: '目标', tone: 'warning' },
-      ],
-    }),
-  },
-  F: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x03CompactTripleSlotLayout',
-      title: '4*3 ABC 紧凑分块模板',
-      pattern: 'AABC',
-      cols: 4,
-      rows: 3,
-      auxMode: '2/1/1',
-      summary: '4 说明区：紧凑三槽只放短组件内容；超出口径应拆块，不把说明塞进组件槽。',
-      note: '3 组件区：A 主槽 + B/C 窄槽，仅填核心组件内容。',
-      slots: [
-        { id: 'A', label: '主项', widthUnits: 2, role: 'primary', value: '6区', unit: '', delta: '模板', tone: 'primary' },
-        { id: 'B', label: '填充', widthUnits: 1, role: 'secondary', value: 'KPI', unit: '', delta: 'only', tone: 'success' },
-        { id: 'C', label: '边界', widthUnits: 1, role: 'supporting', value: '0', unit: '混放', delta: '校验', tone: 'danger' },
-      ],
-    }),
-  },
-};
+const projectRows = [
+  { id: 'P-001', project: '智慧家庭套购增长', region: '华东', owner: '王晶', revenue: 3860, margin: 29.6, progress: '96%', risk: '低', action: '放大复购投放' },
+  { id: 'P-002', project: '门店焕新转化', region: '华南', owner: '陈卓', revenue: 2480, margin: 22.4, progress: '84%', risk: '中', action: '优化样机结构' },
+  { id: 'P-003', project: '工程客户交付', region: '华北', owner: '赵岩', revenue: 1960, margin: 18.8, progress: '77%', risk: '高', action: '锁定回款节点' },
+  { id: 'P-004', project: '海外直营提效', region: '海外', owner: '林可', revenue: 3120, margin: 27.3, progress: '91%', risk: '中', action: '补齐交付资源' },
+];
 
-const singleSlotTemplateWidgets: WidgetMap = {
-  A: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x03SingleSlotLayout',
-      title: '4*3 单槽位模板',
-      pattern: 'AAAA',
-      cols: 4,
-      rows: 3,
-      auxMode: '单槽',
-      summary: '导航一：4*3 分块只保留 A 槽，一个组件内容区占满整个组件区域。',
-      note: '3 组件区：A 槽占满 4 列，适合单指标、单图表或单列表。',
-      slots: [
-        { id: 'A', label: '核心指标', widthUnits: 4, role: 'primary', value: '4*3', unit: '', delta: '单槽', tone: 'primary' },
-      ],
-    }),
-  },
-  B: {
-    ...createBlockTemplateWidget({
-      type: 'Span08x03Layout',
-      title: '8*3 单槽位模板',
-      pattern: 'AAAAAAAA',
-      cols: 8,
-      rows: 3,
-      auxMode: '宽幅单槽',
-      summary: '导航一：8*3 分块保留一个横向大槽位，用于承载宽幅趋势、宽表或组合图。',
-      note: '3 组件区：A 槽横向占满 8 列，分块层保留标题、胶囊、附加信息和说明区。',
-      slots: [
-        { id: 'A', label: '宽幅组件', widthUnits: 8, role: 'primary', value: '8*3', unit: '', delta: '单槽', tone: 'primary' },
-      ],
-    }),
-  },
-  C: {
-    ...createBlockTemplateWidget({
-      type: 'Span05x03Layout',
-      title: '5*3 单槽位模板',
-      pattern: 'AAAAA',
-      cols: 5,
-      rows: 3,
-      auxMode: '中宽单槽',
-      summary: '导航一：5*3 分块使用一个完整 A 槽，适合中等密度的核心组件。',
-      note: '3 组件区：A 槽占满 5 列，避免把说明或单位下发到组件槽内。',
-      slots: [
-        { id: 'A', label: '中宽组件', widthUnits: 5, role: 'primary', value: '5*3', unit: '', delta: '单槽', tone: 'success' },
-      ],
-    }),
-  },
-  D: {
-    ...createBlockTemplateWidget({
-      type: 'Span07x03Layout',
-      title: '7*3 单槽位模板',
-      pattern: 'AAAAAAA',
-      cols: 7,
-      rows: 3,
-      auxMode: '大单槽',
-      summary: '导航一：7*3 分块用一个大槽位承载主要分析内容。',
-      note: '3 组件区：A 槽占满 7 列，适合需要更多横向阅读空间的组件。',
-      slots: [
-        { id: 'A', label: '大组件', widthUnits: 7, role: 'primary', value: '7*3', unit: '', delta: '单槽', tone: 'warning' },
-      ],
-    }),
-  },
-  E: {
-    ...createBlockTemplateWidget({
-      type: 'Span03x02Layout',
-      title: '3*2 单槽位模板',
-      pattern: 'AAA',
-      cols: 3,
-      rows: 2,
-      auxMode: '紧凑单槽',
-      summary: '导航一：3*2 分块以最小可读块展示一个单槽位组件。',
-      note: '3 组件区：A 槽占满 3 列，适合轻量 KPI 或状态提示。',
-      slots: [
-        { id: 'A', label: '轻量组件', widthUnits: 3, role: 'primary', value: '3*2', unit: '', delta: '单槽', tone: 'neutral' },
-      ],
-    }),
-  },
-  F: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x02Layout',
-      title: '4*2 单槽位模板',
-      pattern: 'AAAA',
-      cols: 4,
-      rows: 2,
-      auxMode: '标准单槽',
-      summary: '导航一：4*2 分块提供一个标准宽度的单槽位组件区。',
-      note: '3 组件区：A 槽占满 4 列，用于常规指标卡或小型图表。',
-      slots: [
-        { id: 'A', label: '标准组件', widthUnits: 4, role: 'primary', value: '4*2', unit: '', delta: '单槽', tone: 'primary' },
-      ],
-    }),
-  },
-  G: {
-    ...createBlockTemplateWidget({
-      type: 'Span05x02Layout',
-      title: '5*2 单槽位模板',
-      pattern: 'AAAAA',
-      cols: 5,
-      rows: 2,
-      auxMode: '横向单槽',
-      summary: '导航一：5*2 分块用一个横向槽位承载摘要型组件。',
-      note: '3 组件区：A 槽占满 5 列，保持组件内容区和分块说明区分离。',
-      slots: [
-        { id: 'A', label: '摘要组件', widthUnits: 5, role: 'primary', value: '5*2', unit: '', delta: '单槽', tone: 'success' },
-      ],
-    }),
-  },
-};
+const detailColumns = [
+  { key: 'project', label: '项目', width: 150, align: 'left', fixed: 'left', formatter: 'text', priority: 1 },
+  { key: 'region', label: '区域', width: 72, align: 'center', formatter: 'text', priority: 1 },
+  { key: 'owner', label: '负责人', width: 80, align: 'center', formatter: 'text', priority: 2 },
+  { key: 'revenue', label: '收入', width: 86, align: 'right', formatter: 'currency', unit: '万', priority: 1 },
+  { key: 'margin', label: '毛利率', width: 78, align: 'right', formatter: 'percent', unit: '%', priority: 1 },
+  { key: 'progress', label: '进度', width: 72, align: 'center', formatter: 'text', priority: 2 },
+  { key: 'risk', label: '风险', width: 70, align: 'center', formatter: 'status', priority: 1 },
+  { key: 'action', label: '下一步动作', width: 150, align: 'left', formatter: 'text', priority: 1 },
+];
 
-const multiSlotSizeTemplateWidgets: WidgetMap = {
-  A: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x03DoubleSlotLayout',
-      title: '4*3 AB 多槽位模板',
-      pattern: 'AABB',
-      cols: 4,
-      rows: 3,
-      auxMode: '2/2',
-      summary: '导航二：4*3 分块拆成 A/B 两个等宽组件槽位。',
-      note: '3 组件区：A/B 槽只承载组件内容区，标题、单位和说明仍归分块层。',
-      slots: [
-        { id: 'A', label: '主槽', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
-        { id: 'B', label: '副槽', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'warning' },
-      ],
-    }),
-  },
-  B: {
-    ...createBlockTemplateWidget({
-      type: 'Span08x03Layout',
-      title: '8*3 AB 多槽位模板',
-      pattern: 'AAAABBBB',
-      cols: 8,
-      rows: 3,
-      auxMode: '4/4',
-      summary: '导航二：8*3 分块拆成两个宽槽，用于主分析与对比分析并排。',
-      note: '3 组件区：A/B 两个槽位各占 4 列，适合双图或图表加列表。',
-      slots: [
-        { id: 'A', label: '主分析', widthUnits: 4, role: 'primary', value: 'A', unit: '', delta: '4列', tone: 'primary' },
-        { id: 'B', label: '对比分析', widthUnits: 4, role: 'secondary', value: 'B', unit: '', delta: '4列', tone: 'success' },
-      ],
-    }),
-  },
-  C: {
-    ...createBlockTemplateWidget({
-      type: 'Span05x03Layout',
-      title: '5*3 AB 多槽位模板',
-      pattern: 'AAABB',
-      cols: 5,
-      rows: 3,
-      auxMode: '3/2',
-      summary: '导航二：5*3 分块按 3/2 拆成主槽和辅助槽。',
-      note: '3 组件区：A 槽放核心内容，B 槽放辅助判断或状态组件。',
-      slots: [
-        { id: 'A', label: '主内容', widthUnits: 3, role: 'primary', value: 'A', unit: '', delta: '3列', tone: 'primary' },
-        { id: 'B', label: '辅助', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'warning' },
-      ],
-    }),
-  },
-  D: {
-    ...createBlockTemplateWidget({
-      type: 'Span07x03Layout',
-      title: '7*3 AB 多槽位模板',
-      pattern: 'AAABBBB',
-      cols: 7,
-      rows: 3,
-      auxMode: '3/4',
-      summary: '导航二：7*3 分块拆成 3 列摘要槽和 4 列分析槽。',
-      note: '3 组件区：A/B 不等宽，适合摘要加主图的组合。',
-      slots: [
-        { id: 'A', label: '摘要', widthUnits: 3, role: 'primary', value: 'A', unit: '', delta: '3列', tone: 'neutral' },
-        { id: 'B', label: '主图', widthUnits: 4, role: 'secondary', value: 'B', unit: '', delta: '4列', tone: 'primary' },
-      ],
-    }),
-  },
-  E: {
-    ...createBlockTemplateWidget({
-      type: 'Span03x02Layout',
-      title: '3*2 AB 多槽位模板',
-      pattern: 'AAB',
-      cols: 3,
-      rows: 2,
-      auxMode: '2/1',
-      summary: '导航二：3*2 紧凑块拆成一个主槽和一个窄辅助槽。',
-      note: '3 组件区：A 槽显示主要值，B 槽显示状态或趋势。',
-      slots: [
-        { id: 'A', label: '主值', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
-        { id: 'B', label: '状态', widthUnits: 1, role: 'secondary', value: 'B', unit: '', delta: '1列', tone: 'danger' },
-      ],
-    }),
-  },
-  F: {
-    ...createBlockTemplateWidget({
-      type: 'Span04x02Layout',
-      title: '4*2 AB 多槽位模板',
-      pattern: 'AABB',
-      cols: 4,
-      rows: 2,
-      auxMode: '2/2',
-      summary: '导航二：4*2 分块拆成两个等宽槽位，用于小型对比组件。',
-      note: '3 组件区：A/B 等宽并列，保持最小可读宽度。',
-      slots: [
-        { id: 'A', label: '当前', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
-        { id: 'B', label: '目标', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'warning' },
-      ],
-    }),
-  },
-  G: {
-    ...createBlockTemplateWidget({
-      type: 'Span05x02Layout',
-      title: '5*2 ABC 多槽位模板',
-      pattern: 'AABBC',
-      cols: 5,
-      rows: 2,
-      auxMode: '2/2/1',
-      summary: '导航二：5*2 分块拆成 A/B/C 三个槽位，适合小指标组。',
-      note: '3 组件区：A/B 为主对比槽，C 为状态槽。',
-      slots: [
-        { id: 'A', label: '指标A', widthUnits: 2, role: 'primary', value: 'A', unit: '', delta: '2列', tone: 'primary' },
-        { id: 'B', label: '指标B', widthUnits: 2, role: 'secondary', value: 'B', unit: '', delta: '2列', tone: 'success' },
-        { id: 'C', label: '状态', widthUnits: 1, role: 'supporting', value: 'C', unit: '', delta: '1列', tone: 'danger' },
-      ],
-    }),
-  },
-};
+const operatingRows = [
+  { id: 'R-001', region: '华东', channel: '线上直营', revenue: 3860, revenueYoY: 14.8, grossMargin: 29.6, fulfillmentRate: 97.8, stockRisk: '低', overdueAmount: 186, status: '健康', owner: '王晶', nextAction: '加大高复购会员投放' },
+  { id: 'R-002', region: '华南', channel: '门店零售', revenue: 2480, revenueYoY: 6.2, grossMargin: 22.4, fulfillmentRate: 92.1, stockRisk: '中', overdueAmount: 312, status: '关注', owner: '陈卓', nextAction: '压降低效样机库存' },
+  { id: 'R-003', region: '华北', channel: '工程客户', revenue: 1960, revenueYoY: -3.4, grossMargin: 18.8, fulfillmentRate: 88.6, stockRisk: '高', overdueAmount: 468, status: '预警', owner: '赵岩', nextAction: '周内确认回款计划' },
+  { id: 'R-004', region: '海外', channel: '直营网点', revenue: 3120, revenueYoY: 11.5, grossMargin: 27.3, fulfillmentRate: 94.5, stockRisk: '中', overdueAmount: 224, status: '关注', owner: '林可', nextAction: '补齐交付安装资源' },
+];
 
-const buildNavItem = (id: string, label: string, icon: NavItem['icon']): NavItem => ({
-  id,
-  label,
-  icon,
-  layoutRows: businessReportLayoutRows,
-  widgets: businessReportWidgets,
-});
-
-const buildMultiSlotNavItem = (id: string, label: string, icon: NavItem['icon']): NavItem => ({
-  id,
-  label,
-  icon,
-  layoutRows: multiSlotTemplateLayoutRows,
-  widgets: multiSlotTemplateWidgets,
-});
-
-const buildComponentContentAreaNavItem = (label: string, icon: NavItem['icon']): NavItem => ({
-  id: componentContentAreaTemplateLibraryNavId,
-  label,
-  icon,
-  layoutRows: componentContentAreaTemplateLayoutRows,
-  widgets: componentContentAreaTemplateWidgets,
-});
-
-const buildLaunchScenarioNavItem = (label: string, icon: NavItem['icon']): NavItem => ({
-  id: 'launch-scenario',
-  label,
-  icon,
-  layoutRows: launchScenarioLayoutRows,
-  widgets: launchScenarioWidgets,
-});
-
-const buildRiskClosureNavItem = (label: string, icon: NavItem['icon']): NavItem => ({
-  id: 'risk-closure',
-  label,
-  icon,
-  layoutRows: riskClosureLayoutRows,
-  widgets: riskClosureWidgets,
-});
-
-export const businessReportNav: NavItem[] = [
+const operatingColumnTree = [
+  { key: 'region', label: '区域', field: 'region', width: 70, fixed: 'left', align: 'center', formatter: 'text', locked: true },
+  { key: 'channel', label: '渠道', field: 'channel', width: 96, fixed: 'left', align: 'left', formatter: 'text', locked: true },
   {
-    id: 'nav-one',
-    label: '导航一',
-    icon: 'Gauge',
-    layoutRows: multiSlotTemplateLayoutRows,
-    widgets: singleSlotTemplateWidgets,
+    key: 'performance',
+    label: '经营表现',
+    children: [
+      { key: 'revenue', label: '收入', field: 'revenue', width: 86, align: 'right', formatter: 'currency', unit: '万', sortable: true },
+      { key: 'revenueYoY', label: '同比', field: 'revenueYoY', width: 72, align: 'right', formatter: 'percent', unit: '%', sortable: true },
+      { key: 'grossMargin', label: '毛利率', field: 'grossMargin', width: 78, align: 'right', formatter: 'percent', unit: '%', sortable: true },
+    ],
   },
   {
-    id: 'nav-two',
-    label: '导航二',
-    icon: 'Network',
-    layoutRows: multiSlotTemplateLayoutRows,
-    widgets: multiSlotSizeTemplateWidgets,
+    key: 'delivery',
+    label: '履约质量',
+    children: [
+      { key: 'fulfillmentRate', label: '履约率', field: 'fulfillmentRate', width: 78, align: 'right', formatter: 'percent', unit: '%' },
+      { key: 'stockRisk', label: '库存风险', field: 'stockRisk', width: 82, align: 'center', formatter: 'status' },
+    ],
+  },
+  {
+    key: 'risk',
+    label: '风险闭环',
+    children: [
+      { key: 'overdueAmount', label: '逾期回款', field: 'overdueAmount', width: 90, align: 'right', formatter: 'currency', unit: '万' },
+      { key: 'status', label: '状态', field: 'status', width: 76, align: 'center', formatter: 'status' },
+      { key: 'owner', label: '负责人', field: 'owner', width: 76, align: 'center', formatter: 'text' },
+      { key: 'nextAction', label: '下一步', field: 'nextAction', minWidth: 140, align: 'left', formatter: 'text', ellipsis: true },
+    ],
   },
 ];
+
+const overviewWidgets: WidgetMap = {
+  A: projectBlock({
+    title: '核心经营指标',
+    note: '收入、利润与现金流三项指标共同判断项目经营健康度。',
+    componentRegionPattern: 'ABC',
+    slots: [
+      slot('A', '项目收入', 'kpi-metric-card', kpi('项目收入', 12860, '万', 'primary', [{ label: '同比', value: '+12.6%', tone: 'success', icon: 'trend' }], [82, 96, 104, 116, 122, 129]), 1, 'primary'),
+      slot('B', '经营利润', 'kpi-metric-card', kpi('经营利润', 2460, '万', 'success', [{ label: '利润率', value: '19.1%', tone: 'primary', icon: 'target' }], [16, 18, 20, 21, 23, 25]), 1, 'secondary'),
+      slot('C', '经营现金流', 'kpi-metric-card', kpi('经营现金流', 3180, '万', 'warning', [{ label: '回款达成', value: '88.4%', tone: 'warning', icon: 'clock' }], [21, 26, 24, 28, 31, 32]), 1, 'supporting'),
+    ],
+  }),
+  B: projectBlock({
+    title: '年度目标达成',
+    note: '以收入目标为主线，识别当前差距与达成压力。',
+    componentRegionPattern: 'A',
+    slots: [slot('A', '收入达成率', 'target-progress-card', target('收入达成率', 92.4, 100, 92.4, 7.6, 'primary'), 1, 'primary')],
+  }),
+  C: projectBlock({
+    title: '经营结论',
+    note: '把本期结论、证据和动作放在首屏可读位置。',
+    componentRegionPattern: 'A',
+    slots: [
+      slot('A', '本期判断', 'conclusion-card', conclusion('本期判断', '项目收入保持增长，但华北工程客户拖累利润与现金流。', '增长质量分化', 'warning', [
+        { label: '收入同比', value: '+12.6%', tone: 'success' },
+        { label: '华北毛利率', value: '18.8%', tone: 'warning' },
+      ], [
+        { label: '优先动作', value: '锁定华北回款与交付节点', tone: 'warning' },
+      ]), 1, 'primary'),
+    ],
+  }),
+  D: projectBlock({
+    title: '收入趋势',
+    note: '跟踪月度收入、目标线和增长拐点。',
+    componentRegionPattern: 'A',
+    slots: [slot('A', '月度收入趋势', 'line-chart-card', line('月度收入趋势', '万元', ['1月', '2月', '3月', '4月', '5月', '6月'], [{ name: '实际收入', values: [8600, 9400, 10100, 11200, 11900, 12860], smooth: true, areaVisible: true }, { name: '目标收入', values: [9000, 9600, 10400, 11100, 12000, 13200], smooth: true }], [{ label: '6月收入', value: '12860万', tone: 'primary' }]), 1, 'primary')],
+  }),
+  E: projectBlock({
+    title: '收入与毛利联动',
+    note: '收入增长需要同步验证毛利率是否被折扣、履约成本侵蚀。',
+    componentRegionPattern: 'A',
+    slots: [slot('A', '收入毛利组合', 'combo-chart-card', combo('收入毛利组合', ['华东', '华南', '华北', '海外'], [{ name: '收入', type: 'bar', values: [3860, 2480, 1960, 3120] }, { name: '毛利率', type: 'line', values: [29.6, 22.4, 18.8, 27.3] }], [{ label: '平均毛利率', value: '24.8%', tone: 'primary' }]), 1, 'primary')],
+  }),
+  F: projectBlock({
+    title: '区域贡献排行',
+    note: '识别贡献主体和需要重点补强的区域。',
+    componentRegionPattern: 'A',
+    slots: [slot('A', '区域收入排行', 'ranking-list-card', ranking('区域收入排行', [{ name: '华东', value: 3860, delta: '+14.8%' }, { name: '海外', value: 3120, delta: '+11.5%' }, { name: '华南', value: 2480, delta: '+6.2%' }, { name: '华北', value: 1960, delta: '-3.4%' }], '万'), 1, 'secondary')],
+  }),
+  G: projectBlock({
+    title: '收入结构',
+    note: '查看渠道结构是否支撑利润目标。',
+    componentRegionPattern: 'AB',
+    slots: [
+      slot('A', '渠道占比', 'proportion-chart-card', proportion('渠道收入占比', [{ name: '线上直营', value: 42 }, { name: '门店零售', value: 28 }, { name: '工程客户', value: 18 }, { name: '海外直营', value: 12 }]), 1, 'primary'),
+      slot('B', '经营健康度', 'radar-chart-card', radar('经营健康度', ['增长', '毛利', '履约', '回款', '库存'], [86, 78, 82, 72, 68]), 1, 'secondary'),
+    ],
+  }),
+  H: projectBlock({
+    title: '本周动作',
+    note: '动作清单用于经营例会闭环。',
+    componentRegionPattern: 'A',
+    slots: [slot('A', '经营动作清单', 'action-list-card', actions('经营动作清单', [
+      { label: '华北工程客户回款专项会', owner: '赵岩', due: '今日', status: '待处理', tone: 'danger' },
+      { label: '华南门店样机结构复盘', owner: '陈卓', due: '明日', status: '推进中', tone: 'warning' },
+      { label: '华东会员复购投放扩量', owner: '王晶', due: '本周', status: '推进中', tone: 'primary' },
+      { label: '海外交付资源补齐', owner: '林可', due: '本周', status: '已排期', tone: 'success' },
+    ]), 1, 'primary')],
+  }),
+  I: projectBlock({
+    title: '项目明细',
+    note: '保留项目级明细，支持会议追问。',
+    componentRegionPattern: 'A',
+    slots: [slot('A', '项目经营明细', 'detail-table-card', detailTable('项目经营明细', projectRows, detailColumns), 1, 'reference')],
+  }),
+};
+
+const revenueWidgets: WidgetMap = {
+  A: projectBlock({ title: '收入拆解', note: '按项目、区域、渠道拆解本期收入来源。', componentRegionPattern: 'AB', slots: [
+    slot('A', '项目收入', 'kpi-metric-card', kpi('项目收入', 12860, '万', 'primary', [{ label: '同比', value: '+12.6%', tone: 'success' }], [88, 92, 108, 116, 124, 129]), 1, 'primary'),
+    slot('B', '新增收入', 'kpi-metric-card', kpi('新增收入', 1760, '万', 'success', [{ label: '贡献', value: '13.7%', tone: 'primary' }], [8, 10, 11, 13, 16, 18]), 1, 'secondary'),
+  ] }),
+  B: projectBlock({ title: '目标缺口', note: '收入缺口定位到项目责任人与渠道动作。', componentRegionPattern: 'A', slots: [slot('A', '收入目标达成', 'target-progress-card', target('收入目标达成', 92.4, 100, 92.4, 7.6, 'warning'), 1, 'primary')] }),
+  C: projectBlock({ title: '收入结论', note: '收入增长来自线上直营和海外直营，工程客户承压。', componentRegionPattern: 'A', slots: [slot('A', '收入结论', 'conclusion-card', conclusion('收入结论', '线上直营贡献最大，华北工程客户连续两月低于目标。', '结构增长成立', 'primary', [{ label: '线上直营占比', value: '42%', tone: 'success' }, { label: '工程客户缺口', value: '420万', tone: 'warning' }], [{ label: '动作', value: '工程客户逐单确认签收与回款', tone: 'warning' }]), 1, 'primary')] }),
+  D: projectBlock({ title: '渠道趋势', note: '观察不同渠道的连续增长和波动。', componentRegionPattern: 'A', slots: [slot('A', '渠道收入趋势', 'line-chart-card', line('渠道收入趋势', '万元', ['1月', '2月', '3月', '4月', '5月', '6月'], [{ name: '线上直营', values: [3200, 3480, 3720, 4050, 4380, 4620], smooth: true, areaVisible: true }, { name: '门店零售', values: [2100, 2180, 2240, 2320, 2380, 2480], smooth: true }, { name: '工程客户', values: [1800, 1720, 1680, 1640, 1590, 1510], smooth: true }]), 1, 'primary')] }),
+  E: projectBlock({ title: '品类收入', note: '品类结构用于识别增量来源和资源投向。', componentRegionPattern: 'A', slots: [slot('A', '品类收入', 'bar-chart-card', bar('品类收入', ['冰箱', '洗衣机', '空调', '厨电', '热水器'], [2860, 2410, 2180, 1960, 1450], '万元'), 1, 'secondary')] }),
+  F: projectBlock({ title: '收入热力', note: '区域与渠道二维交叉定位高低贡献区。', componentRegionPattern: 'A', slots: [slot('A', '区域渠道热力', 'heatmap-chart-card', heatmap('区域渠道热力', ['华东', '华南', '华北', '海外'], ['线上', '门店', '工程'], [[92, 76, 58], [74, 68, 46], [58, 52, 31], [82, 44, 39]]), 1, 'supporting')] }),
+  G: projectBlock({ title: '区域渠道占比', note: '结构占比与排行共同判断资源配置。', componentRegionPattern: 'AB', slots: [
+    slot('A', '区域占比', 'proportion-chart-card', proportion('区域收入占比', [{ name: '华东', value: 34 }, { name: '海外', value: 27 }, { name: '华南', value: 22 }, { name: '华北', value: 17 }]), 1, 'primary'),
+    slot('B', '渠道排行', 'ranking-list-card', ranking('渠道排行', [{ name: '线上直营', value: 4620, delta: '+18.4%' }, { name: '海外直营', value: 3120, delta: '+11.5%' }, { name: '门店零售', value: 2480, delta: '+6.2%' }], '万'), 1, 'secondary'),
+  ] }),
+  H: projectBlock({ title: '收入动作', note: '收入动作按责任人推进。', componentRegionPattern: 'A', slots: [slot('A', '收入动作', 'action-list-card', actions('收入动作', [
+    { label: '工程客户订单逐单复盘', owner: '赵岩', due: '今日', status: '待处理', tone: 'danger' },
+    { label: '线上直营会员加购包上线', owner: '王晶', due: '本周', status: '推进中', tone: 'primary' },
+    { label: '海外直营价格带复核', owner: '林可', due: '本周', status: '已排期', tone: 'success' },
+  ]), 1, 'primary')] }),
+  I: projectBlock({ title: '收入明细', note: '收入明细保留项目粒度和追踪字段。', componentRegionPattern: 'A', slots: [slot('A', '收入明细', 'detail-table-card', detailTable('收入明细', projectRows, detailColumns), 1, 'reference')] }),
+};
+
+const profitWidgets: WidgetMap = {
+  A: projectBlock({ title: '利润指标', note: '利润页优先看毛利率、费用率和经营利润。', componentRegionPattern: 'ABC', slots: [
+    slot('A', '毛利率', 'kpi-metric-card', kpi('毛利率', 24.8, '%', 'primary', [{ label: '环比', value: '+1.2pp', tone: 'success' }], [21, 22, 23, 24, 25, 25]), 1, 'primary'),
+    slot('B', '费用率', 'kpi-metric-card', kpi('费用率', 11.6, '%', 'warning', [{ label: '预算差', value: '+0.8pp', tone: 'warning' }], [10, 11, 12, 12, 11, 12]), 1, 'secondary'),
+    slot('C', '经营利润', 'kpi-metric-card', kpi('经营利润', 2460, '万', 'success', [{ label: '同比', value: '+9.4%', tone: 'success' }], [18, 19, 21, 22, 24, 25]), 1, 'supporting'),
+  ] }),
+  B: projectBlock({ title: '利润目标', note: '利润目标距离年度预算仍有 5.8pp 缺口。', componentRegionPattern: 'A', slots: [slot('A', '利润达成率', 'target-progress-card', target('利润达成率', 94.2, 100, 94.2, 5.8, 'primary'), 1, 'primary')] }),
+  C: projectBlock({ title: '利润结论', note: '利润改善主要来自高毛利渠道占比提升。', componentRegionPattern: 'A', slots: [slot('A', '利润结论', 'conclusion-card', conclusion('利润结论', '毛利率改善，但费用率超预算，需要压降华南门店促销和华北交付返工。', '利润改善但费用承压', 'warning', [{ label: '毛利率', value: '24.8%', tone: 'success' }, { label: '费用率', value: '11.6%', tone: 'warning' }], [{ label: '动作', value: '费用专项复核到项目', tone: 'warning' }]), 1, 'primary')] }),
+  D: projectBlock({ title: '利润趋势', note: '对比收入、利润和利润率走势。', componentRegionPattern: 'A', slots: [slot('A', '利润趋势', 'combo-chart-card', combo('利润趋势', ['1月', '2月', '3月', '4月', '5月', '6月'], [{ name: '经营利润', type: 'bar', values: [1680, 1810, 1960, 2110, 2280, 2460] }, { name: '利润率', type: 'line', values: [18.6, 18.9, 19.2, 19.4, 19.6, 19.1] }]), 1, 'primary')] }),
+  E: projectBlock({ title: '成本结构', note: '成本拆分用于识别费用压降抓手。', componentRegionPattern: 'A', slots: [slot('A', '成本结构', 'proportion-chart-card', proportion('成本结构', [{ name: '采购成本', value: 56 }, { name: '履约成本', value: 18 }, { name: '促销费用', value: 14 }, { name: '售后费用', value: 12 }]), 1, 'secondary')] }),
+  F: projectBlock({ title: '费用热力', note: '费用异常集中在华南门店和华北工程客户。', componentRegionPattern: 'A', slots: [slot('A', '费用热力', 'heatmap-chart-card', heatmap('费用热力', ['华东', '华南', '华北', '海外'], ['促销', '履约', '售后'], [[46, 38, 22], [78, 61, 44], [58, 82, 63], [42, 56, 35]]), 1, 'supporting')] }),
+  G: projectBlock({ title: '项目利润象限', note: '用增长与毛利识别投资优先级。', componentRegionPattern: 'A', slots: [slot('A', '项目利润象限', 'quadrant-chart-card', quadrant('项目利润象限', [{ name: '智慧家庭套购', x: 82, y: 76, value: 38 }, { name: '门店焕新', x: 58, y: 54, value: 24 }, { name: '工程客户交付', x: 36, y: 42, value: 18 }, { name: '海外直营提效', x: 74, y: 68, value: 31 }]), 1, 'primary')] }),
+  H: projectBlock({ title: '利润动作', note: '利润动作聚焦费用压降与低毛利项目治理。', componentRegionPattern: 'A', slots: [slot('A', '利润动作', 'action-list-card', actions('利润动作', [
+    { label: '华南门店促销费用复核', owner: '财务BP', due: '今日', status: '待确认', tone: 'warning' },
+    { label: '华北返工成本专项分析', owner: '交付经理', due: '明日', status: '推进中', tone: 'danger' },
+    { label: '高毛利套购方案扩区', owner: '产品运营', due: '本周', status: '推进中', tone: 'primary' },
+  ]), 1, 'primary')] }),
+  I: projectBlock({ title: '利润分组表', note: '复杂表头承载经营、履约、风险和动作字段。', componentRegionPattern: 'A', slots: [slot('A', '利润分组表', 'complex-table-card', complexTable('利润分组表', operatingRows, operatingColumnTree), 1, 'reference')] }),
+};
+
+const riskWidgets: WidgetMap = {
+  A: projectBlock({ title: '风险概览', note: '风险页聚焦回款、库存、履约和动作闭环。', componentRegionPattern: 'AB', slots: [
+    slot('A', '风险项目数', 'kpi-metric-card', kpi('风险项目数', 7, '项', 'danger', [{ label: '高风险', value: '2项', tone: 'danger' }], [3, 4, 5, 6, 7, 7]), 1, 'primary'),
+    slot('B', '回款达成率', 'target-progress-card', target('回款达成率', 88.4, 100, 88.4, 11.6, 'warning'), 1, 'secondary'),
+  ] }),
+  B: projectBlock({ title: '风险结论', note: '高风险主要集中在华北工程客户回款与履约延迟。', componentRegionPattern: 'A', slots: [slot('A', '风险结论', 'conclusion-card', conclusion('风险结论', '华北工程客户存在回款与验收双风险，需要按项目建立日清单。', '回款风险优先', 'danger', [{ label: '逾期回款', value: '468万', tone: 'danger' }, { label: '履约率', value: '88.6%', tone: 'warning' }], [{ label: '动作', value: '项目经理每日更新验收材料', tone: 'danger' }]), 1, 'primary')] }),
+  C: projectBlock({ title: '自开发图表', note: '没有现成图表能表达阶段阻塞时，绑定自开发 ECharts 模板。', componentRegionPattern: 'A', slots: [slot('A', '项目阶段阻塞', 'custom-echart-component-template', customEChart('项目阶段阻塞'), 1, 'primary')] }),
+  D: projectBlock({ title: '风险热力', note: '识别区域与风险类型交叉分布。', componentRegionPattern: 'A', slots: [slot('A', '风险热力', 'heatmap-chart-card', heatmap('风险热力', ['华东', '华南', '华北', '海外'], ['回款', '库存', '履约'], [[22, 28, 18], [46, 58, 44], [86, 74, 82], [38, 42, 56]]), 1, 'primary')] }),
+  E: projectBlock({ title: '回款漏斗', note: '从应收到账逐级追踪损耗。', componentRegionPattern: 'A', slots: [slot('A', '回款漏斗', 'rounded-funnel-chart-card', funnel('回款漏斗', [{ name: '应收确认', value: 100 }, { name: '开票完成', value: 92 }, { name: '客户确认', value: 81 }, { name: '到账', value: 68 }]), 1, 'secondary')] }),
+  F: projectBlock({ title: '风险排行', note: '按影响金额排列风险对象。', componentRegionPattern: 'A', slots: [slot('A', '风险排行', 'ranking-list-card', ranking('风险排行', [{ name: '华北工程客户', value: 468, delta: '高' }, { name: '华南门店样机', value: 312, delta: '中' }, { name: '海外安装资源', value: 224, delta: '中' }], '万'), 1, 'supporting')] }),
+  G: projectBlock({ title: '风险健康度', note: '多维度衡量风险治理能力。', componentRegionPattern: 'A', slots: [slot('A', '风险健康度', 'radar-chart-card', radar('风险健康度', ['回款', '库存', '履约', '客诉', '动作闭环'], [58, 64, 62, 76, 68]), 1, 'primary')] }),
+  H: projectBlock({ title: '风险动作', note: '风险动作必须明确责任人与截止时间。', componentRegionPattern: 'A', slots: [slot('A', '风险动作', 'action-list-card', actions('风险动作', [
+    { label: '华北回款日清单', owner: '赵岩', due: '今日', status: '高优先级', tone: 'danger' },
+    { label: '验收材料补齐', owner: '交付经理', due: '明日', status: '推进中', tone: 'warning' },
+    { label: '华南样机库存处置', owner: '陈卓', due: '本周', status: '推进中', tone: 'warning' },
+    { label: '海外安装资源排班', owner: '林可', due: '本周', status: '已排期', tone: 'success' },
+  ]), 1, 'primary')] }),
+  I: projectBlock({ title: '风险明细', note: '风险明细保留项目、责任人和下一步动作。', componentRegionPattern: 'A', slots: [slot('A', '风险明细', 'detail-table-card', detailTable('风险明细', projectRows, detailColumns), 1, 'reference')] }),
+};
+
+export const projectReportPageIds = ['overview', 'revenue', 'profit', 'risk'] as const;
+
+export const blockAreaConfigMap = {
+  overview: overviewWidgets,
+  revenue: revenueWidgets,
+  profit: profitWidgets,
+  risk: riskWidgets,
+} as const;
+
+export const projectReportPages: Record<(typeof projectReportPageIds)[number], DashboardPageConfig> = {
+  overview: {
+    layoutRows: projectLayoutRows,
+    widgets: overviewWidgets,
+  },
+  revenue: {
+    layoutRows: projectLayoutRows,
+    widgets: revenueWidgets,
+  },
+  profit: {
+    layoutRows: projectLayoutRows,
+    widgets: profitWidgets,
+  },
+  risk: {
+    layoutRows: projectLayoutRows,
+    widgets: riskWidgets,
+  },
+};
+
+export const defaultProjectReportPage = projectReportPages.overview;
+
+export const projectReportTopbarNav = [
+  { id: 'overview', label: '经营总览' },
+  { id: 'revenue', label: '收入结构' },
+  { id: 'profit', label: '利润成本' },
+  { id: 'risk', label: '风险行动' },
+] as const;
+
+export const projectReportNav = [
+  { id: 'overview', label: '经营总览', icon: 'Gauge' as const, ...projectReportPages.overview },
+  { id: 'revenue', label: '收入结构', icon: 'BarChart3' as const, ...projectReportPages.revenue },
+  { id: 'profit', label: '利润成本', icon: 'Factory' as const, ...projectReportPages.profit },
+  { id: 'risk', label: '风险行动', icon: 'Network' as const, ...projectReportPages.risk },
+] satisfies ReportTemplateNav[];
+
+export const configuredReportTemplatePage = defaultProjectReportPage;
+export const reportTemplatePages = projectReportPages;
+export const reportTemplateNav = projectReportNav;

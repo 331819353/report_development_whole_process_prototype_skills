@@ -109,7 +109,7 @@ const option = computed<EChartsOption>(() => ({
     right: 6,
     bottom: 20,
     left: 30,
-    containLabel: true,
+    containLabel: false,
   },
   xAxis: {
     type: 'category',

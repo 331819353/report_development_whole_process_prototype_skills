@@ -17,7 +17,7 @@ Use this as the direct front door for filter-control standards. It separates fil
 
 When filter controls come from screenshots or visual samples, treat them as part of the same component-style generalization target: every reusable selector must become a text-only `filterControlPattern` contract with size tiers, scope, data binding, states, and fallback. Do not rely on the original image or vector embedding as durable knowledge.
 
-Use `filter-linkage-completeness-test` when the task is runtime testing; use this skill when designing or reviewing filter control semantics, visual placement, local/global scope, defaults, reset, cascade, and component ownership.
+Use `frontend-runtime-qa-validation` when the task is runtime filter verification; use this skill when designing or reviewing filter control semantics, visual placement, local/global scope, defaults, reset, cascade, and component ownership.
 
 ## Reference Map
 
@@ -44,10 +44,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 3. Classify each control as page/global, module/tab scoped, component-local, or table-column scoped.
 4. Define option source, default value, reset behavior, cascade rule, permission-limited options, empty/no-permission state, and backend/query ownership.
 5. Select a stable `filterControlPattern` when the visual expression matters, such as single select, multi-tag select, date range, searchable select, tree path, advanced drawer, or combined chipbar.
-6. Place page/global filters in the page shell or template-native filter surface. For bundled-template `3 componentArea` slot fills, do not place filters inside 组件内容区模板; use shell/page filters, `1-2 pillArea`, or a named template redesign instead. Component-local filters may appear only in ordinary non-slot business widgets with explicit ownership.
+6. Place page/global filters in the page shell or template-native filter surface. For bundled-template `3 componentArea` slots, do not place filters inside component examples; use shell/page filters, `1-2 pillArea`, or a named template redesign instead. Component-local filters may appear only in ordinary non-slot business widgets with explicit ownership.
 7. Check whether filter changes affect metrics, chart series, table rows, export scope, pagination, drilldown, and cache/query context.
 8. Convert filter rules into proof obligations when implementation or URL exists: option-source evidence, default/non-default/reset/cascade state, query/API/provider params, export/pagination/drilldown context, template/component control ownership, and screenshot/DOM evidence for placement.
-9. Hand off testing cases to `filter-linkage-completeness-test` when runtime verification is needed.
+9. Hand off runtime verification cases to `frontend-runtime-qa-validation` when live filter behavior must be checked.
 
 ## Required Output
 
@@ -55,7 +55,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Control type, default/reset/cascade behavior, option source, and query/API impact.
 - Selected `filterControlPattern`, size tier behavior, active summary, and state rules when visual filter design is in scope.
 - Sample-derived generalization status: selected `filterControlPattern`, adaptive size variables, fallback, and text-only reproducibility.
-- Placement rules for page/global controls, and component-local controls only when they are outside 组件内容区模板 slot fills.
+- Placement rules for page/global controls, and component-local controls only when they are outside `3 componentArea` component-example slot fills.
 - Proof obligations: scope classification, option-source evidence, default/non-default/reset/cascade states, query/export/pagination/drilldown impact, template-native surface or component-local ownership, and runtime handoff checks.
 - Runtime test handoff items when behavior must be verified.
 
@@ -64,9 +64,9 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not hide a perspective switch or schema-changing view switch as an ordinary filter.
 - Do not let filters become the visual center of a report page. Keep key filters visible, collapse low-frequency filters into an advanced surface, and expose active conditions through a compact summary/chip path.
 - Do not design, repair, or accept filters before filter scope, option source, default/reset behavior, and affected component/query contracts are known.
-- Component-local filters cannot silently change page/global scope, export scope, backend aggregation, or other components. They are not allowed inside 组件内容区模板 slot fills.
+- Component-local filters cannot silently change page/global scope, export scope, backend aggregation, or other components. They are not allowed inside `3 componentArea` component-example slot fills.
 - Filter controls are not ready until default, non-default, empty, no-permission, reset, and cascade states are defined or explicitly blocked.
 - Screenshot-inspired filter controls must be converted into text/structured filter selector contracts; do not rely on raw screenshots as durable guidance.
 - Sample-derived filter controls are not ready unless each reusable selector maps to `filterControlPattern`, a composed filter surface, or a documented `requires-pattern-extension` gap under the shared style generalization goal.
-- Template-based pages must not duplicate page/global filter surfaces. Page/global filters belong in the template-native filter trigger/panel/popover/drawer or a named redesign exception; component-local filters must prove current-component scope and must not be rendered inside 组件内容区模板 slots.
+- Template-based pages must not duplicate page/global filter surfaces. Page/global filters belong in the template-native filter trigger/panel/popover/drawer or a named redesign exception; component-local filters must prove current-component scope and must not be rendered inside `3 componentArea` component-example slots.
 - Advisory filter wording is not enough for readiness. Scope, source, default/reset/cascade, query/API impact, export/pagination/drilldown context, and permission behavior are `MUST/fail` constraints with proof obligations.

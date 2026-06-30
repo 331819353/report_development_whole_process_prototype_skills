@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this as the direct front door for implementation-ready component-internal placement. It turns the former deep placement references into a predictable trigger surface.
 
-Use `report-layout-size-constraint-spec` for parent block size; use this skill for slots inside one component after the parent container is known.
+Use `report-layout-size-constraint-spec` for parent block size; use this skill for slots inside one component after the parent container is known. For configurable template projects, the parent container must be a declared `3 componentArea` slot from `componentSlotConfigMap`; this skill can refine component-internal geometry but cannot invent page blocks, block area rows, or component-example bindings.
 
 ## Reference Map
 
@@ -27,6 +27,7 @@ Use `report-layout-size-constraint-spec` for parent block size; use this skill f
 | Coordinate variables and local-filter geometry | `report-component-style-design` `references/12a-placement-foundation-controls.md` |
 | Anti-squeeze fit contract and minimum typography/component floors | `report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` when slot geometry is crowded or a parent span is smaller than the component floor |
 | Component acceptance gates | `report-component-style-design` `references/12-component-acceptance-gates.md` |
+| Configurable template slot contract | `report-prototype-template-management` `references/configurable-zero-to-one-flow.md` when placement targets a bundled-template component slot |
 
 ## Anti-Laziness Gate
 
@@ -35,7 +36,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Workflow
 
 1. Run the Preflight understanding gate for implementation, repair, or acceptance work; name parent container, component family, local controls, density, state set, hard constraints, missing evidence, and start decision.
-2. Confirm parent container width/height, padding, component family, data density, local controls, state set, and any upstream `layoutFitContract`.
+2. Confirm parent container width/height, padding, component family, data density, local controls, state set, and any upstream `layoutFitContract`. For configurable templates, also confirm `blockCoordinate`, `slotCoordinate`, `componentSlotPattern`, and the target `componentExampleId`.
 3. Load `references/01-placement-reference-map.md`, then load only the exact placement file for that component family.
 4. Define container variables, slot rectangles, title/filter/legend/metric/plot/table/body/footer coordinates, alignment, typography and slot floors, responsive degradation, and state geometry.
 5. Pair placement with the visual/content skill for the component family, such as `report-chart-design-spec`, `report-table-design-spec`, or `report-filter-control-design-spec`.
@@ -46,6 +47,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Preflight understanding result when the work is implementation/repair/acceptance, plus component family, parent container, and selected placement reference.
 - Slot and coordinate rules with size tiers and fallback order.
+- Configurable-template slot trace when applicable: `blockCoordinate`, `slotCoordinate`, `componentSlotConfigMap` source, and `componentExampleId`.
 - Typography, line-height, metric-cell, tap-target, padding/gap, and component-family minimum floors, plus `layoutFitContract` pass/fail when present.
 - Local-filter/control placement when present.
 - State geometry for loading, empty, error, no-permission, stale, and dense data.
@@ -56,6 +58,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Do not output implementation-ready component specs without measurable slot geometry.
 - Do not define slot coordinates before parent container dimensions, component family, density, local controls, and state set are known.
+- Do not mark configurable-template placement ready when the component is not mapped to a declared `3 componentArea` slot and a registered `componentExampleId`.
 - Do not accept placement that relies on shrinking below minimum typography/component floors or auto-shrinking flex/grid tracks. If the upstream parent span is too small, return the defect to layout with the relevant `VIS-*` squeeze code.
 - Do not place local controls where they collide with title, legend, unit, metric strip, or action areas.
 - Do not accept geometry that only fits the happy path and fails state masks, long labels, or dense data.

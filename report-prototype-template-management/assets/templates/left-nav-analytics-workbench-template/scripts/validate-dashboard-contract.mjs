@@ -8,12 +8,68 @@ const configPath = path.join(projectRoot, 'src/config/dashboard.config.ts');
 const mainEntryPath = path.join(projectRoot, 'src/main.ts');
 const srcPath = path.join(projectRoot, 'src');
 const widgetComponentsPath = path.join(projectRoot, 'src/widgets/components');
+const deliveryIndexPath = path.join(projectRoot, 'DELIVERY_INDEX.md');
+const prototypeDataSummaryPath = path.join(projectRoot, 'docs/prototype-data-summary.md');
 const errors = [];
 const warnings = [];
 
 const readText = (filePath) => readFileSync(filePath, 'utf8');
 const sourceText = readText(configPath);
 const sourceFile = ts.createSourceFile(configPath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+const requireMarkdownSections = (filePath, label, sections) => {
+  if (!existsSync(filePath)) {
+    errors.push(`${label}: required handoff artifact is missing at ${path.relative(projectRoot, filePath)}.`);
+    return '';
+  }
+
+  const text = readText(filePath);
+  sections.forEach((section) => {
+    if (!text.includes(section)) {
+      errors.push(`${label}: missing required section "${section}".`);
+    }
+  });
+  return text;
+};
+
+const validateProjectHandoffArtifacts = () => {
+  const deliveryIndexText = requireMarkdownSections(deliveryIndexPath, 'DELIVERY_INDEX.md', [
+    '# Delivery Index',
+    '## Artifact Index',
+    '## Version Chain',
+    '## Change History',
+  ]);
+
+  if (deliveryIndexText && !/docs\/prototype-data-summary\.md|docs\\prototype-data-summary\.md/.test(deliveryIndexText)) {
+    errors.push('DELIVERY_INDEX.md: must reference docs/prototype-data-summary.md status in change history or artifact notes.');
+  }
+
+  const dataSummaryText = requireMarkdownSections(prototypeDataSummaryPath, 'docs/prototype-data-summary.md', [
+    '# Prototype Data Summary',
+    '## Source Files And Data Modes',
+    '## Dataset Catalog',
+    '## Field Dictionary',
+    '## Metric And Conclusion Inputs',
+    '## Component Data Binding Matrix',
+    '## Filter And Parameter Semantics',
+    '## Interaction Payloads',
+    '## Backend API And Model Suggestions',
+    '## Gaps And Assumptions',
+    '## Verification',
+  ]);
+
+  [
+    'dashboard.config.ts',
+    'business-report-pages.ts',
+    'dashboard.dataset.json',
+    'dataSources/registry.ts',
+    'component-example-catalog',
+  ].forEach((needle) => {
+    if (dataSummaryText && !dataSummaryText.includes(needle)) {
+      errors.push(`docs/prototype-data-summary.md: must mention actual project data/binding artifact "${needle}".`);
+    }
+  });
+};
 
 const getName = (name) => {
   if (!name) {
@@ -240,7 +296,6 @@ const requiredGridColumns = 12;
 const visibleGridRows = 8;
 const minimumLayoutRows = visibleGridRows;
 const minimumSpanColumns = 2;
-const minimumSpanRows = 2;
 const rowHeightTolerance = 1;
 const minimumAxisChartContainerWidth = 300;
 const warningAxisChartContainerWidth = 400;
@@ -251,7 +306,7 @@ const minimumAxisChartBodyHeight = 180;
 const minimumAxisPlotHeight = 120;
 const denseAxisPlotHeight = 140;
 const reservedActionHooks = new Set(['dashboardAction']);
-const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'componentContentAreaTemplate']);
+const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'customEChartComponent']);
 const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
 const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
 const allowedInteractionTargetTypes = new Set(['route', 'drawer', 'modal', 'popover', 'external', 'cross-filter', 'fullscreen', 'export']);
@@ -298,17 +353,11 @@ const hiddenOverflowPattern = /^(?:hidden|clip|overflow-hidden|truncate|none)$/i
 const actionDisclosureOverflowPattern = /(?:detail|drawer|tooltip|popover|collapse|view-all|table|详情|抽屉|提示|查看全部|明细)/i;
 const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
 
-const genericLayoutSpans = Array.from({ length: visibleGridRows - minimumSpanRows + 1 }, (_, rowIndex) => {
-  const rows = rowIndex + minimumSpanRows;
-
-  return Array.from({ length: requiredGridColumns - rows + 1 }, (_, columnIndex) => `${columnIndex + rows}x${rows}`);
-}).flat();
-
 const allowedSpansByVisualType = {
   line: ['3x2', '4x2', '3x3', '4x3'],
   bar: ['3x2', '4x2', '3x3', '4x3'],
   combo: ['3x2', '4x2', '3x3', '4x3'],
-  'compact-sparkline': ['3x2', '4x2'],
+  'compact-sparkline': ['2x1', '3x1', '4x1', '3x2', '4x2'],
   candlestick: ['3x2', '4x2', '3x3', '4x3'],
   heatmap: ['3x2', '4x2', '3x3', '4x3'],
   pie: ['3x2', '3x3', '4x3'],
@@ -325,14 +374,14 @@ const allowedSpansByVisualType = {
   treemap: ['3x2', '3x3', '4x3'],
   sankey: ['3x2', '3x3', '4x3'],
   funnel: ['3x2', '3x3', '4x3'],
-  'metric-card': ['2x2', '3x2'],
-  'text-summary': ['2x2', '3x2', '4x2', '6x2', '8x2', '12x2'],
+  'metric-card': ['2x1', '3x2'],
+  'text-summary': ['3x2', '4x1', '4x2', '6x1', '6x2', '8x1', '8x2', '12x1', '12x2'],
   'operational-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   'action-recommendation-card': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   'ranking-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
   table: ['3x2', '4x2', '6x2', '8x2', '12x2', '4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
   pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
-  other: genericLayoutSpans,
+  other: ['2x1', '3x2', '4x2', '3x3', '4x3'],
 };
 
 const emptyGridMarks = new Set(['.', ' ']);
@@ -508,17 +557,13 @@ const buildLayoutBlockSpans = (rowsToBuild, location) => {
       rows: maxRow - minRow + 1,
     };
 
-    if (span.columns < minimumSpanColumns || span.rows < minimumSpanRows) {
-      errors.push(
-        `${location}: layout block "${label}" spans ${span.columns}x${span.rows}; minimum block span is ${minimumSpanColumns}x${minimumSpanRows}.`,
-      );
+    if (span.columns < minimumSpanColumns) {
+      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x1.`);
       return;
     }
 
     if (span.columns < span.rows) {
-      errors.push(
-        `${location}: layout block "${label}" spans ${span.columns}x${span.rows}; MxN layouts must satisfy M >= N.`,
-      );
+      errors.push(`${location}: layout block "${label}" spans ${span.columns}x${span.rows}; 12*N block placement requires M >= N for selectable block layout templates.`);
       return;
     }
 
@@ -602,14 +647,14 @@ const validateSelfDevelopmentExceptionObject = (exceptionNode, location, fallbac
   }
 
   if (!type || !allowedSelfDevelopmentExceptionTypes.has(type)) {
-    errors.push(`${location}.type: only interactionBehavior and componentContentAreaTemplate may be self-developed; all other report areas must use templates.`);
+    errors.push(`${location}.type: only interactionBehavior and customEChartComponent may be self-developed; all other report areas must use configured templates/examples.`);
     return;
   }
 
-  if (type === 'componentContentAreaTemplate') {
-    ['sourcePageId', 'sourceBlockId', 'sourceSlotId', 'componentContentAreaTemplateId'].forEach((field) => {
+  if (type === 'customEChartComponent') {
+    ['sourcePageId', 'sourceBlockId', 'sourceSlotId', 'componentExampleId'].forEach((field) => {
       if (!hasNonEmptyStringProperty(exceptionNode, field)) {
-        errors.push(`${location}: component content area self-development must declare ${field}.`);
+        errors.push(`${location}: custom ECharts self-development must declare ${field}.`);
       }
     });
   } else {
@@ -716,9 +761,7 @@ const validateActions = (actionsNode, location) => {
   });
 };
 
-const getComponentContentAreaTemplateId = (slotNode) =>
-  getStringValue(getProperty(slotNode, 'componentContentAreaTemplateId')) ||
-  getStringValue(getProperty(slotNode, 'componentSampleId'));
+const getComponentExampleId = (slotNode) => getStringValue(getProperty(slotNode, 'componentExampleId'));
 
 const validateComponentSlotFills = (slotFillsNode, location) => {
   if (!slotFillsNode) {
@@ -759,7 +802,7 @@ const validateComponentSlotFills = (slotFillsNode, location) => {
   });
 };
 
-const validateComponentContentAreaSlots = (widgetNode, location) => {
+const validateComponentExampleSlots = (widgetNode, location) => {
   const propsNode = getProperty(widgetNode, 'props');
   const componentSlotsNode = getFirstProperty([propsNode, widgetNode], ['componentSlots']);
 
@@ -773,7 +816,7 @@ const validateComponentContentAreaSlots = (widgetNode, location) => {
   }
 
   if (componentSlotsNode.elements.length === 0) {
-    errors.push(`${location}.componentSlots: componentSlots is configured but empty; every 3 componentArea slot must name a registered component content area template.`);
+    errors.push(`${location}.componentSlots: componentSlots is configured but empty; every 3 componentArea slot must name a configured component example.`);
   }
 
   componentSlotsNode.elements.forEach((slotNode, index) => {
@@ -784,11 +827,11 @@ const validateComponentContentAreaSlots = (widgetNode, location) => {
       return;
     }
 
-    const templateId = getComponentContentAreaTemplateId(slotNode);
+    const componentExampleId = getComponentExampleId(slotNode);
 
-    if (!templateId || /^TBD\b|TBD\(|GAP-COMPONENT-TEMPLATE/i.test(templateId)) {
+    if (!componentExampleId || /^TBD\b|TBD\(|GAP-COMPONENT-TEMPLATE/i.test(componentExampleId)) {
       errors.push(
-        `${slotLocation}: component slot must declare a registered componentContentAreaTemplateId. Text/prose placeholders, visualType-only slots, and inline widget fills are not valid component content area templates.`,
+        `${slotLocation}: component slot must declare a configured componentExampleId. Text/prose placeholders, visualType-only slots, and inline widget fills are not valid component examples.`,
       );
     }
 
@@ -1009,84 +1052,6 @@ const validateAxisChartGeometryContract = (widgetNode, location, span, visualTyp
   }
 };
 
-const validateTitlePills = (widgetNode, location) => {
-  const titlePillsNode = getProperty(widgetNode, 'titlePills');
-
-  if (!titlePillsNode) {
-    return;
-  }
-
-  if (!isArray(titlePillsNode)) {
-    errors.push(`${location}: titlePills must be an array.`);
-    return;
-  }
-
-  if (titlePillsNode.elements.length > 3) {
-    errors.push(`${location}: titlePills supports at most 3 values.`);
-  }
-
-  titlePillsNode.elements.forEach((pillNode, index) => {
-    if (!isObject(pillNode)) {
-      errors.push(`${location}: titlePills[${index}] must be an object.`);
-      return;
-    }
-
-    if (!getStringValue(getProperty(pillNode, 'id'))) {
-      errors.push(`${location}: titlePills[${index}] is missing id.`);
-    }
-
-    if (!getStringValue(getProperty(pillNode, 'label'))) {
-      errors.push(`${location}: titlePills[${index}] is missing label.`);
-    }
-  });
-};
-
-const validateAuxMetrics = (widgetNode, location, span) => {
-  const auxMetricsNode = getProperty(widgetNode, 'auxMetrics');
-
-  if (!auxMetricsNode) {
-    return;
-  }
-
-  if (!isArray(auxMetricsNode)) {
-    errors.push(`${location}: auxMetrics must be an array.`);
-    return;
-  }
-
-  let unitMetricCount = 0;
-  let nonUnitMetricCount = 0;
-  auxMetricsNode.elements.forEach((metricNode, index) => {
-    if (!isObject(metricNode)) {
-      errors.push(`${location}: auxMetrics[${index}] must be an object.`);
-      return;
-    }
-
-    const label = getStringValue(getProperty(metricNode, 'label'));
-
-    if (!label) {
-      errors.push(`${location}: auxMetrics[${index}] is missing label.`);
-    } else if (label.trim() === '单位') {
-      unitMetricCount += 1;
-    } else {
-      nonUnitMetricCount += 1;
-    }
-  });
-
-  if (unitMetricCount > 1) {
-    errors.push(`${location}: auxMetrics can include at most one "单位" metric.`);
-  }
-
-  if (span) {
-    const nonUnitLimit = span.columns < 2 ? 0 : 2 + Math.max(span.columns - 2, 0) * 3;
-
-    if (nonUnitMetricCount > nonUnitLimit) {
-      errors.push(
-        `${location}: auxMetrics has ${nonUnitMetricCount} non-unit metrics; span ${span.columns}x${span.rows} allows at most ${nonUnitLimit}.`,
-      );
-    }
-  }
-};
-
 const validateWidget = (widgetNode, location, span) => {
   if (!isObject(widgetNode)) {
     errors.push(`${location}: widget config must be an object.`);
@@ -1129,7 +1094,7 @@ const validateWidget = (widgetNode, location, span) => {
 
   validateListGeometryContract(widgetNode, location, span, widgetType, visualType);
   validateAxisChartGeometryContract(widgetNode, location, span, visualType);
-  validateComponentContentAreaSlots(widgetNode, location);
+  validateComponentExampleSlots(widgetNode, location);
 
   if (dataNode) {
     const dataSourceId = getStringValue(getProperty(dataNode, 'id'));
@@ -1193,8 +1158,6 @@ const validateWidget = (widgetNode, location, span) => {
     }
   }
 
-  validateTitlePills(widgetNode, location);
-  validateAuxMetrics(widgetNode, location, span);
   validateActions(getProperty(widgetNode, 'actions'), location);
 };
 
@@ -1694,8 +1657,8 @@ const validateWidgetSource = (filePath) => {
   }
 
   if (hasPivotTable) {
-    if (!/(?:@antv\/s2|@antv\/s2-vue|SheetComponent|PivotSheet|S2DataConfig|s2Options|s2DataConfig|S2|ElementPivotTableWidget|ElTable|<ElTable\b|element-pivot-table|Element Plus)/.test(text)) {
-      errors.push(`${label}: Pivot Tables must use AntV S2, Element Plus ElTable, or a declared project analytical table renderer.`);
+    if (!/(?:@antv\/s2|@antv\/s2-vue|SheetComponent|PivotSheet|S2DataConfig|s2Options|s2DataConfig|S2)/.test(text)) {
+      errors.push(`${label}: Pivot Tables must use AntV S2 or a declared project S2-equivalent analytical table renderer.`);
     }
 
     if (!/(?:rowDimensions?|rowFields?|rowHierarchy|rows\s*:|行维度)/.test(text)) {
@@ -2184,6 +2147,7 @@ gridConfigs.forEach(({ contentWidth, contentGap, contentStartY, contentEndY, row
   }
 });
 
+validateProjectHandoffArtifacts();
 validateAllLayoutRows();
 validateSelfDevelopmentExceptionMaps();
 validateStackContract();

@@ -17,7 +17,7 @@ Use this reference when creating the API document skeleton.
    - API id, module/domain, name, method, path, purpose, auth, response model, priority, status, and pending items.
    - Add one plain-language sentence before the table that explains the endpoint group and frontend/backend consumer.
 4. Endpoint details
-   - Full detail for each endpoint. Use `$api-documentation-design` for endpoint-level request, response, auth, error, performance, and compatibility rules.
+   - Full detail for each endpoint. Use `delivery-artifact-template-management` for endpoint-level request, response, auth, error, performance, and compatibility rules.
 5. Model and dependency trace
    - Response models, source models, upstream systems, transformation notes, formulas, refresh cadence, data quality assumptions, and permission dependencies.
 6. Production closed-loop readiness

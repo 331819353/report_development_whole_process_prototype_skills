@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill after frontend or prototype changes affect a runnable page. It verifies browser runtime, visual quality, interaction behavior, data binding, states, and readiness evidence.
 
-It is not a test-case design skill. For test matrices use `integration-test-case-design`; for automated scripts use `automated-test-generation`; for URL reachability only use `$runtime-url-smoke-test`.
+It is not a test-case design skill. For test matrices or automated script needs, hand off through `report-delivery-pipeline-governance`; for URL reachability only use `$runtime-url-smoke-test`.
 
 ## Reference Map
 

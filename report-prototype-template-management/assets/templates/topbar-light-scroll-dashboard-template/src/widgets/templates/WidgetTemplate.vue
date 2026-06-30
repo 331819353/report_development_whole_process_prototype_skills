@@ -121,7 +121,7 @@
  *    - payload 是业务数据。
  *    - 壳层只转发到 actions/registry.ts 的同名钩子或 dashboardAction 兜底钩子。
  *
- * 12. 如果组件内容很大，需要拖拽/缩放，在配置中加 viewport：
+ * 12. 如果组件画布很大，需要拖拽/缩放，在配置中加 viewport：
  *    viewport: {
  *      pannable: true,
  *      zoomable: true,

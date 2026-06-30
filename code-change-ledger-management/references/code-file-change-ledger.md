@@ -169,7 +169,7 @@ python3 delivery-version-management/scripts/update_code_change_ledger.py \
   --verification "<commands or blocker>"
 ```
 
-In copied prototype templates, use the local npm wrapper when present:
+In configured prototype templates, use the local npm wrapper when present:
 
 ```bash
 npm run ledger:code -- --file src/widgets/components/SalesTrend.vue --stage before
@@ -178,7 +178,7 @@ npm run ledger:code -- --file src/widgets/components/SalesTrend.vue --stage afte
 
 The helper should be run in both stages. `before` captures a pre-edit snapshot; `after` compares the snapshot with the edited file and appends a unified diff or sidecar patch. If the helper reports that no pre-edit snapshot exists, the ledger entry is not ready unless an exact external VCS/release reference is supplied.
 
-For copied report template projects, initialize and check project-wide baseline sidecars before normal edit tracking:
+For configured report template projects, initialize and check project-wide baseline sidecars before normal edit tracking:
 
 ```bash
 npm run ledger:init

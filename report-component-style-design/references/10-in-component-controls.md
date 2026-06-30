@@ -4,7 +4,7 @@ Use for capsule switches, segmented controls, dropdown selects, mini menus, comp
 
 In Vue report prototypes, prefer Element Plus `ElSegmented`, `ElRadioGroup`, `ElSelect`, `ElDropdown`, `ElButton`, `ElTooltip`, `ElPopover`, `ElSwitch`, `ElTag`, and `ElTabs` before custom DOM controls. Use custom controls only when Element Plus or the project design system cannot express the interaction.
 
-Template boundary: these in-component control rules apply only to ordinary non-slot business widgets. When a component is used as a 组件内容区模板 inside a 分块布局模板 `3 componentArea` slot, it may render only the optional removable title strip plus body content; filters, controls, title pills, additional information, units, descriptions, and summaries stay outside the slot.
+Template boundary: these in-component control rules apply only to ordinary non-slot business widgets. When a component is used as a 组件示例 inside a 分块配置 `3 componentArea` slot, it may render only the optional removable title strip plus body content; filters, controls, title pills, additional information, units, descriptions, and summaries stay outside the slot.
 
 ## When To Use
 

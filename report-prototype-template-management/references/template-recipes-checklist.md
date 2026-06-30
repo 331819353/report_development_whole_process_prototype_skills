@@ -6,7 +6,7 @@ Use this file for common adjustments and final verification after changing a tem
 
 ### Initialize Code Ledgers After Copy
 
-1. Run `npm run ledger:init` in the copied template project before the first source edit.
+1. Run `npm run ledger:init` in the configured template project before the first source edit.
 2. Confirm the command created same-directory `__change_logs__/<code-file-name>.changes.md` sidecars for scoped source files.
 3. Use `npm run ledger:code -- --file <source-file> --stage before` and `--stage after` for each edited file after this baseline bootstrap.
 4. Run `npm run ledger:check` before handoff; missing sidecars block readiness.
@@ -14,8 +14,8 @@ Use this file for common adjustments and final verification after changing a tem
 ### Create Template Build Packet
 
 1. Read `template-asset-construction-contract.md` and `template-build-packet-contract.md` before PRD-driven or multi-step template implementation.
-2. Create `templateAssetUnderstandingMap` from the selected template asset root before selecting block layout or component content area templates.
-3. Create or update `docs/template-build-packet.md` in the copied project, or maintain an equivalent workflow packet before source edits.
+2. Create `templateAssetUnderstandingMap` from the selected template asset root before creating block area configs or binding registered component examples.
+3. Create or update `docs/template-build-packet.md` in the configured template project, or maintain an equivalent workflow packet before source edits.
 4. Fill the packet sections for framework/shell, pages, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block map, standard block areas, component slots, data/API, filters/actions, interactions, dynamic conclusion rules, self-development exceptions, implementation file plan, and validation plan.
 5. Mark each row `ready`, `draft`, `blocked`, or `deferred`.
 6. Do not edit a target source file unless the packet section 11 row names that file and the page/block/slot/control/data/conclusion rows it consumes.
@@ -39,7 +39,7 @@ Use this file for common adjustments and final verification after changing a tem
 1. Create or update `layoutSectionMap` before editing raw `layoutRows`. Split the page into readable exact `12*K` parts, for example section 1 `12*2` (`AAAAAAAAAAAA|AAAAAAAAAAAA`), section 2 `12*3` (`AAAAAABBBBBB|AAAAAABBBBBB|AAAAAABBBBBB`), and section 3 `12*3` (`AAAAAABBBBBB|AAAAAABBBBBB|AAAAAABBBBBB`).
 2. Edit `layoutRows`.
 3. Keep 12 columns per row and normally provide at least 8 visible row units for the first `1920x1080` content viewport.
-   Record a row audit: each `layoutRows` string has exactly 12 cells, no row exceeds 12 cells, total row count is at least 8, every block letter is rectangular, every block id has one widget and one `blockLayoutTemplateMap` row, and every span records `colStart`, `colSpan`, `rowStart`, and `rowSpan`.
+   Record a row audit: each `layoutRows` string has exactly 12 cells, no row exceeds 12 cells, total row count is at least 8, every block letter is rectangular, every block id has one widget and one `blockAreaConfigMap` row, and every span records `colStart`, `colSpan`, `rowStart`, and `rowSpan`.
    Assign readable `blockCoordinate` values (`R-B`) by layout section/page region and block order. Local A/B previews may repeat across sections for readability, but final machine rows and block ids must globally disambiguate different blocks.
 4. Keep repeated characters rectangular.
 5. Read `template-layout-design-system.md` when changing `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, or content range.
@@ -47,26 +47,26 @@ Use this file for common adjustments and final verification after changing a tem
 7. Verify each span can hold its chart/table/KPI/composite content at the target viewport size.
 8. Keep or add vertical scrolling when the report needs more rows than the first viewport can show.
 9. Rename widget keys to match changed block ids.
-10. Update the Template Build Packet and the nine-step template operation chain from `template-operation-flow.md`: `frameworkTemplateId`, `templateAssetUnderstandingMap`, `pageLayoutConfig` plus `layoutSectionMap` and `layoutCoordinateMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockLayoutTemplateMap` with `blockCoordinate`, `slotCount`, `componentSlotPattern`, `slotCoordinateList`, selected direct independent block layout Vue files, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap` with `slotCoordinate`, slot pattern code, component slot size, and visual-type size compatibility evidence, `summaryAreaConfig`, and any `selfDevelopmentExceptionMap` component content area fallback.
+10. Update the Template Build Packet from `template-build-packet-contract.md` and the configurable flow from `configurable-zero-to-one-flow.md`; do not duplicate the full field list here.
 11. Append the config ledger entry with changed layout ranges and affected widget/filter contracts.
 12. Run `npm run validate:dashboard`.
 
 ### Fill Block Template Slots
 
-1. Confirm the independent 分块布局模板 Vue file for the block and its standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
+1. Confirm the independent 分块配置 Vue file for the block and its standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
    - Choose SingleSlot or MultiSlot from the requirement. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups. In MultiSlot blocks, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed.
-2. Declare `slotCount`, `componentSlotPattern`, and `slotCoordinateList` before selecting component content area templates. Use slot patterns such as `A`, `AB`, `AAB`, and `AABBCC`; these describe slots inside `3 componentArea`, not page `layoutRows`.
+2. Declare `slotCount`, `componentSlotPattern`, and `slotCoordinateList` before selecting registered component examples. Use slot patterns such as `A`, `AB`, `AAB`, and `AABBCC`; these describe slots inside `3 componentArea`, not page `layoutRows`.
 3. Configure `1-1 titleArea`: title and title style.
 4. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured.
 5. Decide whether `2-1 auxMetricArea` is needed. Configure it when needed and keep the items evenly distributed; otherwise record it as not configured.
 6. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
-7. For every `3 componentArea` slot, assign/verify `slotCoordinate` (`R-B-S`), inspect `references/component-content-area-template-map.md`, then inspect `src/widgets/templates/component-content-areas/` and its README/catalog, then select an existing 组件内容区模板 first.
-8. If no suitable component content area template exists, create a standalone Vue component content area template, use ECharts for standard chart needs, register/copy it, and record it in `selfDevelopmentExceptionMap` with `type: componentContentAreaTemplate`.
-9. For every selected 组件内容区模板, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块布局模板 has one slot or when `showContentTitle: false`.
-10. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件内容区模板 slots. Those belong to 分块布局模板 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
+7. For every `3 componentArea` slot, assign/verify `slotCoordinate` (`R-B-S`), inspect `references/component-examples/config.ts`, then inspect `src/widgets/templates/component-examples/` and its README/catalog, then select an existing 组件示例 first.
+8. If no suitable registered component example exists, create a standalone Vue component example, use ECharts for standard chart needs, register/copy it, and record it in `selfDevelopmentExceptionMap` with `type: componentExample`.
+9. For every selected 组件示例, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块配置 has one slot or when `showContentTitle: false`.
+10. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件示例 slots. Those belong to 分块配置 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
 11. Configure `4 summaryArea`: if the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
-12. Do not treat a slot as filled until it points to a registered component content area template ID plus standalone component content area Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
-13. Do not fill a slot with text/prose/placeholder content, `visualType` only, an inline widget object, or a visual type that is not compatible with the slot size. If the component is text-summary/insight, it still needs a registered component content area template and a `conclusionRuleId` when the text is data-driven.
+12. Do not treat a slot as filled until it points to a registered component example ID plus standalone component example Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
+13. Do not fill a slot with text/prose/placeholder content, `visualType` only, an inline widget object, or a visual type that is not compatible with the slot size. If the component is text-summary/insight, it still needs a registered component example and a `conclusionRuleId` when the text is data-driven.
 
 ### Add A Data-Bound Widget
 
@@ -122,15 +122,15 @@ Use this file for common adjustments and final verification after changing a tem
 - Template choice matches report scope and usage scenario.
 - `templateAssetUnderstandingMap` exists and is based on the selected template asset root.
 - Template Build Packet exists for PRD-driven or multi-step implementation, is current with implemented source files, and maps every edited target file to packet section 11.
-- Nine-step template operation chain is complete: `frameworkTemplateId`, `templateAssetUnderstandingMap`, `pageLayoutConfig` with `layoutSectionMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockLayoutTemplateMap` with `slotCount`, `componentSlotPattern`, `slotCoordinateList`, selected direct independent block layout Vue files, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap` with component slot size and visual-type size compatibility evidence, `summaryAreaConfig`, and fallback map when custom component content area templates were created.
-- Component slots under `3 componentArea` contain only registered 组件内容区模板 content. Title, pills, filters, controls, additional information, units, descriptions, explanations, and summaries stay in 分块布局模板 supporting areas, shell/page config, or non-slot widgets.
-- Component slots are not text-filled or placeholder-filled; every slot has a registered component content area template ID, standalone Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
-- Component content area templates are standalone Vue files, rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
+- Nine-step template operation chain is complete: `frameworkTemplateId`, `templateAssetUnderstandingMap`, `pageLayoutConfig` with `layoutSectionMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockAreaConfigMap` with `slotCount`, `componentSlotPattern`, `slotCoordinateList`, block area configs created by `createBlockAreaConfig`, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentExampleConfigMap` with component slot size and visual-type size compatibility evidence, `summaryAreaConfig`, and fallback map when custom registered component examples were created.
+- Component slots under `3 componentArea` contain only registered 组件示例 content. Title, pills, filters, controls, additional information, units, descriptions, explanations, and summaries stay in 分块配置 supporting areas, shell/page config, or non-slot widgets.
+- Component slots are not text-filled or placeholder-filled; every slot has a registered component example ID, standalone Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
+- Registered component examples are standalone Vue files, rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
 - Stack contract is intact: `package.json` keeps Vue 3, TypeScript, Vite, Element Plus, ECharts, axios, and build/typecheck scripts; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus with locale, imports Element Plus base and dark CSS variables, and preserves project Element token styles.
 - Standard chart widgets use real ECharts runtime/options/series; ordinary controls and row tables use Element Plus/project control patterns; S2 is added only when pivot/cross/wide analytical table behavior is implemented.
 - Logo variant matches background.
 - `dashboard.config.ts` owns layout, filters, widgets, actions, and assets.
-- Component content area templates expose only the optional removable title strip plus body content. Component-local filters, filter panels, and detail links are allowed only in non-slot business widgets with explicit ownership.
+- Registered component examples expose only the optional removable title strip plus body content. Component-local filters, filter panels, and detail links are allowed only in non-slot business widgets with explicit ownership.
 - Business data is not stored directly in config.
 - Standard API endpoints are configured with `apiData` / `httpData`; custom resolvers are reserved for complex providers.
 - Every widget has `visualType`.

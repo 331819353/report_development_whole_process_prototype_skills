@@ -6,6 +6,7 @@ import { materializeReportBlueprint } from './materialize';
 import { reportTemplateSlotContracts } from './slot-contracts';
 import type { ReportAssetResolutionContext, ReportBlueprintCatalog } from './types';
 import { widgetConfigurationSchemas } from './widget-config-schemas';
+import { componentExampleConfigSchemas } from '../../widgets/templates/component-examples/config';
 
 export * from './compatibility';
 export * from './component-region-patterns';
@@ -24,6 +25,7 @@ export const getReportBlueprintCatalog = (
   materializerVersion: reportBlueprintMaterializerVersion,
   slotContracts: reportTemplateSlotContracts,
   widgetSchemas: widgetConfigurationSchemas,
+  componentExampleSchemas: componentExampleConfigSchemas,
   compatibilityRules: reportCompatibilityRules,
   componentRegionPatterns: getComponentRegionPatternOptions(),
   currentConfigBlueprint: createBlueprintFromDashboardConfig(config, {

@@ -16,7 +16,12 @@ export interface NavItem {
   widgets?: WidgetMap;
 }
 
-export type DashboardSelfDevelopmentExceptionType = 'interactionBehavior' | 'componentContentAreaTemplate';
+export interface DashboardPageConfig {
+  layoutRows: string[];
+  widgets?: WidgetMap;
+}
+
+export type DashboardSelfDevelopmentExceptionType = 'interactionBehavior' | 'customEChartComponent';
 export type DashboardSelfDevelopmentInteractionType = 'drilldown' | 'jump' | 'modal' | 'drawer' | 'popup' | 'crossFilter';
 export type DashboardSelfDevelopmentTriggerOwner = 'templateActionHook' | 'componentOwnedEvent' | 'widgetEvent';
 export type DashboardSelfDevelopmentTargetType =
@@ -37,11 +42,11 @@ export interface DashboardSelfDevelopmentException {
   sourcePageId?: string;
   sourceBlockId?: string;
   sourceSlotId?: string;
-  componentContentAreaTemplateId?: string;
+  componentExampleId?: string;
   interactionId?: string;
   interactionType?: DashboardSelfDevelopmentInteractionType;
   triggerOwner?: DashboardSelfDevelopmentTriggerOwner;
-  sourceComponentContentAreaTemplateId?: string;
+  sourceComponentExampleId?: string;
   payloadFields?: string[];
   target?: string;
   targetType?: DashboardSelfDevelopmentTargetType;

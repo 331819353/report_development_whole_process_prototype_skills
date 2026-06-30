@@ -86,9 +86,9 @@ export const buildComponentSlotContractsFromPattern = (
     widthUnits: segment.widthUnits,
     heightUnits: rows,
     minSize: `${segment.widthUnits}x${rows ?? 2}`,
-    accepts: ['component-content-area-template'],
+    accepts: ['component-example'],
     required: true,
-    description: `Fill slot ${segment.key} inside 3 componentArea with component content area template only.`,
+    description: `Fill slot ${segment.key} inside 3 componentArea with a configured component example only.`,
   }));
 
 export const createComponentRegionPatternOptions = (

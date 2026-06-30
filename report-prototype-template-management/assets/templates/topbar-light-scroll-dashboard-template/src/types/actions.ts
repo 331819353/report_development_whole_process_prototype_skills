@@ -53,7 +53,7 @@ export interface DashboardActionConfig {
   sourcePageId?: string;
   sourceBlockId?: string;
   sourceSlotId?: string;
-  sourceComponentContentAreaTemplateId?: string;
+  sourceComponentExampleId?: string;
   payloadFields?: string[];
   targetType?: DashboardInteractionTargetType;
   contextInheritance?: string[];

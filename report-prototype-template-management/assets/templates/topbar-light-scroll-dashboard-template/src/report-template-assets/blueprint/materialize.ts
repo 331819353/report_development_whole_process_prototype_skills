@@ -37,19 +37,19 @@ const getAssetById = <T extends { id: string; sourceBlockId?: string }>(assets: 
   return assets.find((asset) => asset.id === id || asset.sourceBlockId === id);
 };
 
-const getBlockGenericTemplate = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
-  getAssetById(context.blockLayoutTemplates, block.blockLayoutTemplateId ?? block.genericTemplateId);
+const getBlockLayoutTemplate = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
+  getAssetById(context.blockLayoutTemplates, block.blockLayoutTemplateId);
 
 const getBlockWidget = (block: ReportBlueprintBlock, context: ReportAssetResolutionContext) =>
   block.widget ??
-  getAssetById(context.componentContentAreaTemplates, block.componentContentAreaTemplateId ?? block.componentSampleId)?.widget ??
-  getBlockGenericTemplate(block, context)?.widget;
+  getAssetById(context.componentExamples, block.componentExampleId)?.widget ??
+  getBlockLayoutTemplate(block, context)?.widget;
 
-const getComponentSlotTemplateId = (slot: ReportBlueprintComponentSlot) =>
-  slot.componentContentAreaTemplateId ?? slot.componentSampleId;
+const getComponentSlotExampleId = (slot: ReportBlueprintComponentSlot) =>
+  slot.componentExampleId;
 
 const getComponentSlotWidget = (slot: ReportBlueprintComponentSlot, context: ReportAssetResolutionContext) =>
-  getAssetById(context.componentContentAreaTemplates, getComponentSlotTemplateId(slot))?.widget ?? slot.widget;
+  getAssetById(context.componentExamples, getComponentSlotExampleId(slot))?.widget ?? slot.widget;
 
 const getUnitMetric = (slotFill: ReportTemplateSlotFill): WidgetAuxMetric | undefined => {
   if (!slotFill.unit) {
@@ -82,7 +82,7 @@ const applySlotFills = (widget: RegisteredWidgetConfig, slotFills: ReportTemplat
     }
 
     if (slotFill.slotId === 'pillArea' && slotFill.pills) {
-      nextWidget.titlePills = slotFill.pills.slice(0, 3);
+      nextWidget.titlePills = slotFill.pills;
     }
 
     if (slotFill.slotId === 'auxMetricArea') {
@@ -108,59 +108,59 @@ const applySlotFills = (widget: RegisteredWidgetConfig, slotFills: ReportTemplat
   return nextWidget;
 };
 
-const applyComponentContentAreaSlotFills = (
+const applyComponentExampleSlotFills = (
   widget: RegisteredWidgetConfig,
   slotFills: ReportTemplateSlotFill[] = [],
 ) => applySlotFills(widget, slotFills.filter((slotFill) => slotFill.slotId === 'componentArea'));
 
-const padSpanPart = (value: number) => String(value).padStart(2, '0');
-
 const getBlockComponentPattern = (
   block: ReportBlueprintBlock,
-  genericTemplate?: ReportTemplateBlockAsset,
+  blockLayoutTemplate?: ReportTemplateBlockAsset,
 ) =>
   normalizeComponentRegionPattern(
     block.componentRegionPattern ??
-    genericTemplate?.componentRegionPattern ??
+    blockLayoutTemplate?.componentRegionPattern ??
     buildComponentRegionPatternFromSlots(block.componentSlots),
   );
 
 const getBlockComponentSlotContracts = (
   block: ReportBlueprintBlock,
-  genericTemplate?: ReportTemplateBlockAsset,
+  blockLayoutTemplate?: ReportTemplateBlockAsset,
 ): ReportTemplateComponentSlotContract[] =>
-  genericTemplate?.componentSlotContracts?.length
-    ? genericTemplate.componentSlotContracts
-    : buildComponentSlotContractsFromPattern(getBlockComponentPattern(block, genericTemplate));
+  blockLayoutTemplate?.componentSlotContracts?.length
+    ? blockLayoutTemplate.componentSlotContracts
+    : buildComponentSlotContractsFromPattern(getBlockComponentPattern(block, blockLayoutTemplate));
 
 const hasBlockComponentComposition = (
   block: ReportBlueprintBlock,
-  genericTemplate?: ReportTemplateBlockAsset,
+  blockLayoutTemplate?: ReportTemplateBlockAsset,
 ) =>
   Boolean(
     block.componentSlots?.length ||
     block.componentRegionPattern ||
-    genericTemplate?.componentRegionPattern ||
-    genericTemplate?.componentSlotContracts?.length,
+    blockLayoutTemplate?.componentRegionPattern ||
+    blockLayoutTemplate?.componentSlotContracts?.length,
   );
 
 const createLayoutHostWidget = (
   block: ReportBlueprintBlock,
-  genericTemplate: ReportTemplateBlockAsset | undefined,
+  blockLayoutTemplate: ReportTemplateBlockAsset | undefined,
   cols: number,
   rows: number,
 ): RegisteredWidgetConfig => ({
-  type: `Span${padSpanPart(cols)}x${padSpanPart(rows)}Layout`,
+  type: 'BaseLayoutSpan',
   visualType: 'other',
   dataPolicy: 'static',
   displayTitle: block.id,
   props: {
+    cols,
+    rows,
     title: block.id,
     placeholder: '3 组件区',
     showChrome: false,
     showFooter: false,
-    componentRegionPattern: getBlockComponentPattern(block, genericTemplate),
-    componentSlotContracts: getBlockComponentSlotContracts(block, genericTemplate),
+    componentRegionPattern: getBlockComponentPattern(block, blockLayoutTemplate),
+    componentSlotContracts: getBlockComponentSlotContracts(block, blockLayoutTemplate),
   },
 });
 
@@ -182,7 +182,7 @@ const materializeComponentSlots = (
       role: slot.role ?? contract?.role,
       size: slot.size,
       dataBinding: slot.dataBinding,
-      widget: widget ? applyComponentContentAreaSlotFills(widget, slot.slotFills) : undefined,
+      widget: widget ? applyComponentExampleSlotFills(widget, slot.slotFills) : undefined,
     };
   });
 
@@ -192,10 +192,10 @@ const applyBlockComposition = (
   context: ReportAssetResolutionContext,
 ) => {
   const nextWidget = applySlotFills(widget, block.slotFills);
-  const genericTemplate = getBlockGenericTemplate(block, context);
-  const hasComponentComposition = hasBlockComponentComposition(block, genericTemplate);
-  const componentRegionPattern = hasComponentComposition ? getBlockComponentPattern(block, genericTemplate) : undefined;
-  const componentSlotContracts = hasComponentComposition ? getBlockComponentSlotContracts(block, genericTemplate) : [];
+  const blockLayoutTemplate = getBlockLayoutTemplate(block, context);
+  const hasComponentComposition = hasBlockComponentComposition(block, blockLayoutTemplate);
+  const componentRegionPattern = hasComponentComposition ? getBlockComponentPattern(block, blockLayoutTemplate) : undefined;
+  const componentSlotContracts = hasComponentComposition ? getBlockComponentSlotContracts(block, blockLayoutTemplate) : [];
   const componentSlots = materializeComponentSlots(block.componentSlots, context, componentSlotContracts);
 
   if (hasComponentComposition) {
@@ -219,12 +219,12 @@ const materializePage = (
     const span = spanByLabel.get(block.id);
     const cols = span ? Math.max(span.columnEnd - span.columnStart, 1) : 2;
     const rows = span ? Math.max(span.rowEnd - span.rowStart, 1) : 2;
-    const genericTemplate = getBlockGenericTemplate(block, context);
-    const hasComponentComposition = hasBlockComponentComposition(block, genericTemplate);
+    const blockLayoutTemplate = getBlockLayoutTemplate(block, context);
+    const hasComponentComposition = hasBlockComponentComposition(block, blockLayoutTemplate);
     const widget = getBlockWidget(block, context) ??
       (!hasComponentComposition && block.componentSlots?.length === 1 ? getComponentSlotWidget(block.componentSlots[0], context) : undefined) ??
       (hasComponentComposition
-        ? createLayoutHostWidget(block, genericTemplate, cols, rows)
+        ? createLayoutHostWidget(block, blockLayoutTemplate, cols, rows)
         : undefined);
 
     if (widget) {

@@ -50,6 +50,7 @@ It sits between `report-design-system-governance` and `report-component-style-de
 | Anomaly / risk / warning / outlier analysis card standards | `report-component-style-design` `references/07f-anomaly-risk-warning-outlier-cards.md` plus mapping and acceptance references when implementation-ready |
 | Chart/table/filter standards | `report-chart-design-spec`, `report-table-design-spec`, `report-filter-control-design-spec` |
 | Placement and acceptance gates | `report-component-placement-spec` and `report-component-style-design` `references/12-component-acceptance-gates.md` |
+| Configurable template component examples | `report-prototype-template-management` `references/configurable-zero-to-one-flow.md` and `references/custom-echarts-component-example-guide.md` when a component must be mounted into a template slot |
 | Haier/company tokens and base components | `$haier-enterprise-app-ui-design-spec` for Haier/enterprise report and common-app surfaces |
 | Readiness/conflict gate | `$quality-gate-validation` |
 
@@ -67,7 +68,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 6. Define placement rules through `report-component-placement-spec`: coordinate variables, slot ownership, main visual center, local-filter geometry, size tiers, fallback order, and state geometry.
 7. Define visual tokens and variants as semantic rules, not one-off colors or decorative effects. When an outside/general design guideline is provided, use it to find gaps, then translate only the useful intent through the inherited baseline and `report-component-style-design` `references/00b-low-noise-high-density-baseline.md`. When modern SaaS / BI Dashboard / UI Kit language is requested, map component surfaces, borders, radius, shadow, UI controls, hierarchy, and chart-lightness constraints to the positive style contract.
 8. Classify normative rules: `MUST/fail` for data contract, renderer ownership, metric display, filter scope, layout fit, accessibility, state coverage, and readiness evidence; `SHOULD/exception-required` for recommended visual defaults or density choices; `MAY/optional` for enhancements.
-9. Add implementation handoff: ECharts/S2/Element Plus usage, config fields, API/view-model expectations, DOM/CSS/option proof hooks, QA crops, DOM overflow checks, and version/adoption notes.
+9. Add implementation handoff: ECharts/S2/Element Plus usage, config fields, API/view-model expectations, DOM/CSS/option proof hooks, QA crops, DOM overflow checks, and version/adoption notes. When the target is a configurable template slot, also specify whether the component maps to an existing `componentExampleId` or requires a new registered component example / `customEChartExampleMap` row.
 10. Run component acceptance gates and list any gaps, deprecated patterns, or project exceptions.
 
 ## Required Output
@@ -76,6 +77,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Component-family standard matrix.
 - Style generalization coverage matrix for sample-derived standards: sample role, selected pattern field, status, adaptive variables, fallback, and extension decision.
 - Per-family spec: purpose, anatomy, data contract, placement, visual tokens, states, interactions, responsive behavior, accessibility, and implementation notes.
+- Configurable-template mounting note when applicable: target slot type, existing or new `componentExampleId`, props/config/data binding, export/registry proof, and size-compatibility evidence.
 - Rule strength and proof matrix: `MUST/fail`, `SHOULD/exception-required`, and `MAY/optional` rules with proof method, failure ID, and exception condition.
 - Acceptance gates and QA evidence requirements.
 - Governance fields: owner, version, status, allowed variants, deprecated patterns, exceptions, and migration notes.
@@ -115,6 +117,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not accept detail evidence / 看明细 / row drilldown / sample / log card standards without `analysisPerspective: detailEvidence`, one controlled `detailEvidenceCardPattern`, `detailEvidenceBinding`, row grain, primary key, identity fields, default sort or event order, local-control scope, exact-value/detail/export route, state coverage, and fallback before tables, lists, timelines, hierarchy rows, samples, logs, or detail charts become decorative or squeezed.
 - Do not accept sample-derived reusable component standards when any reusable sample remains image-only, lacks a controlled pattern field, or cannot be reproduced from text by a non-multimodal downstream model.
 - Do not leave implementation-critical component rules as advice. Renderer ownership, data contracts, metric display, filter scope, overflow/layout fit, accessibility, and state coverage must be written as `MUST/fail` with evidence requirements.
+- Do not mark a template-mounted component standard ready when it cannot be represented as a registered component example with `componentExampleId`, props/config/data binding, and slot-size compatibility evidence.
 - Do not accept Haier/enterprise report component standards that define report-specific rules but omit inherited Haier typography, color, spacing, radius, shadow, state, and base-control tokens.
 - Do not duplicate Haier or report design-system tokens; inherit them and state only component-specific extensions.
 - Do not merge page layout rules into component specs except for the component's own parent/container assumptions.

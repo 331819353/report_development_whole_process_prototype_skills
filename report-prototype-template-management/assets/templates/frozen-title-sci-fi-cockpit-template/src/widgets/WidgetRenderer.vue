@@ -9,6 +9,10 @@ const props = defineProps<{
   widget?: RegisteredWidgetConfig;
   context: WidgetContext;
   data?: unknown[];
+  blockSize?: {
+    cols: number;
+    rows: number;
+  };
 }>();
 
 const emit = defineEmits<{
@@ -40,6 +44,19 @@ const viewportConfig = computed<WidgetViewportConfig | null>(() => {
 });
 
 const visualTypeClass = computed(() => `widget-renderer-visual-${props.widget?.visualType ?? 'empty'}`);
+const widgetProps = computed(() => {
+  const baseProps = props.widget?.props ?? {};
+
+  if (props.widget?.type !== 'BaseLayoutSpan' || !props.blockSize) {
+    return baseProps;
+  }
+
+  return {
+    ...baseProps,
+    cols: props.blockSize.cols,
+    rows: props.blockSize.rows,
+  };
+});
 
 const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   if (!event?.name) {
@@ -59,7 +76,7 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
       <WidgetViewport v-if="registration && widget && viewportConfig" :config="viewportConfig">
         <component
           :is="registration.component"
-          v-bind="widget.props"
+          v-bind="widgetProps"
           :context="context"
           :data="data ?? []"
           @dashboard-action="handleDashboardAction"
@@ -69,7 +86,7 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
       <component
         :is="registration.component"
         v-else-if="registration && widget"
-        v-bind="widget.props"
+        v-bind="widgetProps"
         :context="context"
         :data="data ?? []"
         @dashboard-action="handleDashboardAction"
@@ -197,15 +214,15 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
 .widget-renderer-content :deep(.status-badge.is-danger),
 .widget-renderer-content :deep(.status-pill.is-danger),
 .widget-renderer-content :deep(.badge-danger) {
-  color: #ff8a8a;
-  background: rgba(255, 92, 92, 0.14);
+  color: #ba1a1a;
+  background: rgba(186, 26, 26, 0.1);
 }
 
 .widget-renderer-content :deep(.status-badge.is-success),
 .widget-renderer-content :deep(.status-pill.is-success),
 .widget-renderer-content :deep(.badge-success) {
-  color: #69e2bd;
-  background: rgba(105, 226, 189, 0.14);
+  color: #0f8f5f;
+  background: rgba(15, 143, 95, 0.1);
 }
 
 .widget-renderer-content :deep(.chart-legend),

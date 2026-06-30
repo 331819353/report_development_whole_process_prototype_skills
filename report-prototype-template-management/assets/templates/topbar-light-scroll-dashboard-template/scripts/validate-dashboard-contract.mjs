@@ -8,12 +8,68 @@ const configPath = path.join(projectRoot, 'src/config/dashboard.config.ts');
 const mainEntryPath = path.join(projectRoot, 'src/main.ts');
 const srcPath = path.join(projectRoot, 'src');
 const widgetComponentsPath = path.join(projectRoot, 'src/widgets/components');
+const deliveryIndexPath = path.join(projectRoot, 'DELIVERY_INDEX.md');
+const prototypeDataSummaryPath = path.join(projectRoot, 'docs/prototype-data-summary.md');
 const errors = [];
 const warnings = [];
 
 const readText = (filePath) => readFileSync(filePath, 'utf8');
 const sourceText = readText(configPath);
 const sourceFile = ts.createSourceFile(configPath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+const requireMarkdownSections = (filePath, label, sections) => {
+  if (!existsSync(filePath)) {
+    errors.push(`${label}: required handoff artifact is missing at ${path.relative(projectRoot, filePath)}.`);
+    return '';
+  }
+
+  const text = readText(filePath);
+  sections.forEach((section) => {
+    if (!text.includes(section)) {
+      errors.push(`${label}: missing required section "${section}".`);
+    }
+  });
+  return text;
+};
+
+const validateProjectHandoffArtifacts = () => {
+  const deliveryIndexText = requireMarkdownSections(deliveryIndexPath, 'DELIVERY_INDEX.md', [
+    '# Delivery Index',
+    '## Artifact Index',
+    '## Version Chain',
+    '## Change History',
+  ]);
+
+  if (deliveryIndexText && !/docs\/prototype-data-summary\.md|docs\\prototype-data-summary\.md/.test(deliveryIndexText)) {
+    errors.push('DELIVERY_INDEX.md: must reference docs/prototype-data-summary.md status in change history or artifact notes.');
+  }
+
+  const dataSummaryText = requireMarkdownSections(prototypeDataSummaryPath, 'docs/prototype-data-summary.md', [
+    '# Prototype Data Summary',
+    '## Source Files And Data Modes',
+    '## Dataset Catalog',
+    '## Field Dictionary',
+    '## Metric And Conclusion Inputs',
+    '## Component Data Binding Matrix',
+    '## Filter And Parameter Semantics',
+    '## Interaction Payloads',
+    '## Backend API And Model Suggestions',
+    '## Gaps And Assumptions',
+    '## Verification',
+  ]);
+
+  [
+    'dashboard.config.ts',
+    'business-report-pages.ts',
+    'dashboard.dataset.json',
+    'dataSources/registry.ts',
+    'component-example-catalog',
+  ].forEach((needle) => {
+    if (dataSummaryText && !dataSummaryText.includes(needle)) {
+      errors.push(`docs/prototype-data-summary.md: must mention actual project data/binding artifact "${needle}".`);
+    }
+  });
+};
 
 const getName = (name) => {
   if (!name) {
@@ -250,7 +306,7 @@ const minimumAxisChartBodyHeight = 180;
 const minimumAxisPlotHeight = 120;
 const denseAxisPlotHeight = 140;
 const reservedActionHooks = new Set(['dashboardAction']);
-const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'componentContentAreaTemplate']);
+const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'customEChartComponent']);
 const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
 const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
 const allowedInteractionTargetTypes = new Set(['route', 'drawer', 'modal', 'popover', 'external', 'cross-filter', 'fullscreen', 'export']);
@@ -591,14 +647,14 @@ const validateSelfDevelopmentExceptionObject = (exceptionNode, location, fallbac
   }
 
   if (!type || !allowedSelfDevelopmentExceptionTypes.has(type)) {
-    errors.push(`${location}.type: only interactionBehavior and componentContentAreaTemplate may be self-developed; all other report areas must use templates.`);
+    errors.push(`${location}.type: only interactionBehavior and customEChartComponent may be self-developed; all other report areas must use configured templates/examples.`);
     return;
   }
 
-  if (type === 'componentContentAreaTemplate') {
-    ['sourcePageId', 'sourceBlockId', 'sourceSlotId', 'componentContentAreaTemplateId'].forEach((field) => {
+  if (type === 'customEChartComponent') {
+    ['sourcePageId', 'sourceBlockId', 'sourceSlotId', 'componentExampleId'].forEach((field) => {
       if (!hasNonEmptyStringProperty(exceptionNode, field)) {
-        errors.push(`${location}: component content area self-development must declare ${field}.`);
+        errors.push(`${location}: custom ECharts self-development must declare ${field}.`);
       }
     });
   } else {
@@ -705,9 +761,7 @@ const validateActions = (actionsNode, location) => {
   });
 };
 
-const getComponentContentAreaTemplateId = (slotNode) =>
-  getStringValue(getProperty(slotNode, 'componentContentAreaTemplateId')) ||
-  getStringValue(getProperty(slotNode, 'componentSampleId'));
+const getComponentExampleId = (slotNode) => getStringValue(getProperty(slotNode, 'componentExampleId'));
 
 const validateComponentSlotFills = (slotFillsNode, location) => {
   if (!slotFillsNode) {
@@ -748,7 +802,7 @@ const validateComponentSlotFills = (slotFillsNode, location) => {
   });
 };
 
-const validateComponentContentAreaSlots = (widgetNode, location) => {
+const validateComponentExampleSlots = (widgetNode, location) => {
   const propsNode = getProperty(widgetNode, 'props');
   const componentSlotsNode = getFirstProperty([propsNode, widgetNode], ['componentSlots']);
 
@@ -762,7 +816,7 @@ const validateComponentContentAreaSlots = (widgetNode, location) => {
   }
 
   if (componentSlotsNode.elements.length === 0) {
-    errors.push(`${location}.componentSlots: componentSlots is configured but empty; every 3 componentArea slot must name a registered component content area template.`);
+    errors.push(`${location}.componentSlots: componentSlots is configured but empty; every 3 componentArea slot must name a configured component example.`);
   }
 
   componentSlotsNode.elements.forEach((slotNode, index) => {
@@ -773,11 +827,11 @@ const validateComponentContentAreaSlots = (widgetNode, location) => {
       return;
     }
 
-    const templateId = getComponentContentAreaTemplateId(slotNode);
+    const componentExampleId = getComponentExampleId(slotNode);
 
-    if (!templateId || /^TBD\b|TBD\(|GAP-COMPONENT-TEMPLATE/i.test(templateId)) {
+    if (!componentExampleId || /^TBD\b|TBD\(|GAP-COMPONENT-TEMPLATE/i.test(componentExampleId)) {
       errors.push(
-        `${slotLocation}: component slot must declare a registered componentContentAreaTemplateId. Text/prose placeholders, visualType-only slots, and inline widget fills are not valid component content area templates.`,
+        `${slotLocation}: component slot must declare a configured componentExampleId. Text/prose placeholders, visualType-only slots, and inline widget fills are not valid component examples.`,
       );
     }
 
@@ -1040,7 +1094,7 @@ const validateWidget = (widgetNode, location, span) => {
 
   validateListGeometryContract(widgetNode, location, span, widgetType, visualType);
   validateAxisChartGeometryContract(widgetNode, location, span, visualType);
-  validateComponentContentAreaSlots(widgetNode, location);
+  validateComponentExampleSlots(widgetNode, location);
 
   if (dataNode) {
     const dataSourceId = getStringValue(getProperty(dataNode, 'id'));
@@ -2093,6 +2147,7 @@ gridConfigs.forEach(({ contentWidth, contentGap, contentStartY, contentEndY, row
   }
 });
 
+validateProjectHandoffArtifacts();
 validateAllLayoutRows();
 validateSelfDevelopmentExceptionMaps();
 validateStackContract();

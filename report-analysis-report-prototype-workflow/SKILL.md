@@ -1,126 +1,117 @@
 ---
 name: report-analysis-report-prototype-workflow
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。运行分析报告类报表原型 workflow。用户提到分析报告、专题分析、经营分析报告、月报/周报/季报、活动复盘、原因归因、为什么上涨/下降、结论先行、证据链、行动建议、为什么这样时触发；不负责通用报表原型 workflow、自助分析、指标看板、明细报表、API 文档或后端实现。"
+description: "Run the specialized configurable report-development workflow for analysis reports, topic reports, business review reports, monthly/weekly/quarterly reports, variance analysis, attribution analysis, conclusion-first reporting, evidence chains, and action recommendations. Use only after report-prd-document-generation has converted the user's ordinary PRD into CHILD-PRD-PROTOTYPE and execution files. This workflow consumes the PRD, implements the selected bundled template through pageLayoutConfig, blockAreaConfigMap, componentSlotConfigMap, componentExampleConfigMap, optional customEChartExampleMap, and releaseValidation, and does not recreate the PRD internally."
 ---
 
-# Analysis Report Prototype Workflow
+# Analysis Report Specialized Workflow
 
-## Stage Scope
+## Purpose
 
-Classification: 原型阶段.
+Use this workflow when the executable PRD says the report must answer "why did this happen, what evidence proves it, and what action follows?"
 
-Use this copy only inside any compatible prototype agent bundle. Treat technical solution, backend, frontend delivery, and testing work as downstream handoff artifacts or blockers, not as implementation steps to execute from this workflow.
-
-Agent-neutral rule: this workflow is a capability contract, not a platform-specific instruction file. Capability IDs such as `report-prd-document-generation`, `report-info-component-mapping`, and `report-prototype-template-management` are stable routing names; Claude, Hermes, Codex, or another agent must map them to equivalent local prompts, tools, workflow nodes, or documentation before execution.
-
-## Positioning
-
-Use this workflow when the prototype should explain a topic, variance, or business problem through a structured data story. It is one of the five peer prototype workflows.
-
-PRD prerequisite: consume `report-prd-document-generation` as the independent parent/child PRD bundle. This workflow executes analysis-report-specific story, evidence, layout, and interaction design from `CHILD-PRD-PROTOTYPE`; the main PRD remains business authority. It must not generate a complete PRD internally.
-
-Core intent:
+The workflow starts after PRD compilation:
 
 ```text
-分析报告讲“为什么这样”。
+ordinary PRD
+  -> report-prd-document-generation
+  -> CHILD-PRD-PROTOTYPE
+  -> report-analysis-report-prototype-workflow
+  -> configured report project
 ```
 
-Prototype story gate: this workflow does not call `report-prototype-design-thinking` by default. It carries its own typed story gate: reviewers should understand within 30 seconds what happened, why it likely happened, how large the impact is, and what action or follow-up decision is expected.
+## Input Contract
 
-Prototype layout gate: design and QA target `1920x1080`; page layout uses `12 * N`, minimum `2*1`, default analytical/chart block `3*2`, ordinary chart max `4*3`, and component internals default to center-axis symmetry. Existing design ideas in requirement documents must be checked before landing. Metric口径/指标清单 and design-process artifacts such as 下钻链路清单, component mapping, binding matrix, workflow/gate checklist, dataset field catalogue, and implementation notes are supplemental by default and stay in tooltip/detail/dictionary/interaction contract/validation/handoff unless explicitly requested as visible page content or rewritten as business-value conclusion, evidence, trust/source, or action content.
+Before starting, require:
 
-Template-only gate: this workflow must use templates for framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Only interaction behavior and component content area templates may be self-developed, and both must appear in the PRD/workflow `selfDevelopmentExceptionMap`.
+- `prd/prd-main.md`
+- `prd/children/prd-child-prototype.md`
+- `prd/execution/prd-template-execution-contract.md`
+- `prd/execution/prd-template-build-packet-seed.md`
+- `prd/execution/prd-metric-dictionary-and-mounting.md`
+- `prd/execution/prd-data-api-contract.md`
+- `prd/execution/prd-interaction-contract.md`
+- `prd/execution/prd-conclusion-rules.md`
+- `prd/execution/prd-workflow-execution-matrix.md`
 
-Runnable output gate: when implementation, runnable URL, local preview, or deployable prototype is requested, use `outputArtifact: vueTemplatePrototype` with `implementationMode: copyTemplateProject`: copy the selected bundled template project first and preserve its `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` stack. Add AntV S2 only for pivot/cross/wide analytical tables. HTML mentioned inside the PRD, attachments, source files, screenshots, or requirement text is requirement evidence only; it must not switch this workflow to `htmlPrototype`. Use `htmlPrototype` only when the latest explicit user instruction asks for HTML/static/single-file HTML output or exact static HTML preservation. Use `newVue3Project` only for a documented self-developed/non-template exception with rejected copy candidates.
+`CHILD-PRD-PROTOTYPE` must name this workflow or an accepted mixed-report path with analysis report as the primary execution flow.
+
+The PRD must already contain the thinking output: page content, conclusion/evidence/action reading path, first-viewport priority, visible/non-visible content decisions, and page preview.
 
 ## Required Capabilities
 
-| Stage | Capability ID |
-| --- | --- |
-| PRD prerequisite | `report-prd-document-generation` |
-| Requirement evidence clarification | `report-requirement-structure-extraction` |
-| Report business type | `report-type-design` |
-| Component/data/filter/interaction mapping | `report-info-component-mapping` |
-| Page layout | `report-visual-layout-design` |
-| Runnable template assets | `report-prototype-template-management` |
-| Component visual details | `report-component-style-design` |
-| Chart standards | `report-chart-design-spec` |
-| Table standards | `report-table-design-spec` |
-| Filter standards | `report-filter-control-design-spec` |
-| Component placement | `report-component-placement-spec` |
-| Design system | `report-design-system-governance` |
-| Quality gates | `quality-gate-validation` |
-| Runtime QA | `frontend-runtime-qa-validation` |
+Use these capabilities as needed:
+
+- `report-prd-document-generation` only to repair missing PRD structure.
+- `report-info-component-mapping` for conclusion/evidence/action component mapping.
+- `report-prototype-template-management` for configurable template implementation.
+- `report-chart-design-spec`, `report-table-design-spec`, `report-filter-control-design-spec`, and `report-component-placement-spec` for specialized component decisions.
+- `frontend-runtime-qa-validation` and `runtime-url-smoke-test` for runnable validation.
+
+## Template Reference Gate
+
+Before implementation, read and apply these template references through `report-prototype-template-management`:
+
+- `references/configuration-field-reference.md`
+- `references/configurable-zero-to-one-flow.md`
+- `references/custom-echarts-component-example-guide.md` only when `customEChartExampleMap` is present or no registered example fits.
+- `references/business-report-project-implementation-overview.md` only when updating the bundled business-report demo.
+
+Do not treat these as optional background. The workflow output must include `templateReferenceConsumption` with read status, applicable rules, exceptions, and any blocked items for the selected template.
 
 ## Workflow
 
-1. Run `quality-gate-validation` `references/preflight-understanding-gate.md` before design, repair, template edits, or code. Name affected surfaces, owning capabilities, hard constraints, missing evidence, and start decision.
-2. Confirm the PRD prerequisite. If no PRD exists, or the PRD lacks a PRD-to-workflow execution matrix, child PRD registry, full child PRD bundle/files, or usable `CHILD-PRD-PROTOTYPE`, use `report-prd-document-generation` before continuing. Use `report-requirement-structure-extraction` only to clarify evidence/gaps that must be written back into the PRD.
-3. Load `report-prd-document-generation` `references/prototype-workflow-execution-map.md` and validate that the concise main PRD plus `CHILD-PRD-PROTOTYPE` and execution appendices cover the analysis audience, report-type implementation path, executive satisfaction gate, scope, page content, narrative layout, dynamic conclusion rules, metrics, metric mounting, data/API, interactions, and Template Build Packet seed.
-4. Confirm mode: design proposal, implementation spec, runnable prototype, repair, or URL handoff.
-4A. Lock `outputArtifact: vueTemplatePrototype`, `implementationMode: copyTemplateProject`, and the copied-template Vue/ECharts stack unless the latest explicit user instruction requests HTML/static/single-file output or a documented self-developed/non-template exception requires `newVue3Project`. A PRD section, attachment, or source sample mentioning HTML is not output-format authority.
-4B. For runnable or implementation-ready template work, create or validate `templateAssetUnderstandingMap` from `report-prototype-template-management` `references/template-asset-construction-contract.md`, then create or validate the current Template Build Packet from `report-prototype-template-management` `references/template-build-packet-contract.md` before source edits. Treat Appendix G / `CHILD-PRD-PROTOTYPE` packet rows as the seed and mark every required page, block, slot, data/API, filter/action, interaction, conclusion rule, self-development exception, target file, and validation command as `ready`, `draft`, `blocked`, or `deferred`.
-5. Derive the typed prototype story from `CHILD-PRD-PROTOTYPE` report-path rows and executive gates: target audience, conclusion/value intent plus `conclusionRuleMap`, first-viewport conclusion quality, protagonist problem or variance, key evidence, impact, action or follow-up decision, and meeting/export reuse when required.
-6. Define the report reader path from `CHILD-PRD-PROTOTYPE` first. Default to enter from meeting/topic context -> read conclusion -> inspect overview -> locate cause/attribution -> assess impact -> decide action -> verify appendix/source only when it matches the selected report pattern.
-7. Define the report question from PRD background/goals: what happened, why, impact, and next action.
-6. Write the conclusion-first answer before choosing charts. The conclusion must include fact, magnitude, likely reason, and suggested action when evidence allows.
-7. Build the narrative path: conclusion -> overview -> problem analysis -> attribution -> impact -> action -> appendix.
-8. Define evidence: metric formulas, comparisons, baselines, time/region/channel/product/customer/person/process splits, contribution, and detail evidence.
-9. Define interaction: period switch, dimension switch, chart-to-detail, conclusion-to-chart anchor, expand/collapse, PDF/PPT export, share, comment, historical report.
-10. Use `report-type-design`: default primary type is `analysis-diagnostic`; use `review-recap` when meeting/report circulation is the main scenario.
-11. Use `report-info-component-mapping` to bind conclusions, `CHILD-PRD-PROTOTYPE` executive gates, `conclusionRuleMap`, evidence components, attribution blocks, action items, appendix details, export/review behavior, and states.
-12. Route chart, table, filter, and component-internal placement surfaces to `report-chart-design-spec`, `report-table-design-spec`, `report-filter-control-design-spec`, and `report-component-placement-spec` before implementation-ready decisions.
-13. Run the anti-laziness execution gate from `quality-gate-validation` before implementation-ready, repair, QA, or handoff conclusions. Keep `LAZY-*` findings visible until evidence closes them.
-14. Use `report-visual-layout-design` to produce `pageLayoutConfig`: `layoutSectionMap`, `layoutRows`, stable block ids, readable `layoutCoordinateMap`, block spans, first-viewport narrative path, and nav/page wiring.
-15. Use `report-prototype-template-management` to execute the nine-step template operation flow and Template Build Packet: `frameworkTemplateId -> templateAssetUnderstandingMap -> pageLayoutConfig -> blockLayoutTemplateMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentContentAreaTemplateMap -> summaryAreaConfig`. Select the direct independent 分块布局模板 Vue file for every narrative/evidence block, never a size-only `SpanCCxRRLayout` wrapper, carry `blockCoordinate` (`R-B`), `slotCount`, `componentSlotPattern`, `slotCoordinateList`, and asset availability in each block map row, configure title, decide pill buttons, configure evenly distributed additional information, decide units, then fill declared `3 componentArea` slots with `slotCoordinate` (`R-B-S`) and visual-type size compatibility evidence, and configure summary/explanation. Every source edit must consume packet rows; any conclusion in `4 summaryArea`, conclusion cards, or analysis insight components must consume `conclusionRuleMap`.
-16. For every `3 componentArea` slot, choose an existing standalone Vue 组件内容区模板 first and prove visual-type size compatibility from the selected template's widget schema. If no suitable template fits the evidence body, create a standalone ECharts-backed Vue component content area template inside the copied template project and register/copy it before slot fill. This component fallback does not justify a new Vue project. Do not put title, pills, filters, controls, additional information, units, description, or explanation copy inside the component slot. A conclusion card or analysis insight component may render a generated conclusion only when bound to `conclusionRuleId`; do not put fixed conclusion copy in slot props or component defaults. Example coordinate: `2-2-1` = first component slot inside the second block of section 2.
-17. Use the owning layout, template, and component capabilities only in this order: finalize `pageLayoutConfig`, finalize `blockLayoutTemplateMap`, then finalize each component content area template so the report reads as a coherent story, not a chart gallery.
-18. After data, filters, widgets, generated conclusion rules, and interactions are configured, create or update `docs/prototype-data-summary.md` with dataset catalog, field dictionary, conclusion/evidence inputs, component binding matrix, filter/parameter semantics, attribution/action/export payloads, backend API/model suggestions, gaps, verification, and code-ledger sidecar paths.
-19. Verify conclusion-evidence links, action follow-up, export/share/comment needs, and runnable URL when requested.
+1. Validate the PRD start gate.
+   Confirm the target workflow, thinking output, analysis report path, page preview, `frameworkTemplateId`, and template execution files. If missing, return to `report-prd-document-generation`.
+
+2. Consume the analysis story.
+   Extract conclusion, evidence, attribution, impact, action recommendation, appendix/detail path, meeting/export needs, and trust/source requirements from `CHILD-PRD-PROTOTYPE`.
+
+3. Lock the configurable template route.
+   Preserve the selected bundled template and stack. Do not create static HTML, blank Vue projects, custom shells, custom page layouts, custom block systems, or unregistered slot fills.
+   Before editing an existing configured project, use `delivery-version-management` to read or initialize the root `DELIVERY_INDEX.md`; consume the last change history so this run understands what already changed.
+
+4. Implement page layout.
+   Materialize `pageLayoutConfig` exactly from the PRD: page/nav wiring, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block coordinates, first-viewport plan, and section purpose.
+
+5. Implement block areas.
+   Materialize `blockAreaConfigMap`: title, pill controls, auxiliary metrics, unit, component area, summary/description, conclusion-rule binding, source/trust notes, and not-needed reasons for optional areas.
+
+6. Implement component slots.
+   Materialize `componentSlotConfigMap`, then fill `componentExampleConfigMap`. Every slot must map to a registered `componentExampleId`, Vue component/file, visual type, props/config, metric/data binding, state, and compatibility evidence.
+
+7. Add custom components only through the registry.
+   If no existing example fits a slot, create a `customEChartExampleMap` row, implement a standalone Vue/ECharts component example, export/register it, then bind its `componentExampleId`.
+
+8. Implement data, interactions, and generated conclusions.
+   Bind metrics, datasets, API/mock data, filters, toolbar actions, drilldowns, exports, permissions, and every `RULE-*` row needed by summary areas, conclusion cards, or analysis insight components.
+
+9. Validate and release.
+   Run the template validation/build commands, preview URL when requested, runtime smoke checks, update `docs/prototype-data-summary.md`, and append the current change to `DELIVERY_INDEX.md` for runnable projects.
 
 ## Required Output
 
-- Workflow mode, Preflight understanding matrix, report audience, report period, data scope, business question, and meeting/circulation scenario.
-- Output artifact and implementation mode decision: `vueTemplatePrototype` with `implementationMode: copyTemplateProject` and copied-template `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` by default; any `htmlPrototype` exception must cite the latest explicit user request, and any `newVue3Project` exception must cite the self-developed/non-template reason, not merely PRD/source wording.
-- PRD prerequisite proof: PRD status, child registry, full child PRD bundle/files, `CHILD-PRD-PROTOTYPE` sync status, report-path rows consumed, `templateAssetUnderstandingMap`, Appendix G / Template Build Packet seed/current packet proof, PRD-to-workflow execution matrix, analysis-report rows consumed, blocked/draft rows, and deferred-out-of-scope rows.
-- Typed prototype story: conclusion/value intent plus dynamic rule coverage, reader path, protagonist problem or variance, key evidence, action/follow-up decision, and 30-second review path.
-- Executive satisfaction gate consumption: `ESG-*` conclusion quality, 30-second evidence/attribution path, 3-minute action/follow-up, `ACT-*` owner route, `TRUST-*` source/freshness, `MEET-*` review/export package, and unresolved gaps.
-- Affected-surface to owning-capability routing, especially narrative layout, chart, table, filter, component placement, design-system, template, and runtime QA.
-- Core conclusion, supporting evidence, cause breakdown, impact assessment, and action recommendation.
-- Dynamic conclusion rule map: `conclusionRuleMap` with `RULE-*` rows for the core conclusion, section conclusions, summary-area narratives, conclusion cards, and analysis insight components.
-- Result-content boundary: visible conclusions/evidence/actions versus process artifacts moved to interaction contract, appendix/handoff, validation, or removal.
-- Narrative block plan: title/meta, conclusion, overview, problem analysis, attribution, action, appendix, each traced to PRD `PATH-*` rows.
-- Template operation chain: `templateAssetUnderstandingMap`, Template Build Packet path/status and packet-row consumption evidence, `frameworkTemplateId`, `pageLayoutConfig` plus `layoutSectionMap` and `layoutCoordinateMap`, `blockLayoutTemplateMap` with `blockCoordinate`, `slotCount`, `componentSlotPattern`, `slotCoordinateList`, selected direct independent block layout Vue files, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentContentAreaTemplateMap` with `slotCoordinate`, slot pattern code, component slot size, and visual-type size compatibility evidence, `summaryAreaConfig`, `conclusionRuleMap` consumption evidence, and ECharts self-developed component content area fallback list.
-- Comparison model: current vs previous, YoY, actual vs target, before/after, segment comparison.
-- Action model: owner, deadline, follow-up metric, status, and tracking notes.
-- Filter, interaction, export/share/comment/history, permission, freshness, and state requirements.
-- Component/data/filter/control/interaction binding matrix.
-- Prototype data summary: `docs/prototype-data-summary.md` with actual analysis data modes, datasets, fields, conclusion/evidence inputs, component bindings, filter semantics, attribution/action/export payloads, backend API/model suggestions, `GAP-*` rows, verification, and stale/missing-data decision.
-- Anti-laziness execution result: evidence inspected, `LAZY-*` findings or explicit no-finding result, before/after proof for repairs, regression probe, and readiness impact.
-- `pageShellPath: template`, selected framework template, `selfDevelopmentExceptionMap`, changed files if implemented, verification, URL or blocker, and readiness.
+Return:
+
+- Consumed PRD paths and start-gate status.
+- Analysis story consumed: conclusion, evidence, attribution, impact, action, trust/source, and export/review path.
+- Selected `frameworkTemplateId`.
+- Implemented `pageLayoutConfig`.
+- Implemented `blockAreaConfigMap`.
+- Implemented `componentSlotConfigMap`.
+- Implemented `componentExampleConfigMap`.
+- `customEChartExampleMap` rows and registered files when used.
+- `templateReferenceConsumption`.
+- Data/API, interaction, permission, and `conclusionRuleMap` consumption evidence.
+- Version index evidence: `DELIVERY_INDEX.md` read/initialized before edits and appended after edits with changed files, impacted pages/blocks/slots/components, data/filter/conclusion impact, validation, data-summary status, and next-change notes.
+- Changed files, validation commands, runtime URL or blocker, and release readiness.
 
 ## Quality Gate
 
-- Do not build a chart collection with no conclusion.
-- Do not start analysis story, narrative layout, component mapping, template, or implementation work without a PRD bundle from `report-prd-document-generation` that includes a child registry, full child PRD bundle/files, and usable `CHILD-PRD-PROTOTYPE`.
-- Do not start layout or component mapping when `CHILD-PRD-PROTOTYPE` lacks `RTP-ANALYSIS-REPORT`, `RTP-REVIEW-EXPORT`, or an accepted `RTP-MIXED` primary path with path rows.
-- Do not start layout or component mapping when a management-facing analysis/review PRD lacks executive gate rows for conclusion quality, required action, trust, or review/export behavior.
-- Do not generate an HTML/static prototype merely because the PRD, requirement document, attachment, or source sample mentions HTML. The default runnable route is copying a bundled template project and preserving Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios.
-- Do not create a new Vue3/Vite project as the default implementation route. Copy the selected bundled template project first; create new Vue3 project structure only for a documented self-developed/non-template exception.
-- Do not mark ready until every PRD execution row needed for report story, page content, layout, metrics, metric mounting, data/API, interactions, and export/comment/history behavior is consumed or explicitly deferred out of scope.
-- Do not start layout or component selection until the report story, reader path, protagonist problem/variance, evidence chain, and action/follow-up decision are explicit or safely inferred.
-- Do not start runnable implementation if any requested self-development target is outside interaction behavior or component content area templates.
-- Do not start runnable implementation until `templateAssetUnderstandingMap` and the Template Build Packet are current and the nine-step template operation chain has no missing block configs or slots. The packet must contain rows for the page/block/slot/control/data/conclusion/target file/validation being implemented. `blockLayoutTemplateMap` must name the selected direct independent block layout Vue file, not a size-only `SpanCCxRRLayout` wrapper plus `componentRegionPattern`. Every `3 componentArea` slot must use an existing 组件内容区模板 or a newly registered standalone ECharts component content area template with visual-type size compatibility evidence.
-- Do not start runnable implementation when `blockCoordinate` or `slotCoordinate` is missing, duplicated, or inconsistent with the PRD/Template Build Packet, `layoutRows`, selected block layout slot order, metric mounting, conclusion rules, or interactions.
-- Do not start runnable implementation when `layoutSectionMap` is missing, section row counts do not sum to page `N`, any section is not exact `12*K`, any block lacks `slotCount` / `componentSlotPattern` / `slotCoordinateList`, or any component template maps to an undeclared slot.
-- Do not mark ready when layout or QA uses any viewport other than `1920x1080`, when the page ignores `12 * N`/`3*2`/chart `4*3` constraints, or when supplemental metric口径/指标清单 or design-process artifacts are rendered as page modules without an explicit display requirement or business-value justification.
-- Do not start implementation or repair from this workflow alone when affected chart/table/filter/placement surfaces require their specific front-door capabilities.
-- Do not mark ready without a Preflight understanding start decision and evidence that required specialty capabilities were loaded or explicitly not needed.
-- Do not explain changes without a baseline, comparison, or evidence link.
-- Do not let recommendations appear without owner, follow-up metric, or tracking intent when the report drives action.
-- Do not repeat the same metric across multiple charts unless each chart answers a different narrative step.
-- Do not claim readiness unless each conclusion is tied to evidence or marked as insufficient-data.
-- Do not claim readiness when a core conclusion, section conclusion, `4 summaryArea` conclusion, conclusion card, or analysis insight component uses fixed normal-state copy instead of a PRD `RULE-*` rule that recomputes from current data.
-- Do not put narrative titles, evidence summaries, fixed conclusion text, filters, controls, additional information, units, descriptions, or explanation copy inside component content slots. Those stay on 分块布局模板 supporting areas, shell/page config, or narrative blocks. A conclusion card or analysis insight component may render generated conclusion output only through `conclusionRuleId`.
-- Do not claim readiness for backend-facing handoff when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks actual analysis dataset/field/conclusion-evidence/filter/interaction/API-model/gap/verification content.
-- Do not mark ready when the anti-laziness gate is missing, `LAZY-*` findings remain open, or conclusion/story claims rely on generic design assertions without evidence links.
+- Do not start from ordinary user requirements; start from the specialized PRD output.
+- Do not decide page content from scratch in this workflow. Consume the thinking output in `CHILD-PRD-PROTOTYPE`; if it is missing, return to PRD generation.
+- Do not build a chart gallery with no conclusion/evidence/action path.
+- Do not place titles, filters, pills, auxiliary metrics, units, descriptions, or summaries inside component examples.
+- Do not render fixed normal-state business conclusions when a `RULE-*` generated conclusion is required.
+- Do not use retired block-template deliverables, fixed block-size catalogs, component-content templates, static HTML, blank Vue projects, custom shells, or unregistered component fills.
+- Do not mark release readiness when `DELIVERY_INDEX.md` was not read before editing or lacks a post-change entry for the current work.
+- Do not mark release readiness when `docs/prototype-data-summary.md` is missing, generic, stale, or not current with the implemented data, filters, widgets, interactions, and conclusion rules.

@@ -31,7 +31,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Workflow
 
 1. Identify scoped source files: frontend, backend, prototype, config, SQL, or tests that own behavior.
-2. For copied report template projects, run `npm run ledger:init` once after copy to generate baseline sidecars, and run `npm run ledger:check` before handoff.
+2. For configured report template projects, run `npm run ledger:init` once when the project is first materialized to generate baseline sidecars, and run `npm run ledger:check` before handoff.
 3. Locate each sidecar ledger at `<code-file-directory>/__change_logs__/<code-file-name>.changes.md`.
    Do not look for `change_logs` as the default folder; this skill's required folder name is `__change_logs__`.
 4. Before editing, read or create the ledger and inspect functional inventory, known ranges, risks, and prior entries.
@@ -42,7 +42,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Required Output
 
 - Changed code files and ledger paths.
-- Project-wide ledger init/check status when a copied template project is involved.
+- Project-wide ledger init/check status when a configured template project is involved.
 - Pre-change ledger read/create evidence.
 - Post-change version entry summary.
 - Changed code ranges or stable anchors.
@@ -56,4 +56,4 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not mark a ledger `ready` when it only contains `sha256`, broad summaries, `full file`, or `TBD` code ranges. Those entries are `partial` unless an external VCS/release-bundle reference can reconstruct the exact previous content.
 - Do not replace file-level ledger evidence with only a final chat summary, commit message, PR description, or broad delivery index.
 - Do not treat the absence of a legacy `change_logs` folder as failure. Treat the absence of required `__change_logs__` sidecar ledgers for changed scoped source files as failure.
-- Do not mark a copied report template project ready when `npm run ledger:init` was skipped after copy or `npm run ledger:check` fails before handoff.
+- Do not mark a configured report template project ready when `npm run ledger:init` was skipped during initial materialization or `npm run ledger:check` fails before handoff.

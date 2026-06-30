@@ -15,13 +15,10 @@ import {
 } from '@lucide/vue';
 import { customActionRegistry } from '../actions/registry';
 import { resolveDataSource } from '../dataSources/registry';
-import { getTemplateGallerySections, isTemplateAssetGalleryNav } from '../report-template-assets';
 import type { DashboardActionConfig, DashboardExpressionValue, DashboardWidgetActionEvent } from '../types/actions';
 import type { DashboardFilterScope } from '../types/data-source';
 import type { DashboardConfig, DashboardFilterGroup, DashboardFilterOption, NavItem, ThemeMode } from '../types/dashboard';
 import { resolveDashboardParams, resolveDashboardValue } from '../utils/dashboardExpressions';
-import TemplateGalleryDashboard from '../widgets/galleries/TemplateGalleryDashboard.vue';
-import type { TemplateGallerySection } from '../widgets/galleries/TemplateGalleryDashboard.vue';
 import WidgetRenderer from '../widgets/WidgetRenderer.vue';
 import {
   applyWidgetLocalFilters,
@@ -254,20 +251,20 @@ const titleRenderedHeight = computed(() => props.config.screen.layout.titleVisib
 const titleBackgroundOffsetY = computed(() => -(props.config.screen.layout.titleVisibleTop * titleScale.value));
 const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 1, 1));
 const contentWidth = computed(() => Math.max(props.config.screen.layout.designWidth, 1));
+const designHeight = computed(() => Math.max(props.config.screen.layout.designHeight, 1));
 const contentAreaHeight = computed(() => props.config.screen.grid.contentEndY - props.config.screen.grid.contentStartY);
 const contentGridHeight = computed(
   () => layoutRowCount.value * contentRowHeight.value + Math.max(layoutRowCount.value - 1, 0) * props.config.screen.layout.contentGap,
 );
-const canvasHeight = computed(() => contentAreaHeight.value);
-const isTemplateGalleryDashboard = computed(() => isTemplateAssetGalleryNav(activeNavId.value));
-const templateGallerySections = computed<TemplateGallerySection[]>(() =>
-  getTemplateGallerySections(props.config, activeNavId.value),
-);
+const contentNaturalHeight = computed(() => contentGridHeight.value);
+const canvasHeight = computed(() => Math.max(contentAreaHeight.value, contentNaturalHeight.value));
+const pageHeight = computed(() => Math.max(designHeight.value, props.config.screen.grid.contentStartY + canvasHeight.value));
 const appStyle = computed(() => ({
   '--page-background-image': `url("${props.config.assets.backgroundSrc}")`,
   '--title-background-image': `url("${props.config.assets.titleBackgroundSrc}")`,
   '--design-width': `${props.config.screen.layout.designWidth}px`,
-  '--design-height': `${props.config.screen.layout.designHeight}px`,
+  '--design-height': `${designHeight.value}px`,
+  '--page-height': `${pageHeight.value}px`,
   '--title-background-width': `${props.config.screen.layout.titleBackgroundWidth}px`,
   '--title-background-height': `${props.config.screen.layout.titleBackgroundHeight}px`,
   '--title-current-width': `${titleRenderedWidth.value}px`,
@@ -316,9 +313,13 @@ const getWidgetForBlock = (blockId: string): RegisteredWidgetConfig | undefined 
 
 const hasWidgetForBlock = (blockId: string) => Boolean(getWidgetForBlock(blockId));
 
-const isLayoutTemplateWidget = (widget?: RegisteredWidgetConfig) => Boolean(widget?.type.match(/^Span\d{2}x\d{2}Layout$/));
+const isLayoutTemplateWidget = (widget?: RegisteredWidgetConfig) => widget?.type === 'BaseLayoutSpan';
 
 const isLayoutTemplateBlock = (blockId: string) => isLayoutTemplateWidget(getWidgetForBlock(blockId));
+
+const getWidgetProps = (blockId: string) => (getWidgetForBlock(blockId)?.props ?? {}) as Record<string, unknown>;
+
+const isAutoComponentSlotBlock = (blockId: string) => getWidgetProps(blockId).autoComponentSlots === true;
 
 const getWidgetBlockTitle = (blockId: string) => {
   const widget = getWidgetForBlock(blockId);
@@ -339,8 +340,7 @@ const getWidgetBlockTitle = (blockId: string) => {
 
 const getWidgetTitlePills = (blockId: string): WidgetTitlePillOption[] =>
   (getWidgetForBlock(blockId)?.titlePills ?? [])
-    .filter((pill) => pill.id.trim() && pill.label.trim())
-    .slice(0, 3);
+    .filter((pill) => !pill.hidden && pill.id.trim() && pill.label.trim());
 
 const hasWidgetTitlePills = (blockId: string) => getWidgetTitlePills(blockId).length > 0;
 
@@ -350,6 +350,24 @@ const getWeightedTextLength = (value: string) =>
   Array.from(value.trim()).reduce((total, char) => total + (/[\u4e00-\u9fff]/.test(char) ? 1 : 0.58), 0);
 
 const getBlockColumnSpan = (block: LayoutBlock) => Math.max(block.columnEnd - block.columnStart, 1);
+
+const getBlockRowSpan = (block: LayoutBlock) => Math.max(block.rowEnd - block.rowStart, 1);
+
+const getPlaceholderCellInnerStyle = (block: LayoutBlock): Record<string, string> => {
+  const columnSpan = getBlockColumnSpan(block);
+  const rowSpan = getBlockRowSpan(block);
+  const style: Record<string, string> = {
+    '--block-column-span': String(columnSpan),
+    '--block-row-span': String(rowSpan),
+  };
+
+  if (isAutoComponentSlotBlock(block.label)) {
+    style['--block-summary-row-size'] = '1fr';
+    style['--block-component-row-size'] = `${Math.max(rowSpan - 1, 1)}fr`;
+  }
+
+  return style;
+};
 
 const getBlockContentWidth = (block: LayoutBlock) => {
   const columnWidth = Math.max(props.config.screen.layout.designWidth, 1) / Math.max(layoutColumnCount.value, 1);
@@ -362,8 +380,9 @@ const getTitlePillFontSize = (block: LayoutBlock, pill: WidgetTitlePillOption) =
   const titlePadding = 12;
   const titleColumnGap = 8;
   const pillGroupPadding = 4;
-  const rightColumnWidth = Math.max((getBlockContentWidth(block) - titlePadding - titleColumnGap) / 3, 1);
-  const buttonWidth = Math.max((rightColumnWidth - pillGroupPadding) / pillCount, 1);
+  const pillGap = 2;
+  const pillGroupMaxWidth = Math.max((getBlockContentWidth(block) - titlePadding - titleColumnGap) * (2 / 3), 1);
+  const buttonWidth = Math.max((pillGroupMaxWidth - pillGroupPadding - Math.max(pillCount - 1, 0) * pillGap) / pillCount, 1);
   const labelLength = Math.max(getWeightedTextLength(pill.label), 1);
   const computedSize = (buttonWidth - 4) / (labelLength * 1.04);
 
@@ -916,26 +935,6 @@ const handleWidgetAction = async (blockId: string, event: DashboardWidgetActionE
   }
 };
 
-const handleTemplateGalleryAction = async (event: DashboardWidgetActionEvent) => {
-  const customHandler = customActionRegistry[event.name] ?? customActionRegistry.dashboardAction;
-
-  if (!customHandler) {
-    return;
-  }
-
-  await customHandler({
-    action: { type: event.name },
-    event,
-    context: getWidgetContext(''),
-    filters: activeFilters.value,
-    controls: {
-      print: printDashboard,
-      fullscreen: toggleFullscreen,
-      refresh: refreshDashboard,
-    },
-  });
-};
-
 const hideScrollbars = () => {
   window.clearTimeout(scrollbarsHideTimer);
   isScrollbarsActive.value = false;
@@ -1182,15 +1181,7 @@ watch(
       </aside>
 
       <section class="canvas-shell">
-        <TemplateGalleryDashboard
-          v-if="isTemplateGalleryDashboard"
-          :sections="templateGallerySections"
-          :row-height="contentRowHeight"
-          :content-width="contentWidth"
-          :active-filters="activeFilters"
-          @dashboard-action="handleTemplateGalleryAction"
-        />
-        <section v-else class="placeholder-grid" :aria-label="`${layoutColumnCount}乘${layoutRowCount}内容占位区`">
+        <section class="placeholder-grid" :aria-label="`${layoutColumnCount}乘${layoutRowCount}内容占位区`">
           <div
             v-for="block in layoutBlocks"
             :key="block.id"
@@ -1206,7 +1197,9 @@ watch(
               :class="{
                 'is-block-masked': getBlockState(block.label),
                 'is-layout-template-block': isLayoutTemplateBlock(block.label),
+                'is-auto-component-slots': isAutoComponentSlotBlock(block.label),
               }"
+              :style="getPlaceholderCellInnerStyle(block)"
             >
               <div class="placeholder-cell-top placeholder-cell-title" :class="{ 'has-title-pills': hasWidgetTitlePills(block.label) }">
                 <span v-if="hasWidgetForBlock(block.label)" class="placeholder-cell-title-main">
@@ -1226,6 +1219,7 @@ watch(
                     class="placeholder-cell-pill-button"
                     :class="{ active: getActiveTitlePillId(block.label) === pill.id }"
                     :style="{ '--pill-font-size': `${getTitlePillFontSize(block, pill)}px` }"
+                    :title="pill.label"
                     :disabled="pill.disabled"
                     :aria-pressed="getActiveTitlePillId(block.label) === pill.id"
                     @click="setActiveTitlePill(block.label, pill)"
@@ -1258,6 +1252,7 @@ watch(
                 </section>
                 <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="3 组件区">
                   <WidgetRenderer
+                    :block-size="{ cols: getBlockColumnSpan(block), rows: getBlockRowSpan(block) }"
                     :context="getWidgetContext(block.label)"
                     :data="getWidgetDataForBlock(block.label)"
                     :widget="getWidgetForBlock(block.label)"

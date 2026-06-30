@@ -1,6 +1,6 @@
 # Prototype Data Summary Contract
 
-Use this contract after a runnable prototype has data, filters, widgets, and interactions configured. The output is a backend-facing Markdown document inside the copied prototype project:
+Use this contract after a runnable prototype has data, filters, widgets, and interactions configured. The output is a backend-facing Markdown document inside the configured template project:
 
 ```text
 docs/prototype-data-summary.md
@@ -25,7 +25,7 @@ The document is required for prototype handoff to technical solution, backend/da
    - Record every displayed metric, formula, numerator/denominator, unit, direction, data source, filter scope, null/zero denominator rule, and display precision.
    - Record every `conclusionRuleId` used by `summaryAreaConfig`, conclusion cards, or analysis insight components, including input fields, trigger state, rule logic, fallback, and refresh behavior.
 6. `## Component Data Binding Matrix`
-   - For every page/block/slot/component, record component id, block id, selected block layout template, component content area template id/file, data source id or API id, fields consumed, filters applied, ignored filters with reasons, local filters, sort/rank/pagination rules, states, and visible output.
+   - For every page/block/slot/component, record component id, block id, selected block area config, registered component example id/file, data source id or API id, fields consumed, filters applied, ignored filters with reasons, local filters, sort/rank/pagination rules, states, and visible output.
 7. `## Filter And Parameter Semantics`
    - Record global filters, perspective switches, local filters, default values, option source, `emptyFilterValue`, `aggregateValue`, query omission rules, field/query mapping, affected components, non-default state proof, and permission effects.
 8. `## Interaction Payloads`

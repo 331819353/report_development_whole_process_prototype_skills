@@ -1,8 +1,8 @@
 # Report Type Implementation Patterns
 
-Use this reference before writing the main PRD report-implementation summary and the detailed `CHILD-PRD-PROTOTYPE` / Appendix A report-path rows.
+Use this reference before writing the main PRD report-implementation summary and the detailed `CHILD-PRD-PROTOTYPE` / `prd/execution/prd-template-execution-contract.md` report-path rows.
 
-The PRD must decide how the report should be read before it decides which block layout template to use. A report type is not only a label such as "dashboard" or "detail report"; it defines the user's decision path, module order, first-viewport priority, block layout sequence, and where drilldown/action/export belongs.
+The PRD must decide how the report should be read before it decides which block area config to use. A report type is not only a label such as "dashboard" or "detail report"; it defines the user's decision path, module order, first-viewport priority, block layout sequence, and where drilldown/action/export belongs.
 
 ## Input And Attachment Intake
 
@@ -42,7 +42,7 @@ Validate against these dimensions:
 - Role fit: does the first viewport match the primary role's attention span and authority?
 - Evidence chain: is there a clear path from conclusion to metric evidence, cause, detail, and action/export?
 - Data grain: can the required metric/detail/action data exist at the stated grain?
-- Template fit: can the idea be implemented with framework template, page layout, block layout templates, and standard areas?
+- Template fit: can the idea be implemented with framework template, page layout, block area configs, and standard areas?
 - Interaction fit: are drilldown, jump, drawer, popup, and export placed where users naturally act?
 - Visual density: does the first viewport answer the main question without becoming empty, crowded, or detail-heavy?
 
@@ -54,7 +54,7 @@ Use the closest pattern as the default. For mixed reports, choose one primary pa
 
 ### Pattern To Executive Satisfaction Focus
 
-Use this table together with `executive-satisfaction-design-gate.md` when filling management-facing gate rows in `CHILD-PRD-PROTOTYPE` or execution appendices. The executive satisfaction gate must match the report type instead of forcing every report into the same dashboard pattern.
+Use this table together with `executive-satisfaction-design-gate.md` when filling management-facing gate rows in `CHILD-PRD-PROTOTYPE` or execution files. The executive satisfaction gate must match the report type instead of forcing every report into the same dashboard pattern.
 
 | Pattern ID | 3-second answer | 30-second cause/evidence path | 3-minute action/reuse | Required 4B emphasis |
 | --- | --- | --- | --- | --- |
@@ -82,42 +82,42 @@ Use this table together with `executive-satisfaction-design-gate.md` when fillin
 | `RTP-SELF-SERVICE` | Self-service analysis / exploratory workbench | 用户自己选字段后能得到什么分析结果 | 先配置问题/字段 -> 生成视图 -> 看自动结论/质量 -> 下钻探索 -> 保存/导出 | Analysis config, result preview, generated insight, quality/trust cue | `report-self-service-analysis-prototype-workflow` |
 | `RTP-MIXED` | Mixed report | 同时满足多个场景但必须有一个主路径 | 先主路径 -> 插入必要的次级模块 -> 保持动作/导出闭环 | Primary pattern first viewport; secondary pattern below or secondary page | Matching primary workflow |
 
-## Pattern To Block Layout Mapping
+## Pattern To Block Area Mapping
 
-The PRD bundle must map each reading path step to actual page blocks and block layout templates. Summarize the path in the main PRD, then put this detailed table in `CHILD-PRD-PROTOTYPE` or Appendix A and repeat selected templates in the Template Build Packet seed.
+The PRD bundle must map each reading-path step to page blocks, block area configs, component slots, and registered component examples. Summarize the path in the main PRD, then put this detailed table in `CHILD-PRD-PROTOTYPE`, `prd/execution/prd-template-execution-contract.md`, and the Template Build Packet seed.
 
-The `Preferred block layout template` column is a decision aid, not permission to select size-only wrappers. Large spans, table bands, and any `SpanCCxRRLayout` size wrapper must be proven as direct selectable slot-bearing templates in `templateAssetUnderstandingMap`; otherwise use the closest supported direct template or mark `TBD(GAP-BLOCK-LAYOUT-TEMPLATE-*)`.
+The `Block area guidance` column is not a fixed wrapper catalog. The implementation must create block area configs with `createBlockAreaConfig`; `layoutRows` determines block size, and `componentRegionPattern` only describes slot geometry.
 
-| Path step ID | Pattern ID | Reading step | Business purpose | Recommended block role | Typical span | Preferred block layout template | Component slot strategy | Summary/conclusion rule | Interaction entry |
+| Path step ID | Pattern ID | Reading step | Business purpose | Recommended block role | Span guidance | Block area guidance | Component example strategy | Summary/conclusion rule | Interaction entry |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `PATH-DASH-RESULT` | `RTP-KPI-DASHBOARD` | 先结论/状态 | Make the current state unmistakable | Primary result block | `6*3` or `8*3` | `Span06x03SingleSlotLayout`, `Span06x03DoubleSlotLayout`; `8*3` only when `templateAssetUnderstandingMap` proves a direct selectable template | Conclusion card plus KPI/trend evidence; keep KPI count bounded | `RULE-*` required | KPI click, metric switch, drilldown |
-| `PATH-DASH-DIAGNOSIS` | `RTP-KPI-DASHBOARD` | 看原因/结构/排名 | Explain what drives the state | Diagnostic evidence block | `4*3` or `6*3` | `Span04x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Trend, ranking, composition, driver chart | Optional `RULE-*` | Ranking click, chart point click |
-| `PATH-DASH-PROCESS` | `RTP-KPI-DASHBOARD` | 看过程/趋势 | Show how the result evolved | Process block | `6*3` | `Span06x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Time series, funnel, process chart | Optional `RULE-*` | Period switch, drilldown |
-| `PATH-DASH-ACTION` | `RTP-KPI-DASHBOARD` | 看动作/闭环 | Turn diagnosis into action | Action/detail block | `4*3`, `6*3`, or table band | `Span04x03SingleSlotLayout`, `Span06x03DoubleSlotLayout`, table-capable block | Action list, owner/status/deadline, detail entry | Optional `RULE-*` | Drawer, jump, export |
-| `PATH-COCKPIT-STATUS` | `RTP-COCKPIT` | 先总态势 | Establish large-screen command context | Dominant status block | `8*3` or larger first-screen region | `Span06x03DoubleSlotLayout`; larger status blocks require direct-template evidence or `TBD(GAP-BLOCK-LAYOUT-TEMPLATE-*)` | Big status, map/radar/ranking mix | `RULE-*` required | Fullscreen, alert click |
-| `PATH-ANALYSIS-CONCLUSION` | `RTP-ANALYSIS-REPORT` | 先结论 | Give answer before evidence | Narrative conclusion block | `6*3` or `8*3` | `Span06x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Generated conclusion plus decisive evidence | `RULE-*` required | Evidence jump |
-| `PATH-ANALYSIS-EVIDENCE` | `RTP-ANALYSIS-REPORT` | 看核心证据/拆解归因 | Prove and explain the conclusion | Evidence/attribution block | `4*3`, `6*3`, `8*3` | `Span06x03DoubleSlotLayout`, `Span06x03TripleSlotLayout`; `8*3` only when direct-template evidence exists | Trend, decomposition, comparison, segment table | Optional `RULE-*` | Drilldown, segment switch |
-| `PATH-ANALYSIS-ACTION` | `RTP-ANALYSIS-REPORT` | 看建议/行动 | Make the conclusion usable | Recommendation block | `4*3` or `6*3` | `Span04x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Action recommendation card plus evidence | `RULE-*` when conclusion-like | Jump, task route |
-| `PATH-DETAIL-SUMMARY` | `RTP-DETAIL-QUERY` | 先范围与汇总 | Confirm current query scope and totals | Summary strip/block | `3*2`, `4*2`, or top row | `Span04x03DoubleSlotLayout` or a direct `3*2`/`4*2` template proven by `templateAssetUnderstandingMap` | Small KPI/status cards, source/freshness | Optional `RULE-*` | Filter/date change |
-| `PATH-DETAIL-TABLE` | `RTP-DETAIL-QUERY` | 看明细表 | Show rows at the authoritative grain | Primary detail block | wide `8*3`, `12*N`, or table band | table-capable direct template from `templateAssetUnderstandingMap`; otherwise `TBD(GAP-BLOCK-LAYOUT-TEMPLATE-*)` | Table/pivot/detail evidence component | Static note only unless generated insight exists | Sort, pagination, row click |
-| `PATH-DETAIL-TRACE` | `RTP-DETAIL-QUERY` | 选行看证据/轨迹 | Explain one row without crowding the table | Drawer/detail component | drawer/modal or side block | Existing template action hook plus component content area | Detail evidence card/log/timeline | Optional `RULE-*` | Row drawer, jump |
-| `PATH-RISK-SUMMARY` | `RTP-RISK-MONITOR` | 先风险等级/异常结论 | Identify urgent risk | Risk summary block | `6*3` | `Span06x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Warning card, risk matrix, impacted object count | `RULE-*` required | Alert click |
-| `PATH-RISK-OBJECTS` | `RTP-RISK-MONITOR` | 定位对象/影响范围 | Decide who/what needs attention | Ranking/matrix/detail block | `4*3`, `6*3`, `8*3` | `Span04x03SingleSlotLayout`, `Span06x03DoubleSlotLayout`; `8*3` only when direct-template evidence exists | Ranking, heatmap, table, map | Optional `RULE-*` | Drilldown, drawer |
-| `PATH-CLOSURE-STATUS` | `RTP-CLOSURE-BOARD` | 先任务态势 | Show closure pressure | Status/action block | `4*3` or `6*3` | `Span04x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Overdue KPI, action list, progress | `RULE-*` when conclusion-like | Owner/status click |
-| `PATH-CLOSURE-PROCESS` | `RTP-CLOSURE-BOARD` | 看过程进展/闭环复盘 | Track execution and learning | Process/review block | `6*3` or `8*3` | `Span06x03SingleSlotLayout`; `8*3` only when direct-template evidence exists | Timeline, funnel, before-after review | Optional `RULE-*` | Jump, export |
-| `PATH-REVIEW-CONCLUSION` | `RTP-REVIEW-EXPORT` | 先期间结论 | Prepare review narrative | Review summary block | `6*3` or `8*3` | `Span06x03SingleSlotLayout`, `Span06x03DoubleSlotLayout` | Period conclusion, goal comparison | `RULE-*` required | Export section |
-| `PATH-REVIEW-EVIDENCE` | `RTP-REVIEW-EXPORT` | 看关键事件/影响 | Support recap and export | Evidence/detail block | `4*3`, `6*3`, or table band | `Span04x03SingleSlotLayout`, `Span06x03DoubleSlotLayout`, table-capable block | Event impact card, trend, table | Optional `RULE-*` | Event drawer, export |
-| `PATH-SELF-CONFIG` | `RTP-SELF-SERVICE` | 先配置问题/字段 | Let users define analysis | Configuration block | shell/page area plus `4*3` or `6*3` block | Existing shell/filter/template config plus `Span04x03SingleSlotLayout` | Field picker/config summary; no custom shell | none or static note | Field select, run analysis |
-| `PATH-SELF-RESULT` | `RTP-SELF-SERVICE` | 生成视图/看自动结论 | Show generated result safely | Result block | `6*3`, `8*3`, or table band | `Span06x03SingleSlotLayout`; larger/table blocks require direct-template evidence or `TBD(GAP-BLOCK-LAYOUT-TEMPLATE-*)` | Chart/table plus generated insight | `RULE-*` when insight visible | Drilldown, save, export |
+| `PATH-DASH-RESULT` | `RTP-KPI-DASHBOARD` | 先结论/状态 | Make the current state unmistakable | Primary result block | Wider or taller first-viewport block when needed | Single-slot or primary-plus-evidence slot pattern | Conclusion card, KPI metric, target progress, or trend example | `RULE-*` required | KPI click, metric switch, drilldown |
+| `PATH-DASH-DIAGNOSIS` | `RTP-KPI-DASHBOARD` | 看原因/结构/排名 | Explain what drives the state | Diagnostic evidence block | Medium block or row group | One chart/list slot, or chart plus ranking slot | Line/bar/combo/proportion/ranking examples | Optional `RULE-*` | Ranking click, chart point click |
+| `PATH-DASH-PROCESS` | `RTP-KPI-DASHBOARD` | 看过程/趋势 | Show how the result evolved | Process block | Medium/wide trend area | Single trend slot or trend plus detail slot | Line/combo/funnel/process examples | Optional `RULE-*` | Period switch, drilldown |
+| `PATH-DASH-ACTION` | `RTP-KPI-DASHBOARD` | 看动作/闭环 | Turn diagnosis into action | Action/detail block | Medium block or table band | List/table slot, optionally paired with status slot | Action list, detail table, complex table examples | Optional `RULE-*` | Drawer, jump, export |
+| `PATH-COCKPIT-STATUS` | `RTP-COCKPIT` | 先总态势 | Establish large-screen command context | Dominant status block | Large first-screen block | Multi-slot status pattern when evidence must be simultaneous | KPI, radar, map/custom ECharts, ranking examples | `RULE-*` required | Fullscreen, alert click |
+| `PATH-ANALYSIS-CONCLUSION` | `RTP-ANALYSIS-REPORT` | 先结论 | Give answer before evidence | Narrative conclusion block | Wider reading block | Conclusion-first slot pattern | Conclusion card plus trend/evidence example | `RULE-*` required | Evidence jump |
+| `PATH-ANALYSIS-EVIDENCE` | `RTP-ANALYSIS-REPORT` | 看核心证据/拆解归因 | Prove and explain the conclusion | Evidence/attribution block | Medium/wide evidence area | Multi-slot only when comparison or driver evidence must be side by side | Trend, decomposition, comparison, table, heatmap examples | Optional `RULE-*` | Drilldown, segment switch |
+| `PATH-ANALYSIS-ACTION` | `RTP-ANALYSIS-REPORT` | 看建议/行动 | Make the conclusion usable | Recommendation block | Medium block | Action recommendation slot plus optional evidence slot | Action list/conclusion/detail examples | `RULE-*` when conclusion-like | Jump, task route |
+| `PATH-DETAIL-SUMMARY` | `RTP-DETAIL-QUERY` | 先范围与汇总 | Confirm query scope and totals | Summary strip/block | Compact top block or strip | KPI/source/trust slots | KPI metric, target progress, conclusion/note examples | Optional `RULE-*` | Filter/date change |
+| `PATH-DETAIL-TABLE` | `RTP-DETAIL-QUERY` | 看明细表 | Show rows at authoritative grain | Primary detail block | Wide table band | Table slot should fill available width | Detail table or complex table example | Static note only unless generated insight exists | Sort, pagination, row click |
+| `PATH-DETAIL-TRACE` | `RTP-DETAIL-QUERY` | 选行看证据/轨迹 | Explain one row without crowding the table | Drawer/detail component | Drawer/modal or side block | Component-owned interaction, not shell rebuild | Detail evidence/custom ECharts/list example | Optional `RULE-*` | Row drawer, jump |
+| `PATH-RISK-SUMMARY` | `RTP-RISK-MONITOR` | 先风险等级/异常结论 | Identify urgent risk | Risk summary block | Medium/wide block | Warning-first slot pattern | Conclusion/warning, heatmap, ranking examples | `RULE-*` required | Alert click |
+| `PATH-RISK-OBJECTS` | `RTP-RISK-MONITOR` | 定位对象/影响范围 | Decide who/what needs attention | Ranking/matrix/detail block | Medium/wide block | Ranking/table/heatmap slots | Ranking, heatmap, detail table, custom map examples | Optional `RULE-*` | Drilldown, drawer |
+| `PATH-CLOSURE-STATUS` | `RTP-CLOSURE-BOARD` | 先任务态势 | Show closure pressure | Status/action block | Medium block | KPI plus action/list slot pattern | Progress/KPI/action list examples | `RULE-*` when conclusion-like | Owner/status click |
+| `PATH-CLOSURE-PROCESS` | `RTP-CLOSURE-BOARD` | 看过程进展/闭环复盘 | Track execution and learning | Process/review block | Medium/wide block | Timeline/funnel/evidence slots | Funnel, line/combo, table/list examples | Optional `RULE-*` | Jump, export |
+| `PATH-REVIEW-CONCLUSION` | `RTP-REVIEW-EXPORT` | 先期间结论 | Prepare review narrative | Review summary block | Wider reading block | Conclusion plus goal comparison slot | Conclusion, KPI, combo examples | `RULE-*` required | Export section |
+| `PATH-REVIEW-EVIDENCE` | `RTP-REVIEW-EXPORT` | 看关键事件/影响 | Support recap and export | Evidence/detail block | Medium/wide block or table band | Event evidence plus table/chart slots | Review impact, trend, detail table examples | Optional `RULE-*` | Event drawer, export |
+| `PATH-SELF-CONFIG` | `RTP-SELF-SERVICE` | 先配置问题/字段 | Let users define analysis | Configuration block | Shell/page config plus block when needed | Use existing shell/filter/template config, no custom shell | Config summary/action list/custom example as needed | none or static note | Field select, run analysis |
+| `PATH-SELF-RESULT` | `RTP-SELF-SERVICE` | 生成视图/看自动结论 | Show generated result safely | Result block | Chart/table block or table band | Slot pattern chosen from generated result shape | Chart/table plus generated insight examples | `RULE-*` when insight visible | Drilldown, save, export |
 
 ## PRD Readiness Gates
 
-- The PRD cannot be `ready-for-review` unless the main PRD summarizes one primary report path and `CHILD-PRD-PROTOTYPE` / Appendix A names one primary `RTP-*` pattern or a justified `RTP-MIXED` primary-plus-secondary structure.
-- Every visible page block in Appendix A / Template Build Packet must trace back to a path step in `CHILD-PRD-PROTOTYPE` or Appendix A.
+- The PRD cannot be `ready-for-review` unless the main PRD summarizes one primary report path and `CHILD-PRD-PROTOTYPE` / `prd/execution/prd-template-execution-contract.md` names one primary `RTP-*` pattern or a justified `RTP-MIXED` primary-plus-secondary structure.
+- Every visible page block in `prd/execution/prd-template-execution-contract.md` / Template Build Packet must trace back to a path step in `CHILD-PRD-PROTOTYPE` or `prd/execution/prd-template-execution-contract.md`.
 - The first viewport must implement the first one or two steps of the selected report-type reading path.
-- If the user supplied a report implementation idea, the main PRD must summarize whether it is `accepted`, `optimized`, `rejected`, or `needs-confirmation`, and `CHILD-PRD-PROTOTYPE` / Appendix A must hold the detailed validation.
-- If attachments were provided, the PRD bundle must show which attachment facts shaped the chosen report type, module order, and block layout mapping.
-- Section 4A must not name a size-only `SpanCCxRRLayout` wrapper as ready. Large spans and table bands are only ready when `templateAssetUnderstandingMap` proves a direct selectable slot template.
+- If the user supplied a report implementation idea, the main PRD must summarize whether it is `accepted`, `optimized`, `rejected`, or `needs-confirmation`, and `CHILD-PRD-PROTOTYPE` / `prd/execution/prd-template-execution-contract.md` must hold the detailed validation.
+- If attachments were provided, the PRD bundle must show which attachment facts shaped the chosen report type, module order, and block area mapping.
+- Section 4A must not name a retired fixed-size wrapper as ready. Large spans and table bands are only ready when `templateAssetUnderstandingMap` proves a dynamic slot pattern config.
 - Do not map a detail-query report as a conclusion-first dashboard unless the primary user task is management judgment rather than row lookup.
 - Do not map a dashboard as a dense table-first report unless the user explicitly asks for reconciliation/detail-first behavior.
 - Do not add secondary pattern modules before the primary pattern answers its main question.

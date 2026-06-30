@@ -59,9 +59,9 @@ export const reportTemplateSlotContracts: ReportTemplateSlotContract[] = [
     alignment: 'fill',
     role: 'component-content',
     required: true,
-    accepts: ['componentSlots matching selected block layout template', 'component content area template Vue file', 'data binding'],
+    accepts: ['componentSlots matching selected block layout template', 'componentExampleId', 'component example props.config', 'data binding'],
     heightRatio: '6/9 of body area, or expands when optional slots are hidden',
-    description: 'Block layout template component area. It contains component slots, and each slot may only be filled with a component content area template; title, pills, auxMetrics, unit, and summary stay on the block layout template.',
+    description: 'Block layout template component area. It contains component slots, and each slot may only be filled with a configured component example; title, pills, auxMetrics, unit, and summary stay on the block layout template.',
   },
   {
     id: 'summaryArea',

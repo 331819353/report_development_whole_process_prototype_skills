@@ -32,7 +32,7 @@ When the user says any of the following, use `$frontend-design-improvement-workf
 | 报表规范, 仪表盘规范, 报表风格一致, tokens, 设计系统 | `$haier-enterprise-app-ui-design-spec` as inherited company UI baseline for Haier/enterprise report apps, plus `report-design-system-governance` for report-specific rules |
 | 通用企业应用, 管理后台, 表单列表详情, 工作台, Haier UI | `$haier-enterprise-app-ui-design-spec` |
 | 页面跑起来看, 浏览器检查, 截图, 控制台, hover/focus, 裁切, 溢出 | `$frontend-runtime-qa-validation` |
-| 修改代码, 接口接入, 修复页面, 去mock, 编译报错 | `$frontend-development-workflow` |
+| 修改代码, 接口接入, 修复页面, 去mock, 编译报错 | `report-prototype-template-management`, `$frontend-runtime-qa-validation`, `report-delivery-pipeline-governance` |
 
 ## Default Bundle
 

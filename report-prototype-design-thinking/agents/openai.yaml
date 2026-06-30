@@ -1,4 +1,4 @@
 interface:
   display_name: "报表原型设计思路"
-  short_description: "在画图表或写代码前梳理报表原型的用户、场景、决策动作、指标层级和分析路径，作为原报表原型 workflow 的默认思考层。"
-  default_prompt: "Use report-prototype-design-thinking to start generic report prototype work from user, scenario, decision/action, metric layers, analysis path, component rationale, and downstream handoff notes."
+  short_description: "在 PRD 生成阶段梳理报表用户、场景、决策动作、指标层级、页面内容和阅读路径，供专项 workflow 消费。"
+  default_prompt: "Use report-prototype-design-thinking during report-prd-document-generation to decide the report users, scenarios, decision/action path, metric layers, analysis path, page content, reading sequence, and downstream handoff notes before the selected specialized prototype workflow consumes the PRD bundle."

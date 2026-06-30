@@ -8,6 +8,6 @@
 | Component-local switch, metric selector, period selector, dimension selector, ranking scope | `report-component-style-design` `references/10-in-component-controls.md` |
 | Component-local placement, title-right capsule/dropdown geometry, local-filter responsive fallback | `report-component-style-design` `references/12a-placement-foundation-controls.md` |
 | Report-wide filter engineering and acceptance | `report-design-system-governance` `references/06-report-filters-states-engineering-acceptance.md` |
-| Runtime filter-linkage test design or execution | `$filter-linkage-completeness-test` |
+| Runtime filter-linkage test design or execution | `$frontend-runtime-qa-validation`, `quality-gate-validation` |
 
-When filters drive API/query behavior, also route to `$api-inventory-design` or `$api-documentation-design` for request params and backend execution stage.
+When filters drive API/query behavior, also route to `delivery-artifact-template-management` or `delivery-artifact-template-management` for request params and backend execution stage.

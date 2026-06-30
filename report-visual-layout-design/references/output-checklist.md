@@ -5,8 +5,8 @@
 When asked to design a report visual layout, use this structure:
 
 1. 页面定位: report type, user, core question, usage scenario, custom shell or template-based.
-2. 页面路径、样式来源、品牌模式与视觉模式: declare `pageShellPath`, `pageStyleSource`, exactly one `brandMode`, and exactly one `visualMode`; when custom, declare `customDesignPath` and exactly one `customLayoutPattern`.
-3. 页面外壳: unified page identity/navigation/filter control surface for custom pages, or the selected template's native shell/navigation/filter slots for template-based pages; include logo placement, actions, and template mapping if applicable.
+2. 配置化模板入口: declare `frameworkTemplateId`, `pageStyleSource`, exactly one `brandMode`, exactly one `visualMode`, and the selected configurable template target.
+3. 页面外壳: use the selected template's native shell/navigation/filter slots; include logo placement, actions, and template mapping.
 4. 品牌风格: Haier logo asset discovery result, logo variant or placeholder, Haier blue/white palette, typography, spacing, density, surfaces.
 5. 内容结构: conclusion-chain layout with `overallConclusion`, supporting sections, section conclusions, evidence components, detail, action, and trust/source flow.
 6. 栅格方案: `1920x1080` content grid, menu/sidebar occupied width, menu/header occupied height, 12-column split, 8 visible row-unit sizing basis, columnWidth/rowHeight calculation, N-row scroll behavior, parent spans, internal sub-block plan when used, chart/table/container/complex-diagram safety.
@@ -22,20 +22,20 @@ When asked to design a report visual layout, use this structure:
 
 Before finalizing, verify:
 
-- The entry mode is clear: custom report page or template-based page.
-- `pageShellPath` is declared as `template` or `custom`.
-- `pageStyleSource` is declared. If no page style and no HTML/source/sample styling is provided, `pageShellPath: template` and a bundled template are selected by default.
+- The entry mode is clear: configurable bundled framework template.
+- `frameworkTemplateId` is declared and points to a bundled template.
+- `pageStyleSource` is declared. If no page style and no HTML/source/sample styling is provided, the closest bundled template is selected by default.
 - `brandMode` is declared as `haierBranded`, `sampleNative`, or `neutral`; logo and global-token implications are explicit.
 - User-specified design style or provided sample/HTML source is followed unless it violates hard gates or the user asks for optimization.
 - Exactly one `visualMode` is declared before implementation.
-- If `pageShellPath: custom`, exactly one `customDesignPath` is declared: `htmlReplica` or `freeDesign`.
-- Custom page shells declare exactly one `customLayoutPattern`: `symmetricBalance`, `threePart`, `masterDetail`, or `narrativeStack`.
-- Custom `htmlReplica` and `freeDesign` pages with `brandMode: haierBranded` use a real bundled Haier logo in the header, unified title/control area, or sidebar brand area; placeholder does not pass final acceptance.
+- `pageLayoutConfig` is declared with `layoutSectionMap`, `layoutRows`, and `layoutCoordinateMap`.
+- `blockAreaConfigMap` is declared; every visible block uses a block area config created by `createBlockAreaConfig`.
+- Configured template pages with `brandMode: haierBranded` use a real bundled Haier logo in the template logo slot; placeholder does not pass final acceptance.
 - `sampleRestore` preserves the source page shell, module order, container hierarchy, main control count, layer structure, and card proportions unless the user explicitly asks for redesign.
 - Any added filter, summary card, detail table, matrix, drawer, or jump in `sampleRestore` is labeled as an enhancement and does not change the first viewport or main body layout.
 - Any added conclusion, insight, or status summary in `sampleRestore` is embedded into an existing sample-equivalent region; a new standalone horizontal band fails unless the source has an equivalent band.
-- HTML-replica and custom layouts use global UI tokens for palette, typography, spacing, radius, semantic colors, shadows, and control states unless exact color restoration is explicitly requested.
-- Custom pages use one coherent page identity/navigation/filter control area when possible, instead of mechanically splitting three independent strips.
+- Template pages use global UI tokens for palette, typography, spacing, radius, semantic colors, shadows, and control states unless exact color restoration is explicitly requested as evidence for a template backlog item.
+- Template pages use the selected framework's coherent page identity/navigation/filter control area instead of mechanically adding independent strips.
 - Template-based pages follow the selected template's shell, logo slot, navigation, filter pattern, and grid mechanics.
 - Template-based pages do not add a standalone filter toolbar, persistent filter bar, or extra filter drawer when the selected template already owns filter invocation. The filter plan maps to `filters[]`, native trigger/panel/popover/drawer, component-owned local filters, and binding rules.
 - If a template is used, the chosen template is justified: topbar dark scroll, topbar light scroll, left-nav workbench, or frozen-title sci-fi cockpit.
@@ -43,7 +43,7 @@ Before finalizing, verify:
 - The first viewport reaches the report's core question.
 - The first viewport exposes the overall conclusion or primary judgment, and downstream sections are ordered by how they explain that conclusion.
 - Logo asset discovery has been completed before implementation.
-- The Haier logo is present in the custom-page title/control area or the template logo slot.
+- The Haier logo is present in the template logo slot.
 - Logo variant is correct: original color on light backgrounds, white on dark backgrounds.
 - If logo assets are missing, a visible placeholder remains in the logo slot and the missing asset is listed as a gap.
 - The page uses Haier blue and white as the main palette.
@@ -120,15 +120,15 @@ Before finalizing, verify:
 
 ## 3. Avoid
 
-- Do not treat custom pages and template-based pages as the same layout problem.
+- Do not create alternate shell or independent layout branches inside report development; missing template capability is a blocker or template backlog item.
 - Do not choose a custom shell merely because the user did not specify page style.
-- Do not mark a custom page complete with only a logo placeholder.
+- Do not mark a configured template page complete with only a logo placeholder when a logo slot is required.
 - Do not redesign a selected template's shell unless the task explicitly asks for template-level changes.
 - Do not overwrite a template's original navigation/filter shell with newly generated standalone controls.
 - Do not generate a new filter toolbar/bar for a bundled template unless the user explicitly requested template-level redesign and the adaptation is documented.
 - Do not choose a template without explaining why it fits the report scope and usage scenario.
 - Do not force page identity, navigation, and page/global filters into three separate areas when a unified control area is cleaner.
-- Do not omit the Haier logo from a `brandMode: haierBranded` custom page's title/control area or a template's logo slot.
+- Do not omit the Haier logo from a `brandMode: haierBranded` template logo slot.
 - Do not omit the `brandMode` decision when a sample or custom shell might conflict with Haier branding.
 - Do not silently remove the logo slot when the logo asset is missing.
 - Do not use the original blue logo on dark backgrounds or the white logo on light backgrounds.

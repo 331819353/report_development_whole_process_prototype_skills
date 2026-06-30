@@ -5,6 +5,7 @@ import type {
   WidgetTitlePillOption,
   WidgetVisualType,
 } from '../../widgets/types';
+import type { ComponentExampleConfigSchema } from '../../widgets/templates/component-examples/config';
 import type {
   ReportComponentSlotRole,
   ReportFrameworkAsset,
@@ -89,7 +90,7 @@ export interface ReportBlueprintDataBinding {
   notes?: string[];
 }
 
-export type ReportBlueprintSelfDevelopmentExceptionType = 'interactionBehavior' | 'componentContentAreaTemplate';
+export type ReportBlueprintSelfDevelopmentExceptionType = 'interactionBehavior' | 'customEChartComponent';
 export type ReportBlueprintInteractionType = 'drilldown' | 'jump' | 'modal' | 'drawer' | 'popup' | 'crossFilter';
 export type ReportBlueprintInteractionTriggerOwner = 'templateActionHook' | 'componentOwnedEvent' | 'widgetEvent';
 export type ReportBlueprintInteractionTargetType =
@@ -110,11 +111,11 @@ export interface ReportBlueprintSelfDevelopmentException {
   sourcePageId?: string;
   sourceBlockId?: string;
   sourceSlotId?: string;
-  componentContentAreaTemplateId?: string;
+  componentExampleId?: string;
   interactionId?: string;
   interactionType?: ReportBlueprintInteractionType;
   triggerOwner?: ReportBlueprintInteractionTriggerOwner;
-  sourceComponentContentAreaTemplateId?: string;
+  sourceComponentExampleId?: string;
   payloadFields?: string[];
   target?: string;
   targetType?: ReportBlueprintInteractionTargetType;
@@ -134,9 +135,7 @@ export interface ReportBlueprintComponentSlot {
   regionKey?: string;
   role?: ReportComponentSlotRole;
   size?: string;
-  componentContentAreaTemplateId?: string;
-  /** @deprecated Use componentContentAreaTemplateId. */
-  componentSampleId?: string;
+  componentExampleId?: string;
   widget?: RegisteredWidgetConfig;
   slotFills?: ReportTemplateSlotFill[];
   dataBinding?: ReportBlueprintDataBinding;
@@ -157,12 +156,8 @@ export interface ReportComponentRegionPatternOption {
 export interface ReportBlueprintBlock {
   id: string;
   blockLayoutTemplateId?: string;
-  /** @deprecated Use blockLayoutTemplateId. */
-  genericTemplateId?: string;
   componentRegionPattern?: string;
-  componentContentAreaTemplateId?: string;
-  /** @deprecated Use componentContentAreaTemplateId. */
-  componentSampleId?: string;
+  componentExampleId?: string;
   widget?: RegisteredWidgetConfig;
   componentSlots?: ReportBlueprintComponentSlot[];
   slotFills?: ReportTemplateSlotFill[];
@@ -193,18 +188,15 @@ export interface ReportBlueprint {
 export interface ReportAssetResolutionContext {
   frameworks: ReportFrameworkAsset[];
   pageLayouts: ReportPageLayoutAsset[];
-  componentContentAreaTemplates: ReportTemplateBlockAsset[];
+  componentExamples: ReportTemplateBlockAsset[];
   blockLayoutTemplates: ReportTemplateBlockAsset[];
-  /** @deprecated Use componentContentAreaTemplates. */
-  componentSamples: ReportTemplateBlockAsset[];
-  /** @deprecated Use blockLayoutTemplates. */
-  genericTemplates: ReportTemplateBlockAsset[];
 }
 
 export interface ReportBlueprintCatalog {
   materializerVersion: string;
   slotContracts: ReportTemplateSlotContract[];
   widgetSchemas: WidgetConfigurationSchema[];
+  componentExampleSchemas: ComponentExampleConfigSchema[];
   compatibilityRules: ReportCompatibilityRule[];
   componentRegionPatterns: ReportComponentRegionPatternOption[];
   currentConfigBlueprint: ReportBlueprint;

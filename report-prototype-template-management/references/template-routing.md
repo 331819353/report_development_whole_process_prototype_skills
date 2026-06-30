@@ -12,11 +12,11 @@ Copy the selected asset directory into the target project, or merge its `src/`, 
 
 ## Default Operation Logic
 
-Default to `pageShellPath: template`.
+Default to a selected bundled `frameworkTemplateId`.
 
-In the report development flow, do not choose `pageShellPath: custom`. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must use bundled templates. If the user explicitly asks for 自行设计开发, 自由设计, 自定义开发, 百分百复刻, 像素级复刻, exact restoration, existing shell preservation, HTML/static shell output, or a documented requirement cannot be met by any bundled template, record it as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exception.
+In the report development flow, do not choose an alternate shell path. Framework shell, page layout, block area configs, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must use bundled templates. If the user explicitly asks for 自行设计开发, 自由设计, 自定义开发, 百分百复刻, 像素级复刻, exact restoration, existing shell preservation, or a documented requirement cannot be met by any bundled template, record it as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exception.
 
-Only interaction behavior and component content area templates may be self-developed, and both must be declared in `selfDevelopmentExceptionMap`.
+Only interaction behavior and registered component examples may be self-developed, and both must be declared in `selfDevelopmentExceptionMap`.
 
 When the user provides a sample but does not demand exact restoration, treat the sample as evidence for information hierarchy, density, and visual tone. Still choose the closest bundled template by scenario.
 

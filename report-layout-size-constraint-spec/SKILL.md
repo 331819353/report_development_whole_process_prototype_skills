@@ -24,6 +24,7 @@ Use `report-visual-layout-design` for full page layout decisions; use this skill
 | Preflight understanding before implementation/repair/acceptance | `$quality-gate-validation` `references/preflight-understanding-gate.md` |
 | Size source map | `references/01-size-reference-map.md` |
 | Parent layout references | `report-visual-layout-design` references: `block-size-constraints.md`, `grid-containers.md`, `block-composition.md`, `layout-acceptance-gates.md` |
+| Configurable template block chain | `report-prototype-template-management` `references/configurable-zero-to-one-flow.md` when block sizing affects a bundled-template page |
 | Anti-squeeze row expansion, full-row vacancy reflow, and minimum typography/component floors | `report-visual-layout-design` `references/block-size-constraints-05-anti-squeeze-reflow.md` |
 | Modern SaaS / BI Dashboard / UI Kit pileup and hierarchy constraints | `report-design-system-governance` `references/12-modern-saas-bi-style-contract.md` when requested |
 | KPI time-series card minimums for trend/change/YoY-MoM/cycle/volatility/forecast cards | `report-visual-layout-design` `references/block-size-constraints-02-component-requirements.md` |
@@ -36,10 +37,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Workflow
 
 1. Run the Preflight understanding gate for implementation, repair, or acceptance work; name affected blocks, child component families, viewport targets, hard constraints, missing evidence, and start decision.
-2. Identify the `1920x1080` viewport target, menu/sidebar occupied width, menu/header occupied height, content-area `12 * 8` sizing grid, `N`-row scroll behavior, parent blocks, child components, fixed-height surfaces, and density.
+2. Identify the `1920x1080` viewport target, menu/sidebar occupied width, menu/header occupied height, content-area `12 * 8` sizing grid, `N`-row scroll behavior, parent blocks, child components, fixed-height surfaces, and density. For configurable templates, derive the block span from `pageLayoutConfig.layoutRows` and the matching `blockAreaConfigMap` row.
 3. Calculate usable width/height from the block units before deciding chart/table/KPI composition: `colWidth = (visibleWidth - menuOrSidebarWidth) / 12`; `rowHeight = (visibleHeight - menuOrHeaderHeight) / 8`.
 4. Check row count, header/filter/toolbar/legend/footer/state masks, child-component minimums, metric-cell minimums, typography floors, gaps, padding, line-height, and scroll areas.
-5. Decide whether to enlarge, row-group-expand, move to full row, split, move to drawer/fullscreen, paginate, scroll, or reduce component density. When one block grows taller, evaluate the same-row semantic group; when a block moves to a wider/full row, evaluate the old vacancy and sibling stretch/fill options.
+5. Decide whether to enlarge, row-group-expand, move to full row, split, move to drawer/fullscreen, paginate, scroll, or reduce component density. When a configurable template block changes size, express the decision as a `layoutRows` and `blockAreaConfigMap` update, then recheck declared slots instead of choosing a separate block template.
 6. Require DOM overflow checks when code or URL exists: fixed-height cards, summary/ranking blocks, KPI tiles, nav items, Composite Panels, table bodies, and compact controls must pass `scrollHeight <= clientHeight + 2` and `scrollWidth <= clientWidth + 2`, or declare an intentional visible scroll, expand/collapse, drawer/fullscreen, pagination, or split strategy.
 7. Inspect `overflow: hidden` on parent/root containers. It is allowed for decorative masks or known non-content regions, but fails acceptance when it hides decision-critical text, ranking rows, controls, legends, values, or table content without a declared disclosure path.
 
@@ -47,6 +48,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Preflight understanding result when the work is implementation/repair/acceptance, plus target viewport and block/container size budget.
 - Fit decision for each dense block: fit, enlarge, row-group-expand, full-row, split, scroll, drawer/fullscreen, or blocked.
+- Configurable-template sizing handoff when applicable: affected `layoutRows`, `blockCoordinate`, `blockAreaConfigMap` row, slot impact, and component-example compatibility.
 - Reflow decision when expansion changes neighboring blocks: semantic row group, sibling bottom alignment, old vacancy handling, allowed business-value fill, sibling stretch rationale, or blocked reason.
 - Overflow/cropping risks and required DOM/runtime checks, including selectors, target viewports, `scrollHeight/clientHeight`, `scrollWidth/clientWidth`, overflow CSS, and pass/fail result when code or URL exists.
 - Handoff to component/table/chart skills when internal fit rules are needed.
@@ -55,6 +57,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Do not approve a block only because it roughly looks acceptable; it must pass the `1920x1080` content-area grid, density, and DOM overflow checks that match this prototype stage.
 - Do not approve or edit a layout before identifying affected child component families and their owning chart/table/filter/placement skills.
+- Do not approve a configurable-template block-size change when it is not expressible through `pageLayoutConfig.layoutRows`, `blockAreaConfigMap`, and existing or newly declared component slots.
 - Fixed-height KPI/card/navigation/table areas need explicit padding, line-height, gap, and overflow checks.
 - Do not use font shrinkage, hidden overflow, or arbitrary sibling stretching to make a failed block pass. Typography and interaction floors from `block-size-constraints-05-anti-squeeze-reflow.md` are hard gates unless a baseline-only exception is documented.
 - When a core block in a semantic row group needs additional height, siblings must expand with the row group, be enriched with decision-relevant content, or trigger a split/repack. Sparse empty shells and decorative stretching fail as `VIS-FILLER-STRETCH`.

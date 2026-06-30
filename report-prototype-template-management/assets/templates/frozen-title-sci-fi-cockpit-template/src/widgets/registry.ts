@@ -11,8 +11,8 @@ import RankingCardWidget from './components/RankingCardWidget.vue';
 import S2ReportTableWidget from './components/S2ReportTableWidget.vue';
 import SignalMatrixWidget from './components/SignalMatrixWidget.vue';
 import StatusRowsWidget from './components/StatusRowsWidget.vue';
-import * as ComponentContentAreaTemplates from './templates/component-content-areas';
-import * as SpanLayouts from './templates/block-spans';
+import * as ComponentExamples from './templates/component-examples';
+import BaseLayoutSpan from './templates/block-spans/BaseLayoutSpan.vue';
 import TemplateEChartWidget from './components/TemplateEChartWidget.vue';
 import UniversalCardWidget from './components/UniversalCardWidget.vue';
 
@@ -22,79 +22,77 @@ export interface WidgetRegistration {
   defaultViewport?: WidgetViewportConfig;
 }
 
-const spanLayoutRegistry = Object.fromEntries(
-  Object.entries(SpanLayouts)
-    .filter(([name]) => /^Span\d{2}x\d{2}[A-Za-z0-9]*Layout$/.test(name))
-    .map(([name, component]) => [
-      name,
-      {
-        component: component as Component,
-        description: `Generic ${name.slice(4, 6)}x${name.slice(7, 9)} layout span preview for the 12x8 grid.`,
-      },
-    ]),
-) as Record<string, WidgetRegistration>;
-
-const componentContentAreaTemplateRegistry: Record<string, WidgetRegistration> = {
-  OperatingRevenueMetricContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.OperatingRevenueMetricContentAreaTemplate,
-    description: 'Standalone component content area template for operating revenue metric value.',
+const componentExampleRegistry: Record<string, WidgetRegistration> = {
+  KpiMetricExampleCard: {
+    component: ComponentExamples.KpiMetricExampleCard,
+    description: 'Component example catalog card for KPI metrics with title pill, unit, value, and 2x2 accessory metrics.',
   },
-  OperatingProfitMetricContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.OperatingProfitMetricContentAreaTemplate,
-    description: 'Standalone component content area template for operating profit metric value.',
+  TargetProgressExampleCard: {
+    component: ComponentExamples.TargetProgressExampleCard,
+    description: 'Component example catalog card for target progress with value, detail rows, and progress bar.',
   },
-  TargetAchievementContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.TargetAchievementContentAreaTemplate,
-    description: 'Standalone component content area template for target achievement card content.',
+  RankingListExampleCard: {
+    component: ComponentExamples.RankingListExampleCard,
+    description: 'Component example catalog card for adaptive ranking lists with title, unit, and proportional row fills.',
   },
-  RegionalRevenueRankingContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.RegionalRevenueRankingContentAreaTemplate,
-    description: 'Standalone component content area template for regional revenue ranking content.',
+  LineChartExampleCard: {
+    component: ComponentExamples.LineChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts line charts with title and unit.',
   },
-  RevenueProfitTrendContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.RevenueProfitTrendContentAreaTemplate,
-    description: 'Standalone component content area template for revenue and profit trend chart content.',
+  HeatmapChartExampleCard: {
+    component: ComponentExamples.HeatmapChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts heatmaps with title, unit, and auxiliary metrics.',
   },
-  ChannelRevenueStructureContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.ChannelRevenueStructureContentAreaTemplate,
-    description: 'Standalone component content area template for channel revenue structure chart content.',
+  BarChartExampleCard: {
+    component: ComponentExamples.BarChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts bar charts with title, unit, and auxiliary metrics.',
   },
-  CustomerValueScatterContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.CustomerValueScatterContentAreaTemplate,
-    description: 'Standalone component content area template for customer value scatter chart content.',
+  ComboChartExampleCard: {
+    component: ComponentExamples.ComboChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts combo charts with bars, lines, dual axes, and target marks.',
   },
-  CostProfitHeatmapContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.CostProfitHeatmapContentAreaTemplate,
-    description: 'Standalone component content area template for cost and profit heatmap content.',
+  ProportionChartExampleCard: {
+    component: ComponentExamples.ProportionChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts proportion charts with configurable pie or donut slices.',
   },
-  OperatingHealthRadarContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.OperatingHealthRadarContentAreaTemplate,
-    description: 'Standalone component content area template for operating health radar content.',
+  DetailTableExampleCard: {
+    component: ComponentExamples.DetailTableExampleCard,
+    description: 'Component example catalog card for compact AntV S2 detail tables with title, metrics, frozen columns, and canvas scrolling.',
   },
-  ExceptionWarningContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.ExceptionWarningContentAreaTemplate,
-    description: 'Standalone component content area template for exception warning card content.',
+  ComplexTableExampleCard: {
+    component: ComponentExamples.ComplexTableExampleCard,
+    description: 'Component example catalog card for AntV S2 complex tables with nested grouped headers, frozen dimensions, search, column settings, and pagination.',
   },
-  KeyActionListContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.KeyActionListContentAreaTemplate,
-    description: 'Standalone component content area template for key action list content.',
+  QuadrantChartExampleCard: {
+    component: ComponentExamples.QuadrantChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts quadrant scatter charts with auxiliary metrics and threshold lines.',
   },
-  OpportunityFunnelContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.OpportunityFunnelContentAreaTemplate,
-    description: 'Standalone component content area template for opportunity funnel content.',
+  RadarChartExampleCard: {
+    component: ComponentExamples.RadarChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts radar charts with auxiliary metrics and compact slot sizing.',
   },
-  OperatingConclusionContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.OperatingConclusionContentAreaTemplate,
-    description: 'Standalone component content area template for operating conclusion card content.',
+  SunburstChartExampleCard: {
+    component: ComponentExamples.SunburstChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts sunburst charts with hierarchical share data.',
   },
-  LaunchConversionWaterfallContentAreaTemplate: {
-    component: ComponentContentAreaTemplates.LaunchConversionWaterfallContentAreaTemplate,
-    description: 'Standalone ECharts component content area template for new-launch store conversion path.',
+  RoundedFunnelChartExampleCard: {
+    component: ComponentExamples.RoundedFunnelChartExampleCard,
+    description: 'Component example catalog card for adaptive ECharts rounded funnel charts with stage conversion data.',
+  },
+  CustomEChartComponentTemplate: {
+    component: ComponentExamples.CustomEChartComponentTemplate,
+    description: 'Self-developed ECharts component template with rounded-funnel layout, reusable title/metrics/chart shell, and a replaceable custom-series render entry.',
+  },
+  ActionListExampleCard: {
+    component: ComponentExamples.ActionListExampleCard,
+    description: 'Component example catalog card for adaptive action checklist items with status, owner, and due metadata.',
+  },
+  ConclusionExampleCard: {
+    component: ComponentExamples.ConclusionExampleCard,
+    description: 'Component example catalog card for adaptive conclusions with a core insight area and supplementary list.',
   },
 };
 
-// 模板默认不内置业务组件，保持干净。
-// 复制 WidgetTemplate.vue 开发组件后，在这里 import 并注册。
 export const widgetRegistry: Partial<Record<RegisteredWidgetType, WidgetRegistration>> &
   Record<string, WidgetRegistration | undefined> = {
   AdvancedEChartWidget: {
@@ -104,6 +102,10 @@ export const widgetRegistry: Partial<Record<RegisteredWidgetType, WidgetRegistra
   CompactBarChart: {
     component: CompactBarChart,
     description: 'Compact ECharts bar chart for small 2x2 block component areas.',
+  },
+  BaseLayoutSpan: {
+    component: BaseLayoutSpan,
+    description: 'Block area region layout that adapts to cols/rows and renders configured component slots.',
   },
   KpiMetricWidget: {
     component: KpiMetricWidget,
@@ -149,6 +151,5 @@ export const widgetRegistry: Partial<Record<RegisteredWidgetType, WidgetRegistra
     component: UniversalCardWidget,
     description: 'Template-carried 2x2 universal business card component for target, comparison, warning, contribution, grid, funnel, progress, and summary templates.',
   },
-  ...componentContentAreaTemplateRegistry,
-  ...spanLayoutRegistry,
+  ...componentExampleRegistry,
 };

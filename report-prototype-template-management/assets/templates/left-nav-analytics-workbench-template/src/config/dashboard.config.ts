@@ -1,4 +1,4 @@
-import { businessReportNav } from '../report-template-assets/business-report-pages';
+import { projectReportNav } from '../report-template-assets/business-report-pages';
 import type { DashboardConfig } from '../types/dashboard';
 
 export const cockpitConfig: DashboardConfig = {
@@ -8,9 +8,9 @@ export const cockpitConfig: DashboardConfig = {
   },
 
   screen: {
-    title: '经营分析报表',
-    navTitle: '报表导航',
-    filterTitle: '筛选项',
+    title: '智慧家庭项目经营分析报告',
+    navTitle: '项目报告导航',
+    filterTitle: '经营筛选',
     defaultTheme: 'light',
     defaultNavOpen: true,
     defaultFiltersOpen: false,
@@ -41,7 +41,7 @@ export const cockpitConfig: DashboardConfig = {
     },
   },
 
-  nav: businessReportNav,
+  nav: projectReportNav,
 
   filters: [
     {
@@ -52,6 +52,7 @@ export const cockpitConfig: DashboardConfig = {
         { id: '2026-06', label: '2026年6月' },
         { id: '2026-05', label: '2026年5月' },
         { id: '2026-q2', label: '2026年Q2' },
+        { id: '2026-h1', label: '2026年上半年' },
       ],
     },
     {
@@ -67,6 +68,18 @@ export const cockpitConfig: DashboardConfig = {
       ],
     },
     {
+      id: 'project',
+      label: '经营项目',
+      defaultValue: 'all',
+      options: [
+        { id: 'all', label: '全部项目' },
+        { id: 'smart-home', label: '智慧家庭套购增长' },
+        { id: 'store-refresh', label: '门店焕新转化' },
+        { id: 'engineering', label: '工程客户交付' },
+        { id: 'overseas-direct', label: '海外直营提效' },
+      ],
+    },
+    {
       id: 'channel',
       label: '经营渠道',
       defaultValue: 'all',
@@ -74,8 +87,8 @@ export const cockpitConfig: DashboardConfig = {
         { id: 'all', label: '全部渠道' },
         { id: 'online', label: '线上直营' },
         { id: 'store', label: '门店零售' },
-        { id: 'dealer', label: '经销渠道' },
         { id: 'project', label: '工程客户' },
+        { id: 'overseas', label: '海外直营' },
       ],
     },
   ],

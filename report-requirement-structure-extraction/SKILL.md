@@ -45,8 +45,8 @@ Load references only when their scenario is relevant. Do not bulk-load every ref
 - Use `$artifact-readability-standard` when the requirement package must be reviewed by humans and consumed by downstream AI/workflows.
 - Use `report-delivery-pipeline-governance` when routing the requirement package into prototype, technical solution, backend, frontend, testing, release, or retest stages.
 - Use `$metric-number-display-contract` when requirements include units, percentages, rates, precision, rounding, tooltip/export values, or numeric consistency expectations.
-- Route to `change-impact-analysis` immediately when the input is a change to an existing metric,口径, filter, permission, API, page, field, model, test case, or delivery document.
-- Route to `metric-governance-lineage`, `permission-matrix-validation`, `data-quality-validation`, `$delivery-version-management`, or `production-observability-feedback` when those concerns are the primary deliverable rather than just supporting context.
+- For changes to an existing metric,口径, filter, permission, API, page, field, model, test case, or delivery document, record impact and blockers through `gap-ledger-management` and version alignment through `$delivery-version-management` before redesigning or implementing the affected scope.
+- Route metric display and unit/precision concerns to `$metric-number-display-contract`, version concerns to `$delivery-version-management`, delivery chain concerns to `report-delivery-pipeline-governance`, environment/runtime concerns to `environment-profile-contract`, and unresolved data/permission/source concerns to `gap-ledger-management`.
 - Use `$haier-enterprise-app-ui-design-spec` as the Haier/enterprise application UI baseline when the requirement includes forms, lists, detail pages, tables, navigation, dialogs, empty/error/feedback states, workbench pages, cross-platform app adaptation, or Haier/enterprise report applications.
 - Use `report-design-system-governance` as the report development/design baseline when the requirement includes reports, dashboards, cockpits, BI, data screens, business analysis, detail queries, topic analysis, KPI, charts, tables, filters, metric口径, export, performance, or acceptance.
 
@@ -56,7 +56,7 @@ Accept incomplete inputs and infer cautiously.
 
 Supported input forms include one-sentence ideas, PRDs, meeting notes, screenshots, prototypes, HTML files/source, Markdown/MD documents, copied DOM snippets, static pages, metric lists, data dictionaries, database fields, source-system metadata, API documents, mock data, frontend/backend code, logs, deployment notes, SSO/security notes, and mixed Chinese/English terminology.
 
-When HTML/MD/source artifacts are provided for a report/page prototype, extract page intent, visible content, metric names, dimensions, filters, controls, chart labels/config hints, copy, hierarchy, states, and style evidence into the requirement package. The default downstream runnable implementation is `implementationMode: copyTemplateProject`: copy a bundled template project and preserve Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios; HTML/static output requires explicit user wording such as "输出 HTML", "单 HTML 文件", "HTML 格式原型", or "保留静态 HTML"; a blank/new Vue3 project requires a documented self-developed/non-template exception.
+When HTML/MD/source artifacts are provided for a report/page prototype, extract page intent, visible content, metric names, dimensions, filters, controls, chart labels/config hints, copy, hierarchy, states, and style evidence into the requirement package. The default downstream runnable implementation is the configurable report project flow: select a bundled `frameworkTemplateId`, configure `pageLayoutConfig`, create `blockAreaConfigMap`, declare component slots, bind registered component examples, and preserve Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios. HTML/source format is evidence, not an implementation route; blank/new Vue3 projects and static shells are outside this configurable report flow.
 
 When information is missing:
 
@@ -76,7 +76,7 @@ Use this sequence for every requirement transformation:
 1. Identify the primary deliverable.
    State whether the user likely expects a requirement brief, prototype spec, technical solution, API list, data model, backend plan, frontend integration plan, test plan, or executable implementation.
 
-   If the request modifies existing delivered or in-progress artifacts, classify it as change management first and use `change-impact-analysis` before redesigning or implementing the affected scope.
+   If the request modifies existing delivered or in-progress artifacts, classify it as change management first, record impacted artifacts through `gap-ledger-management`, and align versions through `$delivery-version-management` before redesigning or implementing the affected scope.
 
 2. Judge the scenario.
    Pick one primary scenario and optional secondary scenarios. If scenario choice is not obvious, read `references/scenario-routing.md`.
@@ -114,5 +114,5 @@ Use this sequence for every requirement transformation:
 11. Route to downstream skills.
     Recommend the next skill/workflow only after the requirement package is clear enough for that skill to act.
 
-    Include governance routes when relevant: `metric-governance-lineage` for指标口径, `permission-matrix-validation` for multi-role/data-scope rules, `data-quality-validation` for real data trust, `$delivery-version-management` for artifact versions, and `production-observability-feedback` for上线后闭环.
+    Include governance routes when relevant: `$metric-number-display-contract` for numeric display and unit/precision rules, `gap-ledger-management` for unresolved metric/source/permission/data trust gaps, `$delivery-version-management` for artifact versions, `environment-profile-contract` for runtime profile concerns, and `report-delivery-pipeline-governance` for delivery-chain handoff blockers.
     Use `report-delivery-pipeline-governance` to state next-stage entry conditions and handoff blockers.

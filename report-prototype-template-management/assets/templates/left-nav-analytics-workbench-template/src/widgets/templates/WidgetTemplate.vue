@@ -48,41 +48,44 @@
  *    - WidgetViewport 负责拖拽、缩放、双击复位和初始居中，不应写进业务组件。
  *    - 除非要改整套模板机制，否则不要修改 WidgetRenderer.vue 和 WidgetViewport.vue。
  *
- * 7. 在 src/config/dashboard.config.ts 的对应导航页 widgets 中使用，例如：
- *    widgets: {
- *      A: {
- *        type: 'MyWidget',
- *        visualType: 'other',
- *        title: '业务标题',
- *        props: {
- *          value: '128.6',
- *          unit: '亿',
+ * 7. 在 src/config/dashboard.config.ts 的 page.widgets 中使用，例如：
+ *    page: {
+ *      layoutRows: ['AAAABBBB', 'CCDDEEFF'],
+ *      widgets: {
+ *        A: {
+ *          type: 'MyWidget',
+ *          visualType: 'other',
+ *          title: '业务标题',
+ *          props: {
+ *            value: '128.6',
+ *            unit: '亿',
+ *          },
+ *          filterScope: 'revenue',
+ *          localFilters: [
+ *            {
+ *              id: 'productLine',
+ *              label: '产品线',
+ *              field: 'productLine',
+ *              mode: 'auto',
+ *              maxButtonOptions: 5,
+ *            },
+ *          ],
+ *          data: {
+ *            id: 'staticData',
+ *            params: {
+ *              key: 'revenueMonthly',
+ *            },
+ *            filterFields: {
+ *              cycle: 'period',
+ *              scope: 'regionId',
+ *            },
+ *            requiredFilters: ['cycle', 'scope'],
+ *          },
+ *          // 弹窗、跳转、下钻由 MyWidget 内部自行实现。
+ *          // 如果需要通知外部系统，可在组件里 emit('dashboard-action', { name, payload })。
  *        },
- *        filterScope: 'revenue',
- *        localFilters: [
- *          {
- *            id: 'productLine',
- *            label: '产品线',
- *            field: 'productLine',
- *            mode: 'auto',
- *            maxButtonOptions: 5,
- *          },
- *        ],
- *        data: {
- *          id: 'staticData',
- *          params: {
- *            key: 'revenueMonthly',
- *          },
- *          filterFields: {
- *            cycle: 'period',
- *            scope: 'regionId',
- *          },
- *          requiredFilters: ['cycle', 'scope'],
- *        },
- *        // 弹窗、跳转、下钻由 MyWidget 内部自行实现。
- *        // 如果需要通知外部系统，可在组件里 emit('dashboard-action', { name, payload })。
  *      },
- *    }
+ *    },
  *
  * 8. 数据不要直接写在 dashboard.config.ts。
  *    离线/mock 数据放到 src/data/dashboard.dataset.json；常规 API 使用 data.id: 'apiData' + data.api 配置。
@@ -118,7 +121,7 @@
  *    - payload 是业务数据。
  *    - 壳层只转发到 actions/registry.ts 的同名钩子或 dashboardAction 兜底钩子。
  *
- * 12. 如果组件内容很大，需要拖拽/缩放，在配置中加 viewport：
+ * 12. 如果组件画布很大，需要拖拽/缩放，在配置中加 viewport：
  *    viewport: {
  *      pannable: true,
  *      zoomable: true,
@@ -181,8 +184,8 @@ interface Props {
    * context 是模板自动提供的上下文，不需要在配置文件里写。
    * 常用字段：
    * - context.area：当前区域，模板主画布固定为 page
-   * - context.navId：当前导航页 id
-   * - context.navLabel：当前导航页名称
+   * - context.navId：当前页面/导航 id；未配置 pages 时回退为 single-page
+   * - context.navLabel：当前导航标签；未配置导航时回退为页面标题
    * - context.blockId：当前分块字符，例如 A、B、g
    * - context.filters：当前组件作用域内的筛选项选中值
    * - context.allFilters：全量筛选项选中值
@@ -276,7 +279,7 @@ const triggerExampleAction = () => {
   border: 0;
   border-radius: 8px;
   color: var(--text-strong);
-  background: color-mix(in srgb, var(--primary, #004ac6) 14%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
   cursor: pointer;
 }
 </style>

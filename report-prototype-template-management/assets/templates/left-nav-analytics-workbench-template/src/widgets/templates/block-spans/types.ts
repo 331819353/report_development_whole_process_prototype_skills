@@ -3,19 +3,29 @@ import type { LayoutDensityBand, LayoutSpanSpec } from './catalog';
 
 export type ComponentRegionPattern = string;
 
-export interface LayoutSpanSlotContent {
-  type?: 'kpi';
+export interface LayoutSpanSlotContentRow {
   label?: string;
+  value?: string;
+  tone?: string;
+  percent?: number;
+}
+
+export interface LayoutSpanSlotContent {
+  type?: 'kpi' | 'metric' | 'trend' | 'funnel' | 'summary';
+  label?: string;
+  eyebrow?: string;
   title?: string;
   value?: string;
   unit?: string;
   delta?: string;
-  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+  rows?: LayoutSpanSlotContentRow[];
 }
 
 export interface LayoutSpanTemplateProps {
   context?: WidgetContext;
   data?: unknown[];
+  cols?: number;
+  rows?: number;
   title?: string;
   note?: string;
   showChrome?: boolean;
@@ -24,16 +34,24 @@ export interface LayoutSpanTemplateProps {
   density?: LayoutDensityBand | 'auto';
   placeholder?: string;
   zonePatternLabel?: string;
+  // Letter occupancy grid, for example A, AABBC, or AAABB|AAABB|AAABB.
   componentRegionPattern?: ComponentRegionPattern;
+  autoComponentSlots?: boolean;
+  componentAreaPaddingPx?: number;
+  componentSlotGapPx?: number;
   componentSlots?: Array<{
     id: string;
     templateSlotId?: string;
     label?: string;
     regionKey?: string;
     role?: string;
-    // Component slots carry only the selected component's internal content area.
+    // Component slots carry only the selected component example body.
     // Block-level additional information, unit, pills, and summaries belong to the block layout template.
-    componentContentAreaTemplateId?: string;
+    componentExampleId?: string;
+    props?: Record<string, unknown>;
+    widgetProps?: Record<string, unknown>;
+    config?: Record<string, Record<string, unknown>>;
+    dataPolicy?: RegisteredWidgetConfig['dataPolicy'];
     widget?: RegisteredWidgetConfig;
     content?: LayoutSpanSlotContent;
   }>;

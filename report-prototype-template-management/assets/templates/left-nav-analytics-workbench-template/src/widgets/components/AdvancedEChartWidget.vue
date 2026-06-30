@@ -210,7 +210,7 @@ const gridBase = computed(() => ({
   right: scale.value.gridRight,
   bottom: scale.value.gridBottom,
   left: scale.value.gridLeft,
-  containLabel: true,
+  containLabel: false,
 }));
 
 const axisBase = computed(() => ({
@@ -500,7 +500,7 @@ const boxplotOption = (): Record<string, unknown> => ({
     right: scale.value.gridRight,
     bottom: scale.value.gridBottom,
     left: scale.value.gridLeft,
-    containLabel: true,
+    containLabel: false,
   },
   xAxis: {
     ...axisBase.value,
@@ -682,7 +682,7 @@ const quadrantOption = (): Record<string, unknown> => {
       right: 10,
       bottom: 22,
       left: 32,
-      containLabel: true,
+      containLabel: false,
     },
     xAxis: {
       ...axisBase.value,

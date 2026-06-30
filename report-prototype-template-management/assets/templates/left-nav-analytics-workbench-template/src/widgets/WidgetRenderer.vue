@@ -9,6 +9,10 @@ const props = defineProps<{
   widget?: RegisteredWidgetConfig;
   context: WidgetContext;
   data?: unknown[];
+  blockSize?: {
+    cols: number;
+    rows: number;
+  };
 }>();
 
 const emit = defineEmits<{
@@ -40,6 +44,19 @@ const viewportConfig = computed<WidgetViewportConfig | null>(() => {
 });
 
 const visualTypeClass = computed(() => `widget-renderer-visual-${props.widget?.visualType ?? 'empty'}`);
+const widgetProps = computed(() => {
+  const baseProps = props.widget?.props ?? {};
+
+  if (props.widget?.type !== 'BaseLayoutSpan' || !props.blockSize) {
+    return baseProps;
+  }
+
+  return {
+    ...baseProps,
+    cols: props.blockSize.cols,
+    rows: props.blockSize.rows,
+  };
+});
 
 const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   if (!event?.name) {
@@ -59,7 +76,7 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
       <WidgetViewport v-if="registration && widget && viewportConfig" :config="viewportConfig">
         <component
           :is="registration.component"
-          v-bind="widget.props"
+          v-bind="widgetProps"
           :context="context"
           :data="data ?? []"
           @dashboard-action="handleDashboardAction"
@@ -69,17 +86,15 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
       <component
         :is="registration.component"
         v-else-if="registration && widget"
-        v-bind="widget.props"
+        v-bind="widgetProps"
         :context="context"
         :data="data ?? []"
         @dashboard-action="handleDashboardAction"
       />
 
-      <div v-else-if="widget" class="widget-empty">
+      <div v-else class="widget-empty">
         <span class="widget-empty-pill">建设中</span>
       </div>
-
-      <div v-else class="widget-blank" aria-hidden="true"></div>
     </div>
   </div>
 </template>
@@ -101,8 +116,7 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
 }
 
 .widget-renderer-content,
-.widget-empty,
-.widget-blank {
+.widget-empty {
   position: relative;
   width: 100%;
   height: 100%;
@@ -111,10 +125,6 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   overflow: hidden;
   box-sizing: border-box;
   contain: layout paint;
-}
-
-.widget-blank {
-  background: transparent;
 }
 
 .widget-renderer-content {
@@ -132,8 +142,8 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
 .widget-renderer-content :deep(.echarts),
 .widget-renderer-content :deep(.chart),
 .widget-renderer-content :deep(.chart-container),
-.widget-renderer-content :deep(.antv-s2-container),
-.widget-renderer-content :deep(.s2-container) {
+.widget-renderer-content :deep(.s2-container),
+.widget-renderer-content :deep(.antv-s2-container) {
   max-width: 100%;
   max-height: 100%;
 }
@@ -150,19 +160,6 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   height: 100%;
   overflow: auto;
   scrollbar-gutter: stable both-edges;
-}
-
-.widget-renderer-visual-pivot .widget-renderer-content {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.widget-renderer-visual-table .widget-renderer-content :deep(.s2-report-table-widget),
-.widget-renderer-visual-pivot .widget-renderer-content :deep(.s2-report-table-widget) {
-  width: 100%;
-  height: 100%;
 }
 
 .widget-renderer-visual-table .widget-renderer-content :deep(table) {
@@ -189,11 +186,6 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
-}
-
-.widget-renderer-visual-table .widget-renderer-content :deep(th) {
-  text-align: center;
-  vertical-align: middle;
 }
 
 .widget-renderer-content :deep(.numeric),
@@ -245,6 +237,14 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   color: var(--muted);
 }
 
+.widget-renderer-visual-table .widget-renderer-content :deep(.antv-s2-container),
+.widget-renderer-visual-table .widget-renderer-content :deep(.s2-container),
+.widget-renderer-visual-table .widget-renderer-content :deep(.s2-table) {
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+}
+
 .widget-renderer-has-content::before {
   position: absolute;
   inset: 0;
@@ -258,11 +258,11 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
 .widget-empty {
   display: grid;
   place-items: center;
-  border: 1px dashed var(--line, rgba(0, 91, 170, 0.22));
+  border: 1px dashed var(--line, rgba(127, 213, 255, 0.26));
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 44%),
-    var(--accent-soft, rgba(0, 120, 215, 0.08));
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 44%),
+    var(--accent-soft, rgba(37, 201, 255, 0.1));
 }
 
 .widget-empty-pill {
@@ -272,13 +272,13 @@ const handleDashboardAction = (event: DashboardWidgetActionEvent) => {
   min-width: 82px;
   height: 28px;
   padding: 0 18px;
-  border: 1px solid var(--line-strong, rgba(0, 91, 170, 0.36));
+  border: 1px solid var(--line-strong, rgba(127, 213, 255, 0.46));
   border-radius: 999px;
-  color: var(--text-strong, #061520);
+  color: var(--text-strong, #ffffff);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.58)),
-    var(--panel, rgba(255, 255, 255, 0.72));
-  box-shadow: 0 8px 22px rgba(0, 91, 170, 0.08);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+    var(--panel, rgba(5, 18, 30, 0.62));
+  box-shadow: 0 0 18px rgba(37, 201, 255, 0.14);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0;

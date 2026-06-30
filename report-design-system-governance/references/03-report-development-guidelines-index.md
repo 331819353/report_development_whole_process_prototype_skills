@@ -26,12 +26,12 @@ This report guideline is for PC Web reports, business analysis dashboards, detai
 
 Use with:
 
-- `report-design-workflow` for generic report prototype/design orchestration, or the specialized prototype workflow when the user explicitly asks for 自助分析、指标看板、分析报告、or 明细报表.
+- `report-prd-document-generation` for ordinary PRD to specialized executable report PRD conversion before prototype work, then the selected specialized prototype workflow for 自助分析、指标看板、分析报告、or 明细报表.
 - `report-design-system-governance` for reusable report UI standards and governance.
 - `report-info-component-mapping` for business question to component/data/filter/interaction contracts.
 - `report-visual-layout-design` for page structure, first viewport, card grid, filter region, and layout fit.
 - `report-component-style-design` for KPI cards, charts, tables, filters, states, and component readability.
-- `$frontend-development-workflow`, `$api-*`, `$data-*`, and `$testing-*` skills when the guideline moves into implementation, contracts, data consistency, and acceptance verification.
+- `report-prototype-template-management`, `$frontend-runtime-qa-validation`, `report-delivery-pipeline-governance`, `quality-gate-validation`, and `gap-ledger-management` when the guideline moves into implementation, contracts, data consistency, and acceptance verification.
 
 Do not use `$haier-enterprise-app-ui-design-spec` as the primary analytical report guideline. That skill supplies the inherited Haier enterprise application UI baseline and remains required for Haier/enterprise report pages unless an explicit non-Haier/native/neutral exception exists. This distilled report standard owns report-specific hierarchy, visualization, tables, filters, metric display, engineering handoff, and acceptance.
 

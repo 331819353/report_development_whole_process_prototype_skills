@@ -1,6 +1,7 @@
 import type { DashboardActionMap, DashboardRuntimeContext } from '../types/actions';
 import type { DashboardDataSourceRef, DashboardFilterScope } from '../types/data-source';
 import type { LayoutSpanTemplateWidgetProps } from './templates/block-spans/types';
+import type { ComponentExampleConfigByWidgetType } from './templates/component-examples/config';
 
 export interface CompactBarChartWidgetProps extends Record<string, unknown> {
   metricName?: string;
@@ -82,6 +83,477 @@ export interface MetricValueWidgetProps extends Record<string, unknown> {
   maxDecimals?: number;
 }
 
+export interface KpiMetricExampleAccessoryMetric {
+  label: string;
+  value: string;
+  tone?: TemplateCarriedWidgetTone;
+  icon?: 'trend' | 'target' | 'clock';
+}
+
+export type KpiMetricExampleSparkType = 'line' | 'bar' | 'none';
+
+export interface KpiMetricExampleLayoutConfig {
+  titleRatio?: number;
+  valueRatio?: number;
+  accessoryRatio?: number;
+  gapPx?: number;
+  paddingPx?: number;
+}
+
+export interface KpiMetricExampleTitleConfig {
+  visible?: boolean;
+  underline?: boolean;
+  fontSizePx?: number;
+  lineHeightPx?: number;
+  color?: string;
+  unitVisible?: boolean;
+  unitFontSizePx?: number;
+  unitColor?: string;
+}
+
+export interface KpiMetricExampleValueConfig {
+  minFontSizePx?: number;
+  maxFontSizePx?: number;
+  heightScale?: number;
+  gradientStartColor?: string;
+  gradientMidColor?: string;
+  gradientEndColor?: string;
+  affixRatio?: number;
+  affixMinFontSizePx?: number;
+  affixMaxFontSizePx?: number;
+  shadow?: string;
+  reflectionVisible?: boolean;
+  reflectionOpacity?: number;
+}
+
+export interface KpiMetricExampleSparkConfig {
+  visible?: boolean;
+  type?: KpiMetricExampleSparkType;
+  values?: number[];
+  maxPoints?: number;
+  showArea?: boolean;
+  showStroke?: boolean;
+  fillStartColor?: string;
+  fillMidColor?: string;
+  fillEndColor?: string;
+  fillStartOpacity?: number;
+  fillMidOpacity?: number;
+  fillEndOpacity?: number;
+  strokeStartColor?: string;
+  strokeMidColor?: string;
+  strokeEndColor?: string;
+  strokeStartOpacity?: number;
+  strokeMidOpacity?: number;
+  strokeEndOpacity?: number;
+  strokeWidth?: number;
+  barOpacity?: number;
+  barRadiusPx?: number;
+  edgeFade?: boolean;
+  widthPercent?: number;
+  heightPercent?: number;
+  rightPercent?: number;
+  bottomPercent?: number;
+}
+
+export interface KpiMetricExampleAccessoryConfig {
+  visible?: boolean;
+  columns?: 1 | 2;
+  maxItems?: number;
+  padding?: string;
+  rowMinHeightPx?: number;
+  columnGapPx?: number;
+  rowGapPx?: number;
+  itemGapPx?: number;
+  itemPaddingInlinePx?: number;
+  itemInnerPaddingPx?: number;
+  iconVisible?: boolean;
+  iconSizePx?: number;
+  iconGraphicSizePx?: number;
+  iconStrokeWidth?: number;
+  iconRadiusPx?: number;
+  labelFontSizePx?: number;
+  valueFontSizePx?: number;
+  dividerVisible?: boolean;
+  dividerColor?: string;
+  dividerWeakOpacity?: number;
+  dividerStrongOpacity?: number;
+}
+
+export interface KpiMetricExampleToneConfig {
+  primary?: string;
+  success?: string;
+  warning?: string;
+  danger?: string;
+  neutral?: string;
+  neutralValue?: string;
+}
+
+export interface KpiMetricExampleCardConfig {
+  layout?: KpiMetricExampleLayoutConfig;
+  title?: KpiMetricExampleTitleConfig;
+  value?: KpiMetricExampleValueConfig;
+  spark?: KpiMetricExampleSparkConfig;
+  accessory?: KpiMetricExampleAccessoryConfig;
+  tones?: KpiMetricExampleToneConfig;
+}
+
+export interface KpiMetricExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  value?: number | string;
+  valuePrefix?: string;
+  valueSuffix?: string;
+  maxDecimals?: number;
+  tone?: TemplateCarriedWidgetTone;
+  accessoryMetrics?: KpiMetricExampleAccessoryMetric[];
+  sparkType?: KpiMetricExampleSparkType;
+  sparkValues?: number[];
+  config?: KpiMetricExampleCardConfig;
+}
+
+export interface TargetProgressExampleDetailItem {
+  label: string;
+  value: number | string;
+  icon?: 'target' | 'current' | 'gap';
+}
+
+export interface TargetProgressExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  value?: number | string;
+  valueSuffix?: string;
+  maxDecimals?: number;
+  tone?: TemplateCarriedWidgetTone;
+  targetValue?: number | string;
+  currentValue?: number | string;
+  gapValue?: number | string;
+  targetLabel?: string;
+  currentLabel?: string;
+  gapLabel?: string;
+  progressLabel?: string;
+  goalLabel?: string;
+  details?: TargetProgressExampleDetailItem[];
+  config?: ComponentExampleConfigByWidgetType['TargetProgressExampleCard'];
+}
+
+export interface RankingListExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  items?: RankingCardItem[];
+  valueUnit?: string;
+  config?: ComponentExampleConfigByWidgetType['RankingListExampleCard'];
+}
+
+export interface LineChartExampleSeries {
+  name: string;
+  values: number[];
+  color?: string;
+  areaVisible?: boolean;
+  smooth?: boolean;
+}
+
+export interface LineChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  categories?: string[];
+  values?: number[];
+  series?: LineChartExampleSeries[];
+  config?: ComponentExampleConfigByWidgetType['LineChartExampleCard'];
+}
+
+export interface HeatmapChartExampleCell {
+  row: string;
+  col: string;
+  value: number | null;
+}
+
+export interface HeatmapChartExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface HeatmapChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  rows?: string[];
+  columns?: string[];
+  cells?: HeatmapChartExampleCell[];
+  auxMetrics?: HeatmapChartExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['HeatmapChartExampleCard'];
+}
+
+export interface BarChartExampleSeries {
+  name: string;
+  values: number[];
+  color?: string;
+  stack?: string;
+}
+
+export interface BarChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  categories?: string[];
+  values?: number[];
+  series?: BarChartExampleSeries[];
+  config?: ComponentExampleConfigByWidgetType['BarChartExampleCard'];
+}
+
+export interface ComboChartExampleSeries {
+  name: string;
+  values: number[];
+  kind?: 'bar' | 'line';
+  color?: string;
+  unit?: string;
+  yAxisIndex?: 0 | 1;
+  targetValue?: number;
+  smooth?: boolean;
+}
+
+export interface ComboChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  categories?: string[];
+  values?: number[];
+  rateValues?: number[];
+  series?: ComboChartExampleSeries[];
+  config?: ComponentExampleConfigByWidgetType['ComboChartExampleCard'];
+}
+
+export interface ProportionChartExampleItem {
+  name: string;
+  value: number;
+  color?: string;
+}
+
+export interface ProportionChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  totalLabel?: string;
+  items?: ProportionChartExampleItem[];
+  config?: ComponentExampleConfigByWidgetType['ProportionChartExampleCard'];
+}
+
+export interface DetailTableExampleColumn {
+  key: string;
+  label: string;
+  field?: string;
+  width?: number;
+  align?: 'left' | 'center' | 'right';
+  formatter?: 'text' | 'number' | 'currency' | 'percent' | 'status' | 'date';
+  unit?: string;
+  priority?: number;
+  fixed?: 'left' | 'right';
+  definition?: string;
+}
+
+export interface DetailTableExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface DetailTableExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  rowKey?: string;
+  rows?: Record<string, unknown>[];
+  columns?: DetailTableExampleColumn[];
+  auxMetrics?: DetailTableExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['DetailTableExampleCard'];
+}
+
+export interface ComplexTableExampleColumn {
+  key: string;
+  label: string;
+  field?: string;
+  children?: ComplexTableExampleColumn[];
+  width?: number;
+  minWidth?: number;
+  align?: 'left' | 'center' | 'right';
+  fixed?: 'left' | 'right';
+  sortable?: boolean;
+  filterable?: boolean;
+  unit?: string;
+  definition?: string;
+  formula?: string;
+  formatter?: 'text' | 'number' | 'currency' | 'percent' | 'duration' | 'status';
+  priority?: number;
+  ellipsis?: boolean;
+  locked?: boolean;
+}
+
+export interface ComplexTableExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface ComplexTableExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  rowKey?: string;
+  rows?: Record<string, unknown>[];
+  columnTree?: ComplexTableExampleColumn[];
+  auxMetrics?: ComplexTableExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['ComplexTableExampleCard'];
+}
+
+export interface QuadrantChartExamplePoint {
+  name: string;
+  x: number;
+  y: number;
+  size?: number;
+  group?: string;
+  color?: string;
+}
+
+export interface QuadrantChartExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface QuadrantChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  points?: QuadrantChartExamplePoint[];
+  auxMetrics?: QuadrantChartExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['QuadrantChartExampleCard'];
+}
+
+export interface RadarChartExampleIndicator {
+  name: string;
+  max?: number;
+  min?: number;
+  unit?: string;
+}
+
+export interface RadarChartExampleSeries {
+  name: string;
+  values: number[];
+  color?: string;
+}
+
+export interface RadarChartExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface RadarChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  seriesName?: string;
+  indicators?: RadarChartExampleIndicator[];
+  values?: number[];
+  series?: RadarChartExampleSeries[];
+  auxMetrics?: RadarChartExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['RadarChartExampleCard'];
+}
+
+export interface SunburstChartExampleNode {
+  name: string;
+  value?: number;
+  color?: string;
+  children?: SunburstChartExampleNode[];
+}
+
+export interface SunburstChartExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface SunburstChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  totalLabel?: string;
+  nodes?: SunburstChartExampleNode[];
+  auxMetrics?: SunburstChartExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['SunburstChartExampleCard'];
+}
+
+export interface RoundedFunnelChartExampleStage {
+  name: string;
+  value: number;
+  color?: string;
+  detail?: string;
+}
+
+export interface RoundedFunnelChartExampleAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface RoundedFunnelChartExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  stages?: RoundedFunnelChartExampleStage[];
+  auxMetrics?: RoundedFunnelChartExampleAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['RoundedFunnelChartExampleCard'];
+}
+
+export interface CustomEChartComponentTemplateDatum {
+  name: string;
+  value: number;
+  color?: string;
+  detail?: string;
+  meta?: Record<string, string | number | boolean | null | undefined>;
+}
+
+export interface CustomEChartComponentTemplateAuxMetric {
+  label: string;
+  value: string | number;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+}
+
+export interface CustomEChartComponentTemplateProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  items?: CustomEChartComponentTemplateDatum[];
+  auxMetrics?: CustomEChartComponentTemplateAuxMetric[];
+  config?: ComponentExampleConfigByWidgetType['CustomEChartComponentTemplate'];
+}
+
+export interface ActionListExampleItem {
+  label: string;
+  status?: string;
+  owner?: string;
+  due?: string;
+  tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+  done?: boolean;
+}
+
+export interface ActionListExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  items?: ActionListExampleItem[];
+  config?: ComponentExampleConfigByWidgetType['ActionListExampleCard'];
+}
+
+export type ConclusionExampleTone = 'primary' | 'success' | 'warning' | 'danger' | 'neutral';
+
+export interface ConclusionExampleItem {
+  label: string;
+  value: string;
+  tone?: ConclusionExampleTone;
+}
+
+export interface ConclusionExampleCardProps extends Record<string, unknown> {
+  title?: string;
+  unit?: string;
+  conclusion?: string;
+  emphasis?: string;
+  statusLabel?: string;
+  statusTone?: ConclusionExampleTone;
+  evidenceItems?: ConclusionExampleItem[];
+  actionItems?: ConclusionExampleItem[];
+  items?: ConclusionExampleItem[];
+  config?: ComponentExampleConfigByWidgetType['ConclusionExampleCard'];
+}
+
 export interface ProgressGaugeWidgetProps extends Record<string, unknown> {
   label?: string;
   progress?: number;
@@ -146,14 +618,6 @@ export interface FollowupActionWidgetProps extends Record<string, unknown> {
   displayBudget?: TemplateWidgetDisplayBudget;
 }
 
-export interface ComponentContentAreaTemplateProps extends Record<string, unknown> {
-  title?: string;
-  contentAreaTitle?: string;
-  showContentTitle?: boolean;
-  slotCount?: number;
-  templateFile?: string;
-}
-
 export interface ElementPivotTableMeta {
   field: string;
   name: string;
@@ -172,19 +636,6 @@ export interface ElementPivotTableContract {
   tooltip?: string;
   drilldown?: string;
   states?: string[];
-}
-
-export interface ElementPivotTableWidgetProps extends Record<string, unknown> {
-  rowFields?: string[];
-  columnFields?: string[];
-  valueFields?: string[];
-  rawData?: Record<string, unknown>[];
-  meta?: ElementPivotTableMeta[];
-  valueInCols?: boolean;
-  cornerText?: string;
-  emptyText?: string;
-  pivotContract?: ElementPivotTableContract;
-  displayBudget?: TemplateWidgetDisplayBudget;
 }
 
 export type DetailTableColumnAlign = 'left' | 'center' | 'right';
@@ -242,18 +693,6 @@ export interface DetailTableContract {
   states?: Array<'loading' | 'empty' | 'error' | 'noPermission'>;
 }
 
-export interface DetailTableWidgetProps extends Record<string, unknown> {
-  rows?: DetailTableRow[];
-  tableColumns?: DetailTableColumnConfig[];
-  rowKey?: string;
-  emptyText?: string;
-  loading?: boolean;
-  errorText?: string;
-  noPermission?: boolean;
-  detailTableContract?: DetailTableContract;
-  displayBudget?: TemplateWidgetDisplayBudget;
-}
-
 export type ComplexTableAlign = 'left' | 'center' | 'right';
 export type ComplexTableFixed = 'left' | 'right';
 export type ComplexTableFormatter = 'text' | 'number' | 'currency' | 'percent' | 'duration' | 'status';
@@ -303,18 +742,6 @@ export interface ComplexTableContract {
   densityFallback?: string;
   detailRoute?: string;
   states?: Array<'loading' | 'empty' | 'error' | 'noPermission'>;
-}
-
-export interface ComplexGroupedTableWidgetProps extends Record<string, unknown> {
-  rows?: ComplexTableRow[];
-  columnTree?: ComplexTableColumnConfig[];
-  rowKey?: string;
-  emptyText?: string;
-  loading?: boolean;
-  errorText?: string;
-  noPermission?: boolean;
-  complexTableContract?: ComplexTableContract;
-  displayBudget?: TemplateWidgetDisplayBudget;
 }
 
 export type S2ReportTableVariant = 'pivot' | 'detail' | 'complex';
@@ -527,6 +954,7 @@ export type WidgetVisualType =
 export interface WidgetTitlePillOption {
   id: string;
   label: string;
+  hidden?: boolean;
   disabled?: boolean;
 }
 
@@ -541,11 +969,11 @@ export interface BaseWidgetConfig<TType extends string, TProps extends Record<st
   title?: string;
   // Reader-facing title for a business block/card. Metric widgets may mirror this from title.
   displayTitle?: string;
-  // Optional 1-2 block-layout-template segmented pill options rendered on the right side of the block title. Max 3.
+  // Optional shell-level pill options rendered on the right side of the block title. Hidden pills do not render or reserve space.
   titlePills?: WidgetTitlePillOption[];
-  // Optional 4 block-layout-template explanation/conclusion text.
+  // Optional shell-level text rendered in the top part of the block body.
   bodySummary?: string;
-  // Optional 2-1 block-layout-template additional information plus 2-2 unit. These do not belong inside componentSlots. Max 5.
+  // Optional shell-level additional information rendered in the bottom part of the block body. Max 5.
   auxMetrics?: WidgetAuxMetric[];
   // Semantic metric identity for tooltip, export, drilldown, and口径 disclosure; not always rendered visibly.
   metricName?: string;
@@ -582,6 +1010,23 @@ export interface WidgetPropsRegistry {
   AdvancedEChartWidget: AdvancedEChartWidgetProps;
   CompactBarChart: CompactBarChartWidgetProps;
   KpiMetricWidget: KpiMetricWidgetProps;
+  KpiMetricExampleCard: KpiMetricExampleCardProps;
+  TargetProgressExampleCard: TargetProgressExampleCardProps;
+  RankingListExampleCard: RankingListExampleCardProps;
+  LineChartExampleCard: LineChartExampleCardProps;
+  HeatmapChartExampleCard: HeatmapChartExampleCardProps;
+  BarChartExampleCard: BarChartExampleCardProps;
+  ComboChartExampleCard: ComboChartExampleCardProps;
+  ProportionChartExampleCard: ProportionChartExampleCardProps;
+  DetailTableExampleCard: DetailTableExampleCardProps;
+  ComplexTableExampleCard: ComplexTableExampleCardProps;
+  QuadrantChartExampleCard: QuadrantChartExampleCardProps;
+  RadarChartExampleCard: RadarChartExampleCardProps;
+  SunburstChartExampleCard: SunburstChartExampleCardProps;
+  RoundedFunnelChartExampleCard: RoundedFunnelChartExampleCardProps;
+  CustomEChartComponentTemplate: CustomEChartComponentTemplateProps;
+  ActionListExampleCard: ActionListExampleCardProps;
+  ConclusionExampleCard: ConclusionExampleCardProps;
   MetricValueWidget: MetricValueWidgetProps;
   ProgressGaugeWidget: ProgressGaugeWidgetProps;
   RankingCardWidget: RankingCardWidgetProps;
@@ -589,30 +1034,10 @@ export interface WidgetPropsRegistry {
   MiniBarTrendWidget: MiniBarTrendWidgetProps;
   SignalMatrixWidget: SignalMatrixWidgetProps;
   FollowupActionWidget: FollowupActionWidgetProps;
-  ElementPivotTableWidget: ElementPivotTableWidgetProps;
-  DetailTableWidget: DetailTableWidgetProps;
-  ComplexGroupedTableWidget: ComplexGroupedTableWidgetProps;
   S2ReportTableWidget: S2ReportTableWidgetProps;
   TemplateEChartWidget: TemplateEChartWidgetProps;
   UniversalCardWidget: UniversalCardWidgetProps;
-  OperatingRevenueMetricContentAreaTemplate: ComponentContentAreaTemplateProps;
-  OperatingProfitMetricContentAreaTemplate: ComponentContentAreaTemplateProps;
-  TargetAchievementContentAreaTemplate: ComponentContentAreaTemplateProps;
-  RegionalRevenueRankingContentAreaTemplate: ComponentContentAreaTemplateProps;
-  RevenueProfitTrendContentAreaTemplate: ComponentContentAreaTemplateProps;
-  ChannelRevenueStructureContentAreaTemplate: ComponentContentAreaTemplateProps;
-  CustomerValueScatterContentAreaTemplate: ComponentContentAreaTemplateProps;
-  CostProfitHeatmapContentAreaTemplate: ComponentContentAreaTemplateProps;
-  OperatingHealthRadarContentAreaTemplate: ComponentContentAreaTemplateProps;
-  ExceptionWarningContentAreaTemplate: ComponentContentAreaTemplateProps;
-  KeyActionListContentAreaTemplate: ComponentContentAreaTemplateProps;
-  OpportunityFunnelContentAreaTemplate: ComponentContentAreaTemplateProps;
-  OperatingConclusionContentAreaTemplate: ComponentContentAreaTemplateProps;
-  LaunchConversionWaterfallContentAreaTemplate: ComponentContentAreaTemplateProps;
-  [layoutSpanType: `Span${string}Layout`]: LayoutSpanTemplateWidgetProps;
-  Span02x02Layout: LayoutSpanTemplateWidgetProps;
-  Span03x02Layout: LayoutSpanTemplateWidgetProps;
-  Span04x03Layout: LayoutSpanTemplateWidgetProps;
+  BaseLayoutSpan: LayoutSpanTemplateWidgetProps;
 }
 
 export type RegisteredWidgetType = keyof WidgetPropsRegistry & string;

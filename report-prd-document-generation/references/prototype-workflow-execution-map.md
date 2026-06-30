@@ -1,127 +1,103 @@
 # Prototype Workflow Execution Map
 
-Use this reference when finalizing a PRD and when a prototype workflow starts from an existing PRD. The PRD is not merely background reading; it is the executable input contract for report prototype workflows.
-
-Capability references in this file are platform-neutral. Names such as `report-prd-document-generation`, `report-prototype-template-management`, or legacy `report-prd-document-generation` are capability IDs, not Codex-only skill invocations. Claude, Hermes, Codex, and other agents must map each capability ID to their own available prompt, tool, workflow, or documentation bundle before execution.
+Use this reference when finalizing the specialized PRD and when a specialized workflow starts from an existing PRD.
 
 ## Hard Rule
 
-All report prototype workflows must start from a PRD produced or validated by capability `report-prd-document-generation`.
+The PRD layer runs first. The specialized workflow consumes the PRD output.
 
-If the user asks for prototype work without a PRD, create a draft PRD first. If the user provides a PRD, validate it against this execution map before design, layout, template, component, or runtime work begins.
+```text
+ordinary PRD
+  -> report-prd-document-generation
+  -> CHILD-PRD-PROTOTYPE + execution files
+  -> selected specialized workflow
+  -> configurable template implementation
+```
 
-Prototype workflows consume the parent/child PRD bundle, not only the reader-facing main PRD. The concise main PRD remains the business authority; `CHILD-PRD-PROTOTYPE` plus execution appendices are the AI-executable prototype-stage contract. If the main PRD exists but `CHILD-PRD-PROTOTYPE` is missing, stale, or blocked, update the PRD bundle before design, layout, template, component, or source work continues.
+The active specialized workflows are:
 
-Report development workflows must stay template-only except for two explicit extension surfaces: self-developed interaction behavior and self-developed component content area templates. Framework shell, page layout, block layout templates, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must be configured through templates, not self-developed.
+- `report-analysis-report-prototype-workflow`
+- `report-kpi-dashboard-prototype-workflow`
+- `report-detail-report-prototype-workflow`
+- `report-self-service-analysis-prototype-workflow`
 
-All runnable report prototype workflows default to `outputArtifact: vueTemplatePrototype` and `implementationMode: copyTemplateProject`: copy the selected bundled template project first, then preserve its `Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios` stack; add AntV S2 only for pivot/cross/wide analytical tables. A PRD section, attachment, screenshot, HTML source, or requirement document mentioning HTML is not output-format authority. `htmlPrototype` is allowed only when the latest explicit user instruction asks for HTML/static/single-file HTML output or exact static HTML preservation. `newVue3Project` is allowed only for a documented self-developed/non-template exception with rejected copy candidates.
+Generic report-design workflows are retired and must not be used as active downstream owners.
 
-Summary areas, conclusion cards, and analysis insight components must consume PRD `RULE-*` entries from `conclusionRuleMap`. Prototype workflows must not replace dynamic frontend-generated conclusions with fixed one-sentence copy.
+## What The Workflow Consumes
 
-Runnable prototype workflows must create or update `docs/prototype-data-summary.md` after data, filters, widgets, generated conclusion rules, and interactions are configured. The data/API contract in Appendix C or `CHILD-PRD-PROTOTYPE` is not fully executed until this backend-facing Markdown handoff exists or is explicitly deferred out of scope.
+Before any specialized workflow starts implementation, the PRD bundle must provide:
 
-Report-type implementation paths are binding. Prototype workflows must consume the report path rows in `CHILD-PRD-PROTOTYPE` or Appendix A to preserve the intended reading path before page layout, component mapping, and block layout template selection. A dashboard starts with status/conclusion before cause/process/action; a detail report starts with scope/summary and detail rows; an analysis report starts with conclusion before evidence/attribution/action unless the PRD validates a better exception.
+- `prd/prd-main.md` with a readable business summary, target workflow, page previews, layout summary, metric/data/interaction summary, and gaps.
+- `prd/children/prd-child-prototype.md` with the executable report-development contract.
+- `prd/execution/prd-template-execution-contract.md`.
+- `prd/execution/prd-template-build-packet-seed.md`.
+- `prd/execution/prd-metric-dictionary-and-mounting.md`.
+- `prd/execution/prd-data-api-contract.md`.
+- `prd/execution/prd-interaction-contract.md`.
+- `prd/execution/prd-conclusion-rules.md`.
+- `prd/execution/prd-workflow-execution-matrix.md`.
 
-Executive satisfaction design gates are binding for management-facing reports. Prototype workflows must consume executive gate rows in `CHILD-PRD-PROTOTYPE` or Appendix A/E before layout, component mapping, template selection, export design, or readiness acceptance. These rows decide the first-viewport answer, cause path, action route, severity ordering, trust/source disclosure, and meeting/export reuse.
+## Required Execution Content
 
-Reader-facing page previews are binding. Prototype workflows must consume the main PRD page previews before page layout and template work: every retained navigation page must show filters, toolbar actions, first-viewport blocks, business content, and drilldown/jump/modal/drawer/popup entry points. The preview is the human-readable target; `layoutRows`, `layoutCoordinateMap`, and slot maps are in Appendix A and `CHILD-PRD-PROTOTYPE`.
+`CHILD-PRD-PROTOTYPE` and execution files must include:
 
-Readable layout sections and coordinates are binding. Prototype workflows must preserve `layoutSectionMap`, `blockCoordinate`, and `slotCoordinate` from Appendix A, `CHILD-PRD-PROTOTYPE`, and the Template Build Packet. `layoutSectionMap` decomposes each page into readable `12*K` parts such as `12*2 + 12*3 + 12*3`. `R-B` identifies the block by layout section/page region and block order, and `R-B-S` identifies the component slot inside the selected block layout template. Example: section 2 has two `6*3` blocks; the second block is `2-2`, and its first slot is `2-2-1`. Standard block areas use `blockCoordinate + areaName`, such as `2-2:titleArea`, so the third number remains reserved for component slots.
+- Target specialized workflow and report type path.
+- Thinking output from `report-prototype-design-thinking`: page content, first-viewport priority, reading path, visible/non-visible content decisions, conclusion/evidence/action sequence.
+- Page preview references.
+- Selected `frameworkTemplateId`.
+- `pageLayoutConfig`: `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, block coordinates, and first-viewport plan.
+- `blockAreaConfigMap`: per-block title, pill, auxiliary metric, unit, component area, summary/description, source/trust, and optional conclusion-rule binding.
+- `componentSlotConfigMap`: slot count, slot pattern, slot coordinates, slot roles, slot sizes, required/optional state, and ownership.
+- `componentExampleConfigMap`: one registered component example per declared slot, including `componentExampleId`, Vue file/component, visual type, props/config, data binding, state contract, and compatibility evidence.
+- `customEChartExampleMap` for slots that need a newly registered ECharts component example.
+- `filterSurfaceMap`, `toolbarActionMap`, and `interactionBehaviorMap`.
+- Metric dictionary and metric mounting matrix.
+- Data/API contract and mock/data-source fallback status.
+- `conclusionRuleMap` for every generated summary, conclusion card, or analysis insight.
+- Permission, export, loading, empty, error, and no-permission behavior.
+- Release validation commands and acceptance evidence expectations.
 
-Template Build Packet rows are binding for implementation. Prototype workflows must turn the PRD appendix seed into a current Template Build Packet before editing copied template source files, then implement row by row from that packet.
+## Start Gate
 
-Template asset understanding is binding. Before block layout template selection or component content area template filling, prototype workflows must consume `templateAssetUnderstandingMap` from Appendix A/G or `CHILD-PRD-PROTOTYPE`, or rebuild it from `report-prototype-template-management` `references/template-asset-construction-contract.md`. A block layout row is ready only when the selected template is a direct slot-bearing Vue file from the selected asset root; size-only `SpanCCxRRLayout` wrappers and `componentRegionPattern` alone are not selectable templates.
+A specialized workflow may start only when:
 
-Child PRD rows are binding for stage routing. The PRD final output must state which child PRD is used by 原型、前端、后端、技术方案、测试. Prototype workflows execute only `CHILD-PRD-PROTOTYPE`; they may read other child PRDs for context, but they must not perform frontend/backend/technical-solution/testing work inside the prototype stage.
+- Target workflow is one of the four active specialized workflows.
+- `CHILD-PRD-PROTOTYPE` is present and `synced` or `draft` with non-blocking gaps.
+- Page content and reading path are decided by the thinking output or an explicitly accepted user design idea.
+- The configurable template route is complete enough to implement: `frameworkTemplateId`, `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` are present for every retained page.
+- Any missing component has a `customEChartExampleMap` entry and registration plan.
+- Every displayed metric is defined and mounted.
+- Every visible conclusion has a `RULE-*` row in `conclusionRuleMap`.
+- Every interaction has visible ownership and system response.
+- The self-development exception map contains only registered component examples and interaction behavior.
 
-Prototype workflows must not recreate complete PRD content internally. They may only:
+If the start gate fails, return to `report-prd-document-generation` or `report-requirement-structure-extraction`; do not patch missing PRD structure inside the specialized workflow.
 
-- Consume main PRD sections, execution appendices, and child PRDs as execution inputs.
-- Ask capability `report-requirement-structure-extraction` or an equivalent requirement-clarification agent to clarify evidence or gaps.
-- Return to capability `report-prd-document-generation` or an equivalent PRD-generation agent to update missing or conflicting PRD sections.
+## Area To Execution Map
 
-## Required PRD Execution Matrix
-
-Add this matrix to every PRD:
-
-| PRD area | Executable IDs | Downstream owner capability/workflow | Execution artifact | Blocking rule | Status |
-| --- | --- | --- | --- | --- | --- |
-
-Rules:
-
-- `Executable IDs` must reference actual IDs from the PRD, such as `PAGE-*`, `BLK-*`, `MET-*`, `API-*`, `INT-*`, `ROLE-*`, `RTP-*`, `PATH-*`, `RULE-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `CHILD-PRD-*`, and `GAP-*`.
-- `Downstream owner capability/workflow` must name the workflow, atomic capability, or equivalent agent function that will consume the section.
-- `Execution artifact` must be concrete: binding matrix, pageLayoutConfig, blockLayoutTemplateMap, API contract, interaction contract, permission matrix, runtime QA case, etc.
-- `Blocking rule` must say whether missing data blocks prototype start, only blocks implementation, or is explicitly out of scope.
-- `Status` must be `ready`, `draft`, `blocked`, or `deferred-out-of-scope`.
-
-## Area-To-Execution Map
-
-| PRD area | Required execution | Primary downstream owner |
+| PRD area | Required execution | Primary owner |
 | --- | --- | --- |
-| Main 0A. 子 PRD 索引 | Identify the required child PRD for each downstream stage, especially `CHILD-PRD-PROTOTYPE`, and verify child sync status. | `report-prd-document-generation`, target prototype workflow, `report-delivery-pipeline-governance` |
-| Main 0-3. 摘要/背景/用户/范围 | Set workflow mode, source authority, gap ownership, management question, user path, permission scope, phase-one scope, `outputArtifact`, template-only constraint, self-development exception boundary, and readiness status. | `quality-gate-validation`, `delivery-version-management`, target prototype workflow |
-| Main 4. 报表实现思路 | Preserve the readable report type, user-thought validation, and business reading path; detailed `RTP-*`/`PATH-*` rows live in `CHILD-PRD-PROTOTYPE` or Appendix A. | target prototype workflow, `report-type-design`, `report-prototype-design-thinking` |
-| Main 5. 导航页与页面预览 | Produce Markdown/mermaid previews for every retained navigation page, including filters, toolbar actions, first-viewport blocks, block business content, reading path, and interaction entries. | `report-prd-document-generation`, `report-visual-layout-design`, `report-prototype-template-management` |
-| Main 6. 模板布局摘要 | Preserve framework choice, `12*K` page section summary, block/template/slot summary, and template asset readiness status; machine rows live in Appendix A/G and `CHILD-PRD-PROTOTYPE`. | `report-visual-layout-design`, `report-prototype-template-management` |
-| Main 7. 指标/数据/交互摘要 | Preserve business-level metric/data/API/interaction/conclusion intent; detailed dictionaries, fields, payloads, and rules live in Appendix B-E and child PRDs. | `report-info-component-mapping`, target prototype workflow |
-| Main 8. 验收与缺口 | Produce readiness gates, unresolved blocker list, and downstream handoff conditions. | `quality-gate-validation`, `report-delivery-pipeline-governance`, `frontend-runtime-qa-validation` |
-| Appendix A / `CHILD-PRD-PROTOTYPE`. Template execution | Produce `frameworkTemplateId`, shell config, `templateAssetUnderstandingMap`, `pageLayoutConfig`, `layoutSectionMap`, exact-12 and minimum-8 `layoutRows` audit, `layoutCoordinateMap`, block maps, standard area configs, component slot map, component content area template map, slot size and visual-type compatibility. | `report-visual-layout-design`, `report-prototype-template-management` |
-| Appendix B. Metrics | Produce metric dictionary, KPI scope boundary, display precision, formula validation, source/freshness, denominator/null behavior, tooltip/export metadata, and metric mounting. | `metric-number-display-contract`, `report-info-component-mapping`, target prototype workflow |
-| Appendix C. Data/API | Produce data object contracts, API request/response contracts, mock/data-source contract, permission filtering, cache/freshness, `docs/prototype-data-summary.md`, and technical-solution handoff. | `report-info-component-mapping`, `report-prototype-template-management`, `delivery-artifact-template-management`, downstream technical/backend workflows |
-| Appendix D. Interactions | Produce `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, and `interactionBehaviorMap` for filters, period switch, metric switch, ranking click, drilldown, jump, drawer/modal, export, loading/empty/error/no-permission states. | `report-info-component-mapping`, `report-filter-control-design-spec`, `report-prototype-template-management`, `frontend-runtime-qa-validation` |
-| Appendix E. Dynamic conclusion rules | Produce `conclusionRuleMap`, summaryArea conclusion bindings, conclusion-card/analysisInsight rule bindings, affected API/filter/interaction refresh behavior, fallback text, and QA cases. | `report-info-component-mapping`, `report-prototype-template-management`, `frontend-runtime-qa-validation` |
-| Appendix F. PRD-to-workflow matrix | Map every main section, appendix, child PRD, executable ID, owner, artifact, blocking rule, and status. | `report-prd-document-generation`, target prototype workflow |
-| Appendix G. Template Build Packet Seed | Produce or update `docs/template-build-packet.md` / equivalent workflow packet with fixed rows for framework, shell, pages, layout sections, layout rows, blocks, standard areas, component slots, data/API, filters/actions, interactions, conclusion rules, exceptions, target files, and validations. | `report-design-workflow`, `report-visual-layout-design`, `report-info-component-mapping`, `report-prototype-template-management` |
-| Child PRD Bundle | Produce stage-specific child PRDs for 原型、前端、后端、技术方案、测试; prototype workflow consumes `CHILD-PRD-PROTOTYPE` and records child sync status in readiness proof. | `report-prd-document-generation`, `report-design-workflow`, typed prototype workflows, downstream delivery workflows |
+| Main summary and scope | Business goal, users, phase scope, target workflow, readiness gaps. | `report-prd-document-generation` |
+| Thinking output | Page content, reading path, first viewport, conclusion/evidence/action sequence. | `report-prototype-design-thinking` through PRD generation |
+| Target workflow | One of the four specialized workflows. | `report-prd-document-generation` |
+| Page layout | `pageLayoutConfig` with section map, layout rows, coordinates, nav/page wiring. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
+| Block areas | `blockAreaConfigMap` with standard block-area content and rules. | target workflow, `report-prototype-template-management` |
+| Component slots | `componentSlotConfigMap` and `componentExampleConfigMap`. | `report-info-component-mapping`, target workflow, `report-prototype-template-management` |
+| Custom components | `customEChartExampleMap`, registration path, props/data contract, validation. | target workflow, `report-prototype-template-management` |
+| Metrics | Metric dictionary, formulas, units, source, null rules, mounting. | `report-info-component-mapping`, `metric-number-display-contract` |
+| Data/API | Data objects, request/response, mock/data-source status, permissions, freshness. | `report-info-component-mapping`, target workflow |
+| Interactions | Filters, pills, toolbar actions, drilldown/jump/drawer/modal/export/state behavior. | `report-info-component-mapping`, target workflow |
+| Conclusions | `conclusionRuleMap` and generated conclusion bindings. | `report-info-component-mapping`, target workflow |
+| Release | Validation commands, URL/screenshot/data evidence, readiness status. | target workflow |
 
-## Prototype Workflow Start Gate
+## Ready Gate
 
-Before any prototype workflow continues past preflight, require:
+A specialized workflow may mark report development ready only when:
 
-- A PRD status of `ready-for-review`, or `draft` with non-blocking `TBD(GAP-*)` items.
-- A concise main PRD child registry and a full child PRD bundle or child files.
-- `CHILD-PRD-PROTOTYPE` exists, is `synced` or explicitly `draft` with non-blocking gaps, and lists the parent sections consumed by the prototype stage.
-- A PRD execution matrix row for every main PRD section, execution appendix, child PRD, and prototype-relevant executable ID.
-- No `blocked` row for the target workflow's first executable step.
-- `outputArtifact` is `vueTemplatePrototype` and `implementationMode` is `copyTemplateProject` by default with copied-template Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof; any `htmlPrototype` exception cites the latest explicit user HTML/static-output request, and any `newVue3Project` exception cites self-developed/non-template authority plus rejected copy candidates.
-- `CHILD-PRD-PROTOTYPE` or Appendix A declares a primary report pattern, reading path, first-viewport plan, and path-to-block layout mapping; if user attachments or user-supplied thinking exist, the PRD records their intake/validation.
-- Management-facing reports include executive gate rows for decision profile, first-viewport 3-second answer, 30-second cause path, 3-minute action or explicit non-action reason, required severity, action, trust/source, and review/export behavior.
-- The main PRD contains a Markdown/mermaid preview for every retained navigation page, and each preview shows visible filters, toolbar actions, major blocks, block business content, and interaction entry points.
-- Appendix A/G or `CHILD-PRD-PROTOTYPE` contains `layoutSectionMap` and `layoutCoordinateMap`: every page is decomposed into exact `12*K` sections whose row counts sum to `N`, every visible block has `blockCoordinate` (`R-B`), every `3 componentArea` slot has `slotCoordinate` (`R-B-S`), and coordinates match the preview, section map, `layoutRows`, `blockMap`, and selected block layout slot order.
-- Every `blockLayoutTemplateMap` row declares `slotCount`, `componentSlotPattern` such as `A`, `AB`, `AAB`, or `AABBCC`, and `slotCoordinateList`; every `componentContentAreaTemplateMap` row maps to one declared slot.
-- The PRD execution appendix includes a Template Build Packet seed, and the workflow has created or will create a current Template Build Packet before source edits.
-- The final stage map states that 原型 uses `CHILD-PRD-PROTOTYPE`, 前端 uses `CHILD-PRD-FRONTEND`, 后端 uses `CHILD-PRD-BACKEND`, 技术方案 uses `CHILD-PRD-TECHNICAL-SOLUTION`, and 测试 uses `CHILD-PRD-TESTING`.
-- Every displayed metric in sections 6 and 7 has a mount path.
-- Every summary-area conclusion, conclusion card, or analysis insight target has a `RULE-*` row and frontend generation behavior.
-- Every page block in section 5 has `templateAssetUnderstandingMap` evidence, a direct block layout template and component slot plan.
-- Every component slot has a registered component content area template or fallback registration plus component slot size and visual-type size compatibility evidence.
-- Every API/data object used by a component has request/response or a documented mock/data-source fallback.
-- Runnable prototype handoff has `docs/prototype-data-summary.md`, or the main PRD scope explicitly defers backend-facing data handoff out of scope for the current phase.
-- Every interaction in section 9 has a system response and state behavior.
-- The self-development exception map contains only interaction IDs and component content area template IDs; any custom shell/page/block/supporting-area work is `blocked` or `deferred-out-of-scope`.
+- Every required PRD execution row is consumed or explicitly `deferred-out-of-scope`.
+- `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` match the implemented template files.
+- Every declared slot has a registered component example or newly registered custom ECharts example.
+- Data, filters, widgets, generated conclusion rules, interactions, and permission states are reflected in `docs/prototype-data-summary.md` when a runnable project is produced.
+- Validation/build/release commands have passed or the blocker is explicit.
 
-If these conditions fail, update the PRD first instead of continuing inside the workflow.
-
-## 100 Percent Execution Gate
-
-A workflow may mark a prototype stage `ready` only when every PRD execution matrix row is one of:
-
-- `ready`: consumed by the named workflow/capability and materialized into the required artifact.
-- `deferred-out-of-scope`: explicitly excluded by the main PRD scope and not required for the current phase.
-
-Rows with `draft` or `blocked` status keep the prototype stage `partial` or `blocked`. Do not hide incomplete PRD areas inside assumptions, mock data, or visual placeholders.
-
-Dynamic conclusion rows are not optional. A workflow cannot mark the stage `ready` while a visible summary-area conclusion, conclusion card, or analysis insight component is backed only by fixed copy instead of a consumed `RULE-*` execution row.
-
-Executive satisfaction rows are not optional for management-facing reports. A workflow cannot mark the stage `ready` while first-viewport blocks, component bundles, template maps, interactions, or export behavior fail to consume required `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, or `MEET-*` rows.
-
-Navigation/page preview rows are not optional. A workflow cannot mark the stage `ready` while a retained nav page has no consumed main PRD preview or while the implementation contradicts the preview's filters, toolbar actions, major blocks, business content, or interaction entries.
-
-Template Build Packet rows are not optional for implementation. A workflow cannot edit copied template source or mark implementation `ready` while packet sections for the edited page/block/slot/control/data/conclusion/target file are missing, blank, stale, blocked, or missing the required readable coordinate for that block or slot.
-
-Child PRD rows are not optional for cross-stage handoff. A workflow cannot mark prototype readiness for downstream 前端、后端、技术方案、测试 when the final stage map is missing, when `CHILD-PRD-PROTOTYPE` is stale, or when affected downstream child PRDs are missing/stale without explicit `GAP-*` impact.
-
-Output stack rows are not optional for runnable prototypes. A workflow cannot mark the stage `ready` if it chose HTML/static output from PRD/source wording instead of an explicit user request, if it created a new Vue3 project while a bundled template could be copied, or if the copied-template Vue 3 + TypeScript + Vite + Element Plus + ECharts + axios stack proof is missing.
-
-Data handoff rows are not optional when the prototype will feed technical solution, backend/data-service design, frontend integration, or testing. A workflow cannot mark the stage `ready` while `docs/prototype-data-summary.md` is missing, generic, stale, or not tied to current datasets, fields, component bindings, filters, interactions, API/model suggestions, gaps, and verification.
+Rows with `draft` or `blocked` status keep readiness `partial` or `blocked`.

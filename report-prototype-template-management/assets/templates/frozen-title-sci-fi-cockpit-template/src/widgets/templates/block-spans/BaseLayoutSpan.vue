@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue';
-import { getLayoutSpanSpec, type LayoutSpanId } from './catalog';
-import * as ComponentContentAreaTemplates from '../component-content-areas';
+import { createLayoutSpanSpec } from './catalog';
+import * as ComponentExamples from '../component-examples';
+import {
+  createComponentExampleDefaultConfig,
+  getComponentExampleConfigSchemaById,
+} from '../component-examples/config';
+import type { RegisteredWidgetConfig, WidgetVisualType } from '../../types';
 import type { ComponentRegionPattern, LayoutSpanTemplateProps } from './types';
 
-interface Props extends LayoutSpanTemplateProps {
-  spanId: LayoutSpanId;
-}
+type Props = LayoutSpanTemplateProps;
+type ComponentSlot = NonNullable<LayoutSpanTemplateProps['componentSlots']>[number];
 
 const props = withDefaults(defineProps<Props>(), {
   title: '',
@@ -17,22 +21,103 @@ const props = withDefaults(defineProps<Props>(), {
   density: 'auto',
   placeholder: '3 组件区',
   zonePatternLabel: '',
-  componentRegionPattern: 'AA',
+  componentRegionPattern: 'A',
+  autoComponentSlots: false,
+  componentAreaPaddingPx: 2,
+  componentSlotGapPx: 10,
 });
 
 const slotComponentRegistry: Record<string, Component> = {
-  ...ComponentContentAreaTemplates,
+  ...ComponentExamples,
 };
-const spec = computed(() => getLayoutSpanSpec(props.spanId));
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const mergeComponentExampleConfig = (...configs: unknown[]) =>
+  configs.reduce<Record<string, Record<string, unknown>>>((result, config) => {
+    if (!isRecord(config)) {
+      return result;
+    }
+
+    Object.entries(config).forEach(([section, sectionConfig]) => {
+      if (isRecord(sectionConfig)) {
+        result[section] = {
+          ...(result[section] ?? {}),
+          ...sectionConfig,
+        };
+      }
+    });
+
+    return result;
+  }, {});
+
+const getSlotConfigurableProps = (slot: ComponentSlot) => ({
+  ...((slot.widget?.props ?? {}) as Record<string, unknown>),
+  ...(slot.props ?? {}),
+  ...(slot.widgetProps ?? {}),
+});
+
+const resolveComponentExampleWidget = (slot?: ComponentSlot): RegisteredWidgetConfig | undefined => {
+  if (!slot) {
+    return undefined;
+  }
+
+  const schema = getComponentExampleConfigSchemaById(slot.componentExampleId);
+
+  if (!schema) {
+    return slot.widget;
+  }
+
+  const explicitProps = getSlotConfigurableProps(slot);
+  const { config: explicitPropsConfig, ...componentProps } = explicitProps;
+
+  return {
+    ...(slot.widget ?? {}),
+    type: schema.widgetType,
+    visualType: (slot.widget?.visualType ?? schema.visualType) as WidgetVisualType,
+    dataPolicy: slot.widget?.dataPolicy ?? slot.dataPolicy ?? 'static',
+    displayTitle: slot.widget?.displayTitle ?? slot.label ?? schema.label,
+    metricName: slot.widget?.metricName ?? slot.label ?? schema.label,
+    props: {
+      title: slot.label ?? schema.label,
+      ...componentProps,
+      config: mergeComponentExampleConfig(
+        createComponentExampleDefaultConfig(schema),
+        (slot.widget?.props as Record<string, unknown> | undefined)?.config,
+        explicitPropsConfig,
+        slot.config,
+      ),
+    },
+  } as RegisteredWidgetConfig;
+};
+const spec = computed(() => createLayoutSpanSpec(props.cols ?? 2, props.rows ?? 2));
+const shouldUseAutoComponentSlots = computed(() => props.autoComponentSlots === true);
 const isFourByThreeScaffold = computed(() => spec.value.id === '04x03');
-const normalizeComponentRegionPattern = (pattern: ComponentRegionPattern) =>
-  /^[A-Z]{2,12}$/.test(pattern) ? pattern : 'AA';
+const normalizeComponentRegionPatternRows = (pattern: ComponentRegionPattern) => {
+  const rows = pattern
+    .toUpperCase()
+    .split('|')
+    .map((row) => row.trim())
+    .filter(Boolean);
+
+  if (rows.length === 0 || rows.length > 8) {
+    return ['A'];
+  }
+
+  const columnCount = rows[0]?.length ?? 0;
+  const isValid = columnCount > 0
+    && columnCount <= 12
+    && rows.every((row) => row.length === columnCount && /^[A-Z]+$/.test(row));
+
+  return isValid ? rows : ['A'];
+};
+const normalizedComponentRegionPatternRows = computed(() =>
+  normalizeComponentRegionPatternRows(props.componentRegionPattern),
+);
 const normalizedComponentRegionPattern = computed<ComponentRegionPattern>(() =>
-  normalizeComponentRegionPattern(props.componentRegionPattern),
+  normalizedComponentRegionPatternRows.value.join('|'),
 );
-const shouldRenderComponentRegionPattern = computed(
-  () => isFourByThreeScaffold.value || normalizedComponentRegionPattern.value.length > 2,
-);
+const shouldRenderComponentRegionPattern = computed(() => normalizedComponentRegionPatternRows.value.length > 0);
 const rows = computed(() => props.data ?? []);
 const resolvedDensity = computed(() => (props.density === 'auto' ? spec.value.densityBand : props.density));
 const hasChrome = computed(() => !isFourByThreeScaffold.value && props.showChrome && spec.value.minReadableChrome);
@@ -67,6 +152,12 @@ const componentSlotByRegion = computed(() => new Map(
     slot,
   ]),
 ));
+const componentSlotWidgetByRegion = computed(() => new Map(
+  (props.componentSlots ?? []).map((slot, index) => [
+    (slot.regionKey ?? slot.id ?? String.fromCharCode(65 + index)).toLowerCase().slice(0, 1),
+    resolveComponentExampleWidget(slot),
+  ]),
+));
 const componentContractByRegion = computed(() => new Map(
   (props.componentSlotContracts ?? []).map((contract, index) => [
     (contract.regionKey ?? contract.id ?? String.fromCharCode(65 + index)).toLowerCase().slice(0, 1),
@@ -74,22 +165,53 @@ const componentContractByRegion = computed(() => new Map(
   ]),
 ));
 const componentRegionSegments = computed(() => {
-  const segments: Array<{ key: string; kind: string; span: number }> = [];
+  const patternRows = normalizedComponentRegionPatternRows.value;
+  const orderedKinds: string[] = [];
 
-  Array.from(normalizedComponentRegionPattern.value).forEach((rawKind, index) => {
-    const kind = rawKind.toLowerCase();
-    const previous = segments[segments.length - 1];
+  patternRows.forEach((row) => {
+    Array.from(row).forEach((rawKind) => {
+      const kind = rawKind.toLowerCase();
 
-    if (previous?.kind === kind) {
-      previous.span += 1;
-      return;
-    }
-
-    segments.push({ key: `${kind}-${index}`, kind, span: 1 });
+      if (!orderedKinds.includes(kind)) {
+        orderedKinds.push(kind);
+      }
+    });
   });
 
-  return segments;
+  return orderedKinds.map((kind) => {
+    const cells: Array<{ row: number; column: number }> = [];
+
+    patternRows.forEach((row, rowIndex) => {
+      Array.from(row).forEach((rawKind, columnIndex) => {
+        if (rawKind.toLowerCase() === kind) {
+          cells.push({ row: rowIndex, column: columnIndex });
+        }
+      });
+    });
+
+    const rowIndexes = cells.map((cell) => cell.row);
+    const columnIndexes = cells.map((cell) => cell.column);
+    const rowStart = Math.min(...rowIndexes) + 1;
+    const rowEnd = Math.max(...rowIndexes) + 2;
+    const columnStart = Math.min(...columnIndexes) + 1;
+    const columnEnd = Math.max(...columnIndexes) + 2;
+
+    return {
+      key: `${kind}-${rowStart}-${columnStart}`,
+      kind,
+      columnStart,
+      columnEnd,
+      rowStart,
+      rowEnd,
+    };
+  });
 });
+const componentRegionColumnCount = computed(() =>
+  normalizedComponentRegionPatternRows.value[0]?.length ?? 1,
+);
+const componentRegionRowCount = computed(() =>
+  normalizedComponentRegionPatternRows.value.length,
+);
 const componentSlotCount = computed(() => componentRegionSegments.value.length);
 const getRegionLabel = (kind: string) => {
   const slot = componentSlotByRegion.value.get(kind);
@@ -98,7 +220,7 @@ const getRegionLabel = (kind: string) => {
   return slot?.label ?? contract?.label ?? `${componentAreaLabel.value} ${kind.toUpperCase()}`;
 };
 const getRegionSlot = (kind: string) => componentSlotByRegion.value.get(kind);
-const getSlotWidget = (kind: string) => getRegionSlot(kind)?.widget;
+const getSlotWidget = (kind: string) => componentSlotWidgetByRegion.value.get(kind);
 const getSlotContent = (kind: string) => getRegionSlot(kind)?.content;
 const getSlotContentLabel = (kind: string) => {
   const content = getSlotContent(kind);
@@ -166,6 +288,7 @@ const getPercentStyle = (percent?: number) => ({
         'has-footer': hasFooter,
         'is-four-by-three-scaffold': isFourByThreeScaffold,
         'has-region-pattern': shouldRenderComponentRegionPattern,
+        'is-auto-component-slots': shouldUseAutoComponentSlots,
       },
     ]"
     :style="{
@@ -192,14 +315,22 @@ const getPercentStyle = (percent?: number) => ({
             v-if="shouldRenderComponentRegionPattern"
             class="layout-zone-pattern"
             :aria-label="`${normalizedComponentRegionPattern} ${componentAreaLabel}`"
-            :style="{ '--layout-region-column-count': normalizedComponentRegionPattern.length }"
+            :style="{
+              '--layout-region-column-count': componentRegionColumnCount,
+              '--layout-region-row-count': componentRegionRowCount,
+              '--layout-region-gap': shouldUseAutoComponentSlots ? `${props.componentSlotGapPx}px` : undefined,
+              '--layout-region-padding': shouldUseAutoComponentSlots ? `${props.componentAreaPaddingPx}px` : undefined,
+            }"
           >
             <span
               v-for="segment in componentRegionSegments"
               :key="segment.key"
               class="layout-zone-cell"
               :class="[`layout-zone-${segment.kind}`, { 'has-slot-content': hasSlotComponentContent(segment.kind) || getSlotContent(segment.kind) }]"
-              :style="{ gridColumn: `span ${segment.span}` }"
+              :style="{
+                gridColumn: `${segment.columnStart} / ${segment.columnEnd}`,
+                gridRow: `${segment.rowStart} / ${segment.rowEnd}`,
+              }"
             >
               <component
                 :is="getSlotComponent(segment.kind)"
@@ -458,12 +589,14 @@ const getPercentStyle = (percent?: number) => ({
 .layout-zone-pattern {
   display: grid;
   grid-template-columns: repeat(var(--layout-region-column-count, 2), minmax(0, 1fr));
-  gap: clamp(1px, 0.8cqw, 3px);
+  grid-template-rows: repeat(var(--layout-region-row-count, 1), minmax(0, 1fr));
+  gap: var(--layout-region-gap, clamp(1px, 0.8cqw, 3px));
   width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  padding: var(--layout-region-padding, 0);
 }
 
 .layout-zone-cell {
@@ -472,18 +605,17 @@ const getPercentStyle = (percent?: number) => ({
   place-items: center;
   min-width: 0;
   min-height: 0;
-  border: 1px dashed color-mix(in srgb, var(--accent, #25c9ff) 42%, transparent);
+  border: 1px dashed rgba(0, 74, 198, 0.38);
   border-radius: 0;
-  background: color-mix(in srgb, var(--accent, #25c9ff) 7%, rgba(5, 18, 30, 0.72));
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .layout-zone-cell.has-slot-content {
   place-items: stretch;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--accent) 11%, transparent);
-  border-radius: 5px;
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid rgba(0, 115, 229, 0.14);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .layout-zone-label {
@@ -533,8 +665,8 @@ const getPercentStyle = (percent?: number) => ({
   min-height: 0;
   overflow: hidden;
   border: 0;
-  border-radius: var(--component-content-area-radius, 8px);
-  background: var(--component-content-area-background, transparent);
+  border-radius: var(--component-example-area-radius, 8px);
+  background: var(--component-example-area-background, transparent);
 }
 
 .layout-slot-content.has-content-title {
@@ -654,7 +786,7 @@ const getPercentStyle = (percent?: number) => ({
   min-height: var(--layout-slot-row-min-height);
   padding: 0 var(--layout-slot-pad);
   border-radius: 6px;
-  background: color-mix(in srgb, var(--accent, #25c9ff) 7%, rgba(5, 18, 30, 0.72));
+  background: rgba(255, 255, 255, 0.42);
 }
 
 .layout-slot-bar-row span,

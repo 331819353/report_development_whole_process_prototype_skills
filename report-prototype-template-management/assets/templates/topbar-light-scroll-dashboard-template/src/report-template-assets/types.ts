@@ -1,21 +1,7 @@
 import type { RegisteredWidgetConfig, WidgetMap } from '../widgets/types';
 import type { ReportBlueprintCatalog } from './blueprint/types';
 
-export type CanonicalReportTemplateAssetKind = 'component-content-area-template' | 'block-layout-template';
-export type LegacyReportTemplateAssetKind = 'component-sample' | 'generic-template';
-export type ReportTemplateAssetKind = CanonicalReportTemplateAssetKind | LegacyReportTemplateAssetKind;
-
-export const normalizeReportTemplateAssetKind = (kind: ReportTemplateAssetKind): CanonicalReportTemplateAssetKind => {
-  if (kind === 'component-sample') {
-    return 'component-content-area-template';
-  }
-
-  if (kind === 'generic-template') {
-    return 'block-layout-template';
-  }
-
-  return kind;
-};
+export type ReportTemplateAssetKind = 'component-example' | 'block-layout-template';
 
 export interface ReportFrameworkAsset {
   id: string;
@@ -39,7 +25,7 @@ export interface ReportTemplateDevelopmentStep {
   label: string;
   description: string;
   requiredInputs?: string[];
-  outputArtifact?: string;
+  operationOutput?: string;
   gate?: string;
 }
 
@@ -99,12 +85,8 @@ export interface ReportTemplateAssetCatalog {
   frameworks: ReportFrameworkAsset[];
   pageLayouts: ReportPageLayoutAsset[];
   developmentFlow: ReportTemplateDevelopmentStep[];
-  componentContentAreaTemplates: ReportTemplateBlockAsset[];
+  componentExamples: ReportTemplateBlockAsset[];
   blockLayoutTemplates: ReportTemplateBlockAsset[];
-  /** @deprecated Use componentContentAreaTemplates. */
-  componentSamples: ReportTemplateBlockAsset[];
-  /** @deprecated Use blockLayoutTemplates. */
-  genericTemplates: ReportTemplateBlockAsset[];
   blueprint: ReportBlueprintCatalog;
 }
 

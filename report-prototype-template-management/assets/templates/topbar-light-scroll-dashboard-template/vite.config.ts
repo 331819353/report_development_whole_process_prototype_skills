@@ -1,6 +1,17 @@
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import type { RollupLog } from 'rollup';
+
+const isElementPlusAnnotationWarning = (warning: RollupLog) => {
+  const id = warning.id?.replace(/\\/g, '/') ?? '';
+
+  return (
+    warning.code === 'INVALID_ANNOTATION' &&
+    id.includes('/node_modules/') &&
+    (id.includes('/element-plus/') || id.includes('/@vueuse/'))
+  );
+};
 
 export default defineConfig(({ mode }) => {
   const envConfig = loadEnv(mode, process.cwd(), '');
@@ -33,6 +44,17 @@ export default defineConfig(({ mode }) => {
             },
           }
         : undefined,
+    },
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (isElementPlusAnnotationWarning(warning)) {
+            return;
+          }
+
+          warn(warning);
+        },
+      },
     },
   };
 });

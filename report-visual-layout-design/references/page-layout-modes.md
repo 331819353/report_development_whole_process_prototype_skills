@@ -1,97 +1,51 @@
 # Page Layout Modes
 
-## 1. Entry Decision
+Use this reference when deciding the report page shell and layout mode.
 
-Before designing a report page, decide which mode controls the page shell:
+## 1. Single Supported Mode
 
-- `pageShellPath: template`: default for report layout work. Use the selected implementation asset under `assets/templates/`: `topbar-light-scroll-dashboard-template`, `left-nav-analytics-workbench-template`, `frozen-title-sci-fi-cockpit-template`, or another existing project template.
-- `pageShellPath: custom`: use only when the user explicitly asks for 自行设计开发 / 自由设计 / custom development, explicitly asks to 百分百复刻 / exactly restore a provided sample/HTML/source, or a documented template limitation makes all bundled templates unsuitable.
+Report development now has one supported implementation mode: configure a bundled framework template.
 
-This decision comes before choosing cards, charts, filters, or navigation.
+Declare these decisions before designing cards, charts, filters, or navigation:
 
-Declare `pageStyleSource` before implementation:
+- `frameworkTemplateId`: choose one bundled framework template, such as `topbar-light-scroll-dashboard-template`, `left-nav-analytics-workbench-template`, or `frozen-title-sci-fi-cockpit-template`.
+- `pageStyleSource`: `templateDefault`, `userSpecified`, or `sampleProvided`. Source files, screenshots, HTML, or samples are evidence for hierarchy, density, tone, and wording; they do not create an alternate shell path.
+- `brandMode`: `haierBranded`, `sampleNative`, or `neutral`, with explicit logo/token implications.
+- `visualMode`: choose the visual direction allowed by the selected framework template.
+- `pageLayoutConfig`: the page-level `12 * N` layout, `layoutSectionMap`, `layoutRows`, and `layoutCoordinateMap`.
+- `blockAreaConfigMap`: one block area config per visible block, created through `createBlockAreaConfig`.
+- `componentExampleConfigMap`: one registered component example per declared `3 componentArea` slot.
 
-- `templateDefault`: no style specified and no HTML/source/sample styling provided; use a bundled template.
-- `userSpecified`: user names the design style or shell; choose the bundled template that best satisfies that direction unless the user explicitly asks for custom development.
-- `sampleProvided`: screenshot, HTML source, image, or display sample supplies style; use custom `htmlReplica` only for explicit exact restoration, otherwise choose the closest bundled template and use the sample as evidence.
+If no bundled framework template can satisfy the report shell, layout, navigation, filter, toolbar, export, or permission surface, record a blocker or template backlog item. Do not branch into a free shell or independent project implementation inside this workflow.
 
-Declare `brandMode` before `visualMode`:
+## 2. Template-Owned Shell
 
-- `haierBranded`: default for Haier enterprise pages, Haier-branded prototypes, and custom report pages unless the user clearly asks otherwise.
-- `sampleNative`: only when a provided HTML/source/sample is explicitly non-Haier and the user asks to keep source-native branding.
-- `neutral`: only when the user explicitly asks for a generic non-branded page.
-- If `brandMode: haierBranded`, configure the Haier logo and global UI tokens while preserving the selected shell's main hierarchy.
-- If `brandMode: sampleNative` or `neutral`, record why Haier branding is not required instead of silently omitting the decision.
-
-## 2. Custom Report Page
-
-When `pageShellPath: custom`, choose exactly one `customDesignPath`:
-
-- `htmlReplica`: replicate provided HTML/source/sample structure. Preserve the source shell, module order, container hierarchy, main control count, layer structure, and card proportions unless the user explicitly asks for redesign.
-- `freeDesign`: create a custom shell from requirements without an HTML/source/sample visual authority. Use this only when the user asks for custom/free design or a template limitation is documented.
-
-Hard logo rule for both custom paths when `brandMode: haierBranded`:
-
-- `htmlReplica` and `freeDesign` must use the bundled Haier logo in the unified title/control area, header, or sidebar brand area.
-- Prefer `haier-logo.svg` / original color on light backgrounds and `haier-logo-white.svg` on dark backgrounds.
-- If the provided HTML/sample lacks a logo, add Haier logo as a required brand element while preserving the sample's main layout.
-- A logo placeholder is a blocking gap for `brandMode: haierBranded` custom pages, not an accepted final state. Do not mark that custom page complete until a real Haier logo asset is configured.
-- If `brandMode: sampleNative` or `neutral`, do not add Haier logo only because the page is custom; keep the source/native identity and record the brand decision.
-
-Global UI rule for custom paths:
-
-- `htmlReplica` preserves the source shell, module order, container hierarchy, main control count, layer structure, and card proportions.
-- `freeDesign` follows the selected custom layout pattern.
-- Both paths must use the project/global UI tokens for palette, typography, spacing, radius, shadows, semantic states, and Element Plus/control styling unless the user explicitly asks for exact color restoration.
-- Do not let copied HTML inline colors, one-off card surfaces, or ad hoc control styles override the global UI system.
-
-Custom pages need these capabilities, but they do not need to be three separate visual regions:
-
-- Title identity: Haier logo, report title, period/scope, data status, and primary actions.
-- Navigation: view switching, report hierarchy, chapter jump, or cross-report entry when needed.
-- Filter access: scope setting and active filter feedback.
-- Content display: the `12 * N` report grid.
-
-Design title, navigation, and filter access as one coherent header/control area when that improves simplicity. Do not force a separate title strip, separate nav strip, and separate filter strip unless the product style or task genuinely needs them.
-
-Choose exactly one `customLayoutPattern` before designing a custom page:
-
-- `symmetricBalance` / 对称式: balanced left-right or top-bottom blocks for comparison, paired metric groups, or two-side diagnosis.
-- `threePart` / 三部式: summary, analysis, and detail/action zones; useful when the page needs a clear top answer and two supporting layers.
-- `masterDetail` / 主从式: primary list/map/chart with detail panel/drawer/table; useful for record exploration, monitoring, and traceability.
-- `narrativeStack` / 分层叙事式: vertical conclusion-evidence-diagnosis-detail-action flow; useful for recap, diagnosis, and leadership reading.
-
-Do not invent another custom layout pattern unless the user explicitly asks for it.
-
-Good custom-page shell patterns:
-
-- Integrated top control area: logo + title on the left, compact tabs or breadcrumb below/near the title, filter trigger and actions on the right.
-- Title + segmented views: logo/title/scope in one row, view tabs as small segmented controls, filters opened from a button with active chips.
-- Compact workbench header: logo/title/status plus icon actions; filter drawer or popover opens from the toolbar.
-- Low-intrusion side navigation: icon-collapsed or narrow nav only when many report chapters must be visible.
-
-Custom-page content rules:
-
-- The content display area starts after the unified control area.
-- Use a `12 * N` rectangular grid.
-- `N` grows with content. Enable vertical scrolling when the grid exceeds the first viewport.
-- Do not compress row heights to force all blocks into one screen.
-
-## 3. Template-Based Report Page
-
-When a template is selected, the template owns the shell.
+When a framework template is selected, the template owns the shell.
 
 Rules:
 
 - Follow the selected template's layout zones, logo slot, navigation style, filter mechanism, toolbar, action hook boundary, sizing model, and grid mechanics.
-- Configure the template through its intended fields: title, assets/logo, nav/page, filters, toolbar actions, `layoutRows`, widgets, theme, and data source bindings.
-- Do not redesign the template's global frame unless the task explicitly asks to modify the template.
+- Configure the template through intended fields: title, assets/logo, nav/page, filters, toolbar actions, `layoutRows`, widgets, theme, data source bindings, and permission/export hooks.
+- Do not add a second global header, standalone filter bar, duplicate navigation, or replacement toolbar when the template already owns that surface.
 - If the template exposes `public/haier-logo.svg`, keep that asset for the light/default logo slot unless a dark theme requires the white logo variant.
-- If the template defines invoked filters, keep that pattern and map filter requirements to `filters[]`, native trigger/panel/popover/drawer, and binding rules. Do not generate a standalone filter toolbar/bar unless the task explicitly approves template-level redesign.
-- If the template defines persistent filters, keep them compact and aligned with the template's own controls instead of adding another filter row.
+- If the template defines invoked filters, map filter requirements to `filters[]`, native trigger/panel/popover/drawer, and binding rules.
+- If the template defines persistent filters, keep them compact and aligned with the template's own controls.
 - For scrollable templates, keep row/block heights and enable vertical scrolling when the `12 * N` content exceeds the active viewport height.
 - Treat `1920x1080` as the visible prototype review viewport, not the full report height limit.
-- For fixed big-screen templates, respect the fixed 1920*1080 canvas and do not force the 220px scrollable-row rule.
+- For fixed big-screen templates, respect the fixed `1920x1080` canvas and do not force scrollable-row sizing.
+
+## 3. Configurable Block Area Layout
+
+The only supported block layout template is the block area config created by `createBlockAreaConfig` and listed in `blockAreaConfigMap`.
+
+Rules:
+
+- Block size comes from `pageLayoutConfig.layoutRows`, not from fixed historical wrappers.
+- Each block records `blockCoordinate`, `slotCount`, `componentSlotPattern`, `slotCoordinateList`, and optional area configs.
+- `1-1 titleArea` and `3 componentArea` are required unless the block is explicitly non-component by design.
+- `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, and `4 summaryArea` are optional but must be configured or marked unnecessary with a reason.
+- `componentRegionPattern` may appear only as derived slot-geometry metadata. It is not a selectable implementation target.
+- Every `3 componentArea` slot must bind to a registered component example or a newly registered self-developed ECharts component example with size compatibility evidence.
 
 ## 4. Navigation Guidance
 

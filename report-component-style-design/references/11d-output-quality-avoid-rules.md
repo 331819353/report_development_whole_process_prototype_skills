@@ -55,7 +55,7 @@ Before finalizing, verify:
 - Typography has minimum readable sizes and consistent hierarchy.
 - Filters, text summaries, charts, cards, tables, and drawers share the same visual language.
 - In-component capsule switches and dropdowns share one UI style, have clear selected states, and do not overlap titles, legends, axes, tables, KPI values, or empty states.
-- Component-level controls state exactly which component content they change and do not behave like hidden page-level filters unless explicitly designed that way.
+- Component-level controls state exactly which component body they change and do not behave like hidden page-level filters unless explicitly designed that way.
 - Components remain readable after filter-driven data changes, including empty results, long labels, changed totals, hidden series, and stale selections.
 - Drawers, fullscreen views, exports, and refreshed components visually reflect the same active filter state as their source component.
 - Charts and clickable components have visible entrance/update animation unless intentionally disabled for performance or accessibility.

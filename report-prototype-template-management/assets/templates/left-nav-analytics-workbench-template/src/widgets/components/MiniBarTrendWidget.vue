@@ -150,7 +150,7 @@ const option = computed<EChartsOption>(() => {
       right: scale.gridRight,
       bottom: scale.gridBottom,
       left: scale.gridLeft,
-      containLabel: true,
+      containLabel: false,
     },
     xAxis: {
       type: 'category',
