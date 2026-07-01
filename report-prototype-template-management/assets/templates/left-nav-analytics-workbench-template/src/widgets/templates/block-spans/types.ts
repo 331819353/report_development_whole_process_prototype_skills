@@ -1,4 +1,6 @@
-import type { RegisteredWidgetConfig, WidgetContext } from '../../types';
+import type { DashboardActionMap } from '../../../types/actions';
+import type { DashboardDataSourceRef, DashboardFilterScope } from '../../../types/data-source';
+import type { RegisteredWidgetConfig, WidgetContext, WidgetDataBindingConfig } from '../../types';
 import type { LayoutDensityBand, LayoutSpanSpec } from './catalog';
 
 export type ComponentRegionPattern = string;
@@ -39,6 +41,8 @@ export interface LayoutSpanTemplateProps {
   autoComponentSlots?: boolean;
   componentAreaPaddingPx?: number;
   componentSlotGapPx?: number;
+  slotData?: Record<string, unknown[]>;
+  slotContexts?: Record<string, WidgetContext>;
   componentSlots?: Array<{
     id: string;
     templateSlotId?: string;
@@ -52,6 +56,10 @@ export interface LayoutSpanTemplateProps {
     widgetProps?: Record<string, unknown>;
     config?: Record<string, Record<string, unknown>>;
     dataPolicy?: RegisteredWidgetConfig['dataPolicy'];
+    data?: DashboardDataSourceRef;
+    dataBinding?: WidgetDataBindingConfig;
+    filterScope?: DashboardFilterScope;
+    actions?: DashboardActionMap;
     widget?: RegisteredWidgetConfig;
     content?: LayoutSpanSlotContent;
   }>;

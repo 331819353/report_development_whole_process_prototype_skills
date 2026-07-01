@@ -1,7 +1,7 @@
 import type { DashboardActionConfig, DashboardRuntimeContext, DashboardWidgetActionEvent } from '../types/actions';
 
 export interface DashboardActionControls {
-  // 全局层面只保留页面级工具能力；弹窗、跳转、下钻由组件内部自行实现。
+  // 全局层面保留页面级工具能力；弹窗、跳转、下钻也可由壳层默认 action 执行。
   print: () => void;
   fullscreen: () => Promise<void>;
   refresh: () => void;
@@ -19,10 +19,10 @@ export type DashboardActionHandler = (
   runtime: DashboardActionHandlerRuntime,
 ) => void | Promise<void>;
 
-// 全局动作预留接口。
-// DashboardShell 不再内置业务弹窗、页面跳转、下钻或筛选改写等交互动作。
-// 组件需要弹窗、跳转、下钻时，应在组件内部实现；如需把事件抛给外部系统，
-// 可按事件名注册处理器，或注册 dashboardAction 作为兜底处理器。
+// 全局动作扩展接口。
+// DashboardShell 会先匹配这里的自定义处理器；没有匹配时执行内置 action。
+// 需要覆盖默认弹窗、页面跳转、下钻、交叉筛选，或把事件抛给外部系统时，
+// 可按 action.type / event.name 注册处理器，或注册 dashboardAction 作为兜底处理器。
 //
 // 示例：
 // export const customActionRegistry = {

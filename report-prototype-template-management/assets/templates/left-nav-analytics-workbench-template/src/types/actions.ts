@@ -26,6 +26,13 @@ export interface DashboardRuntimeContext {
   navId: string;
   navLabel: string;
   blockId: string;
+  sourceBlockId?: string;
+  sourceSlotId?: string;
+  sourceSlotLabel?: string;
+  sourceComponentExampleId?: string;
+  activeTitlePillId?: string;
+  activeTitlePillLabel?: string;
+  activeTitlePill?: Record<string, unknown>;
   // filters 是当前组件作用域内可见的筛选值。
   filters: Record<string, string>;
   // allFilters 是全量筛选值，只有少数跨作用域组件需要读取。
@@ -38,14 +45,18 @@ export interface DashboardRuntimeContext {
 
 export interface DashboardWidgetActionEvent {
   // 组件抛出的事件名，例如 barClick、rowClick、nodeClick。
-  // 壳层只会转发给 customActionRegistry[event.name] 或 dashboardAction 钩子。
+  // 壳层会按 actions 配置解析；没有自定义 handler 时执行默认交互。
   name: string;
+  sourceBlockId?: string;
+  sourceSlotId?: string;
+  sourceSlotLabel?: string;
+  sourceComponentExampleId?: string;
   // 组件抛出的业务数据。组件私有交互可直接消费，也可让预留钩子读取。
   payload?: Record<string, unknown>;
 }
 
 export interface DashboardActionConfig {
-  // 动作配置仅作为预留钩子的元数据；壳层不内置执行业务交互。
+  // 动作配置可由壳层执行默认行为，也可被 customActionRegistry 覆盖。
   type: DashboardActionType;
   interactionId?: string;
   interactionType?: DashboardInteractionType;

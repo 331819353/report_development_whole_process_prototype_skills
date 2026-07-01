@@ -25,11 +25,16 @@ The document is required for prototype handoff to technical solution, backend/da
    - Record every displayed metric, formula, numerator/denominator, unit, direction, data source, filter scope, null/zero denominator rule, and display precision.
    - Record every `conclusionRuleId` used by `summaryAreaConfig`, conclusion cards, or analysis insight components, including input fields, trigger state, rule logic, fallback, and refresh behavior.
 6. `## Component Data Binding Matrix`
-   - For every page/block/slot/component, record component id, block id, selected block area config, registered component example id/file, data source id or API id, fields consumed, filters applied, ignored filters with reasons, local filters, sort/rank/pagination rules, states, and visible output.
+   - For every page/block/slot/component, record component id, block id, slot coordinate, selected block area config, registered component example id/file, data source id or API id, `dataBinding.mode`, source fields, mapped props, filters applied, ignored filters with reasons, local filters, sort/rank/pagination rules, states, and visible output.
+   - For component-slot bindings, explicitly name whether the source config lives on the block widget or `componentSlots[]`, and whether rows are cached by `blockId + slotId`.
 7. `## Filter And Parameter Semantics`
-   - Record global filters, perspective switches, local filters, default values, option source, `emptyFilterValue`, `aggregateValue`, query omission rules, field/query mapping, affected components, non-default state proof, and permission effects.
+   - Record global filters, scoped filters, perspective switches, local filters, default values, option source, `filters[].scope`, `componentSlots[].filterScope`, `emptyFilterValue`, `aggregateValue`, query omission rules, field/query mapping, required filter ids, affected components/slot coordinates, non-default state proof, and permission effects.
+   - Record block pill switches from `titlePills`: owner block, visible `1-2 pillArea`, default active pill, `filters/params/props/dataBinding/actions`, affected data/API params, affected block/slot coordinates, and refresh scope. Data-affecting pills must state the runtime context path, for example `$context.activeTitlePill.params.metric`.
+   - State clearly that `filterScope` matches `filters[].scope`, while `requiredFilters` and API/query mappings reference filter ids.
 8. `## Interaction Payloads`
-   - Record drilldown, jump, drawer, modal, popup, row action, chart click, export, refresh, and share events: trigger, payload fields, inherited context, target route/component/action, API needs, stale-selection behavior, and state handling.
+   - Record drilldown, jump, drawer, modal, popup, row action, chart click, cross-filter, export, refresh, and share events: trigger, source block/slot coordinate, event name, action placement, payload fields, query/params, inherited context, target route/component/action, handler mode (`shell-default` or `customActionRegistry:<key>`), API needs, stale-selection behavior, and state handling.
+   - For pill-triggered interactions, use event name `titlePillChange` when the action is declared on `titlePills[].actions`; include `titlePillId`, `titlePillLabel`, and the resolved active-pill params/filters in the payload description.
+   - For shell-default actions, identify the default target type: `route`, `external`, `drawer`, `modal`, `popover`, `cross-filter`, `fullscreen`, `export`, or `refresh`.
 9. `## Backend API And Model Suggestions`
    - Propose backend endpoint candidates, request params, response shape, response model family, dataset/model grain, pagination/sort/filter execution stage, export behavior, cache/freshness, permission injection, and source/model assumptions.
    - Mark these as suggestions unless an upstream API contract already exists.

@@ -9,6 +9,8 @@ const props = defineProps<{
   widget?: RegisteredWidgetConfig;
   context: WidgetContext;
   data?: unknown[];
+  slotData?: Record<string, unknown[]>;
+  slotContexts?: Record<string, WidgetContext>;
   blockSize?: {
     cols: number;
     rows: number;
@@ -55,6 +57,8 @@ const widgetProps = computed(() => {
     ...baseProps,
     cols: props.blockSize.cols,
     rows: props.blockSize.rows,
+    slotData: props.slotData,
+    slotContexts: props.slotContexts,
   };
 });
 

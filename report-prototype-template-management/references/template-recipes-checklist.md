@@ -57,7 +57,7 @@ Use this file for common adjustments and final verification after changing a tem
    - Choose SingleSlot or MultiSlot from the requirement. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups. In MultiSlot blocks, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed.
 2. Declare `slotCount`, `componentSlotPattern`, and `slotCoordinateList` before selecting registered component examples. Use slot patterns such as `A`, `AB`, `AAB`, and `AABBCC`; these describe slots inside `3 componentArea`, not page `layoutRows`.
 3. Configure `1-1 titleArea`: title and title style.
-4. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured.
+4. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured. If a pill changes metric, period, mode, scenario, or data perspective, configure `titlePills[].filters`, `titlePills[].params`, `titlePills[].props`, `titlePills[].dataBinding`, or `titlePills[].actions`; do not stop at `id/label`.
 5. Decide whether `2-1 auxMetricArea` is needed. Configure it when needed and keep the items evenly distributed; otherwise record it as not configured.
 6. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
 7. For every `3 componentArea` slot, assign/verify `slotCoordinate` (`R-B-S`), inspect `references/component-examples/config.ts`, then inspect `src/widgets/templates/component-examples/` and its README/catalog, then select an existing 组件示例 first.
@@ -73,14 +73,17 @@ Use this file for common adjustments and final verification after changing a tem
 1. Read/create sidecar ledgers before editing each planned source file, usually `dashboard.config.ts`, `dashboard.dataset.json`, `src/widgets/types.ts`, `src/widgets/registry.ts`, and the new component file.
 2. Create/register the widget.
 3. Add static/mock rows in `src/data/dashboard.dataset.json`, configure `widget.data.id: 'apiData'` with `widget.data.api`, or register a custom API/provider resolver in `dataSources/registry.ts` for complex providers. Do not create TS fixture modules for mock rows.
-4. Verify data completeness before binding filters: every affecting primary/global filter has option rows, matching business rows or API/resolver support, required fields, default and non-default states, and empty/no-permission coverage when relevant.
-5. Configure `widget.data`.
-6. Add `filterFields`, `requiredFilters`, API params, resolver params, or `requiredParams` for every affecting global/page filter. Use `ignoredFilters` plus `ignoredFilterReasons` only for filters the widget intentionally does not consume.
-7. If mock/offline mode is used, ensure non-default filter values return different rows or values when the business state should change; add a custom resolver when plain rows cannot model the scenario.
-8. For line, area, and category-axis charts, sort row tuples first and derive labels, values, tooltip payloads, and click payloads from the same sorted rows.
-9. Render from the `data` prop inside the widget.
-10. Append sidecar ledger entries for every changed source file with feature list, code ranges, affected data/filter/API contracts, and verification.
-11. Update `docs/prototype-data-summary.md` with the dataset id, fields, metric/conclusion inputs, component binding row, filters, interaction payloads, backend API/model implications, gaps, and verification.
+4. For registered component examples inside `3 componentArea`, configure the owning slot/widget with `data`, `filterScope`, and `dataBinding`; do not add a component-example-specific data loader.
+5. Verify data completeness before binding filters: every affecting primary/global/scoped filter has option rows, matching business rows or API/resolver support, required fields, default and non-default states, and empty/no-permission coverage when relevant.
+6. Configure `widget.data` or `componentSlots[].data`.
+7. Add `requiredFilters`, API params, resolver params, or `requiredParams` for every affecting global/page filter. Use `ignoredFilters` plus `ignoredFilterReasons` only for filters the widget intentionally does not consume.
+8. If a filter is scoped, set `filters[].scope` and match it from `componentSlots[].filterScope`; `filterScope` is not a substitute for required filter ids or API/query mappings.
+9. Configure `dataBinding.mode`: `rows`, `first-row`, `category-series`, `items`, or `custom-props`. Verify mapped props match the selected component example.
+10. If mock/offline mode is used, ensure non-default filter values return different rows or values when the business state should change; add a custom resolver when plain rows cannot model the scenario.
+11. For line, area, and category-axis charts, sort row tuples first and derive labels, values, tooltip payloads, and click payloads from the same sorted rows.
+12. Render from the `data` prop inside ordinary widgets, or from `slotData` plus `dataBinding` inside component examples.
+13. Append sidecar ledger entries for every changed source file with feature list, code ranges, affected data/filter/API contracts, and verification.
+14. Update `docs/prototype-data-summary.md` with the dataset id, fields, metric/conclusion inputs, component binding row, filters, interaction payloads, backend API/model implications, gaps, and verification.
 
 ### Update Prototype Data Summary
 
@@ -103,10 +106,12 @@ Use this file for common adjustments and final verification after changing a tem
 ### Add Component Interaction
 
 1. Widget emits `dashboard-action`.
-2. Configure `actions[eventName]` on the widget.
-3. Implement popup, navigation, drilldown, and detail behavior inside the widget or hosting product module.
-4. Use `actions/registry.ts` only for shell-level utilities or host-system event observation.
-5. Keep global filters immutable from component actions unless the host product intentionally wires that behavior.
+2. Configure `actions[eventName]` on the block widget or component slot.
+3. Choose `targetType`: `route`, `external`, `drawer`, `modal`, `popover`, `cross-filter`, `fullscreen`, `export`, or `refresh`.
+4. Fill `target`, `query`, `params`, `contextInheritance`, and `meta.title` when relevant. Use `$event`, `$filters`, and `$context` expressions for payload mapping.
+5. Let the shell default behavior run when it is sufficient: nav/route jump, external open, drawer/drilldown, modal, popup, cross-filter, fullscreen, export, and refresh.
+6. Use `actions/registry.ts` only when default behavior must be overridden for permission, API orchestration, analytics, host-system integration, or a business-specific overlay.
+7. Record the interaction in `interactionBehaviorMap` with source page/block/slot coordinate, event name, action placement, target type, handler mode, state response, and QA case.
 
 ### Change Visual Style
 
@@ -124,6 +129,7 @@ Use this file for common adjustments and final verification after changing a tem
 - Template Build Packet exists for PRD-driven or multi-step implementation, is current with implemented source files, and maps every edited target file to packet section 11.
 - Nine-step template operation chain is complete: `frameworkTemplateId`, `templateAssetUnderstandingMap`, `pageLayoutConfig` with `layoutSectionMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockAreaConfigMap` with `slotCount`, `componentSlotPattern`, `slotCoordinateList`, block area configs created by `createBlockAreaConfig`, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentExampleConfigMap` with component slot size and visual-type size compatibility evidence, `summaryAreaConfig`, and fallback map when custom registered component examples were created.
 - Component slots under `3 componentArea` contain only registered 组件示例 content. Title, pills, filters, controls, additional information, units, descriptions, explanations, and summaries stay in 分块配置 supporting areas, shell/page config, or non-slot widgets.
+- Block pills are verified as real switches when they claim to switch data: active pill context path, affected params/filters, affected block/slot coordinates, data reload scope, and optional `titlePillChange` action are documented.
 - Component slots are not text-filled or placeholder-filled; every slot has a registered component example ID, standalone Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
 - Registered component examples are standalone Vue files, rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
 - Stack contract is intact: `package.json` keeps Vue 3, TypeScript, Vite, Element Plus, ECharts, axios, and build/typecheck scripts; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus with locale, imports Element Plus base and dark CSS variables, and preserves project Element token styles.
@@ -142,8 +148,11 @@ Use this file for common adjustments and final verification after changing a tem
 - Binding matrix includes `controlSemantics` and `componentSchemaImpact` for controls that affect widgets.
 - Navigation percentages, rankings, and status lights have lineage and are not stored in `filterData.meta` unless explicitly static display copy.
 - Filter scope and data field mapping are explicit.
+- Component-slot filter binding is explicit: `filters[].scope` matches `componentSlots[].filterScope`, while `requiredFilters` and API/query params reference filter ids.
+- Every dynamic component slot has `dataBinding.mode` plus mapped fields/props, or a documented static-data reason.
 - Affecting filters are bound through `filterFields`, `requiredFilters`, API params, or resolver params; `ignoredFilters` is used only for intentionally invariant widgets and each ignored filter has `ignoredFilterReasons`.
 - Non-default primary filter states visibly change affected widget data in JSON/API/resolver mode, or the widget is clearly labeled static/invariant.
+- Configured interactions name source coordinate, event name, action placement, target type, query/params, handler mode, state response, and QA case.
 - Non-default perspective states update metric names, titles/summaries, table dimensions/headers, component set, specialty metrics, and口径 when specified by `componentSchemaImpact`; value-only changes are not enough.
 - Block spans match the size and component-count constraints from `report-visual-layout-design`.
 - Layout tokens match the selected template family or deviations are documented: content range, `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, and component-owned title/control handoff.

@@ -1,7 +1,7 @@
 import type { DashboardConfig } from '../src/types/dashboard';
 import type { DashboardActionConfig } from '../src/types/actions';
 import type { DashboardDataSourceRef } from '../src/types/data-source';
-import type { RegisteredWidgetConfig } from '../src/widgets/types';
+import type { RegisteredWidgetConfig, WidgetTitlePillOption } from '../src/widgets/types';
 
 // Template: left-nav-analytics-workbench-template
 // 用法：复制需要的对象片段到 src/config/dashboard.config.ts。
@@ -48,20 +48,118 @@ export const datasetTemplate = {
 export const actionConfigTemplates = {
   rowClick: {
     type: 'rowClick',
+    interactionType: 'drilldown',
+    triggerOwner: 'componentOwnedEvent',
+    targetType: 'drawer',
+    target: 'revenue-row-detail',
     params: {
       id: '$event.id',
       productLine: '$event.productLine',
       navId: '$context.navId',
     },
+    meta: {
+      title: '收入行明细',
+    },
   },
   openExternalWorkbench: {
     type: 'openExternalWorkbench',
+    targetType: 'external',
+    target: '/workbench/revenue',
     params: {
       sourceBlock: '$context.blockId',
       filters: '$filters',
     },
   },
+  crossFilterRegion: {
+    type: 'dashboardAction',
+    interactionType: 'crossFilter',
+    triggerOwner: 'componentOwnedEvent',
+    targetType: 'cross-filter',
+    params: {
+      regionId: '$event.regionId',
+    },
+  },
+  detailModal: {
+    type: 'dashboardAction',
+    interactionType: 'modal',
+    triggerOwner: 'componentOwnedEvent',
+    targetType: 'modal',
+    target: 'revenue-detail-modal',
+    query: {
+      id: '$event.id',
+      period: '$event.period',
+      regionId: '$filters.regionId',
+    },
+    meta: {
+      title: '收入详情',
+    },
+  },
+  jumpToRevenueNav: {
+    type: 'dashboardAction',
+    interactionType: 'jump',
+    triggerOwner: 'componentOwnedEvent',
+    targetType: 'route',
+    target: 'revenue',
+    query: {
+      id: '$event.id',
+    },
+  },
 } satisfies Record<string, DashboardActionConfig>;
+
+export const titlePillSwitchTemplates = {
+  metricSwitch: [
+    {
+      id: 'revenue',
+      label: '收入',
+      params: { metric: 'revenue' },
+      filters: { metric: 'revenue' },
+      props: { unit: '万元', contentAreaTitle: '收入趋势' },
+      dataBinding: {
+        mode: 'category-series',
+        categoryField: 'period',
+        series: [{ name: '收入', valueField: 'amount', type: 'line', smooth: true, unit: '万元' }],
+      },
+    },
+    {
+      id: 'completion',
+      label: '达成率',
+      params: { metric: 'completion' },
+      filters: { metric: 'completion' },
+      props: { unit: '%', contentAreaTitle: '达成率趋势' },
+      dataBinding: {
+        mode: 'category-series',
+        categoryField: 'period',
+        series: [{ name: '达成率', valueField: 'completion', type: 'line', smooth: true, unit: '%' }],
+      },
+    },
+  ],
+  displayModeSwitch: [
+    { id: 'trend', label: '趋势', props: { chartMode: 'trend' } },
+    { id: 'rank', label: '排行', props: { chartMode: 'rank' } },
+  ],
+  actionSwitch: [
+    {
+      id: 'detail',
+      label: '详情',
+      params: { mode: 'detail' },
+      actions: {
+        titlePillChange: {
+          type: 'dashboardAction',
+          interactionType: 'drawer',
+          triggerOwner: 'widgetEvent',
+          targetType: 'drawer',
+          target: 'active-pill-detail',
+          query: {
+            blockId: '$context.blockId',
+            pillId: '$context.activeTitlePillId',
+            mode: '$context.activeTitlePill.params.mode',
+          },
+          meta: { title: '当前分块切换详情' },
+        },
+      },
+    },
+  ],
+} satisfies Record<string, WidgetTitlePillOption[]>;
 
 export const dataSourceTemplates = {
   jsonRevenueRows: {
@@ -234,6 +332,58 @@ export const widgetTemplates = {
     dataPolicy: 'external',
   },
 } satisfies Record<string, RegisteredWidgetConfig>;
+
+export const componentSlotBindingTemplates = {
+  lineChartSlot: {
+    componentExampleId: 'component-example-catalog:line-chart-card',
+    props: {
+      unit: '万元',
+      config: {
+        title: { visible: false },
+        chart: { legendVisible: true, smooth: true },
+      },
+    },
+    data: {
+      ...dataSourceTemplates.jsonRevenueRows,
+    },
+    filterScope: ['revenue'],
+    dataBinding: {
+      mode: 'category-series',
+      categoryField: 'period',
+      series: [
+        { name: '收入', valueField: 'amount', type: 'line', smooth: true, unit: '万元' },
+        { name: '达成率', valueField: 'completion', type: 'line', unit: '%' },
+      ],
+    },
+    actions: {
+      chartClick: actionConfigTemplates.detailModal,
+      legendClick: actionConfigTemplates.crossFilterRegion,
+    },
+  },
+  detailTableSlot: {
+    componentExampleId: 'component-example-catalog:detail-table-card',
+    props: {
+      unit: '万元',
+      rowKey: 'id',
+      columns: [
+        { key: 'period', label: '期间', field: 'period' },
+        { key: 'productLineName', label: '产品线', field: 'productLineName' },
+        { key: 'amount', label: '收入', field: 'amount', align: 'right' },
+      ],
+    },
+    data: {
+      ...dataSourceTemplates.apiRevenueRows,
+    },
+    filterScope: ['revenue'],
+    dataBinding: {
+      mode: 'rows',
+      rowsProp: 'rows',
+    },
+    actions: {
+      rowClick: actionConfigTemplates.rowClick,
+    },
+  },
+} as const;
 
 export const leftNavAnalyticsConfigTemplate = {
   assets: {

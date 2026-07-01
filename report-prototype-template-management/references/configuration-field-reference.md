@@ -126,7 +126,7 @@ const projectLayoutRows = [
 | `title` | string | 分块标题，显示在块标题区。 | 改这里就是改分块标题。 |
 | `note` | string | 分块说明或业务口径，传给分块运行时。 | 写该块回答什么问题、统计范围或口径。 |
 | `bodySummary` | string | 说明区文本，显示在块体的 `4 说明区`。 | 改这里就是改说明区。没有说明就不要填。 |
-| `titlePills` | `WidgetTitlePillOption[]` | 标题右侧胶囊按钮。 | 改数组的 `id/label/hidden/disabled`。 |
+| `titlePills` | `WidgetTitlePillOption[]` | 标题右侧胶囊按钮，支持分块级局部切换。 | 改数组的 `id/label/hidden/disabled`；需要驱动数据/展示时配置 `filters/params/props/dataBinding/actions`。 |
 | `componentRegionPattern` | string | 组件区内部槽位布局。 | 单槽用 `A`，双槽用 `AB`，三槽用 `ABC`，复杂布局用 `AAB|CCD`。 |
 | `slots` | `ProjectReportSlot[]` | 分块内的组件槽位。 | 每个槽位用 `slot(...)` 绑定一个组件示例。 |
 
@@ -161,9 +161,21 @@ slot('A', '收入趋势', 'line-chart-card', componentWidget('LineChartExampleCa
 
 ```ts
 titlePills: [
-  { id: 'revenue', label: '收入' },
-  { id: 'profit', label: '利润' },
-  { id: 'risk', label: '风险', hidden: false },
+  {
+    id: 'revenue',
+    label: '收入',
+    params: { metric: 'revenue' },
+    filters: { metric: 'revenue' },
+    props: { unit: '万元', contentAreaTitle: '收入趋势' },
+  },
+  {
+    id: 'profit',
+    label: '利润',
+    params: { metric: 'profit' },
+    filters: { metric: 'profit' },
+    props: { unit: '万元', contentAreaTitle: '利润趋势' },
+  },
+  { id: 'risk', label: '风险', params: { metric: 'risk' }, hidden: false },
   { id: 'forecast', label: '预测', disabled: true },
 ],
 ```
@@ -174,11 +186,19 @@ titlePills: [
 | `label` | 按钮显示文本。必须非空。 |
 | `hidden` | 为 `true` 时不渲染，也不占位。 |
 | `disabled` | 为 `true` 时渲染但不可点击。 |
+| `value` | 当前胶囊的语义值，可通过 `$context.activeTitlePill.value` 读取。 |
+| `filters` | 合并到当前 block/slot 的运行时 `context.filters`，适合声明 `metric`、`mode`、`scenario` 等局部筛选值。 |
+| `params` | 合并到 block/slot 数据源请求参数，且同名字段覆盖 `widget.data.params` 的默认值。 |
+| `props` | 合并到组件示例 props，适合切换单位、标题、阈值、展示模式等轻量展示配置。 |
+| `dataBinding` | 覆盖当前激活态下的行到 props 映射，适合同一组件在不同胶囊下读取不同字段。 |
+| `actions` | 可选动作映射，支持 `titlePillChange` / `change` / `click`，走同一套 shell 默认交互或 `customActionRegistry`。 |
 
 注意：
 
-- 胶囊按钮目前是块标题区的轻量切换入口，模板会维护激活态。
-- 胶囊按钮本身不自动切换组件数据。需要真实切换时，在交互行为或组件 props 中补充数据切换逻辑。
+- 胶囊按钮属于 `1-2 pillArea`，仍然是分块支持区配置，不要塞进 `componentSlots[]`。
+- 模板会维护激活态，并把当前项写入 `$context.activeTitlePillId`、`$context.activeTitlePillLabel`、`$context.activeTitlePill`。
+- 配置了 `filters/params/props/dataBinding` 后，胶囊切换会触发该 block 及其 slot 数据重载和 props 重算。
+- 数据源参数可以直接依赖胶囊：`params: { metric: '$context.activeTitlePill.params.metric' }`；也可以让胶囊 `params.metric` 覆盖数据源默认 `metric`。
 - 一个分块可见胶囊建议不超过 6 个，超过会触发密度风险。
 
 ### 说明区怎么改
@@ -309,6 +329,144 @@ slot.widget.props
   },
 }
 ```
+
+### 组件与筛选项怎么通过配置绑定
+
+绑定链路固定为：
+
+```text
+filters[]
+  -> widget.data / componentSlot.data
+  -> filterScope
+  -> dataBinding
+  -> registered component props
+```
+
+配置职责：
+
+| 字段 | 放置位置 | 作用 |
+| --- | --- | --- |
+| `filters[]` | `dashboard.config.ts` | 壳层全局/页面筛选；只负责筛选 UI、默认值、选项来源。 |
+| `data` | block widget 或 `componentSlots[].data` | 声明数据源、接口、参数、必填筛选、忽略筛选。 |
+| `filterScope` | block widget 或 `componentSlots[]` | 声明当前组件接收哪些 `filters[].scope` 作用域；未配时只接收全局筛选。 |
+| `dataBinding` | block widget 或 `componentSlots[]` | 把数据源返回的 rows 转成组件示例需要的 props。 |
+| `props/config` | `componentWidget(...)`、`slot.props`、`slot.config` | 静态展示配置和组件私有样式配置。 |
+
+`dataBinding.mode` 支持：
+
+| mode | 输出 props | 适用组件 |
+| --- | --- | --- |
+| `rows` | `rows` 或 `rowsProp` 指定字段 | 表格、明细、原始列表。 |
+| `first-row` | `firstRowProps` 映射出的字段 | KPI、目标进度、单对象卡片。 |
+| `category-series` | `categories` + `series` | 折线、柱状、组合图。 |
+| `items` | `items` | 排名、占比、行动清单、结论列表。 |
+| `custom-props` | `propExpressions` 映射字段 | 自开发组件或特殊组件示例。 |
+
+示例：
+
+```ts
+const revenueTrendWidget = {
+  ...componentWidget('LineChartExampleCard', 'line', '收入趋势', {
+    unit: '万元',
+    config: { title: { visible: false }, chart: { legendVisible: true } },
+  }),
+  data: {
+    id: 'businessData',
+    params: { key: 'revenueRows' },
+    requiredFilters: ['regionId'],
+  },
+  filterScope: ['revenue'],
+  dataBinding: {
+    mode: 'category-series',
+    categoryField: 'period',
+    series: [
+      { name: '收入', valueField: 'amount', type: 'line', smooth: true, unit: '万元' },
+      { name: '达成率', valueField: 'completion', type: 'line', unit: '%' },
+    ],
+  },
+};
+
+slot(
+  'A',
+  '收入趋势',
+  'line-chart-card',
+  revenueTrendWidget,
+  1,
+  'primary',
+);
+```
+
+注意：
+
+- `componentSlots[]` 只放组件区槽位，不放标题、胶囊按钮、单位、说明或筛选 UI。
+- `filterScope` 匹配的是 `filters[].scope`，不是 `filters[].id`；未配置 `scope` 的筛选项是全局筛选，仍会进入所有组件。
+- 数据接口必填字段用 `data.requiredFilters` 声明，例如 `requiredFilters: ['regionId']`。
+- 若槽位配置了 `data`，运行时会按 `blockId + slotId` 单独缓存数据，并把 `slotData`、`slotContext` 传给对应组件示例。
+- 组件示例不再需要自己知道模板筛选面板在哪里；它只接收已经按 `filterScope` 计算好的 `context.filters` 和绑定后的 props。
+
+弱模型固定步骤：
+
+1. 先写 `filters[]`，确认每个筛选项的 `id`、`label`、`defaultValue`、`source/options`；需要局部影响时再写 `scope`。
+2. 在目标组件槽位的 `widget` 上写 `data`；接口参数、`requiredFilters`、`ignoredFilters` 都在这里，不写进组件 props。
+3. 在同一个槽位写 `filterScope`，只填 `filters[].scope` 的值；未设置 scope 的全局筛选不需要重复填。
+4. 按组件示例需要写 `dataBinding`，确认输出 props 和组件 props 表一致。
+5. 写 `actions` 时先使用壳层默认行为；只有默认行为表达不了时才注册 `src/actions/registry.ts` handler。
+6. 在 `template-build-packet.md` 或等价施工包中同步 `filterSurfaceMap`、`componentExampleConfigMap`、`interactionBehaviorMap`，否则不要开始改代码。
+
+### 页面交互怎么通过配置绑定
+
+组件抛出 `dashboard-action` 后，壳层按以下顺序处理：
+
+```text
+component event
+  -> componentSlots[].actions 或 block widget.actions
+  -> customActionRegistry[action.type/event.name/dashboardAction]
+  -> shell built-in action
+```
+
+内置 action 支持：
+
+| targetType / interactionType | 默认行为 |
+| --- | --- |
+| `route` / `jump` | 目标命中当前模板导航时切换 nav/page；否则写入 `location.hash`。 |
+| `external` | 新窗口打开外部链接。 |
+| `drawer` / `drilldown` | 打开模板默认抽屉，并展示 event、block、slot、target、query、params。 |
+| `modal` | 打开模板默认弹窗。 |
+| `popover` / `popup` | 使用默认弹窗容器承载轻量弹出信息。 |
+| `cross-filter` / `crossFilter` | 将 `params/query` 中命中的筛选字段写回 `filters[]`。 |
+| `fullscreen` | 进入或退出全屏。 |
+| `export` / `exportCurrentBlock` | 触发当前模板导出/打印入口。 |
+
+示例：
+
+```ts
+actions: {
+  chartClick: {
+    type: 'dashboardAction',
+    interactionId: 'revenue-region-drilldown',
+    interactionType: 'drilldown',
+    triggerOwner: 'componentOwnedEvent',
+    targetType: 'drawer',
+    target: 'revenue-detail',
+    query: {
+      period: '$event.period',
+      regionId: '$filters.regionId',
+    },
+    contextInheritance: ['filters', 'navId', 'blockId', 'sourceSlotId'],
+    meta: { title: '收入明细下钻' },
+  },
+  legendClick: {
+    type: 'dashboardAction',
+    interactionType: 'crossFilter',
+    targetType: 'cross-filter',
+    params: {
+      regionId: '$event.regionId',
+    },
+  },
+}
+```
+
+需要更复杂的业务弹窗、权限判断、埋点或多接口联动时，在 `src/actions/registry.ts` 注册 `action.type` 或 `event.name` 对应 handler；同名 handler 会覆盖壳层默认行为。
 
 ## 7. 各组件常用 props
 

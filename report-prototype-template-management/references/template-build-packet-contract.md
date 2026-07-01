@@ -7,7 +7,9 @@ This contract follows the latest configurable flow:
 ```text
 frameworkTemplateId
   -> pageLayoutConfig
-  -> blockAreaConfigMap
+  -> filterSurfaceMap
+  -> toolbarActionMap
+  -> interactionBehaviorMap
   -> blockAreaConfigMap
   -> componentSlotConfigMap
   -> componentExampleConfigMap
@@ -78,7 +80,9 @@ Rules:
 | `dynamicBlockCollectionExport` | `blockAreaConfigMap`. |
 | `componentExampleCatalogSource` | `src/widgets/templates/component-examples/config.ts`. |
 | `componentExampleExportSource` | `src/widgets/templates/component-examples/index.ts`. |
+| `componentSlotRuntimeBindingSource` | `src/widgets/templates/block-spans/BaseLayoutSpan.vue` and `src/widgets/WidgetRenderer.vue`. |
 | `widgetRegistrySource` | `src/widgets/registry.ts`. |
+| `actionRegistrySource` | `src/actions/registry.ts`. |
 | `validatorSource` | `scripts/validate-dashboard-contract.mjs`. |
 
 ### 3. Page Registry
@@ -122,12 +126,14 @@ Rules:
 
 - `titleAreaConfig` is required.
 - Optional areas must be configured or set to `null` with `notNeededReason`.
+- If `pillAreaConfig` is configured, every pill must state whether it is visual-only or affects `filters`, `params`, `props`, `dataBinding`, or `actions`. Metric/period/mode/scenario switches are not visual-only.
+- For data-affecting pills, record affected block/slot coordinates, affected data/API params, expected refresh scope, and the runtime context path such as `$context.activeTitlePill.params.metric`.
 - Business conclusions in `summaryAreaConfig` must reference `conclusionRuleId`.
 
 ### 7. Component Slot Example Fills
 
-| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot pattern code | Slot role | Component slot size | `componentExampleId` | Component type | Vue file/export | Registry proof | Visual type | Props/config | Metric IDs | Data object/API | State contract | `conclusionRuleId` | Fallback |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot pattern code | Slot role | Component slot size | `componentExampleId` | Component type | Vue file/export | Registry proof | Visual type | Props/config | Metric IDs | Data object/API | `filterScope` | `dataBinding` | `actions` | State contract | `conclusionRuleId` | Fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
@@ -135,6 +141,9 @@ Rules:
 - `componentExampleId` must exist in `component-examples/config.ts`.
 - Component type must be exported from `component-examples/index.ts`.
 - Component type must be registered in `widgets/registry.ts`.
+- Existing component examples bind dynamic rows through `dataBinding`; do not add duplicate component-local data loaders.
+- `filterScope` lists `filters[].scope` values, not raw filter ids unless the scope deliberately equals the id.
+- `actions` names component event names and maps them to route, external, drawer/drilldown, modal, popover/popup, cross-filter, fullscreen, export, refresh, or a custom registry handler.
 - If no existing component example fits, register a custom ECharts component example before treating the slot as filled.
 
 ### 8. Data, API, Filters, And Interactions
@@ -146,13 +155,31 @@ Rules:
 
 #### Filters And Actions
 
-| Control ID | Owner | Visible surface | Label | Type | Default | Query/API params | Affected pages/blocks/slot coordinates | Reset/refresh behavior | Status |
+| Control ID | Owner | Visible surface | Label | Type | Default | `filters[].scope` | Option source | Query/API params | Affected pages/blocks/slot coordinates | Reset/refresh behavior | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+#### Filter Binding Matrix
+
+| Filter ID | Scope | Default | Option source | Bound data/API params | Affected slot coordinates | Required filter ids | Ignored filters/reasons | Non-default proof | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- Global filters have empty `scope` and affect every component unless explicitly ignored by data config.
+- Scoped filters must have a complete `filters[].scope -> componentSlots[].filterScope -> data/API params` path.
+- `requiredFilters` names filter ids; `filterScope` names scopes.
+- Block pills use Owner `blockArea`, Visible surface `1-2 pillArea`, and Type `pill-switch`; their `filters/params/props/dataBinding/actions` must be listed here when they affect data, display, or interaction state.
 
 #### Interaction Behavior
 
-| Interaction ID | Trigger owner | Source page/block/slot coordinate | Trigger | Target type | Payload fields | Context inheritance | Close/back behavior | Permission rule | QA case | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Interaction ID | Trigger owner | Source page/block/slot coordinate | Event name | Action placement | Target type | Target | Payload fields | Query/params | Context inheritance | State response | Handler mode | Close/back behavior | Permission rule | QA case | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- `Action placement` is `componentSlots[].actions` or block `actions`.
+- `Handler mode` is `shell-default` or `customActionRegistry:<key>`.
+- Shell defaults support `route`, `external`, `drawer`/`drilldown`, `modal`, `popover`/`popup`, `cross-filter`, `fullscreen`, `export`, and `refresh`.
 
 ### 9. Dynamic Conclusion Rules
 
@@ -191,5 +218,8 @@ The packet is not ready when:
 - Any `componentExampleId` is missing from schema/export/registry.
 - A fixed block wrapper is used as the report block implementation.
 - A component slot carries title/pill/filter/aux/unit/summary content.
+- A data-bound component slot lacks `data`, `dataBinding`, filter binding path, or a documented static-data reason.
+- A scoped filter lacks a row in the Filter Binding Matrix.
+- An interaction lacks source slot/block coordinate, event name, action placement, target type, handler mode, state response, or QA case.
 - A custom ECharts component is not registered.
 - Validation commands are missing.

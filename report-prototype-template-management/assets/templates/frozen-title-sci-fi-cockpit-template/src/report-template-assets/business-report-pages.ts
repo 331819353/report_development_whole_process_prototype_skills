@@ -82,6 +82,11 @@ const createComponentSlots = (slots: ProjectReportSlot[]): ProjectReportComponen
     role: item.role,
     componentExampleId: item.componentExampleId,
     dataPolicy: item.widget.dataPolicy,
+    data: item.widget.data,
+    dataBinding: item.widget.dataBinding,
+    filterScope: item.widget.filterScope,
+    actions: item.widget.actions,
+    widget: item.widget,
     props: item.widget.props as Record<string, unknown>,
   }));
 

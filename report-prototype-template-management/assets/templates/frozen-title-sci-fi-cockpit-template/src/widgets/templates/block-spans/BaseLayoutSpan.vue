@@ -6,6 +6,7 @@ import {
   createComponentExampleDefaultConfig,
   getComponentExampleConfigSchemaById,
 } from '../component-examples/config';
+import type { DashboardWidgetActionEvent } from '../../../types/actions';
 import type { RegisteredWidgetConfig, WidgetVisualType } from '../../types';
 import type { ComponentRegionPattern, LayoutSpanTemplateProps } from './types';
 
@@ -26,6 +27,10 @@ const props = withDefaults(defineProps<Props>(), {
   componentAreaPaddingPx: 2,
   componentSlotGapPx: 10,
 });
+
+const emit = defineEmits<{
+  (event: 'dashboard-action', payload: DashboardWidgetActionEvent): void;
+}>();
 
 const slotComponentRegistry: Record<string, Component> = {
   ...ComponentExamples,
@@ -76,6 +81,10 @@ const resolveComponentExampleWidget = (slot?: ComponentSlot): RegisteredWidgetCo
     type: schema.widgetType,
     visualType: (slot.widget?.visualType ?? schema.visualType) as WidgetVisualType,
     dataPolicy: slot.widget?.dataPolicy ?? slot.dataPolicy ?? 'static',
+    data: slot.widget?.data ?? slot.data,
+    dataBinding: slot.widget?.dataBinding ?? slot.dataBinding,
+    filterScope: slot.widget?.filterScope ?? slot.filterScope,
+    actions: slot.widget?.actions ?? slot.actions,
     displayTitle: slot.widget?.displayTitle ?? slot.label ?? schema.label,
     metricName: slot.widget?.metricName ?? slot.label ?? schema.label,
     props: {
@@ -233,6 +242,151 @@ const getSlotComponent = (kind: string) => {
   return widget ? slotComponentRegistry[widget.type] ?? null : null;
 };
 const getSlotWidgetRawProps = (kind: string) => (getSlotWidget(kind)?.props ?? {}) as Record<string, unknown>;
+const getSlotKeyCandidates = (slot?: ComponentSlot) => [
+  slot?.id,
+  slot?.regionKey,
+  slot?.templateSlotId,
+].filter((value): value is string => Boolean(value));
+const getSlotData = (kind: string) => {
+  const slot = getRegionSlot(kind);
+
+  for (const key of getSlotKeyCandidates(slot)) {
+    const rows = props.slotData?.[key];
+
+    if (rows) {
+      return rows;
+    }
+  }
+
+  return [];
+};
+const getSlotContext = (kind: string) => {
+  const slot = getRegionSlot(kind);
+
+  for (const key of getSlotKeyCandidates(slot)) {
+    const context = props.slotContexts?.[key];
+
+    if (context) {
+      return context;
+    }
+  }
+
+  return {
+    ...props.context,
+    sourceSlotId: slot?.id,
+    sourceSlotLabel: slot?.label,
+    sourceComponentExampleId: slot?.componentExampleId,
+  };
+};
+const isRecordValue = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+const getActiveTitlePill = (kind: string) => {
+  const pill = getSlotContext(kind).activeTitlePill;
+
+  return isRecordValue(pill) ? pill : {};
+};
+const getActiveTitlePillProps = (kind: string) => {
+  const pillProps = getActiveTitlePill(kind).props;
+
+  return isRecordValue(pillProps) ? pillProps : {};
+};
+const getActiveTitlePillDataBinding = (kind: string) => {
+  const binding = getActiveTitlePill(kind).dataBinding;
+
+  return isRecordValue(binding) ? binding as ComponentSlot['dataBinding'] : undefined;
+};
+const getByPath = (source: unknown, path?: string) => {
+  if (!path) {
+    return source;
+  }
+
+  return path.split('.').reduce<unknown>((current, segment) => {
+    if (current && typeof current === 'object' && segment in current) {
+      return (current as Record<string, unknown>)[segment];
+    }
+
+    return undefined;
+  }, source);
+};
+const getRowValue = (row: unknown, field?: string) => (isRecordValue(row) && field ? getByPath(row, field) : undefined);
+const getFirstRow = (data: unknown[]) => data.find(isRecordValue) ?? {};
+const buildItemFromRow = (row: unknown, fields: NonNullable<ComponentSlot['dataBinding']>['itemFields'] = {}) => {
+  const entries = Object.entries(fields)
+    .map(([target, field]) => [target, getRowValue(row, field)] as const)
+    .filter(([, value]) => value !== undefined);
+
+  return Object.fromEntries(entries);
+};
+const resolvePropExpression = (expression: string, data: unknown[], context: unknown) => {
+  if (expression === '$data.rows') {
+    return data;
+  }
+
+  if (expression.startsWith('$data.firstRow.')) {
+    return getByPath(getFirstRow(data), expression.slice('$data.firstRow.'.length));
+  }
+
+  if (expression.startsWith('$context.')) {
+    return getByPath(context, expression.slice('$context.'.length));
+  }
+
+  if (expression.startsWith('$$')) {
+    return expression.slice(1);
+  }
+
+  return expression;
+};
+const getDataBoundProps = (kind: string) => {
+  const slot = getRegionSlot(kind);
+  const widget = getSlotWidget(kind);
+  const binding = getActiveTitlePillDataBinding(kind) ?? slot?.dataBinding ?? widget?.dataBinding;
+  const data = getSlotData(kind);
+  const context = getSlotContext(kind);
+  const propsFromData: Record<string, unknown> = {};
+
+  if (!binding) {
+    return propsFromData;
+  }
+
+  if (binding.mode === 'rows' || binding.rowsProp) {
+    propsFromData[binding.rowsProp ?? 'rows'] = data;
+  }
+
+  if (binding.firstRowProps) {
+    const firstRow = getFirstRow(data);
+
+    Object.entries(binding.firstRowProps).forEach(([target, field]) => {
+      propsFromData[target] = getByPath(firstRow, field);
+    });
+  }
+
+  if (binding.categoryField) {
+    propsFromData.categories = data
+      .map((row) => getRowValue(row, binding.categoryField))
+      .filter((value) => value !== undefined);
+  }
+
+  if (binding.series?.length) {
+    propsFromData.series = binding.series.map((series) => ({
+      ...series,
+      values: data.map((row) => getRowValue(row, series.valueField)),
+    }));
+  } else if (binding.valueField) {
+    propsFromData.values = data.map((row) => getRowValue(row, binding.valueField));
+  }
+
+  if (binding.itemFields) {
+    propsFromData.items = data.map((row) => buildItemFromRow(row, binding.itemFields));
+  }
+
+  if (binding.propExpressions) {
+    Object.entries(binding.propExpressions).forEach(([target, expression]) => {
+      propsFromData[target] = resolvePropExpression(expression, data, context);
+    });
+  }
+
+  return propsFromData;
+};
 const getSlotContentAreaTitle = (kind: string) => {
   const widget = getSlotWidget(kind);
   const widgetProps = getSlotWidgetRawProps(kind);
@@ -258,10 +412,28 @@ const getSlotWidgetProps = (kind: string) => {
 
   return {
     ...widgetProps,
+    ...getDataBoundProps(kind),
+    ...getActiveTitlePillProps(kind),
     contentAreaTitle: getSlotContentAreaTitle(kind),
     slotCount: componentSlotCount.value,
     showContentTitle: componentSlotCount.value > 1 && widgetProps.showContentTitle !== false,
   };
+};
+const handleSlotDashboardAction = (kind: string, event: DashboardWidgetActionEvent) => {
+  const slot = getRegionSlot(kind);
+
+  emit('dashboard-action', {
+    ...event,
+    sourceSlotId: event.sourceSlotId ?? slot?.id,
+    sourceSlotLabel: event.sourceSlotLabel ?? slot?.label,
+    sourceComponentExampleId: event.sourceComponentExampleId ?? slot?.componentExampleId,
+    payload: {
+      sourceSlotId: slot?.id,
+      sourceSlotLabel: slot?.label,
+      sourceComponentExampleId: slot?.componentExampleId,
+      ...(event.payload ?? {}),
+    },
+  });
 };
 const hasSlotComponentContent = (kind: string) => Boolean(getSlotComponent(kind));
 const shouldShowInlineContentTitle = (kind: string) => componentSlotCount.value > 1 && Boolean(getSlotContent(kind));
@@ -337,8 +509,9 @@ const getPercentStyle = (percent?: number) => ({
                 v-if="hasSlotComponentContent(segment.kind)"
                 v-bind="getSlotWidgetProps(segment.kind)"
                 class="layout-slot-content-widget"
-                :context="context"
-                :data="[]"
+                :context="getSlotContext(segment.kind)"
+                :data="getSlotData(segment.kind)"
+                @dashboard-action="handleSlotDashboardAction(segment.kind, $event)"
               />
               <div
                 v-else-if="getSlotContent(segment.kind)"

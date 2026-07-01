@@ -71,7 +71,7 @@ Required block row fields:
 | `componentSlotPattern` | Same as or derived from `componentRegionPattern`. |
 | `slotCoordinateList` | `R-B-S` values for all slots. |
 | `titleAreaConfig` | Required. |
-| `pillAreaConfig` | Config or `null` with reason. |
+| `pillAreaConfig` | Config or `null` with reason. If pills change metric, period, mode, scenario, data perspective, props, or interaction state, include their `titlePills[].filters/params/props/dataBinding/actions` impact and affected block/slot coordinates. |
 | `auxMetricAreaConfig` | Config or `null`. |
 | `unitAreaConfig` | Config or `null`. |
 | `summaryAreaConfig` | Config or `null`. |

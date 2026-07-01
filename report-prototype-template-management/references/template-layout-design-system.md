@@ -31,7 +31,7 @@ Use this order for report implementation:
 2. Design the 页面布局配置. `layoutRows` must be `12 * N`, every row exactly 12 cells, no row longer than 12 cells, and `N >= 8`; `layoutCoordinateMap` must assign `blockCoordinate` (`R-B`) to every block.
 3. Based on 页面布局配置, create each block with `createBlockAreaConfig` and derive `slotCoordinate` (`R-B-S`) for every `3 componentArea` slot.
 4. Configure `1-1 titleArea`: title and title style.
-5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise record `pillAreaConfig: null` with `notNeededReason`.
+5. Decide whether `1-2 pillArea` is needed; configure pill buttons when needed, otherwise record `pillAreaConfig: null` with `notNeededReason`. Data-affecting pills must bind through `titlePills[].filters/params/props/dataBinding/actions` and expose the active state through `$context.activeTitlePill`.
 6. Decide whether `2-1 auxMetricArea` is needed; configure additional information and distribute items evenly when needed, otherwise record it as not configured.
 7. Decide whether `2-2 unitArea` is needed; configure unit text when needed, otherwise record it as not configured.
 8. Based on the selected 分块配置 slot configuration, inspect `references/component-examples/config.ts`, the selected template's component example catalog, and `src/report-template-assets/blueprint/widget-config-schemas.ts`; choose suitable 组件示例 for `3 componentArea` only when the component slot size and visual type are compatible. When no suitable example exists, self-develop a new ECharts-backed standalone Vue component example and register it before filling the slot.

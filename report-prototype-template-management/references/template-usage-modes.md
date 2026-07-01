@@ -2,7 +2,7 @@
 
 Use this file when explaining how a selected template should be used in a delivery flow.
 
-Hard rule for report development: all modes use the selected template for shell, page layout, block area configs, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Only interaction behavior and registered component examples may be self-developed, and both must be declared in `selfDevelopmentExceptionMap`.
+Hard rule for report development: all modes use the selected template for shell, page layout, block area configs, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Registered component examples may be self-developed only when the catalog cannot express the slot. Interaction behavior should use configured `actions` first; self-develop it only when shell-default route, external, drawer/drilldown, modal, popover/popup, cross-filter, fullscreen, export, or refresh behavior cannot express the requirement, and declare that exception in `selfDevelopmentExceptionMap`.
 
 ## 1. 零开发 Mode
 
@@ -24,7 +24,7 @@ What not to edit:
 
 - Do not implement fake business widgets only to make the page look complete.
 - Do not put business data into `dashboard.config.ts`.
-- Do not add global modal, navigation, or drilldown behavior. The shell only reserves action hooks.
+- Do not add duplicate global modal, navigation, or drilldown shells. Use the template's configured `actions` and shell-default behavior where possible.
 
 Verification:
 
@@ -51,13 +51,14 @@ Required changes:
 - Put mock/static data in `src/data/dashboard.dataset.json`. Do not create generated `src/widgets/*Data.ts`, `src/data/*.ts`, or other TS fixture modules for rows, arrays, or payloads.
 - Register business widgets in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 - Implement visual components under `src/widgets/components/`.
-- Bind widgets through `widget.data.id` and either `widget.data.params.key` for JSON mode or `widget.data.api` for standard API mode.
+- Bind ordinary widgets through `widget.data.id` and either `widget.data.params.key` for JSON mode or `widget.data.api` for standard API mode.
+- Bind registered component-example slots through `componentSlots[].data`, `componentSlots[].filterScope`, and `componentSlots[].dataBinding` via the owning widget config.
 - Bind component-local filters through `localFilters[].field`, `valueField`, and `labelField` only for ordinary non-slot business widgets; these filters run only on the component's already loaded data. Visible titles, local filter controls, and detail links are rendered by non-slot widgets using the context values and setters supplied by the shell. `localFilters[]` must not replace template `filters[]`, page/global scope, permission scope, backend aggregation, pagination, export scope, or other widgets, and must not be rendered inside 组件示例 slot fills.
 - Before binding global/page filters, prove data completeness: options, business/API rows, required fields, default and non-default states, empty/no-permission states, and resolver/API branches exist for every affecting filter.
-- Bind global/page filters that affect widgets through `widget.data.filterFields`, `requiredFilters`, API query/body params, or resolver params. Do not put an affecting filter in `ignoredFilters`.
-- Configure `actions` only as event forwarding or integration hooks. Any self-developed action or component-level popup, navigation, drilldown, and detail behavior must appear in `selfDevelopmentExceptionMap` and declare `interactionId`, `interactionType`, `triggerOwner`, `sourcePageId`, `sourceBlockId`, `sourceSlotId`, `sourceComponentExampleId`, `payloadFields`, `target`, `targetType`, `contextInheritance`, `stateSync`, `permissionRule`, `closeBackBehavior`, and `qaCase`.
+- Bind global/page filters that affect ordinary widgets through `widget.data.filterFields`, `requiredFilters`, API query/body params, or resolver params. For component-example slots, use `filters[].scope -> componentSlots[].filterScope -> data/API params`, and keep `requiredFilters` for filter ids. Do not put an affecting filter in `ignoredFilters`.
+- Configure `actions` as executable interaction contracts first, not only forwarding hooks. Every action should declare `interactionId`, `interactionType`, `triggerOwner`, `sourcePageId`, `sourceBlockId`, `sourceSlotId`, `sourceComponentExampleId`, `payloadFields`, `target`, `targetType`, `query/params`, `contextInheritance`, `stateSync`, `permissionRule`, `closeBackBehavior`, and `qaCase` when applicable. Use `actions/registry.ts` only to override default behavior or integrate host systems.
 - Add, remove, or relabel navigation/filter items through the template's existing `nav`/`page` and `filters` arrays. Do not create a new standalone sidebar, top navigation, filter bar, or filter drawer.
-- Treat "筛选工具栏", "主筛选栏", and "filter bar" wording as a filter contract request, not a visual-surface request. Implement it through `filters[]`, native template filter invocation, non-slot component-owned local filters, `1-2 pillArea`, and filter-to-widget binding; never place those controls inside 组件示例 slot fills.
+- Treat "筛选工具栏", "主筛选栏", and "filter bar" wording as a filter contract request, not a visual-surface request. Implement it through `filters[]`, native template filter invocation, non-slot component-owned local filters, `1-2 pillArea`, and filter-to-widget binding; never place those controls inside 组件示例 slot fills. When the control is a block pill, bind it through `titlePills[].filters/params/props/dataBinding/actions` so the active pill reaches `$context.activeTitlePill` and the affected block/slot data reloads.
 - When `screen.defaultTheme` is `dark`, the logo variant, grid/card surfaces, Element Plus controls, and component scoped backgrounds must follow the same dark token system as the shell; do not leave default white cards, `ElSelect`/`ElInput`/date-picker surfaces, or popovers in a dark page.
 
 Data options:
@@ -65,7 +66,7 @@ Data options:
 - JSON mode: use built-in `filterData`, `businessData`, or `staticData` resolvers.
 - Standard API mode: use `id: 'apiData'` or `id: 'httpData'`, configure `api.url`, `api.query`, `api.headers`, `api.body`, `api.responsePath`, and optional `api.adapter` directly on `widget.data` or `filters[].source`.
 - Custom provider mode: for signatures, special auth, complex pagination, SDKs, realtime streams, multi-step requests, or scenario data that must change by view/month/organization/status but is not row-filterable, add a resolver in `src/dataSources/registry.ts`, adapt the provider payload to component-ready rows, then reference the resolver id in `widget.data.id` or `filters[].source.id`.
-- Field mapping: if a global filter id differs from a row field, use `data.filterFields`; if the widget must respond to a filter, add `requiredFilters`; if it should ignore a global filter, add `ignoredFilters` plus `ignoredFilterReasons` only with an intentional invariant-scope reason.
+- Field mapping: if a global filter id differs from a row field for an ordinary widget, use `data.filterFields`; if the widget must respond to a filter, add `requiredFilters`; if a component slot is scoped, map `filters[].scope` to `filterScope`; if it should ignore a global filter, add `ignoredFilters` plus `ignoredFilterReasons` only with an intentional invariant-scope reason.
 - Mock/offline data: one default snapshot is not enough for an affecting global filter. Add matching rows or resolver branches for every primary filter option that should visibly change component data.
 
 Verification:
@@ -92,7 +93,7 @@ Implementation rules:
 - Keep adapters at the data-source boundary so widgets receive stable rows/props.
 - Global/page-level filters must be passed through `api.query`, `api.body`, or the provider resolver before shaping component data. Non-slot component-title `localFilters` may filter only the already fetched component dataset; 组件示例 slot fills may not render local filters or control strips.
 - API response fields may be mapped through an adapter or `filterFields`; do not rename fields randomly across config, data, and component props.
-- Component popup, jump, drilldown, and deep interaction logic is implemented inside the component or the hosting product module only when declared as `interactionBehavior` in `selfDevelopmentExceptionMap`. The global `actions/registry.ts` remains a hook surface for external event observation or shell-level utilities; custom action configs without the full interaction contract fail template validation.
+- Component popup, jump, drilldown, and deep interaction logic should use configured `actions` first. Implement it inside the component or hosting product module only when declared as `interactionBehavior` in `selfDevelopmentExceptionMap`. The global `actions/registry.ts` remains a hook surface for external event observation, permission/API orchestration, or shell-level utilities; custom action configs without the full interaction contract fail template validation.
 - Keep `demo/config-templates.ts` as copyable reference code, not as production data.
 
 Production handoff should document:
@@ -101,6 +102,7 @@ Production handoff should document:
 - JSON sources retained for offline/demo mode, if any;
 - API source ids, provider endpoints, `responsePath`, and adapter names;
 - filter-to-provider input mapping;
+- component-slot `filterScope` / `dataBinding` / action mapping when component examples are used;
 - filter-to-widget response proof, including non-default filter states that change visible data;
 - response adapter mapping to widget rows;
 - non-slot component-level local filters and interactions;

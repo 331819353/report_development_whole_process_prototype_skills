@@ -9,6 +9,9 @@ Every report project must follow this chain:
 ```text
 frameworkTemplateId
   -> pageLayoutConfig
+  -> filterSurfaceMap
+  -> toolbarActionMap
+  -> interactionBehaviorMap
   -> blockAreaConfigMap
   -> componentSlotConfigMap
   -> componentExampleConfigMap
@@ -27,6 +30,7 @@ dashboard.config.ts
   -> WidgetRenderer
   -> BaseLayoutSpan.vue
   -> componentSlots[].componentExampleId
+  -> componentSlots[].data/filterScope/dataBinding/actions
   -> component-examples/config.ts
   -> widgets/registry.ts
   -> component-examples/*.vue
@@ -141,7 +145,7 @@ Block areas stay on the block area, not inside component slots:
 Rules:
 
 - Configure title and note at block level.
-- Configure `titlePills` only for block-local compact switches.
+- Configure `titlePills` only for block-local compact switches. When a pill changes metric, period, mode, scenario, or data perspective, declare its `filters`, `params`, `props`, `dataBinding`, or `actions`; do not leave it as a visual-only active state.
 - Configure summary only for non-duplicative explanation, source, scope, caveat, or data-driven conclusion.
 - Do not place shell filters, toolbar actions, unit labels, block titles, or summaries inside `componentSlots`.
 
@@ -176,6 +180,10 @@ Slot fill contract:
 | `componentExampleId` | `component-example-catalog:<id>`. |
 | `props` | Business data and component props. |
 | `config` | Config sections such as `title`, `layout`, `chart`, `table`, `tones`, `developer`. |
+| `data` | Optional data-source reference loaded per `blockId + slotId`. |
+| `filterScope` | Optional scope list matching `filters[].scope`; unscoped filters remain global. |
+| `dataBinding` | Optional row-to-props mapping for existing component examples. |
+| `actions` | Optional event-to-action map for click, drilldown, jump, modal, drawer, popup, cross-filter, export, refresh, or fullscreen. |
 
 Allowed examples include KPI cards, target progress, line/bar/combo/pie/heatmap/radar/funnel charts, ranking/action lists, conclusion cards, detail tables, complex tables, and the self-developed ECharts template.
 
@@ -205,7 +213,7 @@ To create a new example:
 Self-development is limited to:
 
 - registered component examples;
-- component-owned interactions;
+- interaction behavior that shell-default `actions` cannot express;
 - ECharts/custom chart internals inside the registered component.
 
 It does not permit custom framework shell, custom page layout, custom block area runtime, duplicate filters, duplicate navigation, or duplicate toolbar.
@@ -222,16 +230,27 @@ Use template-owned surfaces first:
 - Global/page filters: `dashboard.config.ts` `filters[]`.
 - Topbar/left-nav/fixed cockpit navigation: template shell config.
 - Toolbar/download/refresh/fullscreen: template shell controls.
-- Block-level switches: `titlePills`.
-- Component-owned drilldown, drawer, modal, row action, chart-point action: registered interaction behavior.
+- Block-level switches: `titlePills`. The active pill is exposed as `$context.activeTitlePillId`, `$context.activeTitlePillLabel`, and `$context.activeTitlePill`. Its `filters` merge into the block/slot runtime filters, its `params` merge into data-source params and override same-name defaults, its `props` merge into component-example props, and its `dataBinding` can override the slot/widget data binding for the active state.
+- Configured drilldown, drawer, modal, row action, chart-point action, jump, popup, and cross-filter: `actions` on the block widget or component slot.
 
 Every component example row must name:
 
 - data source or static props;
+- `dataBinding.mode` and the fields mapped into component props;
 - metric fields;
-- filter impact or ignored-filter reason;
+- filter impact, `filters[].scope` to `filterScope` mapping, required filter ids, API/query params, or ignored-filter reason;
+- interaction event names, source block/slot coordinate, target type, target, query/params, and whether behavior uses shell default or `src/actions/registry.ts`;
 - conclusion rule when it renders a conclusion;
 - loading/empty/error/no-permission behavior when applicable.
+
+For existing component examples, use this binding algorithm:
+
+1. Declare the visible filter in `filters[]`; add `scope` only when it should affect a subset of widgets.
+2. Declare the slot data source in `componentSlots[].data` through the owning widget config. Use `requiredFilters`, `api.query`, resolver params, or `ignoredFilters`/`ignoredFilterReasons`.
+3. Set `componentSlots[].filterScope` to the matching `filters[].scope` values. Do not put filter ids here unless the filter's `scope` intentionally uses the same string.
+4. Set `componentSlots[].dataBinding` to convert rows into registered component props: `rows`, `first-row`, `category-series`, `items`, or `custom-props`.
+5. For block-local switches, configure `titlePills[].params` or `titlePills[].filters` and reference them from data params when needed, for example `params: { metric: '$context.activeTitlePill.params.metric' }`. Use `titlePills[].props` or `titlePills[].dataBinding` when the switch changes component display fields without changing the data source.
+6. Set `componentSlots[].actions[eventName]`, block `actions[eventName]`, or `titlePills[].actions.titlePillChange` for interaction events. Shell defaults handle `route`, `external`, `drawer`/`drilldown`, `modal`, `popover`/`popup`, `cross-filter`, `fullscreen`, `export`, and `refresh`; registry handlers override defaults.
 
 ## Step 8. Validate Runtime Mounting
 
@@ -295,3 +314,4 @@ Any skill that produces or consumes the report configuration must carry these fi
 - validation commands and runtime evidence
 
 Readiness is blocked if any visible block or slot cannot be traced through this chain.
+Data-bound slots are also blocked when they lack `dataBinding` or a documented static-data reason. Scoped filters are blocked when the path `filters[].scope -> componentSlots[].filterScope -> data/API params` is missing. Configured interactions are blocked when source coordinate, event name, action placement, target type, state response, or QA case is missing.

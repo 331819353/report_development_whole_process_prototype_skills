@@ -43,6 +43,8 @@ Nine-step handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap 
    - Update Template Build Packet section 6.
 5. Decide and configure `1-2 pillArea`:
    - Configure pill buttons when needed.
+   - If pills switch metric, period, local mode, scenario, or data perspective, configure `titlePills[].filters`, `titlePills[].params`, `titlePills[].props`, `titlePills[].dataBinding`, or `titlePills[].actions` and record affected block/slot coordinates plus refresh scope.
+   - Use `$context.activeTitlePillId`, `$context.activeTitlePillLabel`, and `$context.activeTitlePill` for data params, component props, and action payloads.
    - If not needed, record `pillAreaConfig: null` plus `notNeededReason`.
    - Update Template Build Packet section 6.
 6. Decide and configure `2-1 auxMetricArea`:
@@ -84,7 +86,7 @@ Nine-step handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap 
    - Use built-in standard API resolvers (`apiData`, `httpData`) for ordinary REST/BFF endpoints.
    - Register custom API/provider resolvers in `src/dataSources/registry.ts` only for signatures, special auth, complex pagination, SDKs, realtime streams, or multi-step requests.
    - Verify data completeness before filter binding: option rows, business rows/API response, required fields, default/non-default filter states, empty/no-permission states, and resolver/API branches.
-   - Map filters with same-name fields or `filterFields`.
+   - Map ordinary widget filters with same-name fields or `filterFields`; for component-example slots, bind through `data`, `filterScope`, and `dataBinding`.
    - Use `requiredFilters` when a widget must respond to a filter.
    - Use `ignoredFilters` when a widget intentionally ignores a global filter.
    - For line, area, and category-axis charts, keep each category label and value in the same row tuple. Sort rows first, then derive `xAxis.data`, every `series.data`, tooltip payloads, and click payloads from that same ordered row list.
@@ -97,9 +99,10 @@ Nine-step handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap 
    - If one parent block needs multiple components, implement one composite widget with internal sub-blocks, keep `5px` parent inset and `5px` sibling gap, and keep sub-block labels subordinate to the block title.
    - If the composite needs 2/4/6/8 visible sub-blocks/components, follow the count limits from `report-visual-layout-design`.
 14. Add interactions:
-   - Emit `dashboard-action` from widgets.
-   - Configure `actions` in widget config.
-   - Keep popup, navigation, drilldown, and detail behavior inside the component unless the host product intentionally observes events through `actions/registry.ts`.
+   - Emit `dashboard-action` from widgets or component examples.
+   - Configure `actions` in block widget config or component-slot config.
+   - Use shell-default actions for route, external, drawer/drilldown, modal, popover/popup, cross-filter, fullscreen, export, and refresh.
+   - Use `actions/registry.ts` only when host observation, permission, API orchestration, analytics, or custom overlay behavior must override defaults.
    - Update Template Build Packet sections 8, 10, and 11.
 15. Validate:
    - Run `npm run validate:dashboard`.
@@ -134,10 +137,17 @@ widgets: {
     },
     actions: {
       pointClick: {
-        type: 'pointClick',
+        type: 'dashboardAction',
+        interactionType: 'drilldown',
+        triggerOwner: 'componentOwnedEvent',
+        targetType: 'drawer',
+        target: 'revenue-period-detail',
         params: {
           org: '$filters.org',
           period: '$event.period',
+        },
+        meta: {
+          title: 'Revenue Period Detail',
         },
       },
     },
@@ -213,6 +223,7 @@ filters: [
   {
     id: 'org',
     label: 'Organization',
+    scope: 'revenue',
     source: {
       id: 'apiData',
       api: {

@@ -1,4 +1,9 @@
-import type { DashboardActionMap, DashboardRuntimeContext } from '../types/actions';
+import type {
+  DashboardActionMap,
+  DashboardExpressionValue,
+  DashboardParams,
+  DashboardRuntimeContext,
+} from '../types/actions';
 import type { DashboardDataSourceRef, DashboardFilterScope } from '../types/data-source';
 import type { LayoutSpanTemplateWidgetProps } from './templates/block-spans/types';
 import type { ComponentExampleConfigByWidgetType } from './templates/component-examples/config';
@@ -868,6 +873,40 @@ export interface WidgetLocalFilterConfig {
   maxButtonOptions?: number;
 }
 
+export interface WidgetDataBindingSeriesConfig {
+  name: string;
+  valueField: string;
+  type?: 'line' | 'bar';
+  color?: string;
+  smooth?: boolean;
+  stack?: string;
+  unit?: string;
+}
+
+export interface WidgetDataBindingItemFields {
+  id?: string;
+  label?: string;
+  name?: string;
+  value?: string;
+  tone?: string;
+  status?: string;
+  owner?: string;
+  due?: string;
+  percent?: string;
+  metaText?: string;
+}
+
+export interface WidgetDataBindingConfig {
+  mode?: 'rows' | 'first-row' | 'category-series' | 'items' | 'custom-props';
+  rowsProp?: string;
+  firstRowProps?: Record<string, string>;
+  categoryField?: string;
+  valueField?: string;
+  series?: WidgetDataBindingSeriesConfig[];
+  itemFields?: WidgetDataBindingItemFields;
+  propExpressions?: Record<string, string>;
+}
+
 export interface WidgetContext extends DashboardRuntimeContext {
   // 组件自有标题区/控制区可读取并渲染本地筛选；Shell 只维护筛选值和数据过滤。
   localFilterConfigs?: WidgetLocalFilterConfig[];
@@ -956,6 +995,12 @@ export interface WidgetTitlePillOption {
   label: string;
   hidden?: boolean;
   disabled?: boolean;
+  value?: DashboardExpressionValue;
+  filters?: DashboardParams;
+  params?: DashboardParams;
+  props?: Record<string, unknown>;
+  dataBinding?: WidgetDataBindingConfig;
+  actions?: DashboardActionMap;
 }
 
 export interface WidgetAuxMetric {
@@ -987,11 +1032,12 @@ export interface BaseWidgetConfig<TType extends string, TProps extends Record<st
   props: TProps;
   // 组件视觉类型。框架校验会用它检查当前 layoutRows 占位是否属于允许尺寸。
   visualType: WidgetVisualType;
-  // 组件抛出 dashboard-action 后，壳层只会转发给预留钩子，不会替组件执行弹窗、跳转或下钻。
+  // 组件抛出 dashboard-action 后，壳层先匹配自定义钩子；没有钩子时执行内置跳转、抽屉、弹窗、交叉筛选、刷新、导出等默认行为。
   actions?: DashboardActionMap;
   // 组件数据源。离线/mock 数据放在 dashboard.dataset.json；常规 API 使用 apiData/httpData + api 配置；复杂 provider 在 dataSources/registry.ts 注册。
   // 配置里只保留引用和参数映射，避免把业务数据塞进 dashboard.config.ts。
   data?: DashboardDataSourceRef;
+  dataBinding?: WidgetDataBindingConfig;
   // 无 data 的组件必须声明原因：static 表示纯静态叙述/说明，external 表示自行管理外部运行态。
   dataPolicy?: 'static' | 'external';
   // 结论卡/洞察卡/异常风险/归因建议/口径质量/预测标注/解释型状态等分析说明组件必须声明该契约。

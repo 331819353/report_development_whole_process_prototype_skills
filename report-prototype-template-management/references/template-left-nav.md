@@ -64,8 +64,8 @@ filters: [],
 2. Give it stable `id` and concise `label`.
 3. Define `layoutRows` with 12 columns per row. Row count is `N`; use as many rows as the business content needs without recalculating rowHeight.
 4. Mount widgets under that nav item's `widgets`.
-5. Add page-specific filters through `scope` / `filterScope`.
-6. Let components own page jump, popup, drilldown, and detail behavior only when those interactions are declared as `interactionBehavior` in `selfDevelopmentExceptionMap`. Use `actions/registry.ts` only when the shell or host product needs to observe a component event.
+5. Add page-specific filters through `filters[].scope` and bind affected slots/widgets through `filterScope`, `data.requiredFilters`, and API/query params.
+6. Configure page jump, popup, drilldown, drawer, modal, and detail behavior through block or component-slot `actions` first. Use `actions/registry.ts` only when the default action model must be overridden for host observation, permission, API orchestration, or custom overlays.
 
 ## Adjustments
 

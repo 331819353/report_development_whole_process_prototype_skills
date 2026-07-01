@@ -3,7 +3,11 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { Download, Maximize2, RefreshCw, SlidersHorizontal } from '@lucide/vue';
 import { customActionRegistry } from '../actions/registry';
 import { resolveDataSource } from '../dataSources/registry';
-import type { DashboardActionConfig, DashboardExpressionValue, DashboardWidgetActionEvent } from '../types/actions';
+import type {
+  DashboardActionConfig,
+  DashboardExpressionValue,
+  DashboardWidgetActionEvent,
+} from '../types/actions';
 import type { DashboardFilterScope } from '../types/data-source';
 import type {
   DashboardConfig,
@@ -46,6 +50,40 @@ interface WidgetActionRuntime {
   event: DashboardWidgetActionEvent;
   widget: RegisteredWidgetConfig;
   context: WidgetContext;
+}
+
+interface ActiveTitlePillRuntime extends Record<string, unknown> {
+  id: string;
+  label: string;
+  value?: unknown;
+  params?: Record<string, unknown>;
+  filters?: Record<string, unknown>;
+  props?: Record<string, unknown>;
+  dataBinding?: RegisteredWidgetConfig['dataBinding'];
+}
+
+interface LayoutComponentSlotConfig {
+  id: string;
+  templateSlotId?: string;
+  label?: string;
+  regionKey?: string;
+  componentExampleId?: string;
+  data?: RegisteredWidgetConfig['data'];
+  dataBinding?: RegisteredWidgetConfig['dataBinding'];
+  filterScope?: DashboardFilterScope;
+  actions?: RegisteredWidgetConfig['actions'];
+  widget?: RegisteredWidgetConfig;
+}
+
+interface DashboardInteractionOverlay {
+  type: 'drawer' | 'modal' | 'popup';
+  title: string;
+  action: Record<string, unknown>;
+  target?: unknown;
+  event: DashboardWidgetActionEvent;
+  context: WidgetContext;
+  query?: Record<string, unknown>;
+  params?: Record<string, unknown>;
 }
 
 interface BlockState {
@@ -209,6 +247,7 @@ const activeTopbarNavId = ref(getInitialTopbarNavId());
 const activeFilters = ref<Record<string, string>>(getInitialFilters());
 const filterOptionMap = ref<Record<string, DashboardFilterOption[]>>({});
 const widgetDataMap = ref<Record<string, unknown[]>>({});
+const interactionOverlay = ref<DashboardInteractionOverlay | null>(null);
 const titlePillSelections = ref<Record<string, string>>({});
 const localWidgetFilters = ref<Record<string, Record<string, string>>>({});
 const isFiltersOpen = ref(props.config.screen.defaultFiltersOpen);
@@ -230,6 +269,41 @@ const layoutRows = computed(() => normalizeLayoutRows(activePage.value.layoutRow
 const layoutColumnCount = computed(() => Math.max(...layoutRows.value.map((row) => Array.from(row).length), 1));
 const layoutRowCount = computed(() => Math.max(layoutRows.value.length, 1));
 const layoutBlocks = computed<LayoutBlock[]>(() => buildLayoutBlocks(layoutRows.value));
+const isInteractionDrawerOpen = computed({
+  get: () => interactionOverlay.value?.type === 'drawer',
+  set: (open: boolean) => {
+    if (!open && interactionOverlay.value?.type === 'drawer') {
+      interactionOverlay.value = null;
+    }
+  },
+});
+const isInteractionDialogOpen = computed({
+  get: () => Boolean(interactionOverlay.value && interactionOverlay.value.type !== 'drawer'),
+  set: (open: boolean) => {
+    if (!open && interactionOverlay.value && interactionOverlay.value.type !== 'drawer') {
+      interactionOverlay.value = null;
+    }
+  },
+});
+const interactionOverlayEntries = computed(() => {
+  const overlay = interactionOverlay.value;
+
+  if (!overlay) {
+    return [];
+  }
+
+  const context = overlay.context as Record<string, unknown>;
+  const entries: Record<string, unknown> = {
+    event: overlay.event.name,
+    blockId: context.blockId,
+    slotId: context.sourceSlotId,
+    target: overlay.target,
+    query: overlay.query,
+    params: overlay.params,
+  };
+
+  return Object.entries(entries).filter(([, value]) => value !== undefined && value !== null && value !== '');
+});
 const contentRowHeight = computed(() => Math.max(props.config.screen.grid.rowHeight ?? 1, 1));
 const contentWidth = computed(() => Math.max(props.config.screen.layout.designWidth, 1));
 const designHeight = computed(() => Math.max(props.config.screen.layout.designHeight, 1));
@@ -270,6 +344,43 @@ let widgetDataLoadToken = 0;
 let hasInitializedFilters = false;
 
 const getWidgetForBlock = (blockId: string): RegisteredWidgetConfig | undefined => activePage.value.widgets?.[blockId];
+
+const getLayoutComponentSlots = (widget?: RegisteredWidgetConfig): LayoutComponentSlotConfig[] => {
+  const slots = widget?.props?.componentSlots;
+
+  return Array.isArray(slots) ? slots as LayoutComponentSlotConfig[] : [];
+};
+
+const getComponentSlotWidget = (slot?: LayoutComponentSlotConfig): RegisteredWidgetConfig | undefined => {
+  if (!slot) {
+    return undefined;
+  }
+
+  if (slot.widget) {
+    return {
+      ...slot.widget,
+      data: slot.widget.data ?? slot.data,
+      dataBinding: slot.widget.dataBinding ?? slot.dataBinding,
+      filterScope: slot.widget.filterScope ?? slot.filterScope,
+      actions: slot.widget.actions ?? slot.actions,
+    };
+  }
+
+  if (!slot.data && !slot.actions && !slot.filterScope && !slot.dataBinding) {
+    return undefined;
+  }
+
+  return {
+    type: 'BaseLayoutSpan',
+    visualType: 'other',
+    dataPolicy: slot.data ? 'external' : 'static',
+    props: {},
+    data: slot.data,
+    dataBinding: slot.dataBinding,
+    filterScope: slot.filterScope,
+    actions: slot.actions,
+  } as RegisteredWidgetConfig;
+};
 
 const hasWidgetForBlock = (blockId: string) => Boolean(getWidgetForBlock(blockId));
 
@@ -398,6 +509,48 @@ const getActiveTitlePillId = (blockId: string) => {
   return pills.find((pill) => !pill.disabled)?.id ?? pills[0].id;
 };
 
+const getActiveTitlePill = (blockId: string) => {
+  const pills = getWidgetTitlePills(blockId);
+  const activeId = getActiveTitlePillId(blockId);
+
+  return pills.find((pill) => pill.id === activeId && !pill.disabled) ?? pills.find((pill) => !pill.disabled) ?? pills[0];
+};
+
+const toRuntimeRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+
+const toFilterValueMap = (values: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(values)
+      .filter(([, value]) => value !== undefined)
+      .map(([key, value]) => [
+        key,
+        value === null ? '' : typeof value === 'object' ? JSON.stringify(value) : String(value),
+      ]),
+  );
+
+const createTitlePillContext = (
+  blockId: string,
+  source: {
+    slotId?: string;
+    slotLabel?: string;
+    componentExampleId?: string;
+  } | undefined,
+  activeTitlePill?: ActiveTitlePillRuntime,
+) => ({
+  area: 'page' as const,
+  navId: activePageId.value,
+  navLabel: activePageLabel.value,
+  blockId,
+  sourceBlockId: blockId,
+  sourceSlotId: source?.slotId,
+  sourceSlotLabel: source?.slotLabel,
+  sourceComponentExampleId: source?.componentExampleId,
+  activeTitlePillId: activeTitlePill?.id,
+  activeTitlePillLabel: activeTitlePill?.label,
+  activeTitlePill,
+});
+
 const setActiveTitlePill = (blockId: string, pill: WidgetTitlePillOption) => {
   if (pill.disabled) {
     return;
@@ -407,6 +560,7 @@ const setActiveTitlePill = (blockId: string, pill: WidgetTitlePillOption) => {
     ...titlePillSelections.value,
     [getWidgetInstanceKey(blockId)]: pill.id,
   };
+  void handleTitlePillActions(blockId, pill);
 };
 
 const isFilterVisibleForWidget = (group: DashboardFilterGroup, widget?: RegisteredWidgetConfig) => {
@@ -430,11 +584,12 @@ const getScopedFilters = (widget?: RegisteredWidgetConfig) =>
 
 const getWidgetFilterScope = (widget?: RegisteredWidgetConfig) => normalizeScope(widget?.filterScope);
 
-const getWidgetDataKey = (ownerId: string, blockId: string) => `page:${ownerId}:${blockId}`;
+const getWidgetDataKey = (ownerId: string, blockId: string, slotId?: string) =>
+  slotId ? `page:${ownerId}:${blockId}:slot:${slotId}` : `page:${ownerId}:${blockId}`;
 
 const getWidgetOwnerId = () => activePageId.value;
 
-const getWidgetInstanceKey = (blockId: string) => getWidgetDataKey(getWidgetOwnerId(), blockId);
+const getWidgetInstanceKey = (blockId: string, slotId?: string) => getWidgetDataKey(getWidgetOwnerId(), blockId, slotId);
 
 const getRawWidgetDataForBlock = (blockId: string) => widgetDataMap.value[getWidgetInstanceKey(blockId)] ?? [];
 
@@ -468,25 +623,96 @@ const getLocalWidgetFilterValues = (blockId: string, widget = getWidgetForBlock(
 const getLocalFilterOptions = (blockId: string) => (filter: WidgetLocalFilterConfig) =>
   getLocalFilterOptionsFromRows(getRawWidgetDataForBlock(blockId), filter);
 
-const getWidgetContext = (blockId: string, widget = getWidgetForBlock(blockId)): WidgetContext => ({
-  area: 'page',
-  navId: activePageId.value,
-  navLabel: activePageLabel.value,
-  blockId,
-  filters: getScopedFilters(widget),
-  allFilters: activeFilters.value,
-  filterScope: getWidgetFilterScope(widget),
-  localFilters: getLocalWidgetFilterValues(blockId, widget),
-  localFilterConfigs: getWidgetLocalFilterConfigs(widget),
-  getLocalFilterOptions: getLocalFilterOptions(blockId),
-  setLocalFilter: (filterId, value) => setLocalWidgetFilter(blockId, filterId, value),
-  clearLocalFilters: () => clearLocalWidgetFilters(blockId, widget),
-});
+const getWidgetContext = (
+  blockId: string,
+  widget = getWidgetForBlock(blockId),
+  source?: {
+    slotId?: string;
+    slotLabel?: string;
+    componentExampleId?: string;
+  },
+): WidgetContext => {
+  const scopedFilters = getScopedFilters(widget);
+  const activePill = getActiveTitlePill(blockId);
+  const initialPillContext: ActiveTitlePillRuntime | undefined = activePill ? {
+    id: activePill.id,
+    label: activePill.label,
+    value: activePill.value,
+    params: activePill.params,
+    filters: activePill.filters,
+    props: activePill.props,
+    dataBinding: activePill.dataBinding,
+  } : undefined;
+  const baseContext = createTitlePillContext(blockId, source, initialPillContext);
+  const pillParams = resolveDashboardParams(activePill?.params, {
+    filters: scopedFilters,
+    context: baseContext,
+    params: {},
+  });
+  const pillFilters = resolveDashboardParams(activePill?.filters, {
+    filters: scopedFilters,
+    context: baseContext,
+    params: pillParams,
+  });
+  const activeTitlePill = initialPillContext ? {
+    ...initialPillContext,
+    value: resolveDashboardValue(activePill?.value, {
+      filters: scopedFilters,
+      context: baseContext,
+      params: pillParams,
+    }),
+    params: pillParams,
+    filters: pillFilters,
+  } satisfies ActiveTitlePillRuntime : undefined;
+  const contextBase = createTitlePillContext(blockId, source, activeTitlePill);
+
+  return {
+    ...contextBase,
+    filters: {
+      ...scopedFilters,
+      ...toFilterValueMap(pillFilters),
+    },
+    allFilters: activeFilters.value,
+    filterScope: getWidgetFilterScope(widget),
+    localFilters: getLocalWidgetFilterValues(blockId, widget),
+    localFilterConfigs: getWidgetLocalFilterConfigs(widget),
+    getLocalFilterOptions: getLocalFilterOptions(blockId),
+    setLocalFilter: (filterId, value) => setLocalWidgetFilter(blockId, filterId, value),
+    clearLocalFilters: () => clearLocalWidgetFilters(blockId, widget),
+  };
+};
 
 const getWidgetDataForBlock = (blockId: string) => {
   const widget = getWidgetForBlock(blockId);
 
   return applyWidgetLocalFilters(getRawWidgetDataForBlock(blockId), widget, getLocalWidgetFilterValues(blockId, widget));
+};
+
+const getSlotDataForBlock = (blockId: string) => {
+  const widget = getWidgetForBlock(blockId);
+  const ownerId = getWidgetOwnerId();
+
+  return Object.fromEntries(
+    getLayoutComponentSlots(widget).map((slot) => [
+      slot.id,
+      widgetDataMap.value[getWidgetDataKey(ownerId, blockId, slot.id)] ?? [],
+    ]),
+  );
+};
+
+const getSlotContextsForBlock = (blockId: string) => {
+  const widget = getWidgetForBlock(blockId);
+
+  return Object.fromEntries(
+    getLayoutComponentSlots(widget).map((slot) => [
+      slot.id,
+      getWidgetContext(blockId, getComponentSlotWidget(slot) ?? widget, {
+        slotId: slot.id,
+        slotLabel: slot.label,
+        componentExampleId: slot.componentExampleId,
+      }),
+    ]),
+  );
 };
 
 const setLocalWidgetFilter = (blockId: string, filterId: string, optionId: string) => {
@@ -674,19 +900,25 @@ const resolveWidgetData = async (
   blockId: string,
   widget: RegisteredWidgetConfig,
   context: WidgetContext,
+  slotId?: string,
 ) => {
-  const key = getWidgetDataKey(ownerId, blockId);
+  const key = getWidgetDataKey(ownerId, blockId, slotId);
 
   if (!widget.data) {
     return [key, [] as unknown[]] as const;
   }
 
   try {
-    const params = resolveDashboardParams(widget.data.params, {
+    const pillParams = toRuntimeRecord(context.activeTitlePill?.params);
+    const dataParams = resolveDashboardParams(widget.data.params, {
       filters: context.filters,
       context: context as unknown as Record<string, unknown>,
-      params: {},
+      params: pillParams,
     });
+    const params = {
+      ...dataParams,
+      ...pillParams,
+    };
     const rows = await resolveDataSource(widget.data, {
       filters: context.filters,
       allFilters: activeFilters.value,
@@ -712,6 +944,26 @@ const loadWidgetData = async () => {
     }
 
     jobs.push(resolveWidgetData(ownerId, blockId, widget, getWidgetContext(blockId, widget)));
+
+    getLayoutComponentSlots(widget).forEach((slot) => {
+      const slotWidget = getComponentSlotWidget(slot);
+
+      if (!slotWidget?.data) {
+        return;
+      }
+
+      jobs.push(resolveWidgetData(
+        ownerId,
+        blockId,
+        slotWidget,
+        getWidgetContext(blockId, slotWidget, {
+          slotId: slot.id,
+          slotLabel: slot.label,
+          componentExampleId: slot.componentExampleId,
+        }),
+        slot.id,
+      ));
+    });
   });
   const entries = await Promise.all(jobs);
 
@@ -835,11 +1087,180 @@ const restorePersistedScroll = () => {
 const buildActionScope = (runtime: WidgetActionRuntime) => ({
   event: {
     name: runtime.event.name,
+    sourceBlockId: runtime.event.sourceBlockId ?? runtime.context.sourceBlockId ?? runtime.context.blockId,
+    sourceSlotId: runtime.event.sourceSlotId ?? runtime.context.sourceSlotId,
+    sourceSlotLabel: runtime.event.sourceSlotLabel ?? runtime.context.sourceSlotLabel,
+    sourceComponentExampleId: runtime.event.sourceComponentExampleId ?? runtime.context.sourceComponentExampleId,
     ...(runtime.event.payload ?? {}),
   },
   filters: activeFilters.value,
   context: runtime.context as unknown as Record<string, unknown>
 });
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+
+const toActionRecord = (value: unknown): Record<string, unknown> => (isRecord(value) ? value : {});
+
+const formatActionValue = (value: unknown) => {
+  if (value === undefined || value === null || value === '') {
+    return '-';
+  }
+
+  return typeof value === 'string' ? value : JSON.stringify(value);
+};
+
+const getActionTargetText = (target: unknown) => {
+  if (typeof target === 'string' || typeof target === 'number') {
+    return String(target);
+  }
+
+  if (!isRecord(target)) {
+    return '';
+  }
+
+  for (const key of ['navId', 'pageId', 'route', 'url', 'id']) {
+    const value = target[key];
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      return String(value);
+    }
+  }
+
+  return '';
+};
+
+const appendQueryParams = (target: string, query: Record<string, unknown>) => {
+  if (!target || Object.keys(query).length === 0) {
+    return target;
+  }
+
+  const url = new URL(target, window.location.href);
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      return;
+    }
+
+    url.searchParams.set(key, String(value));
+  });
+
+  return target.startsWith('http') ? url.toString() : `${url.pathname}${url.search}${url.hash}`;
+};
+
+const getActionTargetType = (action: DashboardActionConfig) => {
+  if (action.targetType) {
+    return action.targetType;
+  }
+
+  if (action.interactionType === 'jump') {
+    return 'route';
+  }
+
+  if (action.interactionType === 'drilldown' || action.interactionType === 'drawer') {
+    return 'drawer';
+  }
+
+  if (action.interactionType === 'modal') {
+    return 'modal';
+  }
+
+  if (action.interactionType === 'popup') {
+    return 'popover';
+  }
+
+  if (action.interactionType === 'crossFilter') {
+    return 'cross-filter';
+  }
+
+  return undefined;
+};
+
+const applyCrossFilterAction = (values: Record<string, unknown>) => {
+  const configuredFilterIds = new Set(props.config.filters.map((group) => group.id));
+  const nextFilters = { ...activeFilters.value };
+
+  Object.entries(values).forEach(([key, value]) => {
+    if (!configuredFilterIds.has(key)) {
+      return;
+    }
+
+    nextFilters[key] = value === undefined || value === null ? '' : String(value);
+  });
+
+  activeFilters.value = nextFilters;
+};
+
+const openInteractionOverlay = (
+  type: DashboardInteractionOverlay['type'],
+  action: DashboardActionConfig,
+  runtime: WidgetActionRuntime,
+  query: Record<string, unknown>,
+  params: Record<string, unknown>,
+) => {
+  interactionOverlay.value = {
+    type,
+    title: String(action.meta && isRecord(action.meta) && action.meta.title ? action.meta.title : action.interactionId ?? runtime.event.name),
+    action: action as unknown as Record<string, unknown>,
+    target: getActionTargetText(action.target),
+    event: runtime.event,
+    context: runtime.context,
+    query,
+    params,
+  };
+};
+
+const runBuiltinDashboardAction = async (action: DashboardActionConfig, runtime: WidgetActionRuntime) => {
+  const targetType = getActionTargetType(action);
+  const query = toActionRecord(action.query);
+  const params = toActionRecord(action.params);
+
+  if (targetType === 'fullscreen' || action.type === 'fullscreen') {
+    await toggleFullscreen();
+    return true;
+  }
+
+  if (targetType === 'export' || action.type === 'exportCurrentBlock') {
+    printDashboard();
+    return true;
+  }
+
+  if (action.type === 'refresh') {
+    refreshDashboard();
+    return true;
+  }
+
+  if (targetType === 'cross-filter') {
+    applyCrossFilterAction({ ...params, ...query });
+    return true;
+  }
+
+  const target = getActionTargetText(action.target);
+
+  if (targetType === 'route') {
+    if (isKnownTopbarNavId(target)) {
+      setActiveTopbarNav(target);
+      return true;
+    }
+
+    if (target) {
+      window.location.hash = appendQueryParams(target, query);
+      return true;
+    }
+  }
+
+  if (targetType === 'external' && target) {
+    window.open(appendQueryParams(target, query), '_blank', 'noopener');
+    return true;
+  }
+
+  if (targetType === 'drawer' || targetType === 'modal' || targetType === 'popover') {
+    openInteractionOverlay(targetType === 'drawer' ? 'drawer' : targetType === 'modal' ? 'modal' : 'popup', action, runtime, query, params);
+    return true;
+  }
+
+  return false;
+};
 
 const runDashboardAction = async (rawAction: DashboardActionConfig, runtime: WidgetActionRuntime) => {
   const action = resolveDashboardValue(
@@ -853,6 +1274,7 @@ const runDashboardAction = async (rawAction: DashboardActionConfig, runtime: Wid
     customActionRegistry.dashboardAction;
 
   if (!customHandler) {
+    await runBuiltinDashboardAction(action, runtime);
     return;
   }
 
@@ -869,25 +1291,73 @@ const runDashboardAction = async (rawAction: DashboardActionConfig, runtime: Wid
   });
 };
 
-const handleWidgetAction = async (blockId: string, event: DashboardWidgetActionEvent) => {
-  const widget = getWidgetForBlock(blockId);
+const getWidgetActionRuntime = (blockId: string, event: DashboardWidgetActionEvent): WidgetActionRuntime | null => {
+  const blockWidget = getWidgetForBlock(blockId);
 
-  if (!widget) {
+  if (!blockWidget) {
+    return null;
+  }
+
+  const sourceSlotId = event.sourceSlotId ?? (event.payload?.sourceSlotId as string | undefined);
+  const sourceSlot = getLayoutComponentSlots(blockWidget).find((slot) => slot.id === sourceSlotId || slot.regionKey === sourceSlotId);
+  const widget = getComponentSlotWidget(sourceSlot) ?? blockWidget;
+
+  return {
+    event: {
+      ...event,
+      sourceBlockId: event.sourceBlockId ?? blockId,
+      sourceSlotId,
+      sourceSlotLabel: event.sourceSlotLabel ?? sourceSlot?.label,
+      sourceComponentExampleId: event.sourceComponentExampleId ?? sourceSlot?.componentExampleId,
+    },
+    widget,
+    context: getWidgetContext(blockId, widget, sourceSlot ? {
+      slotId: sourceSlot.id,
+      slotLabel: sourceSlot.label,
+      componentExampleId: sourceSlot.componentExampleId,
+    } : undefined),
+  };
+};
+
+const handleWidgetAction = async (blockId: string, event: DashboardWidgetActionEvent) => {
+  const runtime = getWidgetActionRuntime(blockId, event);
+
+  if (!runtime) {
     return;
   }
 
-  const actionConfig = widget.actions?.[event.name];
+  const actionConfig = runtime.widget.actions?.[event.name];
   const actions = Array.isArray(actionConfig) ? actionConfig : actionConfig ? [actionConfig] : [];
-  const runtime = {
-    event,
-    widget,
-    context: getWidgetContext(blockId, widget),
-  };
 
   if (actions.length === 0) {
-    await runDashboardAction({ type: event.name }, runtime);
+    await runDashboardAction({ type: event.name, sourceSlotId: runtime.context.sourceSlotId }, runtime);
     return;
   }
+
+  for (const action of actions) {
+    await runDashboardAction(action, runtime);
+  }
+};
+
+const handleTitlePillActions = async (blockId: string, pill: WidgetTitlePillOption) => {
+  const runtime = getWidgetActionRuntime(blockId, {
+    name: 'titlePillChange',
+    sourceBlockId: blockId,
+    payload: {
+      titlePillId: pill.id,
+      titlePillLabel: pill.label,
+      value: pill.value,
+      params: pill.params,
+      filters: pill.filters,
+    },
+  });
+
+  if (!runtime) {
+    return;
+  }
+
+  const actionConfig = pill.actions?.titlePillChange ?? pill.actions?.change ?? pill.actions?.click;
+  const actions = Array.isArray(actionConfig) ? actionConfig : actionConfig ? [actionConfig] : [];
 
   for (const action of actions) {
     await runDashboardAction(action, runtime);
@@ -978,6 +1448,14 @@ watch(
   activeFilters,
   () => {
     void loadFilterOptions();
+    void loadWidgetData();
+  },
+  { deep: true },
+);
+
+watch(
+  titlePillSelections,
+  () => {
     void loadWidgetData();
   },
   { deep: true },
@@ -1209,6 +1687,8 @@ watch(
                     :block-size="{ cols: getBlockColumnSpan(block), rows: getBlockRowSpan(block) }"
                     :context="getWidgetContext(block.label)"
                     :data="getWidgetDataForBlock(block.label)"
+                    :slot-contexts="getSlotContextsForBlock(block.label)"
+                    :slot-data="getSlotDataForBlock(block.label)"
                     :widget="getWidgetForBlock(block.label)"
                     @dashboard-action="handleWidgetAction(block.label, $event)"
                   />
@@ -1239,5 +1719,35 @@ watch(
       </section>
     </section>
   </main>
+  <el-drawer
+    v-model="isInteractionDrawerOpen"
+    :title="interactionOverlay?.title"
+    size="42%"
+    destroy-on-close
+  >
+    <section class="interaction-overlay-body">
+      <dl class="interaction-overlay-list">
+        <template v-for="[key, value] in interactionOverlayEntries" :key="key">
+          <dt>{{ key }}</dt>
+          <dd>{{ formatActionValue(value) }}</dd>
+        </template>
+      </dl>
+    </section>
+  </el-drawer>
+  <el-dialog
+    v-model="isInteractionDialogOpen"
+    :title="interactionOverlay?.title"
+    width="640px"
+    destroy-on-close
+  >
+    <section class="interaction-overlay-body">
+      <dl class="interaction-overlay-list">
+        <template v-for="[key, value] in interactionOverlayEntries" :key="key">
+          <dt>{{ key }}</dt>
+          <dd>{{ formatActionValue(value) }}</dd>
+        </template>
+      </dl>
+    </section>
+  </el-dialog>
   </div>
 </template>
