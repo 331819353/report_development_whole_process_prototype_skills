@@ -17,11 +17,11 @@ Child PRDs refine execution only. They must not override the main PRD's business
 
 | Child PRD ID | Required file | Purpose | Primary consumers |
 | --- | --- | --- | --- |
-| `CHILD-PRD-PROTOTYPE` | `prd/children/prd-child-prototype.md` | Convert the ordinary PRD into executable input for one specialized workflow and template configuration. | `report-analysis-report-prototype-workflow`, `report-kpi-dashboard-prototype-workflow`, `report-detail-report-prototype-workflow`, `report-self-service-analysis-prototype-workflow`, `report-prototype-template-management` |
+| `CHILD-PRD-PROTOTYPE` | `prd/children/prd-child-prototype.md` | Convert the ordinary PRD into executable input for the unified implementation workflow and template configuration. | `report-prototype-implementation-workflow`, `report-prototype-template-management` |
 
 The prototype child PRD must include:
 
-- Target specialized workflow and why it was selected.
+- Target workflow `report-prototype-implementation-workflow`, primary `RTP-*` path, and why that report classification was selected.
 - Thinking output: page content, report story, first-viewport priority, reading path, conclusion/evidence/action sequence, visible versus non-visible content decisions.
 - Page preview references from `prd-main.md`.
 - `frameworkTemplateId`.
@@ -50,7 +50,7 @@ Create these only when the user's current delivery scope includes the correspond
 
 | Stage | Child PRD | Status | Purpose | Update trigger |
 | --- | --- | --- | --- | --- |
-| Report development | `CHILD-PRD-PROTOTYPE` | `required` | Feeds the selected specialized workflow and template configuration. | Any page content, layout, component, metric, data/API, interaction, permission, or acceptance change. |
+| Report development | `CHILD-PRD-PROTOTYPE` | `required` | Feeds `report-prototype-implementation-workflow` and template configuration. | Any page content, layout, component, metric, data/API, interaction, permission, or acceptance change. |
 | Frontend | `CHILD-PRD-FRONTEND` | `not-in-current-scope` or `required` | Feeds production frontend integration when scoped. | Route, component, API adapter, state, permission, environment, or release change. |
 | Backend | `CHILD-PRD-BACKEND` | `not-in-current-scope` or `required` | Feeds backend/API/data-service work when scoped. | Data source, metric formula, grain, API, permission, cache, export, or SLA change. |
 | Technical solution | `CHILD-PRD-TECHNICAL-SOLUTION` | `not-in-current-scope` or `required` | Feeds architecture/planning when scoped. | System boundary, technology, environment, NFR, risk, or delivery milestone change. |

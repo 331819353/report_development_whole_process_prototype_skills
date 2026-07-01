@@ -26,7 +26,7 @@ This report guideline is for PC Web reports, business analysis dashboards, detai
 
 Use with:
 
-- `report-prd-document-generation` for ordinary PRD to specialized executable report PRD conversion before prototype work, then the selected specialized prototype workflow for 自助分析、指标看板、分析报告、or 明细报表.
+- `report-prd-document-generation` for ordinary PRD to specialized executable report PRD conversion, including requirement understanding and `RTP-*` classification, then `report-prototype-implementation-workflow` for prototype implementation.
 - `report-design-system-governance` for reusable report UI standards and governance.
 - `report-info-component-mapping` for business question to component/data/filter/interaction contracts.
 - `report-visual-layout-design` for page structure, first viewport, card grid, filter region, and layout fit.

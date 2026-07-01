@@ -99,7 +99,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 15. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
 16. Produce the binding matrix linking business question, conclusion-chain role, `conclusionRuleId`, section 4B gate IDs, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, `metricDrilldownContract`, update triggers, validation cases, and `componentExampleIntent`.
 16A. For template-based implementation, emit PRD-owned Template Build Packet fragments for sections 7, 8, 9, and 10: component slot fills, data/API rows, filter/action rows, interaction rows, dynamic conclusion rows, and allowed self-development exceptions. Do not leave these as prose-only mapping notes.
-17. Return mapping rows to `report-prd-document-generation` or the PRD bundle being repaired. Do not route directly to the four specialized workflows; they consume the PRD contract after it is complete.
+17. Return mapping rows to `report-prd-document-generation` or the PRD bundle being repaired. Do not route directly to implementation; `report-prototype-implementation-workflow` consumes the completed PRD contract after intake, report classification, and component mapping are complete.
 
 ## Required Output
 

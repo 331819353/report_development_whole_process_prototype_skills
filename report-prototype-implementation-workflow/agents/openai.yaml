@@ -1,0 +1,4 @@
+interface:
+  display_name: "Report Prototype Implementation"
+  short_description: "Unified workflow that consumes executable report PRDs and implements them in the bundled configurable templates."
+  default_prompt: "Use report-prototype-implementation-workflow only after report-prd-document-generation has produced CHILD-PRD-PROTOTYPE and execution files. Validate the PRD start gate, prepare the selected bundled template, materialize pageLayoutConfig/blockAreaConfigMap/componentSlotConfigMap/componentExampleConfigMap/data/API/filter/action/interaction/conclusion rules exactly from the PRD, handle declared custom component exceptions, then run validation/build/runtime checks and update docs/prototype-data-summary.md plus DELIVERY_INDEX.md. Do not reinterpret requirements, choose report type, redesign layout, or remap components."

@@ -1,6 +1,6 @@
 ---
 name: report-prd-document-generation
-description: "Convert an ordinary user PRD, requirement document, meeting note, screenshot brief, metric list, or report idea into a specialized executable report-development PRD. Use when a report/dashboard/cockpit/analysis/detail/self-service requirement must be transformed before implementation so downstream specialized workflows clearly know page content, reading path, page layout, block areas, component slots, registered component examples, data/API, interactions, permissions, acceptance gaps, and how the report will be implemented through one of the bundled configurable templates. This skill does not develop code; its output is the required input for report-analysis-report-prototype-workflow, report-kpi-dashboard-prototype-workflow, report-detail-report-prototype-workflow, or report-self-service-analysis-prototype-workflow."
+description: "Convert an ordinary user PRD, requirement document, meeting note, screenshot brief, metric list, or report idea into a specialized executable report-development PRD. Use when a report/dashboard/cockpit/analysis/detail/self-service requirement must be transformed before implementation so the unified report-prototype-implementation-workflow clearly knows requirement understanding, report classification, RTP/PATH reading path, page layout, block areas, component slots, registered component examples, data/API, interactions, permissions, acceptance gaps, and how the report will be implemented through one of the bundled configurable templates. This skill does not develop code; its output is the required input for report-prototype-implementation-workflow."
 ---
 
 # Report PRD Document Generation
@@ -14,7 +14,7 @@ The fixed direction is:
 ```text
 ordinary user PRD / evidence
   -> specialized executable report PRD
-  -> one specialized workflow
+  -> report-prototype-implementation-workflow
   -> configurable template implementation
 ```
 
@@ -27,9 +27,9 @@ The specialized PRD must answer four implementation questions before any workflo
 
 ## Core Rules
 
-- PRD comes before workflow. The four specialized workflows consume this PRD; they do not recreate it internally.
+- PRD comes before workflow. The unified implementation workflow consumes this PRD; it does not recreate requirement understanding, report classification, layout, component mapping, data/API, or interaction decisions internally.
 - Use `report-prototype-design-thinking` during PRD generation to decide the page content, report story, decision path, and reading sequence. Thinking is part of PRD compilation, not a replacement for template configuration.
-- Choose exactly one downstream specialized workflow in the PRD: `report-analysis-report-prototype-workflow`, `report-kpi-dashboard-prototype-workflow`, `report-detail-report-prototype-workflow`, or `report-self-service-analysis-prototype-workflow`.
+- Set the downstream workflow to `report-prototype-implementation-workflow` and choose exactly one primary `RTP-*` report path inside the PRD. Secondary `RTP-*` modules are allowed only when they support the primary path.
 - Own the full intake, gap, and report-path decision inside this PRD skill. Extract facts, assumptions, missing gaps, attachment evidence, target report path, and target workflow here instead of routing to separate requirement-extraction or report-type skills.
 - Do not route new work to a generic report-design workflow; the generic workflow is retired.
 - Do not route new work to retired historical requirement-intake or standalone report-type entry skills.
@@ -81,8 +81,8 @@ Use these capabilities as needed:
 1. Intake the ordinary PRD and evidence.
    Extract confirmed facts, assumptions, missing gaps, source materials, report users, business scenarios, metric families, existing reports, screenshots, and explicit exclusions.
 
-2. Determine the target specialized workflow.
-   Classify the report as analysis report, KPI dashboard/cockpit, detail report, self-service analysis, or a mixed report with one primary execution workflow.
+2. Determine the report classification and implementation target.
+   Classify the requirement into one primary `RTP-*` path such as KPI dashboard, cockpit, analysis report, detail query, self-service analysis, risk monitor, closure board, or review/export report. Set the implementation target to `report-prototype-implementation-workflow`.
 
 3. Run the thinking step inside PRD generation.
    Use `report-prototype-design-thinking` to decide page content, first-viewport priority, reading path, conclusion/evidence/action sequence, and which content should be visible versus moved to tooltip/detail/export/handoff.
@@ -91,7 +91,7 @@ Use these capabilities as needed:
    Keep `prd/prd-main.md` concise: background, users, scope, target workflow, report content summary, page preview, layout summary, metric/data/interaction summary, child/execution file registry, and readiness gaps.
 
 5. Create `CHILD-PRD-PROTOTYPE`.
-   This is the executable input for the selected specialized workflow. It must include target workflow, thinking output, report type path, page content map, page preview references, layout contract, block area plan, component slot plan, registered component example map, custom component gaps, data/API requirements, interaction behavior, conclusion rules, permissions, and release validation expectations.
+   This is the executable input for `report-prototype-implementation-workflow`. It must include target workflow, thinking output, report type path, page content map, page preview references, layout contract, block area plan, component slot plan, registered component example map, custom component gaps, data/API requirements, interaction behavior, conclusion rules, permissions, and release validation expectations.
 
 6. Create execution files.
    At minimum, write:
@@ -114,7 +114,7 @@ Use these capabilities as needed:
    Every displayed metric needs definition, formula, unit, source, refresh, null rule, mount location, data/API source, and interaction impact. Every visible conclusion or insight must bind to `conclusionRuleMap`; fixed normal-state business conclusions are invalid.
 
 10. Create the PRD-to-workflow matrix.
-    Map every PRD file and executable row to the selected specialized workflow, PRD-owned component mapping contract, template-management capability, validation artifact, and blocker rule.
+    Map every PRD file and executable row to `report-prototype-implementation-workflow`, the PRD-owned component mapping contract, template-management capability, validation artifact, and blocker rule.
 
 ## Required Output
 
@@ -141,10 +141,10 @@ Conditional child PRDs:
 
 ## Quality Gate
 
-- Do not hand off to a specialized workflow until `CHILD-PRD-PROTOTYPE` and the execution matrix are ready or explicitly `draft` with non-blocking gaps.
+- Do not hand off to `report-prototype-implementation-workflow` until `CHILD-PRD-PROTOTYPE` and the execution matrix are ready or explicitly `draft` with non-blocking gaps.
 - Do not let `prd-main.md` become the execution manual. Move dense layout rows, metric dictionaries, API fields, interaction maps, slot maps, and validation rows into execution files or child PRDs.
 - Do not output a single Markdown PRD when the result must feed implementation.
-- Do not mark the PRD ready when the target specialized workflow is missing.
+- Do not mark the PRD ready when the target workflow is not `report-prototype-implementation-workflow`.
 - Do not mention a generic report-design workflow as an active downstream workflow.
 - Do not mark the PRD ready when page content was not decided through the thinking step or an equivalent validated report story.
 - Do not mark the PRD ready when `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, or `componentExampleConfigMap` is missing for any retained page.

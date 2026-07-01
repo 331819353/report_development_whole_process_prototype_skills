@@ -1,31 +1,28 @@
 # Prototype Workflow Execution Map
 
-Use this reference when finalizing the specialized PRD and when a specialized workflow starts from an existing PRD.
+Use this reference when finalizing the specialized PRD and when the unified implementation workflow starts from an existing PRD.
 
 ## Hard Rule
 
-The PRD layer runs first. The specialized workflow consumes the PRD output.
+The PRD layer runs first. The implementation workflow consumes the PRD output.
 
 ```text
 ordinary PRD
   -> report-prd-document-generation
   -> CHILD-PRD-PROTOTYPE + execution files
-  -> selected specialized workflow
+  -> report-prototype-implementation-workflow
   -> configurable template implementation
 ```
 
-The active specialized workflows are:
+The active implementation workflow is:
 
-- `report-analysis-report-prototype-workflow`
-- `report-kpi-dashboard-prototype-workflow`
-- `report-detail-report-prototype-workflow`
-- `report-self-service-analysis-prototype-workflow`
+- `report-prototype-implementation-workflow`
 
 Generic report-design workflows are retired and must not be used as active downstream owners.
 
 ## What The Workflow Consumes
 
-Before any specialized workflow starts implementation, the PRD bundle must provide:
+Before `report-prototype-implementation-workflow` starts implementation, the PRD bundle must provide:
 
 - `prd/prd-main.md` with a readable business summary, target workflow, page previews, layout summary, metric/data/interaction summary, and gaps.
 - `prd/children/prd-child-prototype.md` with the executable report-development contract.
@@ -41,7 +38,7 @@ Before any specialized workflow starts implementation, the PRD bundle must provi
 
 `CHILD-PRD-PROTOTYPE` and execution files must include:
 
-- Target specialized workflow and report type path.
+- Target workflow `report-prototype-implementation-workflow` and report type path.
 - Thinking output from `report-prototype-design-thinking`: page content, first-viewport priority, reading path, visible/non-visible content decisions, conclusion/evidence/action sequence.
 - Page preview references.
 - Selected `frameworkTemplateId`.
@@ -60,9 +57,9 @@ Before any specialized workflow starts implementation, the PRD bundle must provi
 
 ## Start Gate
 
-A specialized workflow may start only when:
+`report-prototype-implementation-workflow` may start only when:
 
-- Target workflow is one of the four active specialized workflows.
+- Target workflow is `report-prototype-implementation-workflow`.
 - `CHILD-PRD-PROTOTYPE` is present and `synced` or `draft` with non-blocking gaps.
 - Page content and reading path are decided by the thinking output or an explicitly accepted user design idea.
 - The configurable template route is complete enough to implement: `frameworkTemplateId`, `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` are present for every retained page.
@@ -73,7 +70,7 @@ A specialized workflow may start only when:
 - Every interaction has visible ownership and system response.
 - The self-development exception map contains only registered component examples and interaction behavior.
 
-If the start gate fails, return to `report-prd-document-generation` to complete intake, gap handling, report-path selection, and executable PRD structure; do not patch missing PRD structure inside the specialized workflow.
+If the start gate fails, return to `report-prd-document-generation` to complete intake, classification, gap handling, report-path selection, and executable PRD structure; do not patch missing PRD structure inside the implementation workflow.
 
 ## Area To Execution Map
 
@@ -81,7 +78,7 @@ If the start gate fails, return to `report-prd-document-generation` to complete 
 | --- | --- | --- |
 | Main summary and scope | Business goal, users, phase scope, target workflow, readiness gaps. | `report-prd-document-generation` |
 | Thinking output | Page content, reading path, first viewport, conclusion/evidence/action sequence. | `report-prototype-design-thinking` through PRD generation |
-| Target workflow | One of the four specialized workflows. | `report-prd-document-generation` |
+| Target workflow | `report-prototype-implementation-workflow`. | `report-prd-document-generation` |
 | Page layout | `pageLayoutConfig` with section map, layout rows, coordinates, nav/page wiring. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
 | Block areas | `blockAreaConfigMap` with standard block-area content and rules. | target workflow, `report-prototype-template-management` |
 | Component slots | `componentSlotConfigMap` and `componentExampleConfigMap`. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
@@ -94,7 +91,7 @@ If the start gate fails, return to `report-prd-document-generation` to complete 
 
 ## Ready Gate
 
-A specialized workflow may mark report development ready only when:
+`report-prototype-implementation-workflow` may mark report development ready only when:
 
 - Every required PRD execution row is consumed or explicitly `deferred-out-of-scope`.
 - `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` match the implemented template files.
