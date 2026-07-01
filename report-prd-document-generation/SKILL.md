@@ -7,7 +7,7 @@ description: "Convert an ordinary user PRD, requirement document, meeting note, 
 
 ## Purpose
 
-Use this skill as the first step in report development. Its job is not to summarize a user's PRD; its job is to compile ordinary requirements into a specialized PRD that downstream workflow agents can execute without guessing.
+Use this skill as the first step in report development. Its job is not to summarize a user's PRD; its job is to compile ordinary requirements into a specialized PRD that the unified implementation workflow can execute without guessing.
 
 The fixed direction is:
 
@@ -29,9 +29,9 @@ The specialized PRD must answer four implementation questions before any workflo
 
 - PRD comes before workflow. The unified implementation workflow consumes this PRD; it does not recreate requirement understanding, report classification, layout, component mapping, data/API, or interaction decisions internally.
 - Use `report-prototype-design-thinking` during PRD generation to decide the page content, report story, decision path, and reading sequence. Thinking is part of PRD compilation, not a replacement for template configuration.
-- Set the downstream workflow to `report-prototype-implementation-workflow` and choose exactly one primary `RTP-*` report path inside the PRD. Secondary `RTP-*` modules are allowed only when they support the primary path.
+- Set the implementation target to `report-prototype-implementation-workflow` and choose exactly one primary `RTP-*` report path inside the PRD. Secondary `RTP-*` modules are allowed only when they support the primary path.
 - Own the full intake, gap, and report-path decision inside this PRD skill. Extract facts, assumptions, missing gaps, attachment evidence, target report path, and target workflow here instead of routing to separate requirement-extraction or report-type skills.
-- Do not route new work to a generic report-design workflow; the generic workflow is retired.
+- Do not route new work to retired generic report-design paths.
 - Do not route new work to retired historical requirement-intake or standalone report-type entry skills.
 - Keep the reader-facing `prd/prd-main.md` short. Put executable matrices in `prd/execution/` and stage-specific details in `prd/children/`.
 - `CHILD-PRD-PROTOTYPE` is required for this report-development flow. Other child PRDs are generated only when the current scope includes frontend integration, backend/API implementation, technical solution, or testing handoff.
@@ -145,7 +145,7 @@ Conditional child PRDs:
 - Do not let `prd-main.md` become the execution manual. Move dense layout rows, metric dictionaries, API fields, interaction maps, slot maps, and validation rows into execution files or child PRDs.
 - Do not output a single Markdown PRD when the result must feed implementation.
 - Do not mark the PRD ready when the target workflow is not `report-prototype-implementation-workflow`.
-- Do not mention a generic report-design workflow as an active downstream workflow.
+- Do not mention retired generic report-design paths as active downstream routes.
 - Do not mark the PRD ready when page content was not decided through the thinking step or an equivalent validated report story.
 - Do not mark the PRD ready when `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, or `componentExampleConfigMap` is missing for any retained page.
 - Do not mark the PRD ready when any slot lacks a registered component example or a defined custom ECharts example to be registered.

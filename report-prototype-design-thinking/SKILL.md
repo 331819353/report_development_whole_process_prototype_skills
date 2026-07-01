@@ -1,6 +1,6 @@
 ---
 name: report-prototype-design-thinking
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于报表、仪表盘、数据大屏、BI 页面原型在画表格、画图表或写代码前建立通用设计思路。用户提到原型核心叙事、用户路径、产品价值、半文档半产品、报表原型通用设计思路、产品经理接到报表需求、谁在什么场景下做什么决策、先想清楚业务目标/角色/指标/分析路径时触发；不负责四类专项原型 workflow、页面模板工程、API 文档、后端实现或运行测试。"
+description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于报表、仪表盘、数据大屏、BI 页面原型在画表格、画图表或写代码前建立通用设计思路。用户提到原型核心叙事、用户路径、产品价值、半文档半产品、报表原型通用设计思路、产品经理接到报表需求、谁在什么场景下做什么决策、先想清楚业务目标/角色/指标/分析路径时触发；不负责统一报表原型实现 workflow、页面模板工程、API 文档、后端实现或运行测试。"
 ---
 
 # Report Prototype Design Thinking
@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill before report prototype layout, chart selection, component mapping, template selection, or implementation. It owns the product-manager thinking layer: what story the prototype must make clear, who uses the report, in what scenario, and what decision or action the user should take.
 
-Default policy: this is the thinking layer used during `report-prd-document-generation` to decide report content, story, reading path, and page structure before a specialized prototype workflow starts. Four specialized prototype workflows exist separately for 自助分析、指标看板、分析报告、或明细报表 and should consume the generated PRD bundle instead of recreating the thinking step from scratch.
+Default policy: this is the thinking layer used inside `report-prd-document-generation` to decide report content, story, reading path, and page structure before the unified implementation workflow starts. Report type differences such as self-service analysis, KPI dashboard, analysis report, detail query, cockpit, risk monitor, closure board, or review/export report are expressed as `RTP-*` and `PATH-*` decisions in the PRD; `report-prototype-implementation-workflow` consumes those decisions instead of recreating the thinking step from scratch.
 
 ## Reference Loading
 
@@ -71,7 +71,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not treat the prototype as only a UI drawing. It must help reviewers understand product value without the designer standing beside it.
 - Do not average-weight every feature. Separate protagonist functions, supporting functions, and information display.
 - Do not skip entry path, first action, result feedback, or key states when they affect whether the story can be understood.
-- Do not treat "报表" as one fixed page shape. When the user explicitly needs monitoring, explanation, exploration, or exact record verification, use the corresponding specialized prototype workflow instead of branching inside this skill.
+- Do not treat "报表" as one fixed page shape. When the user explicitly needs monitoring, explanation, exploration, or exact record verification, record the corresponding `RTP-*` path and reading-path implication for `report-prd-document-generation`; do not branch to a separate implementation path from this skill.
 - Do not place all requested fields on the main canvas. Detail fields belong in detail tables, drawers, exports, or appendix unless they are needed for the first decision.
 - Do not accept a report prototype whose primary metrics are isolated numbers without target/baseline/benchmark/denominator/threshold comparison.
 - Do not accept a flat metric list as the core report structure. Core metrics need driver, dimension, detail, action, or trust relationships.
@@ -84,4 +84,4 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not use red/green as the default visual answer. Brand/product colors and neutral hierarchy should carry identity and reading order; semantic colors need explicit business meaning.
 - Every proposed component must answer a named question, provide evidence, or support a required action.
 - A type-specific entry must not bypass metric口径, data source, permissions, export scope, and abnormal/empty/error state notes.
-- If the result feeds a runnable prototype, pass this output into the binding matrix and layout/template workflow before implementation.
+- If the result feeds a runnable prototype, pass this output into the PRD-owned binding matrix and layout/template contract before `report-prototype-implementation-workflow` starts implementation.

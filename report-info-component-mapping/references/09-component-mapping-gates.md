@@ -151,7 +151,7 @@ When this skill is used, produce at least:
 18. Layout and style constraints.
 19. Missing information, assumptions, and removed decorative components.
 
-For implementation tasks, items 5-13 are mandatory. Item 2 is also mandatory when the upstream workflow selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
+For implementation tasks, items 5-13 are mandatory. Item 2 is also mandatory when the PRD or design-thinking output selected a display theme or reusable pattern-card set. Item 3 is mandatory when visual samples or reusable pattern libraries are used. Item 4 is mandatory for report/dashboard/BI/cockpit/detail-query/topic-analysis/report-designer work.
 
 ## Quick Quality Gate
 

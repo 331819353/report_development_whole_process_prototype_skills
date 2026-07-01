@@ -7,7 +7,7 @@ Use this reference whenever the output may become a reusable specification, widg
 The same business input should produce the same:
 
 - Primary report type and secondary report-type routing.
-- Display theme and selected pattern-card IDs when supplied by the prototype workflow.
+- Display theme and selected pattern-card IDs when supplied by the PRD or design-thinking output.
 - `styleGeneralization` status, canonical pattern reference, and adaptive variables when the style comes from screenshots, visual samples, or reusable pattern libraries.
 - `analysisPerspective` and `secondaryAnalysisPerspectives` before answer atoms when the business request is phrased as "看现状/看目标/看趋势/看排名/看原因/看行动" or equivalent.
 - Answer atoms and component priorities.

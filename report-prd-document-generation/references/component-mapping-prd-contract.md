@@ -1,6 +1,6 @@
 # Component Mapping PRD Contract
 
-Use this reference when finalizing `CHILD-PRD-PROTOTYPE` and the execution files. The PRD owns the final component mapping contract. Specialized workflows consume this contract; they do not call a separate component-mapping workflow to decide it later.
+Use this reference when finalizing `CHILD-PRD-PROTOTYPE` and the execution files. The PRD owns the final component mapping contract. `report-prototype-implementation-workflow` consumes this contract; it does not call a separate component-mapping workflow to decide it later.
 
 ## Ownership Rule
 
@@ -44,4 +44,4 @@ For difficult mapping decisions, consult the retained `report-info-component-map
 - `09-component-mapping-gates.md`
 - `10-metric-drilldown-contract.md`
 
-These files inform PRD generation. They are not downstream workflow owners.
+These files inform PRD generation. They do not own implementation routing.

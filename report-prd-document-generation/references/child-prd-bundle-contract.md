@@ -1,6 +1,6 @@
 # Child PRD Bundle Contract
 
-Use this reference when the main PRD would become too large for humans if it carried every execution table. The child PRD layer keeps the main PRD readable while giving downstream workflow agents exact execution input.
+Use this reference when the main PRD would become too large for humans if it carried every execution table. The child PRD layer keeps the main PRD readable while giving the unified implementation workflow exact execution input.
 
 ## Purpose
 

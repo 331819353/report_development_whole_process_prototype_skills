@@ -1,4 +1,4 @@
 interface:
   display_name: "PRD Component Mapping Rules"
   short_description: "Rule library for PRD-owned report component mapping, binding matrices, data/filter/interaction contracts, and conclusion rules."
-  default_prompt: "Use report-info-component-mapping only as a support rule library for report-prd-document-generation. Consult its references to derive or repair PRD-owned componentSlotConfigMap, componentExampleConfigMap, answer atom maps, data/API rows, filter/action rows, interaction rows, conclusionRuleMap, binding matrices, controlled vocabularies, and validation cases. Do not use it as a standalone downstream workflow."
+  default_prompt: "Use report-info-component-mapping only as a support rule library for report-prd-document-generation. Consult its references to derive or repair PRD-owned componentSlotConfigMap, componentExampleConfigMap, answer atom maps, data/API rows, filter/action rows, interaction rows, conclusionRuleMap, binding matrices, controlled vocabularies, and validation cases. Do not use it as a standalone implementation owner."

@@ -1,6 +1,6 @@
 ---
 name: report-info-component-mapping
-description: "Support rule library for PRD-owned report component mapping. Use when maintaining or consulting the detailed mapping references that help report-prd-document-generation turn report questions, RTP/PATH reading paths, executive gates, answer atoms, component bundles, data/filter/interaction contracts, conclusion rules, and binding matrices into executable PRD rows. Do not use as a standalone downstream workflow for normal report implementation; the PRD owns final componentSlotConfigMap, componentExampleConfigMap, data/API, interaction, and conclusion-rule outputs."
+description: "Support rule library for PRD-owned report component mapping. Use when maintaining or consulting the detailed mapping references that help report-prd-document-generation turn report questions, RTP/PATH reading paths, executive gates, answer atoms, component bundles, data/filter/interaction contracts, conclusion rules, and binding matrices into executable PRD rows. Do not use as a standalone implementation owner for normal report implementation; the PRD owns final componentSlotConfigMap, componentExampleConfigMap, data/API, interaction, and conclusion-rule outputs."
 ---
 
 # Report Info Component Mapping
@@ -13,7 +13,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 ## Core Positioning
 
-Use this skill as a support rule library for `report-prd-document-generation`, not as a standalone downstream workflow. The PRD owns the final component mapping contract; this skill preserves the detailed rules used to derive it:
+Use this skill as a support rule library for `report-prd-document-generation`, not as a standalone implementation owner. The PRD owns the final component mapping contract; this skill preserves the detailed rules used to derive it:
 
 `business question -> report-type path -> executive satisfaction gates -> analysis perspective -> answer atoms -> component bundle -> conclusionRuleMap -> data model -> control semantics -> filter/query model -> interaction state -> binding matrix`
 
