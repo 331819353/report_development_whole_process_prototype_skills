@@ -9,15 +9,60 @@ import type { RegisteredWidgetConfig, WidgetTitlePillOption } from '../src/widge
 
 export const datasetTemplate = {
   filterData: {
-    regions: [
-      { id: '__all', label: '全部' },
-      { id: 'china', label: '中国区' },
-      { id: 'overseas', label: '海外区' },
+    periodOptions: [
+      { id: '2026-06', label: '2026-06', sortOrder: 1 },
+      { id: '2026-05', label: '2026-05', sortOrder: 2 },
+    ],
+    regionOptions: [
+      { id: 'all', label: '全部区域', sortOrder: 0 },
+      { id: 'china', label: '中国区', sortOrder: 1 },
+      { id: 'overseas', label: '海外区', sortOrder: 2 },
+    ],
+    projectOptions: [
+      { id: 'all', label: '全部项目', sortOrder: 0 },
+      { id: 'project-a', label: '项目 A', sortOrder: 1 },
+    ],
+    channelOptions: [
+      { id: 'all', label: '全部渠道', sortOrder: 0 },
+      { id: 'direct', label: '直营', sortOrder: 1 },
     ],
   },
   businessData: {
-    revenueRows: [
+    componentProps: {
+      'LineChartExampleCard:收入趋势': {
+        key: 'LineChartExampleCard:收入趋势',
+        componentType: 'LineChartExampleCard',
+        visualType: 'line',
+        props: {
+          title: '收入趋势',
+          unit: '万元',
+          categories: ['2026-04', '2026-05', '2026-06'],
+          series: [{ name: '收入', values: [1212.9, 1280.5, 1366.8], smooth: true }],
+          config: { title: { visible: false }, chart: { legendVisible: true } },
+        },
+      },
+      'DetailTableExampleCard:收入明细': {
+        key: 'DetailTableExampleCard:收入明细',
+        componentType: 'DetailTableExampleCard',
+        visualType: 'table',
+        props: {
+          title: '收入明细',
+          unit: '万元',
+          rowKey: 'id',
+          columns: [
+            { key: 'period', label: '期间', field: 'period' },
+            { key: 'productLineName', label: '产品线', field: 'productLineName' },
+            { key: 'amount', label: '收入', field: 'amount', align: 'right' },
+          ],
+          rows: [
+            { id: 'row-001', period: '2026-06', productLineName: '冰箱', amount: 1280.5 },
+          ],
+        },
+      },
+    },
+    apiRevenueTableRows: [
       {
+        id: 'row-001',
         period: '2026-05',
         regionId: 'china',
         productLine: 'refrigerator',
@@ -55,18 +100,16 @@ export const actionConfigTemplates = {
     params: {
       id: '$event.id',
       productLine: '$event.productLine',
-      navId: '$context.navId',
     },
     meta: {
       title: '收入行明细',
     },
   },
-  openExternalWorkbench: {
-    type: 'openExternalWorkbench',
-    targetType: 'external',
-    target: '/workbench/revenue',
+  exportCurrentBlock: {
+    type: 'exportCurrentBlock',
+    targetType: 'export',
     params: {
-      sourceBlock: '$context.blockId',
+      blockId: '$context.blockId',
       filters: '$filters',
     },
   },
@@ -94,12 +137,12 @@ export const actionConfigTemplates = {
       title: '收入详情',
     },
   },
-  jumpToRevenueNav: {
+  jumpToDetail: {
     type: 'dashboardAction',
     interactionType: 'jump',
     triggerOwner: 'componentOwnedEvent',
     targetType: 'route',
-    target: 'revenue',
+    target: '/revenue/detail',
     query: {
       id: '$event.id',
     },
@@ -162,36 +205,109 @@ export const titlePillSwitchTemplates = {
 } satisfies Record<string, WidgetTitlePillOption[]>;
 
 export const dataSourceTemplates = {
-  jsonRevenueRows: {
-    id: 'businessData',
-    params: {
-      key: 'revenueRows',
-    },
-    requiredFilters: ['regionId'],
-  },
   apiRevenueRows: {
     id: 'apiData',
     api: {
-      url: '/api/revenue/rows',
+      url: '/api/report/revenue-table',
       method: 'GET',
       query: {
-        regionId: '$filters.regionId',
         period: '$filters.period',
+        region: '$filters.region',
+        project: '$filters.project',
+        channel: '$filters.channel',
       },
       responsePath: 'data.rows',
       adapter: 'rows',
+      emptyFilterValues: ['', '__all', 'all'],
     },
-    requiredFilters: ['regionId'],
+  },
+  apiRevenueTrendRows: {
+    id: 'apiData',
+    api: {
+      url: '/api/report/revenue-trend',
+      method: 'GET',
+      query: {
+        period: '$filters.period',
+        region: '$filters.region',
+        project: '$filters.project',
+        channel: '$filters.channel',
+        metric: '$context.activeTitlePill.params.metric',
+      },
+      responsePath: 'data.rows',
+      adapter: 'rows',
+      emptyFilterValues: ['', '__all', 'all'],
+    },
+  },
+  apiKpiSummaryRows: {
+    id: 'apiData',
+    api: {
+      url: '/api/report/kpi-summary',
+      method: 'GET',
+      query: {
+        metric: '$context.activeTitlePill.params.metric',
+      },
+      responsePath: 'data.rows',
+      adapter: 'rows',
+      emptyFilterValues: ['', '__all', 'all'],
+    },
+  },
+  apiLineChartComponentProps: {
+    id: 'apiData',
+    api: {
+      url: `/api/component-props/${encodeURIComponent('LineChartExampleCard:收入趋势')}`,
+      method: 'GET',
+      responsePath: 'data.rows',
+      adapter: 'rows',
+    },
+  },
+  apiDetailTableComponentProps: {
+    id: 'apiData',
+    api: {
+      url: `/api/component-props/${encodeURIComponent('DetailTableExampleCard:收入明细')}`,
+      method: 'GET',
+      responsePath: 'data.rows',
+      adapter: 'rows',
+    },
+  },
+  apiPeriodOptions: {
+    id: 'apiData',
+    api: {
+      url: '/api/filter-options/period',
+      method: 'GET',
+      responsePath: 'data.items',
+      adapter: 'rows',
+    },
+    labelField: 'label',
+    valueField: 'id',
   },
   apiRegionOptions: {
     id: 'apiData',
     api: {
-      url: '/api/filter-options/regions',
+      url: '/api/filter-options/region',
       method: 'GET',
-      query: {
-        period: '$filters.period',
-      },
-      responsePath: 'data.options',
+      responsePath: 'data.items',
+      adapter: 'rows',
+    },
+    labelField: 'label',
+    valueField: 'id',
+  },
+  apiProjectOptions: {
+    id: 'apiData',
+    api: {
+      url: '/api/filter-options/project',
+      method: 'GET',
+      responsePath: 'data.items',
+      adapter: 'rows',
+    },
+    labelField: 'label',
+    valueField: 'id',
+  },
+  apiChannelOptions: {
+    id: 'apiData',
+    api: {
+      url: '/api/filter-options/channel',
+      method: 'GET',
+      responsePath: 'data.items',
       adapter: 'rows',
     },
     labelField: 'label',
@@ -208,7 +324,7 @@ export const widgetTemplates = {
       precision: 1,
     },
     data: {
-      ...dataSourceTemplates.jsonRevenueRows,
+      ...dataSourceTemplates.apiRevenueRows,
     },
     actions: {
       rowClick: actionConfigTemplates.rowClick,
@@ -236,10 +352,7 @@ export const widgetTemplates = {
       sortDirection: 'asc',
     },
     data: {
-      id: 'businessData',
-      params: {
-        key: 'revenueRows',
-      },
+      ...dataSourceTemplates.apiRevenueTrendRows,
     },
   },
   localButtonFilters: {
@@ -248,10 +361,7 @@ export const widgetTemplates = {
     title: '标题区胶囊筛选',
     props: {},
     data: {
-      id: 'businessData',
-      params: {
-        key: 'revenueRows',
-      },
+      ...dataSourceTemplates.apiRevenueRows,
       ignoredFilters: ['regionId'],
       ignoredFilterReasons: {
         regionId: 'This local-filter demo intentionally shows already loaded rows and does not inherit the global region filter.',
@@ -274,10 +384,7 @@ export const widgetTemplates = {
     title: '标题区筛选面板',
     props: {},
     data: {
-      id: 'businessData',
-      params: {
-        key: 'revenueRows',
-      },
+      ...dataSourceTemplates.apiRevenueRows,
     },
     localFilters: [
       {
@@ -300,10 +407,7 @@ export const widgetTemplates = {
     title: '关系图',
     props: {},
     data: {
-      id: 'businessData',
-      params: {
-        key: 'relationRows',
-      },
+      ...dataSourceTemplates.apiRevenueRows,
     },
     viewport: {
       pannable: true,
@@ -319,10 +423,11 @@ export const widgetTemplates = {
     type: 'SummaryText',
     visualType: 'text-summary',
     title: '经营摘要',
-    props: {
-      text: '本月收入保持稳定增长。',
+    props: {},
+    data: {
+      ...dataSourceTemplates.apiKpiSummaryRows,
     },
-    dataPolicy: 'static',
+    dataPolicy: 'external',
   },
   externalRealtime: {
     type: 'RealtimeMap',
@@ -337,23 +442,18 @@ export const componentSlotBindingTemplates = {
   lineChartSlot: {
     componentExampleId: 'component-example-catalog:line-chart-card',
     props: {
-      unit: '万元',
       config: {
         title: { visible: false },
         chart: { legendVisible: true, smooth: true },
       },
     },
     data: {
-      ...dataSourceTemplates.jsonRevenueRows,
+      ...dataSourceTemplates.apiLineChartComponentProps,
     },
     filterScope: ['revenue'],
     dataBinding: {
-      mode: 'category-series',
-      categoryField: 'period',
-      series: [
-        { name: '收入', valueField: 'amount', type: 'line', smooth: true, unit: '万元' },
-        { name: '达成率', valueField: 'completion', type: 'line', unit: '%' },
-      ],
+      mode: 'custom-props',
+      propsObjectField: 'props',
     },
     actions: {
       chartClick: actionConfigTemplates.detailModal,
@@ -362,22 +462,14 @@ export const componentSlotBindingTemplates = {
   },
   detailTableSlot: {
     componentExampleId: 'component-example-catalog:detail-table-card',
-    props: {
-      unit: '万元',
-      rowKey: 'id',
-      columns: [
-        { key: 'period', label: '期间', field: 'period' },
-        { key: 'productLineName', label: '产品线', field: 'productLineName' },
-        { key: 'amount', label: '收入', field: 'amount', align: 'right' },
-      ],
-    },
+    props: {},
     data: {
-      ...dataSourceTemplates.apiRevenueRows,
+      ...dataSourceTemplates.apiDetailTableComponentProps,
     },
     filterScope: ['revenue'],
     dataBinding: {
-      mode: 'rows',
-      rowsProp: 'rows',
+      mode: 'custom-props',
+      propsObjectField: 'props',
     },
     actions: {
       rowClick: actionConfigTemplates.rowClick,
@@ -385,99 +477,64 @@ export const componentSlotBindingTemplates = {
   },
 } as const;
 
-export const leftNavAnalyticsConfigTemplate = {
+export const singlePageLightConfigTemplate = {
   assets: {
-    logoSrc: '/haier-logo.svg',
-    logoAlt: '海尔 logo',
+    logoSrc: '/haier-logo-original.svg',
+    logoAlt: 'Haier logo',
+    backgroundSrc: '/cockpit-bg.jpg',
   },
   screen: {
-    title: '经营分析工作台',
-    navTitle: '功能导航',
-    filterTitle: '查询筛选',
+    title: '经营驾驶舱',
+    filterTitle: '筛选项',
     defaultTheme: 'light',
-    defaultNavOpen: true,
     defaultFiltersOpen: false,
     layout: {
       designWidth: 1920,
       designHeight: 1080,
-      sidebarWidth: 256,
-      sidebarCollapsedWidth: 80,
+      topbarHeight: 160,
       contentGap: 0,
     },
     grid: {
-      contentStartY: 0,
+      contentStartY: 160,
       contentEndY: 1080,
-      rowHeight: 135,
+      rowHeight: 115,
       cellPadding: 6,
-      dominantTitleColor: '#004ac6',
-      innerBackgroundColor: '#ffffff',
+      dominantTitleColor: '#20a8ff',
+      innerBackgroundColor: 'rgba(255, 255, 255, 0.92)',
     },
     controls: {
-      navigation: '收起',
       filters: '筛选',
       download: '下载',
       refresh: '刷新',
-      fullscreen: '全屏',
     },
   },
-  nav: [
-    {
-      id: 'dashboard',
-      label: '数据看板',
-      icon: 'Gauge',
-      layoutRows: [
-        'AAABBBCCCDDD',
-        'AAABBBCCCDDD',
-        'EEEFFFGGGHHH',
-        'EEEFFFGGGHHH',
-        'IIIJJJKKKLLL',
-        'IIIJJJKKKLLL',
-        'MMNNOOPPQQRR',
-        'SSUUVVWWXXYY',
-      ],
-      widgets: {
-        A: widgetTemplates.dataBackedTable,
-        B: widgetTemplates.localButtonFilters,
-        C: widgetTemplates.localPanelFilters,
-        D: widgetTemplates.viewportDiagram,
-        E: widgetTemplates.staticSummary,
-        F: widgetTemplates.externalRealtime,
-      },
+  page: {
+    layoutRows: [
+      'AAABBBCCCDDD',
+      'AAABBBCCCDDD',
+      'EEEFFFGGGHHH',
+      'EEEFFFGGGHHH',
+      'IIIJJJKKKLLL',
+      'IIIJJJKKKLLL',
+      'MMNNOOPPQQRR',
+      'SSUUVVWWXXYY',
+    ],
+    widgets: {
+      A: widgetTemplates.dataBackedTable,
+      B: widgetTemplates.localButtonFilters,
+      C: widgetTemplates.localPanelFilters,
+      D: widgetTemplates.viewportDiagram,
+      E: widgetTemplates.staticSummary,
+      F: widgetTemplates.externalRealtime,
     },
-    {
-      id: 'analytics',
-      label: '分析查询',
-      icon: 'BarChart3',
-      layoutRows: [
-        'AAABBBCCCDDD',
-        'AAABBBCCCDDD',
-        'EEEFFFGGGHHH',
-        'EEEFFFGGGHHH',
-        'IIIJJJKKKLLL',
-        'IIIJJJKKKLLL',
-        'MMNNOOPPQQRR',
-        'SSUUVVWWXXYY',
-      ],
-      widgets: {
-        A: widgetTemplates.dataBackedChart,
-        B: widgetTemplates.dataBackedTable,
-        C: widgetTemplates.localPanelFilters,
-        D: widgetTemplates.staticSummary,
-      },
-    },
-  ],
+  },
   filters: [
     {
       id: 'regionId',
       label: '区域',
       defaultValue: '',
       source: {
-        id: 'filterData',
-        params: {
-          key: 'regions',
-        },
-        labelField: 'label',
-        valueField: 'id',
+        ...dataSourceTemplates.apiRegionOptions,
       },
     },
   ],

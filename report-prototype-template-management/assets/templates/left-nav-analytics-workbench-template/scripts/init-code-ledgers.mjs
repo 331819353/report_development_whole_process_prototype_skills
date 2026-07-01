@@ -61,7 +61,7 @@ const shouldIncludeFile = (filePath) => {
 const collectFiles = (dir, files = []) => {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
-      if (!excludedDirs.has(entry.name)) {
+      if (!excludedDirs.has(entry.name) && !entry.name.startsWith('visual-check')) {
         collectFiles(path.join(dir, entry.name), files);
       }
       continue;

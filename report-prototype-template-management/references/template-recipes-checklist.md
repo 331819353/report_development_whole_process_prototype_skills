@@ -2,6 +2,14 @@
 
 Use this file for common adjustments and final verification after changing a template project.
 
+## Observed Delivery Pitfalls To Prevent
+
+- Mock API mode served with plain Vite: filters and component slots fire many `/api/*` requests, causing repeated generic failures. Use `npm run dev:mock`, smoke API endpoints, and keep request errors rate-limited and diagnosable.
+- Process records shipped as development history: users see old release rows, patches, snapshots, and Codex iteration details in a supposedly new project. Reset bundled templates to initialized baseline records; let copied projects create their own history.
+- Data-field alias mismatch: components may render values while names disappear, for example ranking rows using backend-natural `name` while the component reads only `label`. Prefer `label`, normalize common dimension aliases, and verify visible names in DOM.
+- Config used to fix layout sizing: hand-tuned per-page size values hide weak component auto-fit behavior. Keep size fitting in template runtime and registered component examples.
+- Runtime proof skipped after config passes: contract validation can pass while the browser still has blank pages, clipped values, missing multi-slot titles, or non-working interactions. Keep browser/API/interaction smoke as part of readiness.
+
 ## Common Recipes
 
 ### Initialize Code Ledgers After Copy
@@ -10,6 +18,16 @@ Use this file for common adjustments and final verification after changing a tem
 2. Confirm the command created same-directory `__change_logs__/<code-file-name>.changes.md` sidecars for scoped source files.
 3. Use `npm run ledger:code -- --file <source-file> --stage before` and `--stage after` for each edited file after this baseline bootstrap.
 4. Run `npm run ledger:check` before handoff; missing sidecars block readiness.
+
+### Reset Bundled Template Process Records
+
+Use this only when preparing reusable bundled templates for users. Copied/configured user projects keep their real project history.
+
+1. Keep `docs/mock-api-contract.md`, `docs/prototype-data-summary.md`, and `README.md`; they are handoff/user docs, not process logs.
+2. Reduce each template root `DELIVERY_INDEX.md` to a clean `template-initialized` artifact/version/change baseline.
+3. Reduce each `__change_logs__/*.changes.md` file to a current-file baseline, with no internal release chronology.
+4. Remove generated evidence under `__change_logs__/patches/` and `__change_logs__/.snapshots/` before packaging the reusable template.
+5. After a user copies/configures the template, run `npm run ledger:init` and append project-specific entries normally.
 
 ### Create Template Build Packet
 
@@ -45,6 +63,7 @@ Use this file for common adjustments and final verification after changing a tem
 5. Read `template-layout-design-system.md` when changing `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, component title/control handoff, or content range.
 6. Calculate the actual block width/height with `report-visual-layout-design`.
 7. Verify each span can hold its chart/table/KPI/composite content at the target viewport size.
+   For KPI/core-value spans, verify the internal component body too: the main value, suffix/unit, accessory row, spark/reflection layer, and optional component title strip must all fit in the slot. A block frame or slot grid being aligned is not enough.
 8. Keep or add vertical scrolling when the report needs more rows than the first viewport can show.
 9. Rename widget keys to match changed block ids.
 10. Update the Template Build Packet from `template-build-packet-contract.md` and the configurable flow from `configurable-zero-to-one-flow.md`; do not duplicate the full field list here.
@@ -53,20 +72,19 @@ Use this file for common adjustments and final verification after changing a tem
 
 ### Fill Block Template Slots
 
-1. Confirm the independent 分块配置 Vue file for the block and its standard areas: `1-1 titleArea`, `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, `3 componentArea`, and `4 summaryArea`.
+1. Confirm the independent 分块配置 runtime for the block and its standard block areas: `1-1 titleArea`, `1-2 pillArea`, `3 componentArea`, and `4 summaryArea`.
    - Choose SingleSlot or MultiSlot from the requirement. Use SingleSlot for one dominant conclusion card/component; use MultiSlot only for parallel evidence, comparison, conclusion-card-plus-driver, or tightly related component groups. In MultiSlot blocks, place the conclusion card or primary conclusion component in the first component slot when componentized conclusions are needed.
 2. Declare `slotCount`, `componentSlotPattern`, and `slotCoordinateList` before selecting registered component examples. Use slot patterns such as `A`, `AB`, `AAB`, and `AABBCC`; these describe slots inside `3 componentArea`, not page `layoutRows`.
 3. Configure `1-1 titleArea`: title and title style.
 4. Decide whether `1-2 pillArea` is needed. Configure it when needed; otherwise record it as not configured. If a pill changes metric, period, mode, scenario, or data perspective, configure `titlePills[].filters`, `titlePills[].params`, `titlePills[].props`, `titlePills[].dataBinding`, or `titlePills[].actions`; do not stop at `id/label`.
-5. Decide whether `2-1 auxMetricArea` is needed. Configure it when needed and keep the items evenly distributed; otherwise record it as not configured.
-6. Decide whether `2-2 unitArea` is needed. Configure it when needed; otherwise record it as not configured.
-7. For every `3 componentArea` slot, assign/verify `slotCoordinate` (`R-B-S`), inspect `references/component-examples/config.ts`, then inspect `src/widgets/templates/component-examples/` and its README/catalog, then select an existing 组件示例 first.
-8. If no suitable registered component example exists, create a standalone Vue component example, use ECharts for standard chart needs, register/copy it, and record it in `selfDevelopmentExceptionMap` with `type: componentExample`.
-9. For every selected 组件示例, keep the root as a rounded rectangle without border lines. Configure the optional `20px` top title strip only for metric/content meaning in multi-slot blocks; hide it when the parent 分块配置 has one slot or when `showContentTitle: false`.
-10. Do not put filters, controls, additional information, units, description/help text, summary, or explanation content inside 组件示例 slots. Those belong to 分块配置 supporting areas, shell/page config, or a non-slot widget with explicit ownership.
-11. Configure `4 summaryArea`: if the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
-12. Do not treat a slot as filled until it points to a registered component example ID plus standalone component example Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
-13. Do not fill a slot with text/prose/placeholder content, `visualType` only, an inline widget object, or a visual type that is not compatible with the slot size. If the component is text-summary/insight, it still needs a registered component example and a `conclusionRuleId` when the text is data-driven.
+5. For every `3 componentArea` slot, assign/verify `slotCoordinate` (`R-B-S`), inspect `references/component-examples/config.ts`, then inspect `src/widgets/templates/component-examples/` and its README/catalog, then select an existing 组件示例 first. Component-level title, unit, auxiliary metrics, chart/table/list body, and overflow behavior must be provided by the selected registered example.
+6. If no suitable registered component example exists, create a standalone Vue component example, use ECharts for standard chart needs, register/copy it, and record it in `selfDevelopmentExceptionMap` with `type: componentExample`.
+7. For every selected 组件示例, keep the root as a rounded rectangle without border lines. Component short-title visibility is automatic: hide it for single-slot parent blocks and show it for every multi-slot block. Do not use `showContentTitle: false` or `config.title.visible:false` in multi-slot blocks.
+   When the optional title strip is hidden in a single-slot block, verify the component releases that title-row height and the body/content is not auto-placed into a collapsed title row. If compact KPI/target-progress/conclusion slots still clip values or lists, fix the registered component example auto-fit behavior or choose another registered example; do not hand-tune per-page slot/title/value sizes as the solution.
+8. Do not put parent-block filters, controls, description/help text, summary, or explanation content inside 组件示例 slots. Those belong to 分块配置 block areas, shell/page config, or a non-slot widget with explicit ownership. Component-owned props such as chart/table `unit` and `auxMetrics` remain valid when the selected registered example renders its own internal unit or auxiliary metric strip.
+9. Configure `4 summaryArea`: show it by default. If no separate `bodySummary` is provided, use the block `note`. If the block has no conclusion card/component, it may carry text-only/narrative conclusion, note, caveat, or explanation. If the block contains `ConclusionExampleCard`, hide the outer block `4 summaryArea` with `showSummary:false` plus `summaryHiddenReason`; do not remove the conclusion card's internal supplemental/evidence/action sections. Hide other summary areas only with explicit user intent plus `showSummary: false` and `summaryHiddenReason`.
+10. Do not treat a slot as filled until it points to a registered component example ID plus standalone component example Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
+11. Do not fill a slot with text/prose/placeholder content, `visualType` only, an inline widget object, or a visual type that is not compatible with the slot size. If the component is text-summary/insight, it still needs a registered component example and a `conclusionRuleId` when the text is data-driven.
 
 ### Add A Data-Bound Widget
 
@@ -85,14 +103,29 @@ Use this file for common adjustments and final verification after changing a tem
 13. Append sidecar ledger entries for every changed source file with feature list, code ranges, affected data/filter/API contracts, and verification.
 14. Update `docs/prototype-data-summary.md` with the dataset id, fields, metric/conclusion inputs, component binding row, filters, interaction payloads, backend API/model implications, gaps, and verification.
 
+### Add Lightweight NPM Mock API Data
+
+1. Keep mock rows in `src/data/dashboard.dataset.json`; do not create TS fixture modules for options, chart rows, table rows, or KPI rows.
+2. Use or extend `scripts/mock-api-server.mjs` so filter option endpoints return `{ data: { items } }` and component endpoints return `{ data: { rows, total } }`.
+3. Add or update npm scripts: `mock:api` starts only the API, and `dev:mock` starts the API plus Vite with `/api` proxied to the mock server.
+4. Configure global/page filters with `filters[].source.id: 'apiData'`, `api.url: '/api/filter-options/<filterId>'`, `api.responsePath: 'data.items'`, `labelField`, `valueField`, and `emptyFilterValues`.
+5. Configure component slots or owning widgets with `data.id: 'apiData'`, `api.url: '/api/component-props/<componentKey>'` by default, `api.query` expressions from `$filters` and `$context.activeTitlePill` when needed, `api.responsePath: 'data.rows'`, and `dataBinding.propsObjectField: 'props'` so `rows[0].props` becomes the registered component props.
+6. Do not preserve static `filters[].options`, static widget rows, chart series, KPI values, or component demo props as runtime fallback data in mock API mode.
+7. Document endpoints, response envelope, replacement steps, and field mapping in `docs/mock-api-contract.md` and `docs/prototype-data-summary.md`.
+8. Verify `/api/health`, one `/api/filter-options/*` endpoint, and one `/api/component-props/:componentDataKey` endpoint before browser review.
+9. Use `npm run dev:mock` for the normal local preview path. Plain `npm run dev` is only acceptable when no runtime `/api/*` data source is configured or `VITE_API_BASE_URL` points to a working API.
+10. The shared request client should rate-limit identical user-facing failures and show actionable API-unavailable/404/429/business-error messages; repeated generic `Request failed` toasts block readiness.
+11. Run `npm run validate:dashboard` and `npm run build`.
+
 ### Update Prototype Data Summary
 
 1. Read `prototype-data-summary-contract.md` before final handoff, backend handoff, or any meaningful data/API/filter/widget/interaction change.
 2. Create `docs/prototype-data-summary.md` when it does not exist.
 3. Summarize actual project evidence from `src/data/dashboard.dataset.json`, `src/config/dashboard.config.ts`, `src/dataSources/registry.ts`, widget components, and action hooks.
-4. Include dataset catalog, field dictionary, metric and generated-conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, `GAP-*` rows, and verification.
-5. Keep full fixture rows out of the document; include representative shape and backend design implications.
-6. Record the code-ledger sidecar path for every changed scoped source file that produced or changed the data contract.
+4. Include dataset catalog, field dictionary, metric and generated-conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend interface method contract, backend API/model suggestions, `GAP-*` rows, and verification.
+5. In `## Backend Interface Method Contract`, include what the prototype already provides for backend design, then list method rows with service method name, HTTP method/path, owning domain/service, frontend consumers, request DTO, response DTO/envelope, `responsePath`, adapter/props mapping, pagination/export behavior when relevant, cache/freshness, permission injection, empty/error/no-permission handling, and mock-to-real replacement note.
+6. Keep full fixture rows out of the document; include representative shape and backend design implications.
+7. Record the code-ledger sidecar path for every changed scoped source file that produced or changed the data contract.
 
 ### Add Or Change First-Level Perspective
 
@@ -127,18 +160,24 @@ Use this file for common adjustments and final verification after changing a tem
 - Template choice matches report scope and usage scenario.
 - `templateAssetUnderstandingMap` exists and is based on the selected template asset root.
 - Template Build Packet exists for PRD-driven or multi-step implementation, is current with implemented source files, and maps every edited target file to packet section 11.
-- Nine-step template operation chain is complete: `frameworkTemplateId`, `templateAssetUnderstandingMap`, `pageLayoutConfig` with `layoutSectionMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockAreaConfigMap` with `slotCount`, `componentSlotPattern`, `slotCoordinateList`, block area configs created by `createBlockAreaConfig`, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `auxMetricAreaConfig`, `unitAreaConfig`, `componentExampleConfigMap` with component slot size and visual-type size compatibility evidence, `summaryAreaConfig`, and fallback map when custom registered component examples were created.
-- Component slots under `3 componentArea` contain only registered 组件示例 content. Title, pills, filters, controls, additional information, units, descriptions, explanations, and summaries stay in 分块配置 supporting areas, shell/page config, or non-slot widgets.
+- Template operation chain is complete: `frameworkTemplateId`, `templateAssetUnderstandingMap`, `pageLayoutConfig` with `layoutSectionMap`, `filterSurfaceMap`, `toolbarActionMap`, `interactionBehaviorMap`, `blockAreaConfigMap` with `slotCount`, `componentSlotPattern`, `slotCoordinateList`, block area configs created by `createBlockAreaConfig`, and asset availability, `titleAreaConfig`, `pillAreaConfig`, `componentExampleConfigMap` with component slot size, visual-type size compatibility evidence, and component-owned title/unit/auxMetrics config when declared by the selected example, `summaryAreaConfig`, and fallback map when custom registered component examples were created.
+- Component slots under `3 componentArea` contain only registered 组件示例 content. Parent block title, pills, filters, controls, descriptions, explanations, and summaries stay in 分块配置 block areas, shell/page config, or non-slot widgets. Component-owned internal `unit` and `auxMetrics` stay inside the registered component example when that example supports them.
+- Chart-like component examples that expose component-owned `auxMetrics` keep those metrics visible and fitted. `config.layout.orientation` controls the relationship between aux strip and chart body; `config.aux.orientation` controls the metric-item layout inside the aux strip (`horizontal`, `vertical`, or `auto`). Explicit aux orientation wins, and only `auto` may adapt to available space. Missing aux strips, clipped aux text, or parent-size tuning used to hide the problem blocks readiness.
 - Block pills are verified as real switches when they claim to switch data: active pill context path, affected params/filters, affected block/slot coordinates, data reload scope, and optional `titlePillChange` action are documented.
+- Interactions are verified as runtime effects, not only config rows: click/key-activate representative primary/reference/secondary/supporting slots and confirm drawer, modal, popover, route, cross-filter, refresh, fullscreen, export, or external-open state as configured.
 - Component slots are not text-filled or placeholder-filled; every slot has a registered component example ID, standalone Vue file/component id, component slot size, visual-type size compatibility evidence, sample/source evidence, props/data/state contract, and data binding.
-- Registered component examples are standalone Vue files, rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, and hidden for single-slot parent blocks.
+- Registered component examples are standalone Vue files, rounded rectangles without border lines. Their optional top title strip is `20px`, centered, `3px` top-padded, removable, hidden for single-slot parent blocks, and visible for every multi-slot parent block. When hidden, the title row is removed or set to `0` and content explicitly occupies the full body area.
+- `4 summaryArea` is visible by default on every visible block. The built-in exception is a block containing `ConclusionExampleCard`, where the outer summary area is hidden and the card's internal supplemental/evidence/action sections remain. Other hidden summary areas require explicit user-requested `showSummary:false` and `summaryHiddenReason`.
+- KPI/core-value component examples have local fit evidence: screenshot crop and DOM geometry for the slot, card, main value, suffix/unit, accessory row, spark/reflection layer, and optional title strip. `VIS-TEXT-CLIPPED` or `VIS-CONTENT-OVERFLOW` inside `.layout-slot-content-widget`, `.kpi-example-card`, `.target-progress-example-card`, `.metric`, `.score`, `.value`, or `.card-value` blocks readiness even if the visual audit labels it `minor`.
 - Stack contract is intact: `package.json` keeps Vue 3, TypeScript, Vite, Element Plus, ECharts, axios, and build/typecheck scripts; `src/main.ts` uses Vue 3 `createApp`, registers Element Plus with locale, imports Element Plus base and dark CSS variables, and preserves project Element token styles.
 - Standard chart widgets use real ECharts runtime/options/series; ordinary controls and row tables use Element Plus/project control patterns; S2 is added only when pivot/cross/wide analytical table behavior is implemented.
 - Logo variant matches background.
 - `dashboard.config.ts` owns layout, filters, widgets, actions, and assets.
-- Registered component examples expose only the optional removable title strip plus body content. Component-local filters, filter panels, and detail links are allowed only in non-slot business widgets with explicit ownership.
+- Registered component examples expose the optional removable title strip plus their body content, including component-owned internal auxiliary metric strips when supported by props such as `auxMetrics`. Component-local filters, filter panels, and detail links are allowed only in non-slot business widgets with explicit ownership.
 - Business data is not stored directly in config.
 - Standard API endpoints are configured with `apiData` / `httpData`; custom resolvers are reserved for complex providers.
+- When lightweight backend-shaped data is required, `npm run mock:api` or `npm run dev:mock` works, `docs/mock-api-contract.md` exists, and `filters[].source` / component `data` use response paths matching the mock API envelope.
+- Mock API runtime evidence includes `/api/health`, one filter option endpoint, one component props endpoint, and no repeated generic request-failure toast storm during page load.
 - Every widget has `visualType`.
 - Widgets without data have `dataPolicy`.
 - Data completeness is verified before filter binding: filter option rows, business/API rows, required fields, default/non-default states, and resolver/API branches exist or are documented as gaps.
@@ -150,6 +189,7 @@ Use this file for common adjustments and final verification after changing a tem
 - Filter scope and data field mapping are explicit.
 - Component-slot filter binding is explicit: `filters[].scope` matches `componentSlots[].filterScope`, while `requiredFilters` and API/query params reference filter ids.
 - Every dynamic component slot has `dataBinding.mode` plus mapped fields/props, or a documented static-data reason.
+- List/ranking/action component examples show display names as well as values. Prefer `label`; when backend rows naturally use `name`, `regionName`, `region`, `areaName`, or `dimension`, normalize those fields in the component example or adapter and document the accepted aliases in the data summary.
 - Affecting filters are bound through `filterFields`, `requiredFilters`, API params, or resolver params; `ignoredFilters` is used only for intentionally invariant widgets and each ignored filter has `ignoredFilterReasons`.
 - Non-default primary filter states visibly change affected widget data in JSON/API/resolver mode, or the widget is clearly labeled static/invariant.
 - Configured interactions name source coordinate, event name, action placement, target type, query/params, handler mode, state response, and QA case.
@@ -157,12 +197,16 @@ Use this file for common adjustments and final verification after changing a tem
 - Block spans match the size and component-count constraints from `report-visual-layout-design`.
 - Layout tokens match the selected template family or deviations are documented: content range, `contentGap`, `rowHeight`, `cellPadding`, card padding/radius, and component-owned title/control handoff.
 - Outer block validation does not replace component-internal fit checks. Composite widgets must be reviewed with `report-component-style-design` for summary columns, nested KPI grids, text wrapping, min-height, and no critical nowrap/ellipsis clipping.
+- Do not accept a KPI row where the cards are horizontally aligned but the large value is top-clipped, bottom-clipped, vertically offset, hidden by `overflow: hidden`, or squeezed by a hidden internal title row. This is a component-internal failure, not a page-grid success.
+- Do not accept `VIS-MULTI-SLOT-TITLE-MISSING`, summary-area clipping, or component-slot text/value clipping. These are blocker-level failures because they break the template's automatic fitting contract.
+- Visual geometry audit rules must distinguish real chart panes from wrapper/title/aux elements and distinguish Cartesian axis charts from non-axis charts. Do not use broad `[class*="chart"]` matching as evidence; require explicit chart pane/ECharts roots plus token-matched axis types before applying axis chart floor thresholds.
 - Composite widget no-data masks are scoped by child data states: if all child sub-blocks are no-data, show one parent-block mask; if only some child sub-blocks are no-data, mask only those sub-blocks and include their title/control area plus component body.
 - `1920 * 1080` is used as the prototype viewport check, not a total report height cap.
 - Layout blocks do not clip titles, legends, charts, tables, empty states, or controls.
 - `npm run validate:dashboard` runs after the minimal required dependencies are installed.
 - Stack-contract failures from `npm run validate:dashboard` block handoff even if Vite build or screenshots appear fine.
 - `npm run ledger:init` ran after project copy, `npm run ledger:check` passes before handoff, and every changed source file has a sidecar code ledger under `__change_logs__`. The ledger was read before editing, and a post-change version entry records feature/function list, changed code ranges, affected widget/data/filter/API contracts, verification, and rollback notes. A `change_logs` folder is not required and is not the expected path.
+- For bundled reusable template handoff, process records are initialized, not historical: `DELIVERY_INDEX.md` and `__change_logs__/*.changes.md` contain only clean template-baseline entries, and generated patch/snapshot evidence is not shipped.
 - If npm dependency installation is blocked by domestic network access, retry with a temporary command-level mirror such as `npm install --registry=https://registry.npmmirror.com` or `npm install <package-name> --registry=https://registry.npmmirror.com`; if unavailable, replace the registry URL with `https://npm.aliyun.com/`, `https://mirrors.cloud.tencent.com/npm/`, `https://mirrors.ustc.edu.cn/npm/`, or `https://mirrors.tuna.tsinghua.edu.cn/npm/`. Do not persist registry changes unless explicitly requested.
 - `npm run build` runs before handoff when implementation code changed.
 - A local dev/preview URL is started and verified when a runnable project is part of the task.

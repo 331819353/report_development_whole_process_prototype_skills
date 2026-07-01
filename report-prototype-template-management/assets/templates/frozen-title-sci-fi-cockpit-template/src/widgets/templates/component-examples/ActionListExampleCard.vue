@@ -203,6 +203,7 @@ const resolvedTones = computed<Required<ActionListExampleToneConfig>>(() => ({
 
 const title = computed(() => props.title?.trim() || '事项清单');
 const unit = computed(() => props.unit?.trim() || '单位：项');
+const hasVisibleTitle = computed(() => resolvedTitle.value.visible || resolvedTitle.value.unitVisible);
 const visibleItems = computed(() => (props.items?.length ? props.items : defaultItems).slice(0, resolvedLayout.value.maxVisibleRows));
 
 const getStatusTone = (item: ActionListExampleItem): ActionTone => {
@@ -271,7 +272,8 @@ const valueStyle = computed(() => {
   const titleConfig = resolvedTitle.value;
   const tones = resolvedTones.value;
   const rowCount = Math.max(rows.value.length, 1);
-  const listHeight = Math.max(height - layout.paddingPx * 2 - layout.titleHeightPx - layout.gapPx, 1);
+  const titleRowHeight = hasVisibleTitle.value ? layout.titleHeightPx : 0;
+  const listHeight = Math.max(height - layout.paddingPx * 2 - titleRowHeight - layout.gapPx, 1);
   const autoRowGap = Math.round(clampNumber(listHeight * 0.018, 2, layout.rowGapPx, layout.rowGapPx) * 10) / 10;
   const rowHeight = Math.max((listHeight - autoRowGap * (rowCount - 1)) / rowCount, 1);
   const longestLabel = Math.max(...rows.value.map((item) => getWeightedTextLength(item.label)), 1);
@@ -290,7 +292,7 @@ const valueStyle = computed(() => {
   const pillHeight = Math.round(clampNumber(rowHeight * 0.48, rowConfig.minPillHeightPx, rowConfig.maxPillHeightPx, rowConfig.maxPillHeightPx) * 10) / 10;
 
   return {
-    '--action-list-title-row': `${layout.titleHeightPx}px`,
+    '--action-list-title-row': `${titleRowHeight}px`,
     '--action-list-card-padding': `${layout.paddingPx}px`,
     '--action-list-card-gap': `${layout.gapPx}px`,
     '--action-list-row-count': String(rowCount),
@@ -354,8 +356,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="rootRef" class="action-list-example-card" :style="valueStyle" aria-label="事项清单卡片示例">
-    <header v-if="resolvedTitle.visible || resolvedTitle.unitVisible" class="action-list-example-header">
+  <section ref="rootRef" class="action-list-example-card" :class="{ 'has-title': hasVisibleTitle }" :style="valueStyle" aria-label="action-list-example-card">
+    <header v-if="hasVisibleTitle" class="action-list-example-header">
       <span v-if="resolvedTitle.visible" class="action-list-example-title" :title="title">{{ title }}</span>
       <span v-if="resolvedTitle.unitVisible" class="action-list-example-unit" :title="unit">{{ unit }}</span>
     </header>
@@ -392,6 +394,14 @@ onBeforeUnmount(() => {
   color: var(--text-strong, #101828);
   container-type: size;
   font-variant-numeric: tabular-nums;
+}
+
+.action-list-example-card:not(.has-title) {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.action-list-example-card:not(.has-title) .action-list-example-body {
+  grid-row: 1;
 }
 
 .action-list-example-header {

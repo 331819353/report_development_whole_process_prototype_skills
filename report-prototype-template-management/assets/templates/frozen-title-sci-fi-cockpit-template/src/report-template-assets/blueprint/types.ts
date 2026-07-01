@@ -1,7 +1,6 @@
 import type { DashboardConfig, DashboardFilterGroup } from '../../types/dashboard';
 import type {
   RegisteredWidgetConfig,
-  WidgetAuxMetric,
   WidgetTitlePillOption,
   WidgetVisualType,
 } from '../../widgets/types';
@@ -19,13 +18,11 @@ import type {
 export type ReportTemplateSlotId =
   | 'titleArea'
   | 'pillArea'
-  | 'auxMetricArea'
-  | 'unitArea'
   | 'componentArea'
   | 'summaryArea';
 
 export type ReportTemplateSlotRole = 'block-chrome' | 'component-content' | 'supporting-content';
-export type ReportTemplateSlotRegionCode = '1-1' | '1-2' | '2-1' | '2-2' | '3' | '4';
+export type ReportTemplateSlotRegionCode = '1-1' | '1-2' | '3' | '4';
 export type ReportTemplateSlotAlignment = 'left' | 'right' | 'fill';
 
 export interface ReportTemplateSlotContract {
@@ -46,8 +43,6 @@ export interface ReportTemplateSlotFill {
   slotId: ReportTemplateSlotId;
   text?: string;
   pills?: WidgetTitlePillOption[];
-  metrics?: WidgetAuxMetric[];
-  unit?: WidgetAuxMetric | string;
   props?: Record<string, unknown>;
   hidden?: boolean;
 }

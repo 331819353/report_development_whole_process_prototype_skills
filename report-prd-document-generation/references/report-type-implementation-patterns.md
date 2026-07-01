@@ -52,6 +52,21 @@ If the user's idea is not the best option, the PRD must give an optimized recomm
 
 Use the closest pattern as the default. For mixed reports, choose one primary pattern and add secondary pattern modules only where they serve the primary decision path.
 
+### Historical Type Compatibility
+
+The retired standalone report-type entry used narrower business-type labels. Do not route to a separate type-selection skill. Translate legacy labels or user wording into the active `RTP-*` paths inside this PRD reference:
+
+| Legacy label or user wording | Active PRD path | Notes |
+| --- | --- | --- |
+| `status-overview`, operating overview, health/status board | `RTP-KPI-DASHBOARD` or `RTP-COCKPIT` | Choose cockpit only when large-screen command context is central. |
+| `analysis-diagnostic`, cause analysis, variance analysis | `RTP-ANALYSIS-REPORT` | Keep conclusion -> evidence -> cause -> action order. |
+| `detail-query`, ledger, row lookup, source records | `RTP-DETAIL-QUERY` | Keep row identity, source trace, export, and row action explicit. |
+| `performance-evaluation`, scoring, ranking, target achievement | `RTP-KPI-DASHBOARD` or `RTP-ANALYSIS-REPORT` | Use dashboard when status/rank is primary; use analysis report when fairness, cause, or improvement diagnosis is primary. |
+| `review-recap`, weekly/monthly review, meeting export | `RTP-REVIEW-EXPORT` | Preserve review/export reuse and evidence package expectations. |
+| `anomaly-monitoring`, warning, alert, risk board | `RTP-RISK-MONITOR` | Preserve severity, impacted object, owner, SLA, and closure path. |
+| `operational-execution`, task board, action closure | `RTP-CLOSURE-BOARD` | Preserve owner, deadline, blocker, progress, and closure evidence. |
+| `reconciliation-traceability`, audit, source comparison | `RTP-DETAIL-QUERY` | Treat as detail/audit-first unless management judgment is explicitly primary. Always emphasize trust/source/export/audit. |
+
 ### Pattern To Executive Satisfaction Focus
 
 Use this table together with `executive-satisfaction-design-gate.md` when filling management-facing gate rows in `CHILD-PRD-PROTOTYPE` or execution files. The executive satisfaction gate must match the report type instead of forcing every report into the same dashboard pattern.

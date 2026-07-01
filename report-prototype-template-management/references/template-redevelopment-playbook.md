@@ -6,7 +6,7 @@ Use this file when building a new business report from a configured template or 
 
 Before source edits, create or validate `templateAssetUnderstandingMap` from `template-asset-construction-contract.md`, then create or validate the Template Build Packet from `template-build-packet-contract.md`. Weak/literal models implement from packet rows only: framework/shell, template asset evidence, pages, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, blocks, standard areas, component slots, data/API, filters/actions, interactions, conclusion rules, self-development exceptions, target files, and validation commands.
 
-Nine-step handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap -> pageLayoutConfig -> filterSurfaceMap -> toolbarActionMap -> interactionBehaviorMap -> blockAreaConfigMap -> titleAreaConfig -> pillAreaConfig -> auxMetricAreaConfig -> unitAreaConfig -> componentExampleConfigMap -> summaryAreaConfig`. `pageLayoutConfig` includes `layoutSectionMap` with readable exact `12*K` parts such as `12*2 + 12*3 + 12*3`, an exact-12-column, over-12 rejection, and minimum-8-row `layoutRows` audit plus `layoutCoordinateMap`. `blockAreaConfigMap` names `blockCoordinate` (`R-B`), `slotCount`, `componentSlotPattern` such as `A`, `AB`, `AAB`, or `AABBCC`, `slotCoordinateList`, the block area config created by `createBlockAreaConfig`, and asset availability for every block. `componentExampleConfigMap` names `slotCoordinate` (`R-B-S`), component slot size, and visual-type size compatibility evidence for every `3 componentArea` slot; for example `2-2-1` means first component slot inside the second block of layout section/page region 2. If a slot uses custom ECharts work, add a `selfDevelopmentExceptionMap` entry with `type: componentExample` and create/register the standalone Vue component example before filling the slot.
+Template handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap -> pageLayoutConfig -> filterSurfaceMap -> toolbarActionMap -> interactionBehaviorMap -> blockAreaConfigMap -> titleAreaConfig -> pillAreaConfig -> componentExampleConfigMap -> summaryAreaConfig`. `pageLayoutConfig` includes `layoutSectionMap` with readable exact `12*K` parts such as `12*2 + 12*3 + 12*3`, an exact-12-column, over-12 rejection, and minimum-8-row `layoutRows` audit plus `layoutCoordinateMap`. `blockAreaConfigMap` names `blockCoordinate` (`R-B`), `slotCount`, `componentSlotPattern` such as `A`, `AB`, `AAB`, or `AABBCC`, `slotCoordinateList`, the block area config created by `createBlockAreaConfig`, and asset availability for every block. `componentExampleConfigMap` names `slotCoordinate` (`R-B-S`), component slot size, visual-type size compatibility evidence, and component-owned title/unit/auxMetrics config for every `3 componentArea` slot when declared by the selected example; for example `2-2-1` means first component slot inside the second block of layout section/page region 2. If a slot uses custom ECharts work, add a `selfDevelopmentExceptionMap` entry with `type: componentExample` and create/register the standalone Vue component example before filling the slot.
 
 1. Select 框架模板:
    - Choose the shell first: topbar scroll dashboard, left-nav analytics workbench, frozen-title cockpit, an existing project shell, or an explicit custom exception.
@@ -47,25 +47,16 @@ Nine-step handoff output: `frameworkTemplateId -> templateAssetUnderstandingMap 
    - Use `$context.activeTitlePillId`, `$context.activeTitlePillLabel`, and `$context.activeTitlePill` for data params, component props, and action payloads.
    - If not needed, record `pillAreaConfig: null` plus `notNeededReason`.
    - Update Template Build Packet section 6.
-6. Decide and configure `2-1 auxMetricArea`:
-   - Configure additional information and distribute items evenly when needed.
-   - If not needed, record `auxMetricAreaConfig: null`.
-   - Keep additional information on the parent block/widget config.
-   - Update Template Build Packet section 6.
-7. Decide and configure `2-2 unitArea`:
-   - Configure the unit when needed.
-   - If not needed, record `unitAreaConfig: null`.
-   - Update Template Build Packet section 6.
-8. Based on 分块配置槽位配置, choose 组件示例:
+6. Based on 分块配置槽位配置, choose 组件示例:
    - `componentSlots` under `3 componentArea` carries only the selected component's internal content area.
    - Inspect `references/component-examples/config.ts`, then inspect `src/widgets/templates/component-examples/`, its README/catalog, and `src/report-template-assets/blueprint/widget-config-schemas.ts` before selecting.
    - Mount or copy the selected standalone component example Vue file, or point to a registered `componentExampleId` that maps to that file. Record `slotCoordinate`, slot pattern code, component slot size, visual-type size compatibility evidence, copy source/target, sample/source evidence, props/data/state contract, and data binding.
    - If no existing registered component example fits the slot and business intent, self-develop a new standalone Vue component example with ECharts for chart needs and register it before the slot is considered filled.
-   - Do not attach filters, controls, additional information, unit slot, title pills, description/help text, or summary copy to a component slot. The component example may have only the optional removable title strip plus body content.
+   - Do not attach filters, controls, parent-block title pills, description/help text, or summary copy to a component slot. The component example may have the optional removable title strip plus body content, including component-owned internal unit and auxiliary metrics such as `unit` and `auxMetrics` when its registered contract supports them.
    - Do not fill a slot with text/prose/placeholder copy, `visualType` alone, or an inline widget object.
    - Output `componentExampleConfigMap` with `slotCoordinate`, slot pattern code, component slot size, visual-type size compatibility evidence, registered ID, Vue file, copy source/target, sample evidence, props/data/state; output `selfDevelopmentExceptionMap` component example entries for newly created fallback templates.
    - Update Template Build Packet sections 7 and 10.
-9. Configure `4 summaryArea`:
+7. Configure `4 summaryArea`:
    - If the block has no conclusion card/component, add a text-only/narrative conclusion, note, caveat, or explanation when needed.
    - If the block has a conclusion card/component, record `summaryAreaConfig: null` or use it only for non-conclusion content such as scope, source, caveat, definition, or action note.
    - Do not put conclusion-card content or duplicate conclusion text in `summaryArea` when a MultiSlot first component slot carries that card.

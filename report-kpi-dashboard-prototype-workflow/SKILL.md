@@ -13,7 +13,7 @@ Use this workflow when the executable PRD says the report must answer "what is h
 
 Require the PRD bundle produced by `report-prd-document-generation`, especially `prd/children/prd-child-prototype.md` and the execution files. `CHILD-PRD-PROTOTYPE` must name this workflow or an accepted mixed-report path with KPI dashboard/cockpit as the primary execution flow.
 
-The PRD must already contain thinking output for page content, status hierarchy, first-viewport priority, metric/action path, visible/non-visible content decisions, and page preview.
+The PRD must already contain thinking output and executable component mapping for page content, status hierarchy, first-viewport priority, metric/action path, visible/non-visible content decisions, page preview, `componentSlotConfigMap`, `componentExampleConfigMap`, data/API rows, interaction rows, and `conclusionRuleMap`.
 
 ## Template Reference Gate
 

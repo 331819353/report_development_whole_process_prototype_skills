@@ -119,13 +119,13 @@ Rules:
 
 ### 6. Standard Block Areas
 
-| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `componentExampleConfigMap` coverage | `summaryAreaConfig` | Status |
+| --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - `titleAreaConfig` is required.
-- Optional areas must be configured or set to `null` with `notNeededReason`.
+- Optional block areas must be configured or set to `null` with `notNeededReason`. Component-owned unit and auxiliary information are recorded in section 7 component example rows, not as block areas.
 - If `pillAreaConfig` is configured, every pill must state whether it is visual-only or affects `filters`, `params`, `props`, `dataBinding`, or `actions`. Metric/period/mode/scenario switches are not visual-only.
 - For data-affecting pills, record affected block/slot coordinates, affected data/API params, expected refresh scope, and the runtime context path such as `$context.activeTitlePill.params.metric`.
 - Business conclusions in `summaryAreaConfig` must reference `conclusionRuleId`.
@@ -152,6 +152,13 @@ Rules:
 
 | Data/API ID | Type | Grain | Required fields | Metrics/conclusion inputs | Source file/API | Used by slot coordinates | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- For lightweight prototype API mode, list `scripts/mock-api-server.mjs`, `scripts/dev-with-mock-api.mjs`, npm commands (`mock:api`, `dev:mock`), endpoint path, `responsePath`, and the backing `dashboard.dataset.json` collection.
+- Filter option APIs should declare response path `data.items`; component row APIs should declare response path `data.rows`; component-example props should default to `/api/component-props/:componentKey` with `dataBinding.propsObjectField: 'props'`.
+- In mock API mode, mark static `filters[].options`, static widget rows, chart series, KPI values, or component demo props as invalid runtime fallback data.
+- A row is not ready until the matching `filters[].source` or component `data` config references this API and the used slot coordinates are listed.
 
 #### Filters And Actions
 
@@ -217,7 +224,7 @@ The packet is not ready when:
 - Any slot lacks `componentExampleId`.
 - Any `componentExampleId` is missing from schema/export/registry.
 - A fixed block wrapper is used as the report block implementation.
-- A component slot carries title/pill/filter/aux/unit/summary content.
+- A component slot carries parent-block title, pill, filter, control, summary, description, or help content instead of a registered component example contract.
 - A data-bound component slot lacks `data`, `dataBinding`, filter binding path, or a documented static-data reason.
 - A scoped filter lacks a row in the Filter Binding Matrix.
 - An interaction lacks source slot/block coordinate, event name, action placement, target type, handler mode, state response, or QA case.

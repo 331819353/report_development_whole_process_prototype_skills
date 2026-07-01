@@ -21,7 +21,8 @@
 5. 为每个组件区槽位选择已注册组件示例，写入 `componentSlotConfigMap` 和 `componentExampleConfigMap`。
 6. 只有现有组件示例无法满足时，使用自开发 ECharts 组件模板或注册新的组件示例。
 7. 绑定数据、筛选、交互和结论规则：筛选写在 `filters[]`，槽位数据写在 `componentSlots[].data` 或 owning widget 的 `data`，作用域用 `filterScope` 匹配 `filters[].scope`，数据行转 props 用 `dataBinding`，下钻/跳转/弹窗/交叉筛选用 `actions`。
-8. 运行 `npm run validate:dashboard` 和 `npm run build:test`。
+8. 需要后端形态但真实 API 未就绪时，使用模板内置 `npm run dev:mock`：筛选项通过 `filters[].source -> /api/filter-options/*`，组件示例槽位默认通过 `componentSlots[].data -> /api/component-props/:componentKey`，响应路径分别是 `data.items` 和 `data.rows`，组件 props 通过 `dataBinding.propsObjectField: 'props'` 从 `rows[0].props` 注入。mock API 模式不要保留静态筛选选项或组件展示数据作为保底。
+9. 运行 `npm run validate:dashboard` 和 `npm run build:test`。
 
 ## 新用户不要做什么
 

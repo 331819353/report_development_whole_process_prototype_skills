@@ -27,10 +27,11 @@ The prototype child PRD must include:
 - `frameworkTemplateId`.
 - `pageLayoutConfig` with `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, and block coordinates.
 - `blockAreaConfigMap` for title, pill, auxiliary metrics, unit, component area, and summary/description decisions.
+- Answer atom map and result-content boundary: visible business result, interaction-only contract, supplemental handoff, removed process artifacts, and source `RTP-*` / `PATH-*` rows.
 - `componentSlotConfigMap` with slot count, slot pattern, slot coordinates, slot role, size, and ownership.
 - `componentExampleConfigMap` with registered `componentExampleId`, standalone Vue file/component, visual type, props/config, data binding, state, and visual-size compatibility evidence.
 - `customEChartExampleMap` when no registered example fits.
-- Metric mounting, data/API, interaction behavior, permission, export, conclusion rules, and release validation expectations.
+- Metric mounting, data/API, filter/action map, interaction behavior, permission, export, conclusion rules, validation map, and release validation expectations.
 
 ## Conditional Child PRDs
 
@@ -74,7 +75,7 @@ Every generated child PRD must start with:
 ## Quality Gates
 
 - Do not mark a report-development PRD ready when `prd/children/prd-child-prototype.md` is missing.
-- Do not mark `CHILD-PRD-PROTOTYPE` ready when it lacks target workflow, thinking output, page content map, layout config, block area config, slot config, component example map, metric mounting, data/API, interactions, conclusion rules, or release validation.
+- Do not mark `CHILD-PRD-PROTOTYPE` ready when it lacks target workflow, thinking output, page content map, answer atom map, result-content boundary, layout config, block area config, slot config, component example map, metric mounting, data/API, filter/action map, interactions, conclusion rules, validation map, or release validation.
 - Do not force downstream child PRDs into every report-development PRD. Generate conditional children only when they are in the current scope.
 - Do not use a child PRD registry as a substitute for the required `CHILD-PRD-PROTOTYPE` body.
 - Do not let child PRDs drift silently. If the parent PRD changes, update affected child PRDs and execution files in the same delivery or mark them `stale` with a concrete `GAP-*`.

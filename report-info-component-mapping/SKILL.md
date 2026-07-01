@@ -1,6 +1,6 @@
 ---
 name: report-info-component-mapping
-description: "[原型阶段] 本阶段版本仅服务报表/页面原型设计、可运行原型、模板和原型验收；不承接技术方案、后端实现、前端正式接入或测试执行。用于把报表业务问题映射为分析视角、组件、数据集、筛选、交互和绑定矩阵。用户提到指标怎么放、业务问题怎么变组件、图表选择、分析视角、看现状/看目标/看趋势/看对比/看排名/看占比/看拆解/看分布/看异常/看风险/看预警/看离群点/看关系/看流转/看流程/看转化/看空间/看时间规律/看多维特征/看人群对象/看矩阵判断/看行情/看说明/看结论/看原因/看行动/看复盘/看质量/看明细/看筛选探索、组件规划、页面信息架构、组件设计规范前置、行情卡/报价卡/K线卡/涨跌卡/波动率卡/自选列表卡选择、KPI总览卡/多指标总览卡/横向总览卡选择、单指标KPI卡/单指标卡片布局选择、状态卡/健康度卡/评分卡/仪表盘卡/指标判断卡选择、目标执行卡/目标达成卡/差距卡/进度卡/里程碑卡选择、时间序列KPI卡/趋势卡/变化卡/同环比卡/周期卡/波动卡/预测卡选择、对比分析KPI卡/对比卡/分组对比卡/竞品对比卡/标杆卡/差异卡/偏差卡选择、排名卡/榜单卡/Top N卡/排行榜/帕累托卡选择、占比卡/构成卡/结构卡/份额卡/市场份额卡/集中度卡选择、指标拆解卡/归因拆解卡/贡献卡/层级拆解卡/驱动因素拆解/路径贡献/瀑布拆解选择、分布卡/区间卡/密度卡/箱线卡/分位数卡/直方分布/KDE密度/分布热力图选择、转化卡/漏斗卡/流失卡/留存卡/阶段转化卡选择、多维特征分析卡/画像卡/用户画像卡/客户画像卡/雷达卡/能力画像卡/标签卡/标签云/标签详情卡选择、异常分析卡/异常卡/风险卡/预警卡/离群点卡/波动异常卡/阈值预警卡/风险矩阵卡/异常影响评估卡选择、横向指标卡/横版KPI/宽指标卡选择、横向折线KPI/坐标折线诊断卡选择、横向柱状KPI/坐标柱状诊断卡选择、横向散点KPI/关系诊断卡选择、横向地图KPI/空间诊断卡选择、双栏VS对比诊断卡选择、卡片/表格/图形组合、Micro Dashboard Card/微型看板卡、状态反馈/空态/loading/error/no-permission/building、数据集设计、mock字段、筛选查询、联动状态、钻取路径、组件绑定矩阵、实现配置、页面信息架构落地时触发；不负责页面模板配置或组件视觉细节。"
+description: "Support rule library for PRD-owned report component mapping. Use when maintaining or consulting the detailed mapping references that help report-prd-document-generation turn report questions, RTP/PATH reading paths, executive gates, answer atoms, component bundles, data/filter/interaction contracts, conclusion rules, and binding matrices into executable PRD rows. Do not use as a standalone downstream workflow for normal report implementation; the PRD owns final componentSlotConfigMap, componentExampleConfigMap, data/API, interaction, and conclusion-rule outputs."
 ---
 
 # Report Info Component Mapping
@@ -13,13 +13,13 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 ## Core Positioning
 
-Use this skill as the bridge from business meaning to implementable report components:
+Use this skill as a support rule library for `report-prd-document-generation`, not as a standalone downstream workflow. The PRD owns the final component mapping contract; this skill preserves the detailed rules used to derive it:
 
 `business question -> report-type path -> executive satisfaction gates -> analysis perspective -> answer atoms -> component bundle -> conclusionRuleMap -> data model -> control semantics -> filter/query model -> interaction state -> binding matrix`
 
 When a component bundle uses screenshot-derived or reusable visual pattern knowledge, the mapping must also carry the style generalization decision: selected controlled pattern field, composed-pattern decision, extension gap, adaptive variables, and text-only reproduction status. This prevents later generation from depending on raw images or unstable visual memory.
 
-It does not choose the whole report type and does not style the component. It decides which components are needed, what data each one consumes, how filters and interactions affect them, and what validation proves the mapping.
+It does not choose the whole report path, style the component, or own workflow handoff. It informs PRD-owned decisions about which components are needed, what data each one consumes, how filters and interactions affect them, and what validation proves the mapping.
 
 ## Reference Map
 
@@ -98,8 +98,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 14. For KPI dashboards or primary metric networks, define `metricDrilldownContract` before ordinary interaction details: root metric, result/diagnosis/process/action layers, triggers, payload fields, context inheritance, state rules, and validation cases.
 15. Define interactions: tooltip/value reveal, cross-filter, drilldown, drawer, modal, jump, export, refresh, fullscreen, batch action, owner/action flow, and stale-state behavior.
 16. Produce the binding matrix linking business question, conclusion-chain role, `conclusionRuleId`, section 4B gate IDs, analysis perspective, answer atom, parent block, component, dataset, fields, formulas, controls, filters, interactions, `metricDrilldownContract`, update triggers, validation cases, and `componentExampleIntent`.
-16A. For template-based implementation, emit Template Build Packet fragments for sections 7, 8, 9, and 10: component slot fills, data/API rows, filter/action rows, interaction rows, dynamic conclusion rows, and allowed self-development exceptions. Do not leave these as prose-only mapping notes.
-17. Route to report-type, layout, component-style, template, API/model, frontend, and test skills as needed.
+16A. For template-based implementation, emit PRD-owned Template Build Packet fragments for sections 7, 8, 9, and 10: component slot fills, data/API rows, filter/action rows, interaction rows, dynamic conclusion rows, and allowed self-development exceptions. Do not leave these as prose-only mapping notes.
+17. Return mapping rows to `report-prd-document-generation` or the PRD bundle being repaired. Do not route directly to the four specialized workflows; they consume the PRD contract after it is complete.
 
 ## Required Output
 
@@ -123,7 +123,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Style generalization fields in the binding matrix when reusable sample-derived patterns are used.
 - Controlled `definitionHelpCardPattern`, `definitionHelpEvidenceBinding`, `actionRecommendationCardPattern`, `actionEvidenceBodyMode`, `actionRecommendationEvidenceBinding`, `reviewImpactCardPattern`, `reviewImpactEvidenceMode`, `reviewImpactEvidenceBinding`, `dataQualityTrustCardPattern`, `dataQualityEvidenceBinding`, `detailEvidenceCardPattern`, `detailEvidenceBinding`, `anomalyAnalysisCardPattern`, `anomalyAnalysisEvidenceBinding`, `microDashboardCardPattern`, `microDashboardContract`, `stateFeedbackPattern`, and `stateFeedbackContract` fields when those component classes are selected.
 - Metric口径, calculation notes, and 指标清单 from requirements are supplemental by default. Keep them in metric contracts, tooltip/detail/dictionary payloads, export metadata, validation cases, and handoff artifacts unless the user explicitly asks to show 指标说明/口径说明/指标清单 on the page or the item is rewritten into business-value definition, evidence, trust/source, or action content.
-- Routing notes for report type, layout, component style, API/model, frontend, and testing.
+- PRD repair notes for report path, layout, component style, API/model, frontend, and testing handoff rows.
 
 ## Quality Gate
 

@@ -18,7 +18,7 @@ Inspect the selected framework template asset before writing final layout or imp
 | Component example exports | `src/widgets/templates/component-examples/index.ts` | Vue component exports available for mounting. |
 | Widget registry | `src/widgets/registry.ts` | Registered component type to Vue component mapping. |
 | Validator | `src/report-template-assets/blueprint/compatibility.ts`, `scripts/validate-dashboard-contract.mjs` | Contract validation, slot checks, layout checks, component example checks. |
-| Data/action extension points | `src/data/dashboard.dataset.json`, `src/dataSources/registry.ts`, `src/actions/registry.ts` | Dataset/API/filter/action hooks. |
+| Data/action extension points | `src/data/dashboard.dataset.json`, `src/dataSources/registry.ts`, `scripts/mock-api-server.mjs`, `scripts/dev-with-mock-api.mjs`, `docs/mock-api-contract.md`, `src/actions/registry.ts` | Dataset/API/filter/action hooks, npm mock API, and interaction hooks. |
 
 Bundled framework templates:
 
@@ -72,8 +72,7 @@ Required block row fields:
 | `slotCoordinateList` | `R-B-S` values for all slots. |
 | `titleAreaConfig` | Required. |
 | `pillAreaConfig` | Config or `null` with reason. If pills change metric, period, mode, scenario, data perspective, props, or interaction state, include their `titlePills[].filters/params/props/dataBinding/actions` impact and affected block/slot coordinates. |
-| `auxMetricAreaConfig` | Config or `null`. |
-| `unitAreaConfig` | Config or `null`. |
+| `componentExampleConfigMap` | Required for every component slot. Include component-owned title, unit, auxiliary metric, chart/table/list, props/config/data binding, and auto-fit evidence when the selected example declares those areas. |
 | `summaryAreaConfig` | Config or `null`. |
 
 ## Component Example Selection

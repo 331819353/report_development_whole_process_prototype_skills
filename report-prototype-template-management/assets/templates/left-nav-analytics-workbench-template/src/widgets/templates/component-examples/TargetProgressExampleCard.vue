@@ -234,6 +234,7 @@ const resolvedTones = computed<Required<TargetProgressExampleToneConfig>>(() => 
 
 const title = computed(() => props.title?.trim() || '目标进度卡片');
 const unit = computed(() => props.unit?.trim() || '单位：万元');
+const hasVisibleTitle = computed(() => resolvedTitle.value.visible || resolvedTitle.value.unitVisible);
 const valueText = computed(() => normalizeNumberText(props.value ?? 86));
 const valueSuffix = computed(() => props.valueSuffix?.trim() ?? '%');
 const valueFitScale = computed(() => {
@@ -287,9 +288,10 @@ const valueStyle = computed(() => {
   const detailConfig = resolvedDetail.value;
   const progressConfig = resolvedProgress.value;
   const tones = resolvedTones.value;
+  const titleRowHeight = titleConfig.visible || titleConfig.unitVisible ? titleAreaHeightPx : 0;
 
   return {
-    '--target-progress-card-title-row': `${titleAreaHeightPx}px`,
+    '--target-progress-card-title-row': `${titleRowHeight}px`,
     '--target-progress-card-body-row': `${layout.bodyRatio}fr`,
     '--target-progress-card-top-row': `${layout.topRatio}fr`,
     '--target-progress-card-progress-row': `${layout.progressRatio}fr`,
@@ -325,8 +327,8 @@ const valueStyle = computed(() => {
 </script>
 
 <template>
-  <section class="target-progress-example-card" :style="valueStyle" aria-label="目标进度卡片示例">
-    <header v-if="resolvedTitle.visible || resolvedTitle.unitVisible" class="target-progress-example-header">
+  <section class="target-progress-example-card" :class="{ 'has-title': hasVisibleTitle }" :style="valueStyle" aria-label="target-progress-example-card">
+    <header v-if="hasVisibleTitle" class="target-progress-example-header">
       <span v-if="resolvedTitle.visible" class="target-progress-example-title" :title="title">{{ title }}</span>
       <span v-if="resolvedTitle.unitVisible" class="target-progress-example-unit" :title="unit">{{ unit }}</span>
     </header>
@@ -449,12 +451,20 @@ const valueStyle = computed(() => {
   white-space: nowrap;
 }
 
+.target-progress-example-card:not(.has-title) {
+  grid-template-rows: minmax(0, var(--target-progress-card-body-row, 5fr));
+}
+
+.target-progress-example-card:not(.has-title) .target-progress-example-body {
+  grid-row: 1;
+}
+
 .target-progress-example-body {
   display: grid;
   grid-template-rows:
     minmax(0, var(--target-progress-card-top-row, 3fr))
     minmax(0, var(--target-progress-card-progress-row, 1fr));
-  gap: clamp(2px, 1.8cqh, 6px);
+  gap: clamp(1px, 1cqh, 3px);
   min-width: 0;
   min-height: 0;
 }
@@ -464,8 +474,8 @@ const valueStyle = computed(() => {
   grid-template-columns:
     minmax(0, var(--target-progress-card-value-col, 1fr))
     minmax(0, var(--target-progress-card-detail-col, 1fr));
-  align-items: center;
-  gap: clamp(6px, 3.2cqw, 14px);
+  align-items: stretch;
+  gap: clamp(3px, 1.4cqw, 6px);
   min-width: 0;
   min-height: 0;
 }
@@ -512,8 +522,8 @@ const valueStyle = computed(() => {
 
 .target-progress-example-details {
   display: grid;
-  align-content: center;
-  gap: clamp(4px, 2.7cqh, 9px);
+  align-content: stretch;
+  gap: clamp(2px, 1cqh, 4px);
   min-width: 0;
   min-height: 0;
 }
@@ -522,17 +532,17 @@ const valueStyle = computed(() => {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
-  gap: clamp(4px, 1.8cqw, 7px);
+  gap: clamp(3px, 1cqw, 5px);
   min-width: 0;
   min-height: 0;
-  padding-bottom: clamp(2px, 1.3cqh, 5px);
+  padding-bottom: clamp(1px, 0.5cqh, 2px);
   border-bottom: 1px solid var(--target-progress-detail-divider, rgba(0, 87, 217, 0.16));
 }
 
 .target-progress-example-detail-icon {
   display: inline-grid;
-  width: var(--target-progress-detail-icon-size, 24px);
-  height: var(--target-progress-detail-icon-size, 24px);
+  width: min(var(--target-progress-detail-icon-size, 24px), 17px, 32cqh);
+  height: min(var(--target-progress-detail-icon-size, 24px), 17px, 32cqh);
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--target-progress-primary-color) 18%, transparent);
   border-radius: 999px;
@@ -540,10 +550,15 @@ const valueStyle = computed(() => {
   background: color-mix(in srgb, var(--target-progress-primary-color) 8%, #ffffff);
 }
 
+.target-progress-example-detail-icon :deep(svg) {
+  width: min(var(--target-progress-detail-icon-graphic-size, 13px), 11px, 22cqh);
+  height: min(var(--target-progress-detail-icon-graphic-size, 13px), 11px, 22cqh);
+}
+
 .target-progress-example-detail-label {
   overflow: hidden;
   color: #2f3b4e;
-  font-size: var(--target-progress-detail-label-size, 12px);
+  font-size: min(var(--target-progress-detail-label-size, 12px), 9px);
   font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -552,7 +567,7 @@ const valueStyle = computed(() => {
 .target-progress-example-detail strong {
   overflow: hidden;
   color: var(--target-progress-primary-color);
-  font-size: var(--target-progress-detail-value-size, 13px);
+  font-size: min(var(--target-progress-detail-value-size, 13px), 10px);
   font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -560,9 +575,9 @@ const valueStyle = computed(() => {
 
 .target-progress-example-progress {
   display: grid;
-  grid-template-rows: auto minmax(0, auto) auto;
-  align-content: center;
-  gap: clamp(1px, 1.1cqh, 3px);
+  grid-template-rows: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  align-content: stretch;
+  gap: 1px;
   min-width: 0;
   min-height: 0;
 }
@@ -578,21 +593,21 @@ const valueStyle = computed(() => {
 
 .target-progress-example-progress-head span {
   color: #4e5d6e;
-  font-size: clamp(9px, 4.4cqh, 12px);
+  font-size: clamp(8px, 3.6cqh, 10px);
   font-weight: 800;
 }
 
 .target-progress-example-progress-head b,
 .target-progress-example-progress-foot span {
   color: var(--target-progress-neutral-color, #667085);
-  font-size: clamp(8px, 4cqh, 11px);
+  font-size: clamp(7px, 3.3cqh, 9px);
   font-weight: 800;
 }
 
 .target-progress-example-progress-track {
   position: relative;
-  height: var(--target-progress-track-height, 15px);
-  padding: 2px;
+  height: min(var(--target-progress-track-height, 15px), 8px);
+  padding: 1px;
   overflow: hidden;
   border: 1px solid var(--target-progress-track-border-color, rgba(0, 87, 217, 0.34));
   border-radius: 5px;
@@ -610,7 +625,7 @@ const valueStyle = computed(() => {
 
 .target-progress-example-progress-foot {
   position: relative;
-  height: clamp(10px, 4.7cqh, 14px);
+  height: clamp(8px, 3.8cqh, 10px);
 }
 
 .target-progress-example-progress-foot strong {
@@ -618,7 +633,7 @@ const valueStyle = computed(() => {
   top: 0;
   transform: translateX(-50%);
   color: var(--target-progress-primary-color);
-  font-size: clamp(9px, 4.2cqh, 12px);
+  font-size: clamp(7px, 3.3cqh, 10px);
   font-weight: 900;
   white-space: nowrap;
 }

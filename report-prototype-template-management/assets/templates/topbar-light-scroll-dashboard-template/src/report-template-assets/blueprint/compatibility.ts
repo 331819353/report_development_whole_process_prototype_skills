@@ -53,9 +53,9 @@ export const reportCompatibilityRules: ReportCompatibilityRule[] = [
   },
 ];
 
-const knownSlotIds = new Set(['titleArea', 'pillArea', 'auxMetricArea', 'unitArea', 'componentArea', 'summaryArea']);
+const knownSlotIds = new Set(['titleArea', 'pillArea', 'componentArea', 'summaryArea']);
 const componentExampleSlotFillIds = new Set(['componentArea']);
-const standardSlotAreaList = '1-1 titleArea, 1-2 pillArea, 2-1 auxMetricArea, 2-2 unitArea, 3 componentArea, 4 summaryArea';
+const standardSlotAreaList = '1-1 titleArea, 1-2 pillArea, 3 componentArea, 4 summaryArea';
 const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'customEChartComponent']);
 const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
 const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
@@ -168,9 +168,6 @@ const validateSlotFills = (
       pushFinding(findings, 'warning', 'RPT-SLOT-PILL-DENSE', '1-2 pillArea has more than 6 visible pills; the title area may become crowded.', slotPath);
     }
 
-    if (slotFill.slotId === 'auxMetricArea' && (slotFill.metrics?.length ?? 0) > 5) {
-      pushFinding(findings, 'warning', 'RPT-SLOT-AUX-DENSE', '2-1 auxMetricArea has more than 5 metrics; the materializer will keep the first supported metrics plus the 2-2 unit.', slotPath);
-    }
   });
 };
 
@@ -489,7 +486,7 @@ const validateComponentSlots = (
           findings,
           'error',
           'RPT-COMPONENT-SLOT-FILL-SUPPORTING-AREA',
-          'Component slot fills may only target 3 componentArea. Move 1-1 title, 1-2 pill, 2-1 additional information, 2-2 unit, and 4 summary fills to the block layout template slotFills.',
+          'Component slot fills may only target 3 componentArea. Move parent title, pills, and summary to the block layout template; keep component-owned unit and auxMetrics inside component props/config.',
           slotFillPath,
         );
       }

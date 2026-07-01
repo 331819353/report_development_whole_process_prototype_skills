@@ -4,7 +4,12 @@ import type { WidgetContext } from '../../types';
 
 interface RankingListExampleItem {
   rank?: number;
-  label: string;
+  label?: string;
+  name?: string;
+  regionName?: string;
+  region?: string;
+  areaName?: string;
+  dimension?: string;
   value: string | number;
   suffix?: string;
 }
@@ -169,6 +174,17 @@ const formatValue = (value: number | string) => {
   }).format(numericValue);
 };
 
+const readTextField = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
+
+const getItemLabel = (item: RankingListExampleItem, index: number) =>
+  readTextField(item.label) ||
+  readTextField(item.name) ||
+  readTextField(item.regionName) ||
+  readTextField(item.region) ||
+  readTextField(item.areaName) ||
+  readTextField(item.dimension) ||
+  `#${index + 1}`;
+
 const resolvedTitle = computed<Required<RankingListExampleTitleConfig>>(() => ({
   ...defaultTitleConfig,
   ...(props.config?.title ?? {}),
@@ -209,6 +225,7 @@ const resolvedTones = computed<Required<RankingListExampleToneConfig>>(() => ({
 
 const title = computed(() => props.title?.trim() || '排名列表');
 const unit = computed(() => props.unit?.trim() || '单位：分');
+const hasVisibleTitle = computed(() => resolvedTitle.value.visible || resolvedTitle.value.unitVisible);
 const visibleItems = computed(() => (props.items?.length ? props.items : defaultItems).slice(0, resolvedLayout.value.maxVisibleRows));
 const maxNumericValue = computed(() => Math.max(...visibleItems.value.map((item) => parseNumber(item.value) ?? 0), 1));
 
@@ -218,9 +235,11 @@ const rows = computed(() =>
     const fillBaseValue = maxNumericValue.value <= 100 ? 100 : maxNumericValue.value;
     const sharePercent = numericValue === undefined ? 0 : Math.round(clampNumber((numericValue / fillBaseValue) * 100, 0, 100, 0));
     const rank = item.rank ?? index + 1;
+    const label = getItemLabel(item, index);
 
     return {
       ...item,
+      label,
       rank,
       rankClass: `rank-${rank}`,
       valueText: formatValue(item.value),
@@ -238,7 +257,8 @@ const valueStyle = computed(() => {
   const titleConfig = resolvedTitle.value;
   const tones = resolvedTones.value;
   const rowCount = Math.max(rows.value.length, 1);
-  const listHeight = Math.max(height - layout.paddingPx * 2 - layout.titleHeightPx - layout.gapPx, 1);
+  const titleRowHeight = hasVisibleTitle.value ? layout.titleHeightPx : 0;
+  const listHeight = Math.max(height - layout.paddingPx * 2 - titleRowHeight - layout.gapPx, 1);
   const autoRowGap = Math.round(clampNumber(listHeight * 0.018, 2, layout.rowGapPx, layout.rowGapPx) * 10) / 10;
   const rowHeight = Math.max((listHeight - autoRowGap * (rowCount - 1)) / rowCount, 1);
   const longestLabel = Math.max(...rows.value.map((item) => getWeightedTextLength(item.label)), 1);
@@ -255,7 +275,7 @@ const valueStyle = computed(() => {
   ) / 10;
 
   return {
-    '--ranking-list-title-row': `${layout.titleHeightPx}px`,
+    '--ranking-list-title-row': `${titleRowHeight}px`,
     '--ranking-list-card-padding': `${layout.paddingPx}px`,
     '--ranking-list-card-gap': `${layout.gapPx}px`,
     '--ranking-list-row-count': String(rowCount),
@@ -315,8 +335,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="rootRef" class="ranking-list-example-card" :style="valueStyle" aria-label="排名列表卡片示例">
-    <header v-if="resolvedTitle.visible || resolvedTitle.unitVisible" class="ranking-list-example-header">
+  <section ref="rootRef" class="ranking-list-example-card" :class="{ 'has-title': hasVisibleTitle }" :style="valueStyle" aria-label="ranking-list-example-card">
+    <header v-if="hasVisibleTitle" class="ranking-list-example-header">
       <span v-if="resolvedTitle.visible" class="ranking-list-example-title" :title="title">{{ title }}</span>
       <span v-if="resolvedTitle.unitVisible" class="ranking-list-example-unit" :title="unit">{{ unit }}</span>
     </header>
@@ -352,6 +372,14 @@ onBeforeUnmount(() => {
   color: var(--text-strong, #101828);
   container-type: size;
   font-variant-numeric: tabular-nums;
+}
+
+.ranking-list-example-card:not(.has-title) {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.ranking-list-example-card:not(.has-title) .ranking-list-example-body {
+  grid-row: 1;
 }
 
 .ranking-list-example-header {

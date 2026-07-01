@@ -1,5 +1,5 @@
 import type { DashboardConfig } from '../../types/dashboard';
-import type { RegisteredWidgetConfig, WidgetAuxMetric } from '../../widgets/types';
+import type { RegisteredWidgetConfig } from '../../widgets/types';
 import type { ReportTemplateNav, ReportTemplatePageConfig } from '../types';
 import { buildLayoutBlocks, normalizeLayoutRows } from '../utils/layout-grid';
 import type { ReportBlueprint, ReportBlueprintBlock, ReportTemplateSlotFill } from './types';
@@ -53,12 +53,6 @@ const getTemplateNavsFromConfig = (config: DashboardConfigWithRuntimePages): Rep
   ];
 };
 
-const splitAuxMetrics = (metrics?: WidgetAuxMetric[]) => {
-  const unitMetric = [...(metrics ?? [])].reverse().find((metric) => metric.label === '单位');
-  const nonUnitMetrics = (metrics ?? []).filter((metric) => metric.label !== '单位');
-
-  return { unitMetric, nonUnitMetrics };
-};
 
 const buildSlotFillsFromWidget = (widget?: RegisteredWidgetConfig): ReportTemplateSlotFill[] => {
   if (!widget) {
@@ -66,7 +60,6 @@ const buildSlotFillsFromWidget = (widget?: RegisteredWidgetConfig): ReportTempla
   }
 
   const slotFills: ReportTemplateSlotFill[] = [];
-  const { unitMetric, nonUnitMetrics } = splitAuxMetrics(widget.auxMetrics);
 
   if (widget.displayTitle || widget.title) {
     slotFills.push({ slotId: 'titleArea', text: widget.displayTitle ?? widget.title });
@@ -76,13 +69,6 @@ const buildSlotFillsFromWidget = (widget?: RegisteredWidgetConfig): ReportTempla
     slotFills.push({ slotId: 'pillArea', pills: widget.titlePills });
   }
 
-  if (nonUnitMetrics.length) {
-    slotFills.push({ slotId: 'auxMetricArea', metrics: nonUnitMetrics });
-  }
-
-  if (unitMetric) {
-    slotFills.push({ slotId: 'unitArea', unit: unitMetric });
-  }
 
   if (widget.bodySummary) {
     slotFills.push({ slotId: 'summaryArea', text: widget.bodySummary });

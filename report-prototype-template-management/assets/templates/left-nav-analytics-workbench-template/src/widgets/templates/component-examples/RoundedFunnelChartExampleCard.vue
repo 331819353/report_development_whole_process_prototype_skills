@@ -67,6 +67,7 @@ interface RoundedFunnelToneConfig {
 interface RoundedFunnelAuxConfig {
   visible?: boolean;
   maxItems?: number;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
   labelFontSizePx?: number;
   valueFontSizePx?: number;
   labelColor?: string;
@@ -157,6 +158,7 @@ const defaultToneConfig: Required<RoundedFunnelToneConfig> = {
 const defaultAuxConfig: Required<RoundedFunnelAuxConfig> = {
   visible: true,
   maxItems: 4,
+  orientation: 'auto',
   labelFontSizePx: 9,
   valueFontSizePx: 12,
   labelColor: '#6b7c93',
@@ -174,6 +176,14 @@ const clampNumber = (value: unknown, min: number, max: number, fallback: number)
 };
 
 const normalizeOrientation = (value: unknown): Required<RoundedFunnelLayoutConfig>['orientation'] => {
+  if (value === 'horizontal' || value === 'vertical') {
+    return value;
+  }
+
+  return 'auto';
+};
+
+const normalizeAuxOrientation = (value: unknown): Required<RoundedFunnelAuxConfig>['orientation'] => {
   if (value === 'horizontal' || value === 'vertical') {
     return value;
   }
@@ -210,6 +220,7 @@ const resolvedLayout = computed<Required<RoundedFunnelLayoutConfig>>(() => {
 const resolvedAux = computed<Required<RoundedFunnelAuxConfig>>(() => ({
   ...defaultAuxConfig,
   ...(props.config?.aux ?? {}),
+  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
   maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 8, defaultAuxConfig.maxItems)),
   labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
   valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
@@ -306,8 +317,19 @@ const contentOrientation = computed<'horizontal' | 'vertical'>(() => {
   return containerSize.value.width >= containerSize.value.height ? 'horizontal' : 'vertical';
 });
 
+const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+  const orientation = resolvedAux.value.orientation;
+
+  if (orientation === 'horizontal' || orientation === 'vertical') {
+    return orientation;
+  }
+
+  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+});
+
 const cardClasses = computed(() => ({
   [`is-${contentOrientation.value}`]: true,
+  [`aux-${auxOrientation.value}`]: true,
   'has-aux': visibleAuxMetrics.value.length > 0,
   'has-title': resolvedTitle.value.visible,
 }));
@@ -766,8 +788,8 @@ onBeforeUnmount(() => {
 
 .rounded-funnel-example-card.has-aux.is-horizontal .rounded-funnel-example-body,
 .rounded-funnel-example-card.has-aux.is-vertical .rounded-funnel-example-body {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--rounded-funnel-horizontal-split);
+  grid-template-columns: var(--rounded-funnel-horizontal-split);
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .rounded-funnel-example-card:not(.has-aux) .rounded-funnel-example-body {
@@ -779,19 +801,53 @@ onBeforeUnmount(() => {
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(var(--rounded-funnel-aux-count), minmax(0, 1fr));
-  align-items: center;
-  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(var(--rounded-funnel-aux-count), minmax(0, 1fr));
+  align-items: stretch;
+  row-gap: 2px;
   overflow: hidden;
+}
+
+.rounded-funnel-example-card.aux-horizontal .rounded-funnel-example-aux {
+  grid-template-columns: repeat(var(--rounded-funnel-aux-count), minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  align-items: center;
+  column-gap: 4px;
+}
+
+.rounded-funnel-example-card.aux-vertical .rounded-funnel-example-aux {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(var(--rounded-funnel-aux-count), minmax(0, 1fr));
+  align-items: stretch;
+  row-gap: 2px;
 }
 
 .rounded-funnel-example-aux-item {
   min-width: 0;
+  min-height: 0;
   display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-content: center;
-  justify-items: center;
-  gap: 1px;
+  align-items: center;
+  justify-content: stretch;
+  column-gap: 6px;
   overflow: hidden;
+}
+
+.rounded-funnel-example-card.aux-horizontal .rounded-funnel-example-aux-item {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  justify-items: center;
+  text-align: center;
+  row-gap: 1px;
+}
+
+.rounded-funnel-example-card.aux-vertical .rounded-funnel-example-aux-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+  column-gap: 6px;
+  text-align: left;
 }
 
 .rounded-funnel-example-aux-item em,

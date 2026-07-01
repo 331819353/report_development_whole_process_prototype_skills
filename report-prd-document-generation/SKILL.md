@@ -30,7 +30,9 @@ The specialized PRD must answer four implementation questions before any workflo
 - PRD comes before workflow. The four specialized workflows consume this PRD; they do not recreate it internally.
 - Use `report-prototype-design-thinking` during PRD generation to decide the page content, report story, decision path, and reading sequence. Thinking is part of PRD compilation, not a replacement for template configuration.
 - Choose exactly one downstream specialized workflow in the PRD: `report-analysis-report-prototype-workflow`, `report-kpi-dashboard-prototype-workflow`, `report-detail-report-prototype-workflow`, or `report-self-service-analysis-prototype-workflow`.
+- Own the full intake, gap, and report-path decision inside this PRD skill. Extract facts, assumptions, missing gaps, attachment evidence, target report path, and target workflow here instead of routing to separate requirement-extraction or report-type skills.
 - Do not route new work to a generic report-design workflow; the generic workflow is retired.
+- Do not route new work to retired historical requirement-intake or standalone report-type entry skills.
 - Keep the reader-facing `prd/prd-main.md` short. Put executable matrices in `prd/execution/` and stage-specific details in `prd/children/`.
 - `CHILD-PRD-PROTOTYPE` is required for this report-development flow. Other child PRDs are generated only when the current scope includes frontend integration, backend/API implementation, technical solution, or testing handoff.
 - Use the current configurable template chain:
@@ -58,6 +60,7 @@ Read these references before finalizing the PRD:
 - `references/child-prd-bundle-contract.md`
 - `references/prd-output-structure.md`
 - `references/report-type-implementation-patterns.md`
+- `references/component-mapping-prd-contract.md`
 - `references/executive-satisfaction-design-gate.md` for management-facing reports
 - `references/template-layout-prd-contract.md`
 - `references/metric-api-interaction-matrices.md`
@@ -69,9 +72,7 @@ Read these references before finalizing the PRD:
 
 Use these capabilities as needed:
 
-- `report-requirement-structure-extraction` when the ordinary PRD or evidence is unclear.
 - `report-prototype-design-thinking` to decide page content and reading path.
-- `report-info-component-mapping` for metric/component/data/filter/interaction binding.
 - `report-prototype-template-management` for exact configurable template contracts.
 - `metric-number-display-contract` for numeric display, precision, units, and null rules.
 
@@ -113,7 +114,7 @@ Use these capabilities as needed:
    Every displayed metric needs definition, formula, unit, source, refresh, null rule, mount location, data/API source, and interaction impact. Every visible conclusion or insight must bind to `conclusionRuleMap`; fixed normal-state business conclusions are invalid.
 
 10. Create the PRD-to-workflow matrix.
-    Map every PRD file and executable row to the selected specialized workflow, template-management capability, component mapping capability, validation artifact, and blocker rule.
+    Map every PRD file and executable row to the selected specialized workflow, PRD-owned component mapping contract, template-management capability, validation artifact, and blocker rule.
 
 ## Required Output
 

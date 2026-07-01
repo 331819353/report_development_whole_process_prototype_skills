@@ -1,5 +1,24 @@
 import { projectReportNav } from '../report-template-assets/business-report-pages';
 import type { DashboardConfig } from '../types/dashboard';
+import type { DashboardDataSourceRef } from '../types/data-source';
+
+const apiFilterSource = (filterId: string): DashboardDataSourceRef => ({
+  id: 'apiData',
+  api: {
+    url: `/api/filter-options/${filterId}`,
+    method: 'GET',
+    responsePath: 'data.items',
+    query: {
+      period: '$filters.period',
+      region: '$filters.region',
+      project: '$filters.project',
+      channel: '$filters.channel',
+    },
+  },
+  labelField: 'label',
+  valueField: 'id',
+  emptyFilterValues: ['', '__all', 'all'],
+});
 
 export const cockpitConfig: DashboardConfig = {
   assets: {
@@ -63,48 +82,25 @@ export const cockpitConfig: DashboardConfig = {
       id: 'period',
       label: '经营期间',
       defaultValue: '2026-06',
-      options: [
-        { id: '2026-06', label: '2026年6月' },
-        { id: '2026-05', label: '2026年5月' },
-        { id: '2026-q2', label: '2026年Q2' },
-        { id: '2026-h1', label: '2026年上半年' },
-      ],
+      source: apiFilterSource('period'),
     },
     {
       id: 'region',
       label: '组织区域',
       defaultValue: 'all',
-      options: [
-        { id: 'all', label: '全部区域' },
-        { id: 'east', label: '华东大区' },
-        { id: 'south', label: '华南大区' },
-        { id: 'north', label: '华北大区' },
-        { id: 'overseas', label: '海外市场' },
-      ],
+      source: apiFilterSource('region'),
     },
     {
       id: 'project',
       label: '经营项目',
       defaultValue: 'all',
-      options: [
-        { id: 'all', label: '全部项目' },
-        { id: 'smart-home', label: '智慧家庭套购增长' },
-        { id: 'store-refresh', label: '门店焕新转化' },
-        { id: 'engineering', label: '工程客户交付' },
-        { id: 'overseas-direct', label: '海外直营提效' },
-      ],
+      source: apiFilterSource('project'),
     },
     {
       id: 'channel',
       label: '经营渠道',
       defaultValue: 'all',
-      options: [
-        { id: 'all', label: '全部渠道' },
-        { id: 'online', label: '线上直营' },
-        { id: 'store', label: '门店零售' },
-        { id: 'project', label: '工程客户' },
-        { id: 'overseas', label: '海外直营' },
-      ],
+      source: apiFilterSource('channel'),
     },
   ],
 };

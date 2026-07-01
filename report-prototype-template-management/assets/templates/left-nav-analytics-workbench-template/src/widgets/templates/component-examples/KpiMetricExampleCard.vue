@@ -405,6 +405,7 @@ const resolvedTones = computed<Required<KpiMetricExampleToneConfig>>(() => ({
 
 const title = computed(() => props.title?.trim() || 'Kpi 指标');
 const unit = computed(() => props.unit?.trim() || '单位：万元');
+const hasVisibleTitle = computed(() => resolvedTitle.value.visible || resolvedTitle.value.unitVisible);
 const tone = computed(() => props.tone ?? 'primary');
 const valuePrefix = computed(() => props.valuePrefix?.trim() ?? '');
 const valueSuffix = computed(() => props.valueSuffix?.trim() ?? '');
@@ -615,9 +616,19 @@ const valueStyle = computed(() => {
   const titleConfig = resolvedTitle.value;
   const sparkConfig = resolvedSpark.value;
   const tones = resolvedTones.value;
+  const titleRowHeight = titleConfig.visible || titleConfig.unitVisible ? titleAreaHeightPx : 0;
   const totalRatio = Math.max(layout.valueRatio + layout.accessoryRatio, 1);
-  const gridHeight = Math.max(height - layout.paddingPx * 2 - layout.gapPx * 2 - titleAreaHeightPx, 1);
+  const gridHeight = Math.max(height - layout.paddingPx * 2 - layout.gapPx * 2 - titleRowHeight, 1);
   const valueHeight = gridHeight * (layout.valueRatio / totalRatio);
+  const accessoryHeight = gridHeight * (layout.accessoryRatio / totalRatio);
+  const accessoryMetricCount = Math.max(visibleAccessoryMetrics.value.length, 1);
+  const accessoryColumns = Math.max(accessoryConfig.columns, 1);
+  const accessoryRows = Math.max(Math.ceil(accessoryMetricCount / accessoryColumns), 1);
+  const accessoryRowHeight = Math.max(accessoryHeight / accessoryRows, 1);
+  const compactAccessory = width < 230 || accessoryRowHeight < accessoryConfig.iconSizePx + 4;
+  const accessoryIconSize = Math.max(0, Math.round(Math.min(accessoryConfig.iconSizePx, compactAccessory ? Math.max(accessoryRowHeight - 4, 0) : accessoryConfig.iconSizePx) * 10) / 10);
+  const accessoryLabelSize = Math.round(Math.min(accessoryConfig.labelFontSizePx, Math.max(8, accessoryRowHeight * 0.45)) * 10) / 10;
+  const accessoryValueSize = Math.round(Math.min(accessoryConfig.valueFontSizePx, Math.max(9, accessoryRowHeight * 0.52)) * 10) / 10;
   const textWeight = Math.max(getWeightedTextLength(`${valuePrefix.value}${formattedValue.value}${valueSuffix.value}`), 1);
   const widthDrivenSize = Math.max(width - layout.paddingPx * 2 - 6, 1) / textWeight;
   const heightDrivenSize = valueHeight * valueConfig.heightScale;
@@ -633,7 +644,7 @@ const valueStyle = computed(() => {
   const dividerStrong = getAlphaColor(accessoryConfig.dividerColor, accessoryConfig.dividerStrongOpacity);
 
   return {
-    '--kpi-example-title-row': `${titleAreaHeightPx}px`,
+    '--kpi-example-title-row': `${titleRowHeight}px`,
     '--kpi-example-value-row': `${layout.valueRatio}fr`,
     '--kpi-example-accessory-row': `${layout.accessoryRatio}fr`,
     '--kpi-example-card-gap': `${layout.gapPx}px`,
@@ -676,10 +687,10 @@ const valueStyle = computed(() => {
     '--kpi-example-accessory-item-gap': `${accessoryConfig.itemGapPx}px`,
     '--kpi-example-accessory-item-outer-padding': `${accessoryConfig.itemPaddingInlinePx}px`,
     '--kpi-example-accessory-item-inner-padding': `${accessoryConfig.itemInnerPaddingPx}px`,
-    '--kpi-example-accessory-icon-size': `${accessoryConfig.iconSizePx}px`,
+    '--kpi-example-accessory-icon-size': `${accessoryIconSize}px`,
     '--kpi-example-accessory-icon-radius': `${accessoryConfig.iconRadiusPx}px`,
-    '--kpi-example-accessory-label-size': `${accessoryConfig.labelFontSizePx}px`,
-    '--kpi-example-accessory-value-size': `${accessoryConfig.valueFontSizePx}px`,
+    '--kpi-example-accessory-label-size': `${accessoryLabelSize}px`,
+    '--kpi-example-accessory-value-size': `${accessoryValueSize}px`,
     '--kpi-example-accessory-divider-weak': dividerWeak,
     '--kpi-example-accessory-divider-strong': dividerStrong,
   };
@@ -714,8 +725,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="rootRef" class="kpi-example-card" :class="`tone-${tone}`" :style="valueStyle" aria-label="Kpi 指标卡片示例">
-    <header v-if="resolvedTitle.visible || resolvedTitle.unitVisible" class="kpi-example-card-header">
+  <section ref="rootRef" class="kpi-example-card" :class="[`tone-${tone}`, { 'has-title': hasVisibleTitle }]" :style="valueStyle" aria-label="kpi-example-card">
+    <header v-if="hasVisibleTitle" class="kpi-example-card-header">
       <span v-if="resolvedTitle.visible" class="kpi-example-card-title-text" :title="title">{{ title }}</span>
       <span v-if="resolvedTitle.unitVisible" class="kpi-example-card-unit" :title="unit">{{ unit }}</span>
     </header>
@@ -844,6 +855,7 @@ onBeforeUnmount(() => {
 }
 
 .kpi-example-card-header {
+  grid-row: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
@@ -898,7 +910,22 @@ onBeforeUnmount(() => {
   white-space: nowrap;
 }
 
+.kpi-example-card:not(.has-title) {
+  grid-template-rows:
+    minmax(0, var(--kpi-example-value-row, 3fr))
+    minmax(0, var(--kpi-example-accessory-row, 2fr));
+}
+
+.kpi-example-card:not(.has-title) .kpi-example-card-value {
+  grid-row: 1;
+}
+
+.kpi-example-card:not(.has-title) .kpi-example-card-accessory {
+  grid-row: 2;
+}
+
 .kpi-example-card-value {
+  grid-row: 2;
   position: relative;
   display: flex;
   align-items: center;
@@ -991,6 +1018,7 @@ onBeforeUnmount(() => {
 }
 
 .kpi-example-card-accessory {
+  grid-row: 3;
   position: relative;
   display: grid;
   grid-template-columns: repeat(var(--kpi-example-accessory-columns, 2), minmax(0, 1fr));
@@ -1091,6 +1119,11 @@ onBeforeUnmount(() => {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.76),
     0 5px 12px rgba(0, 87, 217, 0.045);
+}
+
+.kpi-example-card-accessory-icon :deep(svg) {
+  width: calc(100% - 2px) !important;
+  height: calc(100% - 2px) !important;
 }
 
 .kpi-example-card-accessory-item em,

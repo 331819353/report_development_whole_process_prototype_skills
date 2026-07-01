@@ -211,6 +211,139 @@ const evaluateGeometry = (auditThresholds) => {
     });
   };
 
+  const appRoot = document.querySelector('#app');
+  const reportShell = document.querySelector('.dashboard-shell, .analytics-main, .cockpit-shell, .placeholder-grid');
+  const visibleDashboardBlocks = Array.from(document.querySelectorAll('.placeholder-cell')).filter(isVisible);
+
+  if (!appRoot || appRoot.children.length === 0 || visibleDashboardBlocks.length === 0) {
+    addFinding({
+      id: 'VIS-BLANK-PAGE',
+      severity: 'blocker',
+      category: 'blank page',
+      element: appRoot || document.body,
+      observation: 'Dashboard root rendered no visible report blocks.',
+      impact: 'The report page is blank or failed before the template could mount its configured blocks.',
+      suggestedFix: 'Check runtime console errors, layoutRows block spans, imported page config, and mock API startup before running visual QA again.',
+      evidence: {
+        appChildCount: appRoot?.children?.length ?? 0,
+        hasReportShell: Boolean(reportShell),
+        visibleDashboardBlockCount: visibleDashboardBlocks.length,
+      },
+    });
+    return findings;
+  }
+
+  const criticalValueSelector = [
+    '.kpi-example-card-value strong',
+    '.target-progress-example-value strong',
+    '.target-progress-example-value-inner',
+    '.layout-slot-content-widget .metric-value',
+    '.layout-slot-content-widget .score-value',
+    '.layout-slot-content-widget .card-value',
+    '.layout-slot-content-widget [data-core-value]',
+  ].join(',');
+  const criticalValueTextContainerSelector = [
+    '.kpi-example-card-value',
+    '.target-progress-example-value',
+    '.target-progress-example-value-inner',
+  ].join(',');
+
+  Array.from(document.querySelectorAll(criticalValueSelector))
+    .filter(isVisible)
+    .forEach((element) => {
+      const clippingParent =
+        element.closest('.kpi-example-card-value, .target-progress-example-value, .metric-value, .score-value, .card-value, .layout-slot-content-widget') ||
+        element.parentElement;
+
+      if (!clippingParent || !isVisible(clippingParent)) {
+        return;
+      }
+
+      const style = window.getComputedStyle(clippingParent);
+      const clipsContent = ['hidden', 'clip'].includes(style.overflow) || ['hidden', 'clip'].includes(style.overflowY);
+
+      if (!clipsContent) {
+        return;
+      }
+
+      const valueRect = element.getBoundingClientRect();
+      const parentRect = clippingParent.getBoundingClientRect();
+      const tolerance = 1;
+      const clipped =
+        valueRect.top < parentRect.top - tolerance ||
+        valueRect.bottom > parentRect.bottom + tolerance ||
+        valueRect.left < parentRect.left - tolerance ||
+        valueRect.right > parentRect.right + tolerance;
+
+      if (!clipped) {
+        return;
+      }
+
+      addFinding({
+        id: 'VIS-CORE-VALUE-CLIPPED',
+        severity: 'blocker',
+        category: 'core value clipping',
+        element,
+        observation: `Core value "${elementText(element).slice(0, 60)}" is outside its clipped value container.`,
+        impact: 'Decision-critical KPI or target values can appear vertically offset or partially hidden even when the outer card grid is aligned.',
+        suggestedFix: 'Release hidden title-row height, increase the value row, lower value font caps, disable reflection/spark in compact slots, reduce accessory rows, or choose a simpler registered component example.',
+        evidence: {
+          valueRect: rectOf(element),
+          containerRect: rectOf(clippingParent),
+          overflow: style.overflow,
+          overflowY: style.overflowY,
+          text: elementText(element).slice(0, 80),
+        },
+      });
+    });
+
+  Array.from(document.querySelectorAll('.layout-zone-pattern'))
+    .filter(isVisible)
+    .forEach((region) => {
+      const cells = Array.from(region.querySelectorAll('.layout-zone-cell.has-slot-content')).filter(isVisible);
+
+      if (cells.length <= 1) {
+        return;
+      }
+
+      cells.forEach((cell) => {
+        const widget = cell.querySelector('.layout-slot-content-widget');
+
+        if (!widget || !isVisible(widget)) {
+          return;
+        }
+
+        const visibleTitle = Array.from(widget.querySelectorAll([
+          '[class*="example-header"]',
+          '[class*="example-title"]',
+          '[class*="example-card-header"]',
+          '[class*="example-card-title"]',
+          '[class$="-example-header"]',
+          '[class$="-example-title"]',
+        ].join(',')))
+          .filter(isVisible)
+          .some((element) => elementText(element).trim().length > 0);
+
+        if (visibleTitle) {
+          return;
+        }
+
+        addFinding({
+          id: 'VIS-MULTI-SLOT-TITLE-MISSING',
+          severity: 'blocker',
+          category: 'slot title visibility',
+          element: cell,
+          observation: 'A multi-slot block contains a component example without a visible short title.',
+          impact: 'Readers cannot distinguish parallel slots, and the template is leaking title-visibility decisions into manual configuration.',
+          suggestedFix: 'Keep component short titles visible for every multi-slot block. Only single-slot blocks may hide the component short title and rely on the parent block title.',
+          evidence: {
+            slotRect: rectOf(cell),
+            text: elementText(cell).slice(0, 80),
+          },
+        });
+      });
+    });
+
   const isIntentionalScroll = (element, axis) => {
     const style = window.getComputedStyle(element);
     const overflow = axis === 'x' ? style.overflowX : style.overflowY;
@@ -262,6 +395,9 @@ const evaluateGeometry = (auditThresholds) => {
     const axis = overY ? 'vertical' : 'horizontal';
     const intentional = overY ? isIntentionalScroll(element, 'y') : isIntentionalScroll(element, 'x');
     const hidden = overY ? hasHiddenOverflow(element, 'y') : hasHiddenOverflow(element, 'x');
+    const criticalArea = Boolean(element.closest(
+      '.layout-zone-cell, .layout-slot-content-widget, .placeholder-cell-title, .placeholder-cell-body-section-3, .placeholder-cell-summary-text, .kpi-example-card, .target-progress-example-card',
+    ));
 
     if (intentional && !hidden) {
       return;
@@ -269,7 +405,7 @@ const evaluateGeometry = (auditThresholds) => {
 
     addFinding({
       id: hidden ? 'VIS-CONTENT-CLIPPED' : 'VIS-CONTENT-OVERFLOW',
-      severity: hidden ? 'major' : 'minor',
+      severity: criticalArea ? 'blocker' : hidden ? 'major' : 'minor',
       category: hidden ? 'clipping' : 'overflow',
       element,
       observation: `${axis} content exceeds its viewport: scroll ${overY ? element.scrollHeight : element.scrollWidth}px > client ${overY ? element.clientHeight : element.clientWidth}px.`,
@@ -309,6 +445,7 @@ const evaluateGeometry = (auditThresholds) => {
 
   Array.from(document.querySelectorAll(textSelector))
     .filter(isVisible)
+    .filter((element) => !element.matches(criticalValueTextContainerSelector))
     .forEach((element) => {
       const text = elementText(element);
 
@@ -318,6 +455,9 @@ const evaluateGeometry = (auditThresholds) => {
 
       const overX = element.scrollWidth > element.clientWidth + auditThresholds.overflowTolerance;
       const overY = element.scrollHeight > element.clientHeight + auditThresholds.overflowTolerance;
+      const criticalText = Boolean(element.closest(
+        '.layout-zone-cell, .layout-slot-content-widget, .placeholder-cell-title, .placeholder-cell-body-section-3, .placeholder-cell-summary-text',
+      ));
 
       if ((!overX || isIntentionalScroll(element, 'x')) && (!overY || isIntentionalScroll(element, 'y'))) {
         return;
@@ -325,7 +465,7 @@ const evaluateGeometry = (auditThresholds) => {
 
       addFinding({
         id: 'VIS-TEXT-CLIPPED',
-        severity: element.matches('h1,h2,h3,h4,h5,h6,button,th') ? 'major' : 'minor',
+        severity: criticalText ? 'blocker' : element.matches('h1,h2,h3,h4,h5,h6,button,th') ? 'major' : 'minor',
         category: 'text clipping',
         element,
         observation: `Text "${text.slice(0, 60)}" exceeds its visible box.`,
@@ -424,10 +564,13 @@ const evaluateGeometry = (auditThresholds) => {
         const rect = child.getBoundingClientRect();
         const text = elementText(child);
 
-        if (text.length >= 12 && rect.height < auditThresholds.minTextItemHeight) {
+        const compactTextItem = Boolean(child.closest('.conclusion-example-card, [class*="-example-aux"]'));
+        const minTextItemHeight = compactTextItem ? Math.min(auditThresholds.minTextItemHeight, 14) : auditThresholds.minTextItemHeight;
+
+        if (text.length >= 12 && rect.height < minTextItemHeight) {
           addFinding({
             id: 'VIS-LIST-ITEM-SQUEEZED',
-            severity: 'major',
+            severity: compactTextItem ? 'minor' : 'major',
             category: 'component squeezed',
             element: child,
             observation: `Repeated text item is only ${round(rect.height)}px tall: "${text.slice(0, 60)}".`,
@@ -435,7 +578,7 @@ const evaluateGeometry = (auditThresholds) => {
             suggestedFix: 'Increase row min-height, allow multi-line text, reduce item count, or move secondary details out of the compact row.',
             evidence: {
               height: round(rect.height),
-              minimum: auditThresholds.minTextItemHeight,
+              minimum: minTextItemHeight,
               parent: cssPath(parent),
             },
           });
@@ -537,20 +680,52 @@ const evaluateGeometry = (auditThresholds) => {
       });
     });
 
-  const nearestVisualContainer = (element) =>
-    element.closest?.(
-      '[data-ui-role*="chart" i], [data-widget-id], .chart, .chart-card, .dashboard-widget, .widget, .widget-card, .dashboard-card, .card, .panel',
-    ) || element;
+  const chartPaneSelector = [
+    '[class$="-chart-pane"]',
+    '[class*="-chart-pane "]',
+    '.custom-echart-template-chart-pane',
+    '.chart-plot',
+    '.plot-area',
+  ].join(',');
+
+  const chartOwnerSelector = [
+    '[class$="-example-card"]',
+    '[class*="-example-card "]',
+    '.custom-echart-template-card',
+    '.rounded-funnel-example-card',
+  ].join(',');
+
+  const explicitChartRootSelector = [
+    '[_echarts_instance_]',
+    '[data-ui-role*="chart" i]',
+    '[data-visual-type*="chart" i]',
+    '[data-chart-type]',
+    chartPaneSelector,
+  ].join(',');
+
+  const elementClassText = (element) => {
+    if (!element) {
+      return '';
+    }
+
+    if (typeof element.className === 'string') {
+      return element.className;
+    }
+
+    return element.className?.baseVal || '';
+  };
+
+  const nearestVisualContainer = (element) => element.closest?.(chartPaneSelector) || element.closest?.(explicitChartRootSelector) || element;
 
   const chartElements = Array.from(
     new Set(
-      Array.from(
-        document.querySelectorAll(
-          '[_echarts_instance_], canvas, svg, [data-ui-role*="chart" i], [class*="chart" i], [class*="echart" i]',
-        ),
-      )
+      Array.from(document.querySelectorAll(`${explicitChartRootSelector}, canvas, svg`))
         .filter(isVisible)
-        .map(nearestVisualContainer),
+        .map(nearestVisualContainer)
+        .filter((element) => {
+          const classText = `${elementClassText(element)} ${element.getAttribute('data-ui-role') || ''} ${element.getAttribute('data-visual-type') || ''} ${element.getAttribute('data-chart-type') || ''}`;
+          return Boolean(element.matches?.(explicitChartRootSelector)) || /chart|echart/i.test(classText) || Boolean(element.querySelector?.('[_echarts_instance_]'));
+        }),
     ),
   ).filter(isVisible);
 
@@ -559,19 +734,21 @@ const evaluateGeometry = (auditThresholds) => {
     const rendered = Array.from(container.querySelectorAll('canvas, svg')).filter(isVisible);
     const renderedHeights = rendered.map((item) => item.getBoundingClientRect().height).filter((height) => height > 0);
     const renderedHeight = renderedHeights.length > 0 ? Math.max(...renderedHeights) : rect.height;
-    const classText = `${container.className || ''} ${container.getAttribute('data-ui-role') || ''} ${container.getAttribute('data-widget-id') || ''} ${container.getAttribute('data-visual-type') || ''} ${container.getAttribute('data-chart-type') || ''}`;
+    const chartOwner = container.closest?.(chartOwnerSelector);
+    const classText = `${elementClassText(container)} ${elementClassText(chartOwner)} ${container.getAttribute('data-ui-role') || ''} ${container.getAttribute('data-widget-id') || ''} ${container.getAttribute('data-visual-type') || ''} ${container.getAttribute('data-chart-type') || ''}`;
     const isMini = /spark|mini|micro|compact|icon|logo|avatar|badge/i.test(classText);
-    const isAxisChart = /(?:line|bar|combo|axis|cartesian|column)/i.test(classText);
+    const isAxisChart = /(?:^|[-_\s])(?:line|bar|combo|axis|cartesian|column)(?:[-_\s]|$)/i.test(classText);
+    const isNonAxisChart = /(?:pie|donut|rose|proportion|radar|funnel|sunburst|heatmap|treemap|sankey)/i.test(classText);
     const hasDenseCompanion = Boolean(container.closest('.card, .dashboard-card, .widget, .panel')?.querySelector('table, [class*="table" i], ul, ol'));
     const minHeight = hasDenseCompanion ? auditThresholds.minDenseChartHeight : auditThresholds.minChartHeight;
     const plotElement =
       container.querySelector('[data-chart-plot], [data-ui-role*="plot" i], .chart-plot, .plot-area') || rendered[0] || container;
     const plotHeight = plotElement ? plotElement.getBoundingClientRect().height : renderedHeight;
-    const hasSqueezeStrategy = /squeeze|datazoom|sample|sampling|hide-overlap|hideoverlap|rotate|spark|compact|topn|fallback|drawer|detail/i.test(
+    const hasSqueezeStrategy = /squeeze|datazoom|sample|sampling|hide-overlap|hideoverlap|rotate|spark|compact|compact-fit|fit|topn|fallback|drawer|detail|has-aux|is-horizontal/i.test(
       classText,
     );
 
-    if (!isMini && isAxisChart && rect.width < auditThresholds.minAxisChartWidth) {
+    if (!isMini && isAxisChart && !isNonAxisChart && rect.width < auditThresholds.minAxisChartWidth) {
       addFinding({
         id: 'VIS-CHART-CONTAINER-NARROW',
         severity: 'major',
@@ -590,6 +767,7 @@ const evaluateGeometry = (auditThresholds) => {
     if (
       !isMini &&
       isAxisChart &&
+      !isNonAxisChart &&
       rect.width < auditThresholds.warningAxisChartWidth &&
       !hasSqueezeStrategy
     ) {
@@ -608,7 +786,7 @@ const evaluateGeometry = (auditThresholds) => {
       });
     }
 
-    if (!isMini && rect.width >= 220 && rect.height < minHeight) {
+    if (!isMini && isAxisChart && !isNonAxisChart && rect.width >= 220 && rect.height < minHeight) {
       addFinding({
         id: 'VIS-CHART-SQUEEZED',
         severity: 'major',
@@ -626,7 +804,7 @@ const evaluateGeometry = (auditThresholds) => {
       });
     }
 
-    if (!isMini && isAxisChart && rect.height < auditThresholds.minAxisChartContainerHeight) {
+    if (!isMini && isAxisChart && !isNonAxisChart && rect.height < auditThresholds.minAxisChartContainerHeight) {
       addFinding({
         id: 'VIS-CHART-CONTAINER-SHORT',
         severity: 'major',
@@ -645,6 +823,7 @@ const evaluateGeometry = (auditThresholds) => {
     if (
       !isMini &&
       isAxisChart &&
+      !isNonAxisChart &&
       rect.height < auditThresholds.warningAxisChartContainerHeight &&
       !hasSqueezeStrategy
     ) {
@@ -663,7 +842,7 @@ const evaluateGeometry = (auditThresholds) => {
       });
     }
 
-    if (!isMini && isAxisChart && rect.width >= 180 && renderedHeight < auditThresholds.minChartHeight) {
+    if (!isMini && isAxisChart && !isNonAxisChart && rect.width >= 180 && renderedHeight < auditThresholds.minChartHeight) {
       addFinding({
         id: 'VIS-CHART-BODY-SQUEEZED',
         severity: 'major',
@@ -679,7 +858,7 @@ const evaluateGeometry = (auditThresholds) => {
       });
     }
 
-    if (!isMini && rect.width >= 180 && renderedHeight < auditThresholds.minChartRenderedHeight) {
+    if (!isMini && isAxisChart && !isNonAxisChart && rect.width >= 180 && renderedHeight < auditThresholds.minChartRenderedHeight) {
       addFinding({
         id: 'VIS-CHART-SQUEEZED',
         severity: 'major',
@@ -697,7 +876,7 @@ const evaluateGeometry = (auditThresholds) => {
 
     const minPlotHeight = hasDenseCompanion ? auditThresholds.minPlotHeight : auditThresholds.minChartRenderedHeight;
 
-    if (!isMini && isAxisChart && plotHeight < minPlotHeight) {
+    if (!isMini && isAxisChart && !isNonAxisChart && plotHeight < minPlotHeight) {
       addFinding({
         id: 'VIS-CHART-PLOT-SQUEEZED',
         severity: 'major',
@@ -714,7 +893,7 @@ const evaluateGeometry = (auditThresholds) => {
       });
     }
 
-    if (hasDenseCompanion && renderedHeight < auditThresholds.minPlotHeight) {
+    if (isAxisChart && !isNonAxisChart && hasDenseCompanion && renderedHeight < auditThresholds.minPlotHeight) {
       addFinding({
         id: 'VIS-CHART-TABLE-CROWDING',
         severity: 'major',
@@ -792,6 +971,7 @@ try {
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: waitMs });
     await page.waitForLoadState('networkidle', { timeout: waitMs }).catch(() => undefined);
     await page.evaluate(() => document.fonts?.ready).catch(() => undefined);
+    await page.waitForSelector('.placeholder-cell', { state: 'visible', timeout: waitMs }).catch(() => undefined);
     await page.waitForTimeout(stabilizeMs);
 
     const screenshotPath = path.join(reportDir, `geometry-${viewport.name}.png`);

@@ -45,7 +45,7 @@ export const allowedWidgetSizesByVisualType: Record<WidgetVisualType, string[]> 
 };
 
 const defaultRequiredSlots: ReportTemplateSlotId[] = ['titleArea', 'componentArea'];
-const defaultOptionalSlots: ReportTemplateSlotId[] = ['pillArea', 'auxMetricArea', 'unitArea', 'summaryArea'];
+const defaultOptionalSlots: ReportTemplateSlotId[] = ['pillArea', 'summaryArea'];
 
 const chartRequiredKeys = ['visualType', 'props.chartKind or component-specific chart props', 'data or dataPolicy'];
 const tableRequiredKeys = ['visualType', 'props.columns or table schema', 'data or dataPolicy'];

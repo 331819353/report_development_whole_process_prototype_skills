@@ -50,7 +50,7 @@ export interface LayoutSpanTemplateProps {
     regionKey?: string;
     role?: string;
     // Component slots carry only the selected component example body.
-    // Block-level additional information, unit, pills, and summaries belong to the block layout template.
+    // Block-level title, pills, component slots, and summaries belong to the block layout template.
     componentExampleId?: string;
     props?: Record<string, unknown>;
     widgetProps?: Record<string, unknown>;

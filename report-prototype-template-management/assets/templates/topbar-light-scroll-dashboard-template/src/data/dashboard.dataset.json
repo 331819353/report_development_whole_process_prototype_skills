@@ -1,14 +1,2215 @@
 {
   "filterData": {
-    "globalParameters": []
+    "globalParameters": [],
+    "periodOptions": [
+      {
+        "id": "2026-06",
+        "label": "2026年6月",
+        "sortOrder": 1
+      },
+      {
+        "id": "2026-05",
+        "label": "2026年5月",
+        "sortOrder": 2
+      },
+      {
+        "id": "2026-q2",
+        "label": "2026年Q2",
+        "sortOrder": 3
+      },
+      {
+        "id": "2026-h1",
+        "label": "2026年上半年",
+        "sortOrder": 4
+      }
+    ],
+    "regionOptions": [
+      {
+        "id": "all",
+        "label": "全部区域",
+        "sortOrder": 0
+      },
+      {
+        "id": "east",
+        "label": "华东大区",
+        "sortOrder": 1
+      },
+      {
+        "id": "south",
+        "label": "华南大区",
+        "sortOrder": 2
+      },
+      {
+        "id": "north",
+        "label": "华北大区",
+        "sortOrder": 3
+      },
+      {
+        "id": "overseas",
+        "label": "海外市场",
+        "sortOrder": 4
+      }
+    ],
+    "projectOptions": [
+      {
+        "id": "all",
+        "label": "全部项目",
+        "sortOrder": 0
+      },
+      {
+        "id": "smart-home",
+        "label": "智慧家庭套购增长",
+        "sortOrder": 1
+      },
+      {
+        "id": "store-refresh",
+        "label": "门店焕新转化",
+        "sortOrder": 2
+      },
+      {
+        "id": "engineering",
+        "label": "工程客户交付",
+        "sortOrder": 3
+      },
+      {
+        "id": "overseas-direct",
+        "label": "海外直营提效",
+        "sortOrder": 4
+      }
+    ],
+    "channelOptions": [
+      {
+        "id": "all",
+        "label": "全部渠道",
+        "sortOrder": 0
+      },
+      {
+        "id": "online",
+        "label": "线上直营",
+        "sortOrder": 1
+      },
+      {
+        "id": "store",
+        "label": "门店零售",
+        "sortOrder": 2
+      },
+      {
+        "id": "project",
+        "label": "工程客户",
+        "sortOrder": 3
+      },
+      {
+        "id": "overseas",
+        "label": "海外直营",
+        "sortOrder": 4
+      }
+    ]
   },
   "businessData": {
-    "compactBarDemo": [
-      { "period": "Jan", "actual": 68, "target": 72 },
-      { "period": "Feb", "actual": 84, "target": 76 },
-      { "period": "Mar", "actual": 73, "target": 78 },
-      { "period": "Apr", "actual": 96, "target": 82 },
-      { "period": "May", "actual": 88, "target": 86 }
-    ]
+    "apiRevenueTrendRows": [
+      {
+        "period": "2026-03",
+        "periodLabel": "3月",
+        "region": "east",
+        "project": "smart-home",
+        "channel": "online",
+        "amount": 1180,
+        "completion": 91.6,
+        "profit": 218,
+        "riskCount": 5
+      },
+      {
+        "period": "2026-04",
+        "periodLabel": "4月",
+        "region": "east",
+        "project": "smart-home",
+        "channel": "online",
+        "amount": 1264,
+        "completion": 94.2,
+        "profit": 236,
+        "riskCount": 4
+      },
+      {
+        "period": "2026-05",
+        "periodLabel": "5月",
+        "region": "east",
+        "project": "smart-home",
+        "channel": "online",
+        "amount": 1396,
+        "completion": 97.4,
+        "profit": 258,
+        "riskCount": 3
+      },
+      {
+        "period": "2026-06",
+        "periodLabel": "6月",
+        "region": "east",
+        "project": "smart-home",
+        "channel": "online",
+        "amount": 1518,
+        "completion": 101.8,
+        "profit": 286,
+        "riskCount": 2
+      },
+      {
+        "period": "2026-06",
+        "periodLabel": "6月",
+        "region": "south",
+        "project": "store-refresh",
+        "channel": "store",
+        "amount": 1092,
+        "completion": 96.1,
+        "profit": 174,
+        "riskCount": 6
+      },
+      {
+        "period": "2026-06",
+        "periodLabel": "6月",
+        "region": "north",
+        "project": "engineering",
+        "channel": "project",
+        "amount": 874,
+        "completion": 88.9,
+        "profit": 142,
+        "riskCount": 9
+      },
+      {
+        "period": "2026-06",
+        "periodLabel": "6月",
+        "region": "overseas",
+        "project": "overseas-direct",
+        "channel": "overseas",
+        "amount": 1326,
+        "completion": 99.3,
+        "profit": 244,
+        "riskCount": 4
+      }
+    ],
+    "apiRevenueTableRows": [
+      {
+        "id": "R-202606-001",
+        "period": "2026-06",
+        "region": "east",
+        "regionName": "华东大区",
+        "project": "smart-home",
+        "channel": "online",
+        "channelName": "线上直营",
+        "customerName": "华东智慧家庭旗舰店",
+        "amount": 462,
+        "target": 430,
+        "completion": 107.4,
+        "owner": "经营一组",
+        "status": "ahead"
+      },
+      {
+        "id": "R-202606-002",
+        "period": "2026-06",
+        "region": "south",
+        "regionName": "华南大区",
+        "project": "store-refresh",
+        "channel": "store",
+        "channelName": "门店零售",
+        "customerName": "华南门店焕新样板区",
+        "amount": 318,
+        "target": 336,
+        "completion": 94.6,
+        "owner": "零售运营组",
+        "status": "watch"
+      },
+      {
+        "id": "R-202606-003",
+        "period": "2026-06",
+        "region": "north",
+        "regionName": "华北大区",
+        "project": "engineering",
+        "channel": "project",
+        "channelName": "工程客户",
+        "customerName": "华北工程客户交付包",
+        "amount": 286,
+        "target": 330,
+        "completion": 86.7,
+        "owner": "工程交付组",
+        "status": "risk"
+      },
+      {
+        "id": "R-202606-004",
+        "period": "2026-06",
+        "region": "overseas",
+        "regionName": "海外市场",
+        "project": "overseas-direct",
+        "channel": "overseas",
+        "channelName": "海外直营",
+        "customerName": "海外直营增长单元",
+        "amount": 404,
+        "target": 390,
+        "completion": 103.6,
+        "owner": "海外业务组",
+        "status": "ahead"
+      },
+      {
+        "id": "R-202605-001",
+        "period": "2026-05",
+        "region": "east",
+        "regionName": "华东大区",
+        "project": "smart-home",
+        "channel": "online",
+        "channelName": "线上直营",
+        "customerName": "华东智慧家庭旗舰店",
+        "amount": 421,
+        "target": 414,
+        "completion": 101.7,
+        "owner": "经营一组",
+        "status": "ahead"
+      }
+    ],
+    "apiKpiSummaryRows": [
+      {
+        "metric": "revenue",
+        "label": "收入",
+        "value": 4810,
+        "target": 4700,
+        "unit": "万元",
+        "trend": 8.6
+      },
+      {
+        "metric": "completion",
+        "label": "达成率",
+        "value": 97.8,
+        "target": 100,
+        "unit": "%",
+        "trend": 2.4
+      },
+      {
+        "metric": "profit",
+        "label": "经营利润",
+        "value": 844,
+        "target": 812,
+        "unit": "万元",
+        "trend": 6.1
+      },
+      {
+        "metric": "risk",
+        "label": "风险事项",
+        "value": 21,
+        "target": 18,
+        "unit": "项",
+        "trend": -3
+      }
+    ],
+    "componentProps": {
+      "overview.A.A": {
+        "key": "overview.A.A",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "项目收入",
+          "value": 12860,
+          "unit": "万",
+          "tone": "primary",
+          "accessoryMetrics": [
+            {
+              "label": "同比",
+              "value": "+12.6%",
+              "tone": "success"
+            }
+          ],
+          "sparkValues": [
+            88,
+            92,
+            108,
+            116,
+            124,
+            129
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:项目收入"
+      },
+      "overview.A.B": {
+        "key": "overview.A.B",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "经营利润",
+          "value": 2460,
+          "unit": "万",
+          "tone": "success",
+          "accessoryMetrics": [
+            {
+              "label": "同比",
+              "value": "+9.4%",
+              "tone": "success"
+            }
+          ],
+          "sparkValues": [
+            18,
+            19,
+            21,
+            22,
+            24,
+            25
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:经营利润"
+      },
+      "overview.A.C": {
+        "key": "overview.A.C",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "经营现金流",
+          "value": 3180,
+          "unit": "万",
+          "tone": "warning",
+          "accessoryMetrics": [
+            {
+              "label": "回款达成",
+              "value": "88.4%",
+              "tone": "warning",
+              "icon": "clock"
+            }
+          ],
+          "sparkValues": [
+            21,
+            26,
+            24,
+            28,
+            31,
+            32
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:经营现金流"
+      },
+      "overview.B.A": {
+        "key": "overview.B.A",
+        "componentType": "TargetProgressExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "收入达成率",
+          "value": 92.4,
+          "valueSuffix": "%",
+          "targetValue": 100,
+          "currentValue": 92.4,
+          "gapValue": 7.6,
+          "tone": "primary",
+          "details": [
+            {
+              "label": "年度目标",
+              "value": "100%",
+              "icon": "target"
+            },
+            {
+              "label": "当前达成",
+              "value": "92.4%",
+              "icon": "current"
+            },
+            {
+              "label": "缺口",
+              "value": "7.6%",
+              "icon": "gap"
+            }
+          ]
+        },
+        "legacyKey": "TargetProgressExampleCard:收入达成率"
+      },
+      "overview.C.A": {
+        "key": "overview.C.A",
+        "componentType": "ConclusionExampleCard",
+        "visualType": "text-summary",
+        "props": {
+          "title": "本期判断",
+          "conclusion": "项目收入保持增长，但华北工程客户拖累利润与现金流。",
+          "emphasis": "增长质量分化",
+          "statusLabel": "经营判断",
+          "statusTone": "warning",
+          "evidenceItems": [
+            {
+              "label": "收入同比",
+              "value": "+12.6%",
+              "tone": "success"
+            },
+            {
+              "label": "华北毛利率",
+              "value": "18.8%",
+              "tone": "warning"
+            }
+          ],
+          "actionItems": [
+            {
+              "label": "优先动作",
+              "value": "锁定华北回款与交付节点",
+              "tone": "warning"
+            }
+          ]
+        },
+        "legacyKey": "ConclusionExampleCard:本期判断"
+      },
+      "overview.D.A": {
+        "key": "overview.D.A",
+        "componentType": "LineChartExampleCard",
+        "visualType": "line",
+        "props": {
+          "title": "月度收入趋势",
+          "unit": "万元",
+          "categories": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月"
+          ],
+          "series": [
+            {
+              "name": "实际收入",
+              "values": [
+                8600,
+                9400,
+                10100,
+                11200,
+                11900,
+                12860
+              ],
+              "smooth": true,
+              "areaVisible": true
+            },
+            {
+              "name": "目标收入",
+              "values": [
+                9000,
+                9600,
+                10400,
+                11100,
+                12000,
+                13200
+              ],
+              "smooth": true
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "6月收入",
+              "value": "12860万",
+              "tone": "primary"
+            }
+          ]
+        },
+        "legacyKey": "LineChartExampleCard:月度收入趋势"
+      },
+      "overview.E.A": {
+        "key": "overview.E.A",
+        "componentType": "ComboChartExampleCard",
+        "visualType": "combo",
+        "props": {
+          "title": "收入毛利组合",
+          "categories": [
+            "华东",
+            "华南",
+            "华北",
+            "海外"
+          ],
+          "series": [
+            {
+              "name": "收入",
+              "type": "bar",
+              "values": [
+                3860,
+                2480,
+                1960,
+                3120
+              ]
+            },
+            {
+              "name": "毛利率",
+              "type": "line",
+              "values": [
+                29.6,
+                22.4,
+                18.8,
+                27.3
+              ]
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "平均毛利率",
+              "value": "24.8%",
+              "tone": "primary"
+            }
+          ]
+        },
+        "legacyKey": "ComboChartExampleCard:收入毛利组合"
+      },
+      "overview.F.A": {
+        "key": "overview.F.A",
+        "componentType": "RankingListExampleCard",
+        "visualType": "ranking-list",
+        "props": {
+          "title": "区域收入排行",
+          "items": [
+            {
+              "name": "华东",
+              "value": 3860,
+              "delta": "+14.8%"
+            },
+            {
+              "name": "海外",
+              "value": 3120,
+              "delta": "+11.5%"
+            },
+            {
+              "name": "华南",
+              "value": 2480,
+              "delta": "+6.2%"
+            },
+            {
+              "name": "华北",
+              "value": 1960,
+              "delta": "-3.4%"
+            }
+          ],
+          "valueUnit": "万"
+        },
+        "legacyKey": "RankingListExampleCard:区域收入排行"
+      },
+      "overview.G.A": {
+        "key": "overview.G.A",
+        "componentType": "ProportionChartExampleCard",
+        "visualType": "pie",
+        "props": {
+          "title": "渠道收入占比",
+          "items": [
+            {
+              "name": "线上直营",
+              "value": 42
+            },
+            {
+              "name": "门店零售",
+              "value": 28
+            },
+            {
+              "name": "工程客户",
+              "value": 18
+            },
+            {
+              "name": "海外直营",
+              "value": 12
+            }
+          ]
+        },
+        "legacyKey": "ProportionChartExampleCard:渠道收入占比"
+      },
+      "overview.G.B": {
+        "key": "overview.G.B",
+        "componentType": "RadarChartExampleCard",
+        "visualType": "radar",
+        "props": {
+          "title": "经营健康度",
+          "indicators": [
+            "增长",
+            "毛利",
+            "履约",
+            "回款",
+            "库存"
+          ],
+          "values": [
+            86,
+            78,
+            82,
+            72,
+            68
+          ]
+        },
+        "legacyKey": "RadarChartExampleCard:经营健康度"
+      },
+      "overview.H.A": {
+        "key": "overview.H.A",
+        "componentType": "ActionListExampleCard",
+        "visualType": "action-recommendation-card",
+        "props": {
+          "title": "经营动作清单",
+          "items": [
+            {
+              "label": "华北工程客户回款专项会",
+              "owner": "赵岩",
+              "due": "今日",
+              "status": "待处理",
+              "tone": "danger"
+            },
+            {
+              "label": "华南门店样机结构复盘",
+              "owner": "陈卓",
+              "due": "明日",
+              "status": "推进中",
+              "tone": "warning"
+            },
+            {
+              "label": "华东会员复购投放扩量",
+              "owner": "王晶",
+              "due": "本周",
+              "status": "推进中",
+              "tone": "primary"
+            },
+            {
+              "label": "海外交付资源补齐",
+              "owner": "林可",
+              "due": "本周",
+              "status": "已排期",
+              "tone": "success"
+            }
+          ]
+        },
+        "legacyKey": "ActionListExampleCard:经营动作清单"
+      },
+      "overview.I.A": {
+        "key": "overview.I.A",
+        "componentType": "DetailTableExampleCard",
+        "visualType": "table",
+        "props": {
+          "title": "项目经营明细",
+          "rowKey": "id",
+          "rows": [
+            {
+              "id": "P-001",
+              "project": "智慧家庭套购增长",
+              "region": "华东",
+              "owner": "王晶",
+              "revenue": 3860,
+              "margin": 29.6,
+              "progress": "96%",
+              "risk": "低",
+              "action": "放大复购投放"
+            },
+            {
+              "id": "P-002",
+              "project": "门店焕新转化",
+              "region": "华南",
+              "owner": "陈卓",
+              "revenue": 2480,
+              "margin": 22.4,
+              "progress": "84%",
+              "risk": "中",
+              "action": "优化样机结构"
+            },
+            {
+              "id": "P-003",
+              "project": "工程客户交付",
+              "region": "华北",
+              "owner": "赵岩",
+              "revenue": 1960,
+              "margin": 18.8,
+              "progress": "77%",
+              "risk": "高",
+              "action": "锁定回款节点"
+            },
+            {
+              "id": "P-004",
+              "project": "海外直营提效",
+              "region": "海外",
+              "owner": "林可",
+              "revenue": 3120,
+              "margin": 27.3,
+              "progress": "91%",
+              "risk": "中",
+              "action": "补齐交付资源"
+            }
+          ],
+          "columns": [
+            {
+              "key": "customerName",
+              "label": "对象",
+              "width": 170,
+              "align": "left",
+              "fixed": "left",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "regionName",
+              "label": "区域",
+              "width": 88,
+              "align": "center",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "channelName",
+              "label": "渠道",
+              "width": 96,
+              "align": "center",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "amount",
+              "label": "收入",
+              "width": 86,
+              "align": "right",
+              "formatter": "currency",
+              "unit": "万",
+              "priority": 1
+            },
+            {
+              "key": "target",
+              "label": "目标",
+              "width": 86,
+              "align": "right",
+              "formatter": "currency",
+              "unit": "万",
+              "priority": 2
+            },
+            {
+              "key": "completion",
+              "label": "达成率",
+              "width": 84,
+              "align": "right",
+              "formatter": "percent",
+              "unit": "%",
+              "priority": 1
+            },
+            {
+              "key": "owner",
+              "label": "责任组",
+              "width": 104,
+              "align": "center",
+              "formatter": "text",
+              "priority": 2
+            },
+            {
+              "key": "status",
+              "label": "状态",
+              "width": 76,
+              "align": "center",
+              "formatter": "status",
+              "priority": 1
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "明细行数",
+              "value": 4,
+              "tone": "primary"
+            },
+            {
+              "label": "可下钻",
+              "value": "项目/区域",
+              "tone": "success"
+            }
+          ]
+        },
+        "legacyKey": "DetailTableExampleCard:项目经营明细"
+      },
+      "revenue.A.A": {
+        "key": "revenue.A.A",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "项目收入",
+          "value": 12860,
+          "unit": "万",
+          "tone": "primary",
+          "accessoryMetrics": [
+            {
+              "label": "同比",
+              "value": "+12.6%",
+              "tone": "success"
+            }
+          ],
+          "sparkValues": [
+            88,
+            92,
+            108,
+            116,
+            124,
+            129
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:项目收入"
+      },
+      "revenue.A.B": {
+        "key": "revenue.A.B",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "新增收入",
+          "value": 1760,
+          "unit": "万",
+          "tone": "success",
+          "accessoryMetrics": [
+            {
+              "label": "贡献",
+              "value": "13.7%",
+              "tone": "primary"
+            }
+          ],
+          "sparkValues": [
+            8,
+            10,
+            11,
+            13,
+            16,
+            18
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:新增收入"
+      },
+      "revenue.B.A": {
+        "key": "revenue.B.A",
+        "componentType": "TargetProgressExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "收入目标达成",
+          "value": 92.4,
+          "valueSuffix": "%",
+          "targetValue": 100,
+          "currentValue": 92.4,
+          "gapValue": 7.6,
+          "tone": "warning",
+          "details": [
+            {
+              "label": "年度目标",
+              "value": "100%",
+              "icon": "target"
+            },
+            {
+              "label": "当前达成",
+              "value": "92.4%",
+              "icon": "current"
+            },
+            {
+              "label": "缺口",
+              "value": "7.6%",
+              "icon": "gap"
+            }
+          ]
+        },
+        "legacyKey": "TargetProgressExampleCard:收入目标达成"
+      },
+      "revenue.C.A": {
+        "key": "revenue.C.A",
+        "componentType": "ConclusionExampleCard",
+        "visualType": "text-summary",
+        "props": {
+          "title": "收入结论",
+          "conclusion": "线上直营贡献最大，华北工程客户连续两月低于目标。",
+          "emphasis": "结构增长成立",
+          "statusLabel": "经营判断",
+          "statusTone": "primary",
+          "evidenceItems": [
+            {
+              "label": "线上直营占比",
+              "value": "42%",
+              "tone": "success"
+            },
+            {
+              "label": "工程客户缺口",
+              "value": "420万",
+              "tone": "warning"
+            }
+          ],
+          "actionItems": [
+            {
+              "label": "动作",
+              "value": "工程客户逐单确认签收与回款",
+              "tone": "warning"
+            }
+          ]
+        },
+        "legacyKey": "ConclusionExampleCard:收入结论"
+      },
+      "revenue.D.A": {
+        "key": "revenue.D.A",
+        "componentType": "LineChartExampleCard",
+        "visualType": "line",
+        "props": {
+          "title": "渠道收入趋势",
+          "unit": "万元",
+          "categories": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月"
+          ],
+          "series": [
+            {
+              "name": "线上直营",
+              "values": [
+                3200,
+                3480,
+                3720,
+                4050,
+                4380,
+                4620
+              ],
+              "smooth": true,
+              "areaVisible": true
+            },
+            {
+              "name": "门店零售",
+              "values": [
+                2100,
+                2180,
+                2240,
+                2320,
+                2380,
+                2480
+              ],
+              "smooth": true
+            },
+            {
+              "name": "工程客户",
+              "values": [
+                1800,
+                1720,
+                1680,
+                1640,
+                1590,
+                1510
+              ],
+              "smooth": true
+            }
+          ],
+          "auxMetrics": []
+        },
+        "legacyKey": "LineChartExampleCard:渠道收入趋势"
+      },
+      "revenue.E.A": {
+        "key": "revenue.E.A",
+        "componentType": "BarChartExampleCard",
+        "visualType": "bar",
+        "props": {
+          "title": "品类收入",
+          "categories": [
+            "冰箱",
+            "洗衣机",
+            "空调",
+            "厨电",
+            "热水器"
+          ],
+          "values": [
+            2860,
+            2410,
+            2180,
+            1960,
+            1450
+          ],
+          "unit": "万元"
+        },
+        "legacyKey": "BarChartExampleCard:品类收入"
+      },
+      "revenue.F.A": {
+        "key": "revenue.F.A",
+        "componentType": "HeatmapChartExampleCard",
+        "visualType": "heatmap",
+        "props": {
+          "title": "区域渠道热力",
+          "rows": [
+            "华东",
+            "华南",
+            "华北",
+            "海外"
+          ],
+          "columns": [
+            "线上",
+            "门店",
+            "工程"
+          ],
+          "cells": [
+            [
+              92,
+              76,
+              58
+            ],
+            [
+              74,
+              68,
+              46
+            ],
+            [
+              58,
+              52,
+              31
+            ],
+            [
+              82,
+              44,
+              39
+            ]
+          ]
+        },
+        "legacyKey": "HeatmapChartExampleCard:区域渠道热力"
+      },
+      "revenue.G.A": {
+        "key": "revenue.G.A",
+        "componentType": "ProportionChartExampleCard",
+        "visualType": "pie",
+        "props": {
+          "title": "区域收入占比",
+          "items": [
+            {
+              "name": "华东",
+              "value": 34
+            },
+            {
+              "name": "海外",
+              "value": 27
+            },
+            {
+              "name": "华南",
+              "value": 22
+            },
+            {
+              "name": "华北",
+              "value": 17
+            }
+          ]
+        },
+        "legacyKey": "ProportionChartExampleCard:区域收入占比"
+      },
+      "revenue.G.B": {
+        "key": "revenue.G.B",
+        "componentType": "RankingListExampleCard",
+        "visualType": "ranking-list",
+        "props": {
+          "title": "渠道排行",
+          "items": [
+            {
+              "name": "线上直营",
+              "value": 4620,
+              "delta": "+18.4%"
+            },
+            {
+              "name": "海外直营",
+              "value": 3120,
+              "delta": "+11.5%"
+            },
+            {
+              "name": "门店零售",
+              "value": 2480,
+              "delta": "+6.2%"
+            }
+          ],
+          "valueUnit": "万"
+        },
+        "legacyKey": "RankingListExampleCard:渠道排行"
+      },
+      "revenue.H.A": {
+        "key": "revenue.H.A",
+        "componentType": "ActionListExampleCard",
+        "visualType": "action-recommendation-card",
+        "props": {
+          "title": "收入动作",
+          "items": [
+            {
+              "label": "工程客户订单逐单复盘",
+              "owner": "赵岩",
+              "due": "今日",
+              "status": "待处理",
+              "tone": "danger"
+            },
+            {
+              "label": "线上直营会员加购包上线",
+              "owner": "王晶",
+              "due": "本周",
+              "status": "推进中",
+              "tone": "primary"
+            },
+            {
+              "label": "海外直营价格带复核",
+              "owner": "林可",
+              "due": "本周",
+              "status": "已排期",
+              "tone": "success"
+            }
+          ]
+        },
+        "legacyKey": "ActionListExampleCard:收入动作"
+      },
+      "revenue.I.A": {
+        "key": "revenue.I.A",
+        "componentType": "DetailTableExampleCard",
+        "visualType": "table",
+        "props": {
+          "title": "收入明细",
+          "rowKey": "id",
+          "rows": [
+            {
+              "id": "P-001",
+              "project": "智慧家庭套购增长",
+              "region": "华东",
+              "owner": "王晶",
+              "revenue": 3860,
+              "margin": 29.6,
+              "progress": "96%",
+              "risk": "低",
+              "action": "放大复购投放"
+            },
+            {
+              "id": "P-002",
+              "project": "门店焕新转化",
+              "region": "华南",
+              "owner": "陈卓",
+              "revenue": 2480,
+              "margin": 22.4,
+              "progress": "84%",
+              "risk": "中",
+              "action": "优化样机结构"
+            },
+            {
+              "id": "P-003",
+              "project": "工程客户交付",
+              "region": "华北",
+              "owner": "赵岩",
+              "revenue": 1960,
+              "margin": 18.8,
+              "progress": "77%",
+              "risk": "高",
+              "action": "锁定回款节点"
+            },
+            {
+              "id": "P-004",
+              "project": "海外直营提效",
+              "region": "海外",
+              "owner": "林可",
+              "revenue": 3120,
+              "margin": 27.3,
+              "progress": "91%",
+              "risk": "中",
+              "action": "补齐交付资源"
+            }
+          ],
+          "columns": [
+            {
+              "key": "project",
+              "label": "项目",
+              "width": 150,
+              "align": "left",
+              "fixed": "left",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "region",
+              "label": "区域",
+              "width": 72,
+              "align": "center",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "owner",
+              "label": "负责人",
+              "width": 80,
+              "align": "center",
+              "formatter": "text",
+              "priority": 2
+            },
+            {
+              "key": "revenue",
+              "label": "收入",
+              "width": 86,
+              "align": "right",
+              "formatter": "currency",
+              "unit": "万",
+              "priority": 1
+            },
+            {
+              "key": "margin",
+              "label": "毛利率",
+              "width": 78,
+              "align": "right",
+              "formatter": "percent",
+              "unit": "%",
+              "priority": 1
+            },
+            {
+              "key": "progress",
+              "label": "进度",
+              "width": 72,
+              "align": "center",
+              "formatter": "text",
+              "priority": 2
+            },
+            {
+              "key": "risk",
+              "label": "风险",
+              "width": 70,
+              "align": "center",
+              "formatter": "status",
+              "priority": 1
+            },
+            {
+              "key": "action",
+              "label": "下一步动作",
+              "width": 150,
+              "align": "left",
+              "formatter": "text",
+              "priority": 1
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "明细行数",
+              "value": 4,
+              "tone": "primary"
+            },
+            {
+              "label": "可下钻",
+              "value": "项目/区域",
+              "tone": "success"
+            }
+          ]
+        },
+        "legacyKey": "DetailTableExampleCard:收入明细"
+      },
+      "profit.A.A": {
+        "key": "profit.A.A",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "毛利率",
+          "value": 24.8,
+          "unit": "%",
+          "tone": "primary",
+          "accessoryMetrics": [
+            {
+              "label": "环比",
+              "value": "+1.2pp",
+              "tone": "success"
+            }
+          ],
+          "sparkValues": [
+            21,
+            22,
+            23,
+            24,
+            25,
+            25
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:毛利率"
+      },
+      "profit.A.B": {
+        "key": "profit.A.B",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "费用率",
+          "value": 11.6,
+          "unit": "%",
+          "tone": "warning",
+          "accessoryMetrics": [
+            {
+              "label": "预算差",
+              "value": "+0.8pp",
+              "tone": "warning"
+            }
+          ],
+          "sparkValues": [
+            10,
+            11,
+            12,
+            12,
+            11,
+            12
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:费用率"
+      },
+      "profit.A.C": {
+        "key": "profit.A.C",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "经营利润",
+          "value": 2460,
+          "unit": "万",
+          "tone": "success",
+          "accessoryMetrics": [
+            {
+              "label": "同比",
+              "value": "+9.4%",
+              "tone": "success"
+            }
+          ],
+          "sparkValues": [
+            18,
+            19,
+            21,
+            22,
+            24,
+            25
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:经营利润"
+      },
+      "profit.B.A": {
+        "key": "profit.B.A",
+        "componentType": "TargetProgressExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "利润达成率",
+          "value": 94.2,
+          "valueSuffix": "%",
+          "targetValue": 100,
+          "currentValue": 94.2,
+          "gapValue": 5.8,
+          "tone": "primary",
+          "details": [
+            {
+              "label": "年度目标",
+              "value": "100%",
+              "icon": "target"
+            },
+            {
+              "label": "当前达成",
+              "value": "94.2%",
+              "icon": "current"
+            },
+            {
+              "label": "缺口",
+              "value": "5.8%",
+              "icon": "gap"
+            }
+          ]
+        },
+        "legacyKey": "TargetProgressExampleCard:利润达成率"
+      },
+      "profit.C.A": {
+        "key": "profit.C.A",
+        "componentType": "ConclusionExampleCard",
+        "visualType": "text-summary",
+        "props": {
+          "title": "利润结论",
+          "conclusion": "毛利率改善，但费用率超预算，需要压降华南门店促销和华北交付返工。",
+          "emphasis": "利润改善但费用承压",
+          "statusLabel": "经营判断",
+          "statusTone": "warning",
+          "evidenceItems": [
+            {
+              "label": "毛利率",
+              "value": "24.8%",
+              "tone": "success"
+            },
+            {
+              "label": "费用率",
+              "value": "11.6%",
+              "tone": "warning"
+            }
+          ],
+          "actionItems": [
+            {
+              "label": "动作",
+              "value": "费用专项复核到项目",
+              "tone": "warning"
+            }
+          ]
+        },
+        "legacyKey": "ConclusionExampleCard:利润结论"
+      },
+      "profit.D.A": {
+        "key": "profit.D.A",
+        "componentType": "ComboChartExampleCard",
+        "visualType": "combo",
+        "props": {
+          "title": "利润趋势",
+          "categories": [
+            "1月",
+            "2月",
+            "3月",
+            "4月",
+            "5月",
+            "6月"
+          ],
+          "series": [
+            {
+              "name": "经营利润",
+              "type": "bar",
+              "values": [
+                1680,
+                1810,
+                1960,
+                2110,
+                2280,
+                2460
+              ]
+            },
+            {
+              "name": "利润率",
+              "type": "line",
+              "values": [
+                18.6,
+                18.9,
+                19.2,
+                19.4,
+                19.6,
+                19.1
+              ]
+            }
+          ],
+          "auxMetrics": []
+        },
+        "legacyKey": "ComboChartExampleCard:利润趋势"
+      },
+      "profit.E.A": {
+        "key": "profit.E.A",
+        "componentType": "ProportionChartExampleCard",
+        "visualType": "pie",
+        "props": {
+          "title": "成本结构",
+          "items": [
+            {
+              "name": "采购成本",
+              "value": 56
+            },
+            {
+              "name": "履约成本",
+              "value": 18
+            },
+            {
+              "name": "促销费用",
+              "value": 14
+            },
+            {
+              "name": "售后费用",
+              "value": 12
+            }
+          ]
+        },
+        "legacyKey": "ProportionChartExampleCard:成本结构"
+      },
+      "profit.F.A": {
+        "key": "profit.F.A",
+        "componentType": "HeatmapChartExampleCard",
+        "visualType": "heatmap",
+        "props": {
+          "title": "费用热力",
+          "rows": [
+            "华东",
+            "华南",
+            "华北",
+            "海外"
+          ],
+          "columns": [
+            "促销",
+            "履约",
+            "售后"
+          ],
+          "cells": [
+            [
+              46,
+              38,
+              22
+            ],
+            [
+              78,
+              61,
+              44
+            ],
+            [
+              58,
+              82,
+              63
+            ],
+            [
+              42,
+              56,
+              35
+            ]
+          ]
+        },
+        "legacyKey": "HeatmapChartExampleCard:费用热力"
+      },
+      "profit.G.A": {
+        "key": "profit.G.A",
+        "componentType": "QuadrantChartExampleCard",
+        "visualType": "scatter",
+        "props": {
+          "title": "项目利润象限",
+          "xAxisName": "增长率",
+          "yAxisName": "毛利率",
+          "points": [
+            {
+              "name": "智慧家庭套购",
+              "x": 82,
+              "y": 76,
+              "value": 38
+            },
+            {
+              "name": "门店焕新",
+              "x": 58,
+              "y": 54,
+              "value": 24
+            },
+            {
+              "name": "工程客户交付",
+              "x": 36,
+              "y": 42,
+              "value": 18
+            },
+            {
+              "name": "海外直营提效",
+              "x": 74,
+              "y": 68,
+              "value": 31
+            }
+          ]
+        },
+        "legacyKey": "QuadrantChartExampleCard:项目利润象限"
+      },
+      "profit.H.A": {
+        "key": "profit.H.A",
+        "componentType": "ActionListExampleCard",
+        "visualType": "action-recommendation-card",
+        "props": {
+          "title": "利润动作",
+          "items": [
+            {
+              "label": "华南门店促销费用复核",
+              "owner": "财务BP",
+              "due": "今日",
+              "status": "待确认",
+              "tone": "warning"
+            },
+            {
+              "label": "华北返工成本专项分析",
+              "owner": "交付经理",
+              "due": "明日",
+              "status": "推进中",
+              "tone": "danger"
+            },
+            {
+              "label": "高毛利套购方案扩区",
+              "owner": "产品运营",
+              "due": "本周",
+              "status": "推进中",
+              "tone": "primary"
+            }
+          ]
+        },
+        "legacyKey": "ActionListExampleCard:利润动作"
+      },
+      "profit.I.A": {
+        "key": "profit.I.A",
+        "componentType": "ComplexTableExampleCard",
+        "visualType": "table",
+        "props": {
+          "title": "利润分组表",
+          "rowKey": "id",
+          "rows": [
+            {
+              "id": "R-001",
+              "region": "华东",
+              "channel": "线上直营",
+              "revenue": 3860,
+              "revenueYoY": 14.8,
+              "grossMargin": 29.6,
+              "fulfillmentRate": 97.8,
+              "stockRisk": "低",
+              "overdueAmount": 186,
+              "status": "健康",
+              "owner": "王晶",
+              "nextAction": "加大高复购会员投放"
+            },
+            {
+              "id": "R-002",
+              "region": "华南",
+              "channel": "门店零售",
+              "revenue": 2480,
+              "revenueYoY": 6.2,
+              "grossMargin": 22.4,
+              "fulfillmentRate": 92.1,
+              "stockRisk": "中",
+              "overdueAmount": 312,
+              "status": "关注",
+              "owner": "陈卓",
+              "nextAction": "压降低效样机库存"
+            },
+            {
+              "id": "R-003",
+              "region": "华北",
+              "channel": "工程客户",
+              "revenue": 1960,
+              "revenueYoY": -3.4,
+              "grossMargin": 18.8,
+              "fulfillmentRate": 88.6,
+              "stockRisk": "高",
+              "overdueAmount": 468,
+              "status": "预警",
+              "owner": "赵岩",
+              "nextAction": "周内确认回款计划"
+            },
+            {
+              "id": "R-004",
+              "region": "海外",
+              "channel": "直营网点",
+              "revenue": 3120,
+              "revenueYoY": 11.5,
+              "grossMargin": 27.3,
+              "fulfillmentRate": 94.5,
+              "stockRisk": "中",
+              "overdueAmount": 224,
+              "status": "关注",
+              "owner": "林可",
+              "nextAction": "补齐交付安装资源"
+            }
+          ],
+          "columnTree": [
+            {
+              "key": "region",
+              "label": "区域",
+              "field": "region",
+              "width": 70,
+              "fixed": "left",
+              "align": "center",
+              "formatter": "text",
+              "locked": true
+            },
+            {
+              "key": "channel",
+              "label": "渠道",
+              "field": "channel",
+              "width": 96,
+              "fixed": "left",
+              "align": "left",
+              "formatter": "text",
+              "locked": true
+            },
+            {
+              "key": "performance",
+              "label": "经营表现",
+              "children": [
+                {
+                  "key": "revenue",
+                  "label": "收入",
+                  "field": "revenue",
+                  "width": 86,
+                  "align": "right",
+                  "formatter": "currency",
+                  "unit": "万",
+                  "sortable": true
+                },
+                {
+                  "key": "revenueYoY",
+                  "label": "同比",
+                  "field": "revenueYoY",
+                  "width": 72,
+                  "align": "right",
+                  "formatter": "percent",
+                  "unit": "%",
+                  "sortable": true
+                },
+                {
+                  "key": "grossMargin",
+                  "label": "毛利率",
+                  "field": "grossMargin",
+                  "width": 78,
+                  "align": "right",
+                  "formatter": "percent",
+                  "unit": "%",
+                  "sortable": true
+                }
+              ]
+            },
+            {
+              "key": "delivery",
+              "label": "履约质量",
+              "children": [
+                {
+                  "key": "fulfillmentRate",
+                  "label": "履约率",
+                  "field": "fulfillmentRate",
+                  "width": 78,
+                  "align": "right",
+                  "formatter": "percent",
+                  "unit": "%"
+                },
+                {
+                  "key": "stockRisk",
+                  "label": "库存风险",
+                  "field": "stockRisk",
+                  "width": 82,
+                  "align": "center",
+                  "formatter": "status"
+                }
+              ]
+            },
+            {
+              "key": "risk",
+              "label": "风险闭环",
+              "children": [
+                {
+                  "key": "overdueAmount",
+                  "label": "逾期回款",
+                  "field": "overdueAmount",
+                  "width": 90,
+                  "align": "right",
+                  "formatter": "currency",
+                  "unit": "万"
+                },
+                {
+                  "key": "status",
+                  "label": "状态",
+                  "field": "status",
+                  "width": 76,
+                  "align": "center",
+                  "formatter": "status"
+                },
+                {
+                  "key": "owner",
+                  "label": "负责人",
+                  "field": "owner",
+                  "width": 76,
+                  "align": "center",
+                  "formatter": "text"
+                },
+                {
+                  "key": "nextAction",
+                  "label": "下一步",
+                  "field": "nextAction",
+                  "minWidth": 140,
+                  "align": "left",
+                  "formatter": "text",
+                  "ellipsis": true
+                }
+              ]
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "分组表头",
+              "value": "经营表现/风险/动作",
+              "tone": "primary"
+            },
+            {
+              "label": "数据粒度",
+              "value": "区域-渠道",
+              "tone": "neutral"
+            }
+          ]
+        },
+        "legacyKey": "ComplexTableExampleCard:利润分组表"
+      },
+      "risk.A.A": {
+        "key": "risk.A.A",
+        "componentType": "KpiMetricExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "风险项目数",
+          "value": 7,
+          "unit": "项",
+          "tone": "danger",
+          "accessoryMetrics": [
+            {
+              "label": "高风险",
+              "value": "2项",
+              "tone": "danger"
+            }
+          ],
+          "sparkValues": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            7
+          ]
+        },
+        "legacyKey": "KpiMetricExampleCard:风险项目数"
+      },
+      "risk.A.B": {
+        "key": "risk.A.B",
+        "componentType": "TargetProgressExampleCard",
+        "visualType": "metric-card",
+        "props": {
+          "title": "回款达成率",
+          "value": 88.4,
+          "valueSuffix": "%",
+          "targetValue": 100,
+          "currentValue": 88.4,
+          "gapValue": 11.6,
+          "tone": "warning",
+          "details": [
+            {
+              "label": "年度目标",
+              "value": "100%",
+              "icon": "target"
+            },
+            {
+              "label": "当前达成",
+              "value": "88.4%",
+              "icon": "current"
+            },
+            {
+              "label": "缺口",
+              "value": "11.6%",
+              "icon": "gap"
+            }
+          ]
+        },
+        "legacyKey": "TargetProgressExampleCard:回款达成率"
+      },
+      "risk.B.A": {
+        "key": "risk.B.A",
+        "componentType": "ConclusionExampleCard",
+        "visualType": "text-summary",
+        "props": {
+          "title": "风险结论",
+          "conclusion": "华北工程客户存在回款与验收双风险，需要按项目建立日清单。",
+          "emphasis": "回款风险优先",
+          "statusLabel": "经营判断",
+          "statusTone": "danger",
+          "evidenceItems": [
+            {
+              "label": "逾期回款",
+              "value": "468万",
+              "tone": "danger"
+            },
+            {
+              "label": "履约率",
+              "value": "88.6%",
+              "tone": "warning"
+            }
+          ],
+          "actionItems": [
+            {
+              "label": "动作",
+              "value": "项目经理每日更新验收材料",
+              "tone": "danger"
+            }
+          ]
+        },
+        "legacyKey": "ConclusionExampleCard:风险结论"
+      },
+      "risk.C.A": {
+        "key": "risk.C.A",
+        "componentType": "CustomEChartComponentTemplate",
+        "visualType": "other",
+        "props": {
+          "title": "项目阶段阻塞",
+          "categories": [
+            "立项",
+            "签约",
+            "交付",
+            "验收",
+            "回款"
+          ],
+          "values": [
+            42,
+            36,
+            31,
+            26,
+            21
+          ],
+          "auxMetrics": [
+            {
+              "label": "当前阶段",
+              "value": "交付推进"
+            },
+            {
+              "label": "阻塞节点",
+              "value": "验收材料"
+            }
+          ]
+        },
+        "legacyKey": "CustomEChartComponentTemplate:项目阶段阻塞"
+      },
+      "risk.D.A": {
+        "key": "risk.D.A",
+        "componentType": "HeatmapChartExampleCard",
+        "visualType": "heatmap",
+        "props": {
+          "title": "风险热力",
+          "rows": [
+            "华东",
+            "华南",
+            "华北",
+            "海外"
+          ],
+          "columns": [
+            "回款",
+            "库存",
+            "履约"
+          ],
+          "cells": [
+            [
+              22,
+              28,
+              18
+            ],
+            [
+              46,
+              58,
+              44
+            ],
+            [
+              86,
+              74,
+              82
+            ],
+            [
+              38,
+              42,
+              56
+            ]
+          ]
+        },
+        "legacyKey": "HeatmapChartExampleCard:风险热力"
+      },
+      "risk.E.A": {
+        "key": "risk.E.A",
+        "componentType": "RoundedFunnelChartExampleCard",
+        "visualType": "funnel",
+        "props": {
+          "title": "回款漏斗",
+          "stages": [
+            {
+              "name": "应收确认",
+              "value": 100
+            },
+            {
+              "name": "开票完成",
+              "value": 92
+            },
+            {
+              "name": "客户确认",
+              "value": 81
+            },
+            {
+              "name": "到账",
+              "value": 68
+            }
+          ]
+        },
+        "legacyKey": "RoundedFunnelChartExampleCard:回款漏斗"
+      },
+      "risk.F.A": {
+        "key": "risk.F.A",
+        "componentType": "RankingListExampleCard",
+        "visualType": "ranking-list",
+        "props": {
+          "title": "风险排行",
+          "items": [
+            {
+              "name": "华北工程客户",
+              "value": 468,
+              "delta": "高"
+            },
+            {
+              "name": "华南门店样机",
+              "value": 312,
+              "delta": "中"
+            },
+            {
+              "name": "海外安装资源",
+              "value": 224,
+              "delta": "中"
+            }
+          ],
+          "valueUnit": "万"
+        },
+        "legacyKey": "RankingListExampleCard:风险排行"
+      },
+      "risk.G.A": {
+        "key": "risk.G.A",
+        "componentType": "RadarChartExampleCard",
+        "visualType": "radar",
+        "props": {
+          "title": "风险健康度",
+          "indicators": [
+            "回款",
+            "库存",
+            "履约",
+            "客诉",
+            "动作闭环"
+          ],
+          "values": [
+            58,
+            64,
+            62,
+            76,
+            68
+          ]
+        },
+        "legacyKey": "RadarChartExampleCard:风险健康度"
+      },
+      "risk.H.A": {
+        "key": "risk.H.A",
+        "componentType": "ActionListExampleCard",
+        "visualType": "action-recommendation-card",
+        "props": {
+          "title": "风险动作",
+          "items": [
+            {
+              "label": "华北回款日清单",
+              "owner": "赵岩",
+              "due": "今日",
+              "status": "高优先级",
+              "tone": "danger"
+            },
+            {
+              "label": "验收材料补齐",
+              "owner": "交付经理",
+              "due": "明日",
+              "status": "推进中",
+              "tone": "warning"
+            },
+            {
+              "label": "华南样机库存处置",
+              "owner": "陈卓",
+              "due": "本周",
+              "status": "推进中",
+              "tone": "warning"
+            },
+            {
+              "label": "海外安装资源排班",
+              "owner": "林可",
+              "due": "本周",
+              "status": "已排期",
+              "tone": "success"
+            }
+          ]
+        },
+        "legacyKey": "ActionListExampleCard:风险动作"
+      },
+      "risk.I.A": {
+        "key": "risk.I.A",
+        "componentType": "DetailTableExampleCard",
+        "visualType": "table",
+        "props": {
+          "title": "风险明细",
+          "rowKey": "id",
+          "rows": [
+            {
+              "id": "P-001",
+              "project": "智慧家庭套购增长",
+              "region": "华东",
+              "owner": "王晶",
+              "revenue": 3860,
+              "margin": 29.6,
+              "progress": "96%",
+              "risk": "低",
+              "action": "放大复购投放"
+            },
+            {
+              "id": "P-002",
+              "project": "门店焕新转化",
+              "region": "华南",
+              "owner": "陈卓",
+              "revenue": 2480,
+              "margin": 22.4,
+              "progress": "84%",
+              "risk": "中",
+              "action": "优化样机结构"
+            },
+            {
+              "id": "P-003",
+              "project": "工程客户交付",
+              "region": "华北",
+              "owner": "赵岩",
+              "revenue": 1960,
+              "margin": 18.8,
+              "progress": "77%",
+              "risk": "高",
+              "action": "锁定回款节点"
+            },
+            {
+              "id": "P-004",
+              "project": "海外直营提效",
+              "region": "海外",
+              "owner": "林可",
+              "revenue": 3120,
+              "margin": 27.3,
+              "progress": "91%",
+              "risk": "中",
+              "action": "补齐交付资源"
+            }
+          ],
+          "columns": [
+            {
+              "key": "project",
+              "label": "项目",
+              "width": 150,
+              "align": "left",
+              "fixed": "left",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "region",
+              "label": "区域",
+              "width": 72,
+              "align": "center",
+              "formatter": "text",
+              "priority": 1
+            },
+            {
+              "key": "owner",
+              "label": "负责人",
+              "width": 80,
+              "align": "center",
+              "formatter": "text",
+              "priority": 2
+            },
+            {
+              "key": "revenue",
+              "label": "收入",
+              "width": 86,
+              "align": "right",
+              "formatter": "currency",
+              "unit": "万",
+              "priority": 1
+            },
+            {
+              "key": "margin",
+              "label": "毛利率",
+              "width": 78,
+              "align": "right",
+              "formatter": "percent",
+              "unit": "%",
+              "priority": 1
+            },
+            {
+              "key": "progress",
+              "label": "进度",
+              "width": 72,
+              "align": "center",
+              "formatter": "text",
+              "priority": 2
+            },
+            {
+              "key": "risk",
+              "label": "风险",
+              "width": 70,
+              "align": "center",
+              "formatter": "status",
+              "priority": 1
+            },
+            {
+              "key": "action",
+              "label": "下一步动作",
+              "width": 150,
+              "align": "left",
+              "formatter": "text",
+              "priority": 1
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "明细行数",
+              "value": 4,
+              "tone": "primary"
+            },
+            {
+              "label": "可下钻",
+              "value": "项目/区域",
+              "tone": "success"
+            }
+          ]
+        },
+        "legacyKey": "DetailTableExampleCard:风险明细"
+      }
+    }
   }
 }

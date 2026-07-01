@@ -13,7 +13,7 @@ Use this workflow when the executable PRD says the user must configure an analys
 
 Require the PRD bundle produced by `report-prd-document-generation`. `CHILD-PRD-PROTOTYPE` must name this workflow or an accepted mixed-report path with self-service analysis as the primary execution flow.
 
-The PRD must already contain thinking output for analysis model, field panel, configuration path, result view, save/share/export reuse, trust/permission boundary, and page preview.
+The PRD must already contain thinking output and executable component mapping for analysis model, field panel, configuration path, result view, save/share/export reuse, trust/permission boundary, page preview, `componentSlotConfigMap`, `componentExampleConfigMap`, data/API rows, interaction rows, and generated result summary rules when present.
 
 ## Template Reference Gate
 

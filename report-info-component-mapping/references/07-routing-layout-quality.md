@@ -1,19 +1,18 @@
 # 07 Routing Layout Quality
 
-Use this reference when the mapping must route to report-type skills, fit layout/style rules, or produce a final specification.
+Use this reference when the mapping must align with the PRD report path, fit layout/style rules, or produce a final specification.
 
-## Report Type Routing
+## Report Path Routing
 
-Map information patterns to `report-type-design` with one of these primary type labels:
+Map information patterns to the `RTP-*` paths owned by `report-prd-document-generation` `references/report-type-implementation-patterns.md`:
 
-- `status-overview`: current status, health judgment, target progress, variance, trend, structure, risk entry.
-- `analysis-diagnostic`: phenomenon, driver, cause, attribution, decomposition, evidence, recommendation.
-- `detail-query`: records, fields, filters, sorting, export, row detail, source object.
-- `performance-evaluation`: target completion, score, rank, tier, benchmark, fairness, improvement gap.
-- `review-recap`: period story, conclusion, major change, reason, risk, next action, export to PPT/PDF.
-- `anomaly-monitoring`: rule breach, severity, affected object, owner, SLA, handling status.
-- `operational-execution`: task, owner, deadline, progress, blocker, evidence, acceptance, closure.
-- `reconciliation-traceability`: source,口径, version, matching result, difference, lineage, correction, audit log.
+- `RTP-KPI-DASHBOARD`: current status, health judgment, target progress, variance, trend, structure, risk entry, performance score/rank when the primary job is management status.
+- `RTP-ANALYSIS-REPORT`: phenomenon, driver, cause, attribution, decomposition, evidence, recommendation, performance diagnosis, or review narrative when explanation matters most.
+- `RTP-DETAIL-QUERY`: records, fields, filters, sorting, export, row detail, source object, reconciliation, traceability, audit evidence, or row-level verification.
+- `RTP-REVIEW-EXPORT`: period story, conclusion, major change, reason, risk, next action, export to PPT/PDF.
+- `RTP-RISK-MONITOR`: rule breach, severity, affected object, owner, SLA, handling status.
+- `RTP-CLOSURE-BOARD`: task, owner, deadline, progress, blocker, evidence, acceptance, closure.
+- `RTP-SELF-SERVICE`: field/dimension/metric selection, generated analysis result, saved view, sharing, export, and trust/quality cues.
 
 When one page mixes multiple intents, choose one primary type for page logic and use secondary types only for local blocks.
 Do not create a decorative domain overlay. Domain words such as 产业, 区域, 国家, 品牌, 渠道, 客户, or 产品 must first be classified by control semantics: if they change metric names, component set, table schema, metric口径, or domain vocabulary, place them in navigation, route, tab, segment, or an explicit perspective layer; if they only narrow row scope, they may be ordinary filters.

@@ -13,7 +13,7 @@ Use this workflow when the executable PRD says the report must answer "which rec
 
 Require `prd/children/prd-child-prototype.md` plus execution files from `report-prd-document-generation`. The child PRD must name this workflow or an accepted mixed-report path with detail report/query as the primary execution flow.
 
-The PRD must already contain thinking output for query path, visible fields, filter model, row grain, detail/trace/export path, and page preview.
+The PRD must already contain thinking output and executable component mapping for query path, visible fields, filter model, row grain, detail/trace/export path, page preview, `componentSlotConfigMap`, `componentExampleConfigMap`, data/API rows, interaction rows, and generated summary rules when present.
 
 ## Template Reference Gate
 

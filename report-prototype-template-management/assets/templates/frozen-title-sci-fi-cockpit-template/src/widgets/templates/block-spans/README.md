@@ -19,8 +19,6 @@ Every block area keeps the same structural areas:
 
 - `1-1 titleArea`
 - `1-2 pillArea`
-- `2-1 auxMetricArea`
-- `2-2 unitArea`
 - `3 componentArea`
 - `4 summaryArea`
 

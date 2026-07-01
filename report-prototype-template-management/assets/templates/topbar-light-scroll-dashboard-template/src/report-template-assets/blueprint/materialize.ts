@@ -1,5 +1,5 @@
 import type { DashboardConfig } from '../../types/dashboard';
-import type { RegisteredWidgetConfig, WidgetAuxMetric } from '../../widgets/types';
+import type { RegisteredWidgetConfig } from '../../widgets/types';
 import type { ReportTemplateBlockAsset, ReportTemplateComponentSlotContract, ReportTemplateNav, ReportTemplatePageConfig } from '../types';
 import { buildLayoutBlocks, normalizeLayoutRows } from '../utils/layout-grid';
 import { validateReportBlueprint } from './compatibility';
@@ -51,23 +51,6 @@ const getComponentSlotExampleId = (slot: ReportBlueprintComponentSlot) =>
 const getComponentSlotWidget = (slot: ReportBlueprintComponentSlot, context: ReportAssetResolutionContext) =>
   getAssetById(context.componentExamples, getComponentSlotExampleId(slot))?.widget ?? slot.widget;
 
-const getUnitMetric = (slotFill: ReportTemplateSlotFill): WidgetAuxMetric | undefined => {
-  if (!slotFill.unit) {
-    return undefined;
-  }
-
-  return typeof slotFill.unit === 'string' ? { label: '单位', value: slotFill.unit } : slotFill.unit;
-};
-
-const mergeAuxMetrics = (current: WidgetAuxMetric[] | undefined, slotFill: ReportTemplateSlotFill) => {
-  const existingMetrics = current ?? [];
-  const nextMetrics = slotFill.metrics ?? [];
-  const unitMetric = getUnitMetric(slotFill);
-  const nonUnitMetrics = [...existingMetrics, ...nextMetrics].filter((metric) => metric.label !== '单位');
-  const existingUnit = [...existingMetrics].reverse().find((metric) => metric.label === '单位');
-
-  return unitMetric || existingUnit ? [...nonUnitMetrics, unitMetric ?? existingUnit].filter(Boolean) as WidgetAuxMetric[] : nonUnitMetrics;
-};
 
 const applySlotFills = (widget: RegisteredWidgetConfig, slotFills: ReportTemplateSlotFill[] = []) => {
   const nextWidget = cloneValue(widget);
@@ -85,13 +68,6 @@ const applySlotFills = (widget: RegisteredWidgetConfig, slotFills: ReportTemplat
       nextWidget.titlePills = slotFill.pills;
     }
 
-    if (slotFill.slotId === 'auxMetricArea') {
-      nextWidget.auxMetrics = mergeAuxMetrics(nextWidget.auxMetrics, slotFill);
-    }
-
-    if (slotFill.slotId === 'unitArea') {
-      nextWidget.auxMetrics = mergeAuxMetrics(nextWidget.auxMetrics, slotFill);
-    }
 
     if (slotFill.slotId === 'summaryArea' && slotFill.text) {
       nextWidget.bodySummary = slotFill.text;

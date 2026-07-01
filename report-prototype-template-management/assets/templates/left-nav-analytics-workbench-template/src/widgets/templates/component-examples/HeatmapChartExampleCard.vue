@@ -42,6 +42,7 @@ interface HeatmapChartExampleLayoutConfig {
 interface HeatmapChartExampleAuxConfig {
   visible?: boolean;
   maxItems?: number;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
   labelFontSizePx?: number;
   valueFontSizePx?: number;
   labelColor?: string;
@@ -165,6 +166,7 @@ const defaultLayoutConfig: Required<HeatmapChartExampleLayoutConfig> = {
 const defaultAuxConfig: Required<HeatmapChartExampleAuxConfig> = {
   visible: true,
   maxItems: 4,
+  orientation: 'auto',
   labelFontSizePx: 9,
   valueFontSizePx: 12,
   labelColor: '#6b7c93',
@@ -223,6 +225,14 @@ const normalizeOrientation = (value: unknown): Required<HeatmapChartExampleLayou
   return 'auto';
 };
 
+const normalizeAuxOrientation = (value: unknown): Required<HeatmapChartExampleAuxConfig>['orientation'] => {
+  if (value === 'horizontal' || value === 'vertical') {
+    return value;
+  }
+
+  return 'auto';
+};
+
 const resolvedTitle = computed<Required<HeatmapChartExampleTitleConfig>>(() => ({
   ...defaultTitleConfig,
   ...(props.config?.title ?? {}),
@@ -252,6 +262,7 @@ const resolvedLayout = computed<Required<HeatmapChartExampleLayoutConfig>>(() =>
 const resolvedAux = computed<Required<HeatmapChartExampleAuxConfig>>(() => ({
   ...defaultAuxConfig,
   ...(props.config?.aux ?? {}),
+  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
   maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 8, defaultAuxConfig.maxItems)),
   labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
   valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
@@ -431,8 +442,19 @@ const contentOrientation = computed<'horizontal' | 'vertical'>(() => {
   return containerSize.value.width >= containerSize.value.height ? 'horizontal' : 'vertical';
 });
 
+const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+  const orientation = resolvedAux.value.orientation;
+
+  if (orientation === 'horizontal' || orientation === 'vertical') {
+    return orientation;
+  }
+
+  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+});
+
 const cardClasses = computed(() => ({
   [`is-${contentOrientation.value}`]: true,
+  [`aux-${auxOrientation.value}`]: true,
   'has-aux': visibleAuxMetrics.value.length > 0,
   'has-title': resolvedTitle.value.visible,
   'has-title-underline': resolvedTitle.value.underline,
@@ -838,8 +860,8 @@ onBeforeUnmount(() => {
 }
 
 .heatmap-chart-example-card.has-aux.is-horizontal .heatmap-chart-example-body {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--heatmap-chart-horizontal-split);
+  grid-template-columns: var(--heatmap-chart-horizontal-split);
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .heatmap-chart-example-card.has-aux.is-vertical .heatmap-chart-example-body {
@@ -859,14 +881,14 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.heatmap-chart-example-card.is-horizontal .heatmap-chart-example-aux {
+.heatmap-chart-example-card.aux-horizontal .heatmap-chart-example-aux {
   grid-template-columns: repeat(var(--heatmap-chart-aux-count), minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr);
   align-items: center;
   column-gap: 4px;
 }
 
-.heatmap-chart-example-card.is-vertical .heatmap-chart-example-aux {
+.heatmap-chart-example-card.aux-vertical .heatmap-chart-example-aux {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: repeat(var(--heatmap-chart-aux-count), minmax(0, 1fr));
   align-items: stretch;
@@ -882,16 +904,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.heatmap-chart-example-card.is-horizontal .heatmap-chart-example-aux-item {
+.heatmap-chart-example-card.aux-horizontal .heatmap-chart-example-aux-item {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
   justify-items: center;
   text-align: center;
+  row-gap: 1px;
 }
 
-.heatmap-chart-example-card.is-vertical .heatmap-chart-example-aux-item {
+.heatmap-chart-example-card.aux-vertical .heatmap-chart-example-aux-item {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   justify-content: stretch;
   column-gap: 6px;
+  text-align: left;
 }
 
 .heatmap-chart-example-aux-item em,
@@ -916,7 +942,7 @@ onBeforeUnmount(() => {
   font-weight: 800;
 }
 
-.heatmap-chart-example-card.is-vertical .heatmap-chart-example-aux-item b {
+.heatmap-chart-example-card.aux-vertical .heatmap-chart-example-aux-item b {
   justify-self: end;
 }
 

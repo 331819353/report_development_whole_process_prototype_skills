@@ -47,6 +47,7 @@ Before any specialized workflow starts implementation, the PRD bundle must provi
 - Selected `frameworkTemplateId`.
 - `pageLayoutConfig`: `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, block coordinates, and first-viewport plan.
 - `blockAreaConfigMap`: per-block title, pill, auxiliary metric, unit, component area, summary/description, source/trust, and optional conclusion-rule binding.
+- Answer atom map and result-content boundary: which business question each visible block/component answers, which content is visible result versus interaction-only/handoff/removed process artifact, and which `RTP-*` / `PATH-*` row it traces to.
 - `componentSlotConfigMap`: slot count, slot pattern, slot coordinates, slot roles, slot sizes, required/optional state, and ownership.
 - `componentExampleConfigMap`: one registered component example per declared slot, including `componentExampleId`, Vue file/component, visual type, props/config, data binding, state contract, and compatibility evidence.
 - `customEChartExampleMap` for slots that need a newly registered ECharts component example.
@@ -65,13 +66,14 @@ A specialized workflow may start only when:
 - `CHILD-PRD-PROTOTYPE` is present and `synced` or `draft` with non-blocking gaps.
 - Page content and reading path are decided by the thinking output or an explicitly accepted user design idea.
 - The configurable template route is complete enough to implement: `frameworkTemplateId`, `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` are present for every retained page.
+- PRD-owned component mapping rows are complete enough to implement: answer atom map, block-to-component map, component data map, filter/action map, conclusion rule map, and validation map are present or explicitly `draft` with non-blocking gaps.
 - Any missing component has a `customEChartExampleMap` entry and registration plan.
 - Every displayed metric is defined and mounted.
 - Every visible conclusion has a `RULE-*` row in `conclusionRuleMap`.
 - Every interaction has visible ownership and system response.
 - The self-development exception map contains only registered component examples and interaction behavior.
 
-If the start gate fails, return to `report-prd-document-generation` or `report-requirement-structure-extraction`; do not patch missing PRD structure inside the specialized workflow.
+If the start gate fails, return to `report-prd-document-generation` to complete intake, gap handling, report-path selection, and executable PRD structure; do not patch missing PRD structure inside the specialized workflow.
 
 ## Area To Execution Map
 
@@ -82,12 +84,12 @@ If the start gate fails, return to `report-prd-document-generation` or `report-r
 | Target workflow | One of the four specialized workflows. | `report-prd-document-generation` |
 | Page layout | `pageLayoutConfig` with section map, layout rows, coordinates, nav/page wiring. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
 | Block areas | `blockAreaConfigMap` with standard block-area content and rules. | target workflow, `report-prototype-template-management` |
-| Component slots | `componentSlotConfigMap` and `componentExampleConfigMap`. | `report-info-component-mapping`, target workflow, `report-prototype-template-management` |
+| Component slots | `componentSlotConfigMap` and `componentExampleConfigMap`. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
 | Custom components | `customEChartExampleMap`, registration path, props/data contract, validation. | target workflow, `report-prototype-template-management` |
-| Metrics | Metric dictionary, formulas, units, source, null rules, mounting. | `report-info-component-mapping`, `metric-number-display-contract` |
-| Data/API | Data objects, request/response, mock/data-source status, permissions, freshness. | `report-info-component-mapping`, target workflow |
-| Interactions | Filters, pills, toolbar actions, drilldown/jump/drawer/modal/export/state behavior. | `report-info-component-mapping`, target workflow |
-| Conclusions | `conclusionRuleMap` and generated conclusion bindings. | `report-info-component-mapping`, target workflow |
+| Metrics | Metric dictionary, formulas, units, source, null rules, mounting. | `report-prd-document-generation`, `metric-number-display-contract` |
+| Data/API | Data objects, request/response, mock/data-source status, permissions, freshness. | `report-prd-document-generation`, target workflow |
+| Interactions | Filters, pills, toolbar actions, drilldown/jump/drawer/modal/export/state behavior. | `report-prd-document-generation`, target workflow |
+| Conclusions | `conclusionRuleMap` and generated conclusion bindings. | `report-prd-document-generation`, target workflow |
 | Release | Validation commands, URL/screenshot/data evidence, readiness status. | target workflow |
 
 ## Ready Gate

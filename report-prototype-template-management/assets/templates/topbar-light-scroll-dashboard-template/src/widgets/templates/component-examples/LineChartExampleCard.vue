@@ -68,6 +68,7 @@ interface LineChartExampleToneConfig {
 interface LineChartExampleAuxConfig {
   visible?: boolean;
   maxItems?: number;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
   labelFontSizePx?: number;
   valueFontSizePx?: number;
   labelColor?: string;
@@ -156,6 +157,7 @@ const defaultToneConfig: Required<LineChartExampleToneConfig> = {
 const defaultAuxConfig: Required<LineChartExampleAuxConfig> = {
   visible: true,
   maxItems: 4,
+  orientation: 'auto',
   labelFontSizePx: 9,
   valueFontSizePx: 12,
   labelColor: '#6b7c93',
@@ -173,6 +175,14 @@ const clampNumber = (value: unknown, min: number, max: number, fallback: number)
 };
 
 const normalizeOrientation = (value: unknown): Required<LineChartExampleLayoutConfig>['orientation'] => {
+  if (value === 'horizontal' || value === 'vertical') {
+    return value;
+  }
+
+  return 'auto';
+};
+
+const normalizeAuxOrientation = (value: unknown): Required<LineChartExampleAuxConfig>['orientation'] => {
   if (value === 'horizontal' || value === 'vertical') {
     return value;
   }
@@ -209,6 +219,7 @@ const resolvedLayout = computed<Required<LineChartExampleLayoutConfig>>(() => {
 const resolvedAux = computed<Required<LineChartExampleAuxConfig>>(() => ({
   ...defaultAuxConfig,
   ...(props.config?.aux ?? {}),
+  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
   maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 8, defaultAuxConfig.maxItems)),
   labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
   valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
@@ -306,8 +317,19 @@ const contentOrientation = computed<'horizontal' | 'vertical'>(() => {
   return containerSize.value.width >= containerSize.value.height ? 'horizontal' : 'vertical';
 });
 
+const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+  const orientation = resolvedAux.value.orientation;
+
+  if (orientation === 'horizontal' || orientation === 'vertical') {
+    return orientation;
+  }
+
+  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+});
+
 const cardClasses = computed(() => ({
   [`is-${contentOrientation.value}`]: true,
+  [`aux-${auxOrientation.value}`]: true,
   'has-aux': visibleAuxMetrics.value.length > 0,
   'has-title': resolvedTitle.value.visible,
 }));
@@ -702,8 +724,8 @@ onBeforeUnmount(() => {
 }
 
 .line-chart-example-card.has-aux.is-horizontal .line-chart-example-body {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--line-chart-horizontal-split);
+  grid-template-columns: var(--line-chart-horizontal-split);
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .line-chart-example-card.has-aux.is-vertical .line-chart-example-body {
@@ -723,14 +745,14 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.line-chart-example-card.is-horizontal .line-chart-example-aux {
+.line-chart-example-card.aux-horizontal .line-chart-example-aux {
   grid-template-columns: repeat(var(--line-chart-aux-count), minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr);
   align-items: center;
   column-gap: 4px;
 }
 
-.line-chart-example-card.is-vertical .line-chart-example-aux {
+.line-chart-example-card.aux-vertical .line-chart-example-aux {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: repeat(var(--line-chart-aux-count), minmax(0, 1fr));
   align-items: stretch;
@@ -746,16 +768,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.line-chart-example-card.is-horizontal .line-chart-example-aux-item {
+.line-chart-example-card.aux-horizontal .line-chart-example-aux-item {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
   justify-items: center;
   text-align: center;
+  row-gap: 1px;
 }
 
-.line-chart-example-card.is-vertical .line-chart-example-aux-item {
+.line-chart-example-card.aux-vertical .line-chart-example-aux-item {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   justify-content: stretch;
   column-gap: 6px;
+  text-align: left;
 }
 
 .line-chart-example-aux-item em,
@@ -780,7 +806,7 @@ onBeforeUnmount(() => {
   font-weight: 800;
 }
 
-.line-chart-example-card.is-vertical .line-chart-example-aux-item b {
+.line-chart-example-card.aux-vertical .line-chart-example-aux-item b {
   justify-self: end;
 }
 

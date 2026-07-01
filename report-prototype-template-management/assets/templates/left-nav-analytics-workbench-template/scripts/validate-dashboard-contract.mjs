@@ -5,6 +5,7 @@ import ts from 'typescript';
 const projectRoot = process.cwd();
 const packagePath = path.join(projectRoot, 'package.json');
 const configPath = path.join(projectRoot, 'src/config/dashboard.config.ts');
+const reportPagesPath = path.join(projectRoot, 'src/report-template-assets/business-report-pages.ts');
 const mainEntryPath = path.join(projectRoot, 'src/main.ts');
 const srcPath = path.join(projectRoot, 'src');
 const widgetComponentsPath = path.join(projectRoot, 'src/widgets/components');
@@ -53,6 +54,7 @@ const validateProjectHandoffArtifacts = () => {
     '## Component Data Binding Matrix',
     '## Filter And Parameter Semantics',
     '## Interaction Payloads',
+    '## Backend Interface Method Contract',
     '## Backend API And Model Suggestions',
     '## Gaps And Assumptions',
     '## Verification',
@@ -64,6 +66,9 @@ const validateProjectHandoffArtifacts = () => {
     'dashboard.dataset.json',
     'dataSources/registry.ts',
     'component-example-catalog',
+    'Service method',
+    'Request DTO',
+    'Response DTO',
   ].forEach((needle) => {
     if (dataSummaryText && !dataSummaryText.includes(needle)) {
       errors.push(`docs/prototype-data-summary.md: must mention actual project data/binding artifact "${needle}".`);
@@ -256,13 +261,20 @@ const validateFilterDefinitions = () => {
         });
 
         const optionsNode = getProperty(filterNode, 'options');
+        const sourceNode = getProperty(filterNode, 'source');
+        const hasVisibleOptions = isArray(optionsNode) && optionsNode.elements.length > 0;
+        const hasSource = Boolean(sourceNode);
 
-        if (!isArray(optionsNode) || optionsNode.elements.length === 0) {
-          errors.push(`${location}: filter must declare visible options[].`);
+        if (!hasSource) {
+          errors.push(`${location}: filter must declare a dynamic source backed by the mock API option endpoint.`);
           return;
         }
 
-        optionsNode.elements.forEach((optionNode, optionIndex) => {
+        if (hasVisibleOptions) {
+          errors.push(`${location}: static options[] are not allowed in mock API mode; move option rows to dashboard.dataset.json and configure source.`);
+        }
+
+        optionsNode?.elements.forEach((optionNode, optionIndex) => {
           const optionLocation = `${location}.options[${optionIndex}]`;
 
           if (!isObject(optionNode)) {
@@ -840,6 +852,250 @@ const validateComponentExampleSlots = (widgetNode, location) => {
     }
 
     validateComponentSlotFills(getProperty(slotNode, 'slotFills'), `${slotLocation}.slotFills`);
+  });
+};
+
+const isRuntimeRecord = (value) => Boolean(value && typeof value === 'object' && !Array.isArray(value));
+
+const loadRuntimeReportPages = async () => {
+  if (!existsSync(reportPagesPath)) {
+    errors.push(`business-report-pages.ts: missing runtime page config at ${path.relative(projectRoot, reportPagesPath)}.`);
+    return null;
+  }
+
+  try {
+    const transpiled = ts.transpileModule(readText(reportPagesPath), {
+      compilerOptions: {
+        module: ts.ModuleKind.ESNext,
+        target: ts.ScriptTarget.ES2022,
+        importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
+      },
+    }).outputText;
+    const moduleUrl = `data:text/javascript;base64,${Buffer.from(transpiled, 'utf8').toString('base64')}#dashboard-contract`;
+    return await import(moduleUrl);
+  } catch (error) {
+    errors.push(`business-report-pages.ts: failed to load runtime page config for slot data validation: ${error.message}`);
+    return null;
+  }
+};
+
+const getComponentPropsKeyFromUrl = (url) => {
+  const prefix = '/api/component-props/';
+
+  if (typeof url !== 'string' || !url.startsWith(prefix)) {
+    return '';
+  }
+
+  return decodeURIComponent(url.slice(prefix.length));
+};
+
+const normalizeRuntimeActionTargetType = (action) => {
+  const targetType = action?.targetType || action?.interactionType;
+
+  if (targetType === 'drilldown' || targetType === 'drawer') {
+    return 'drawer';
+  }
+
+  if (targetType === 'modal') {
+    return 'modal';
+  }
+
+  if (targetType === 'popup' || targetType === 'popover') {
+    return 'popover';
+  }
+
+  if (targetType === 'jump' || targetType === 'route') {
+    return 'route';
+  }
+
+  return targetType || '';
+};
+
+const getRuntimeActionList = (actionConfig) => {
+  if (!actionConfig) {
+    return [];
+  }
+
+  return Array.isArray(actionConfig) ? actionConfig : [actionConfig];
+};
+
+const validateRuntimePageLayoutRows = (pageConfig, pageId) => {
+  const location = `projectReportPages.${pageId}`;
+  const layoutRows = pageConfig?.layoutRows;
+
+  if (!Array.isArray(layoutRows) || layoutRows.length === 0) {
+    errors.push(`${location}.layoutRows: runtime page config must expose a non-empty layoutRows string array.`);
+    return new Map();
+  }
+
+  const stringRows = [];
+
+  layoutRows.forEach((row, rowIndex) => {
+    if (typeof row !== 'string') {
+      errors.push(`${location}.layoutRows[${rowIndex}]: layout row must be a string.`);
+      return;
+    }
+
+    stringRows.push(row);
+  });
+
+  if (stringRows.length !== layoutRows.length) {
+    return new Map();
+  }
+
+  return buildLayoutBlockSpans(stringRows, `${location}.layoutRows`);
+};
+
+const validateRuntimeComponentSlotDataContracts = async () => {
+  const module = await loadRuntimeReportPages();
+  const pages = module?.projectReportPages ?? module?.reportTemplatePages;
+
+  if (!isRuntimeRecord(pages)) {
+    errors.push('business-report-pages.ts: projectReportPages/reportTemplatePages export must be a page map for runtime slot validation.');
+    return;
+  }
+
+  Object.entries(pages).forEach(([pageId, pageConfig]) => {
+    const layoutBlockSpans = validateRuntimePageLayoutRows(pageConfig, pageId);
+    const widgets = pageConfig?.widgets;
+
+    if (!isRuntimeRecord(widgets)) {
+      errors.push(`projectReportPages.${pageId}: page must expose widgets for runtime slot validation.`);
+      return;
+    }
+
+    Object.entries(widgets).forEach(([blockId, widget]) => {
+      if (layoutBlockSpans.size > 0 && !layoutBlockSpans.has(blockId)) {
+        errors.push(`projectReportPages.${pageId}.widgets.${blockId}: widget key must match a block id declared in runtime layoutRows.`);
+      }
+
+      const componentSlots = widget?.props?.componentSlots;
+      const bodySummary = typeof widget?.bodySummary === 'string' ? widget.bodySummary.trim() : '';
+      const summaryHidden = widget?.props?.showSummary === false || widget?.showSummary === false;
+      const summaryHiddenReason =
+        widget?.props?.summaryHiddenReason ||
+        widget?.summaryHiddenReason ||
+        widget?.props?.notNeededReason ||
+        widget?.notNeededReason;
+
+      if (!bodySummary && !summaryHidden) {
+        errors.push(`projectReportPages.${pageId}.widgets.${blockId}: 4 summaryArea must default to visible bodySummary; omit it only with explicit showSummary:false plus a reason.`);
+      }
+
+      if (summaryHidden && !summaryHiddenReason) {
+        errors.push(`projectReportPages.${pageId}.widgets.${blockId}: hidden 4 summaryArea must declare summaryHiddenReason/notNeededReason.`);
+      }
+
+      if (!Array.isArray(componentSlots)) {
+        return;
+      }
+
+      const componentSlotCount = componentSlots.length;
+
+      componentSlots.forEach((slot, index) => {
+        const slotId = slot?.id || `slot-${index}`;
+        const location = `projectReportPages.${pageId}.widgets.${blockId}.componentSlots.${slotId}`;
+        const slotWidget = slot?.widget;
+        const data = slot?.data ?? slotWidget?.data;
+        const dataBinding = slot?.dataBinding ?? slotWidget?.dataBinding;
+        const expectedKey = `${pageId}.${blockId}.${slotId}`;
+        const actualKey = getComponentPropsKeyFromUrl(data?.api?.url);
+        const titleConfig = slotWidget?.props?.config?.title || slot?.props?.config?.title || {};
+        const titleVisible = titleConfig.visible;
+        const slotClickActions = getRuntimeActionList(slotWidget?.actions?.slotClick ?? slot?.actions?.slotClick);
+        const expectedTargetType =
+          slot?.role === 'secondary'
+            ? 'modal'
+            : slot?.role === 'supporting'
+              ? 'popover'
+              : 'drawer';
+
+        if (!slot?.componentExampleId || !String(slot.componentExampleId).startsWith('component-example-catalog:')) {
+          errors.push(`${location}: componentExampleId must reference component-example-catalog.`);
+        }
+
+        if (componentSlotCount > 1 && titleVisible === false) {
+          errors.push(`${location}: multi-slot blocks must keep the component example short title visible; do not set config.title.visible:false.`);
+        }
+
+        if (componentSlotCount > 1 && slotWidget?.props?.showContentTitle === false) {
+          errors.push(`${location}: multi-slot blocks must set showContentTitle true so each slot remains distinguishable.`);
+        }
+
+        if (componentSlotCount === 1 && titleVisible !== false) {
+          errors.push(`${location}: single-slot blocks must hide the component example short title and use the parent block title.`);
+        }
+
+        if (slot?.dataPolicy !== 'external' || slotWidget?.dataPolicy !== 'external') {
+          errors.push(`${location}: component slot and nested widget must set dataPolicy: 'external'.`);
+        }
+
+        if (!data || data.id !== 'apiData') {
+          errors.push(`${location}: component slot data must use apiData.`);
+        }
+
+        if (!actualKey) {
+          errors.push(`${location}: data.api.url must use /api/component-props/:componentDataKey.`);
+        } else if (actualKey !== expectedKey) {
+          errors.push(`${location}: componentDataKey must be stable page.block.slot "${expectedKey}", received "${actualKey}".`);
+        }
+
+        if (data?.api?.responsePath !== 'data.rows') {
+          errors.push(`${location}: data.api.responsePath must be "data.rows".`);
+        }
+
+        if (data?.api?.adapter !== 'rows') {
+          errors.push(`${location}: data.api.adapter must be "rows".`);
+        }
+
+        ['period', 'region', 'project', 'channel'].forEach((field) => {
+          if (data?.api?.query?.[field] !== `$filters.${field}`) {
+            errors.push(`${location}: data.api.query.${field} must pass $filters.${field} to the mock API.`);
+          }
+
+          if (!data?.filterFields?.[field]) {
+            errors.push(`${location}: data.filterFields.${field} must explicitly declare filter linkage.`);
+          }
+        });
+
+        if (data?.api?.query?.activeTitlePillId !== '$context.activeTitlePillId') {
+          errors.push(`${location}: data.api.query.activeTitlePillId must pass $context.activeTitlePillId for pill-driven reloads.`);
+        }
+
+        if (dataBinding?.propsObjectField !== 'props') {
+          errors.push(`${location}: dataBinding.propsObjectField must be "props" so rows[0].props feeds the component example.`);
+        }
+
+        if (slotWidget?.props?.componentDataKey !== expectedKey) {
+          errors.push(`${location}: widget.props.componentDataKey must mirror the stable componentDataKey.`);
+        }
+
+        if (slotClickActions.length === 0) {
+          errors.push(`${location}: component slot must configure actions.slotClick for drilldown/jump/modal/drawer wiring.`);
+        } else {
+          slotClickActions.forEach((action, actionIndex) => {
+            const actionLocation = `${location}.actions.slotClick[${actionIndex}]`;
+            const targetType = normalizeRuntimeActionTargetType(action);
+
+            if (!targetType) {
+              errors.push(`${actionLocation}: slotClick must declare interactionType or targetType.`);
+            }
+
+            if (targetType !== expectedTargetType) {
+              errors.push(`${actionLocation}: slot role "${slot?.role || 'supporting'}" must open ${expectedTargetType}, received ${targetType}.`);
+            }
+
+            if (!action?.target) {
+              errors.push(`${actionLocation}: slotClick must declare target for visible drawer/modal/popover content.`);
+            }
+
+            if (action?.query?.activeTitlePillId !== '$context.activeTitlePillId') {
+              errors.push(`${actionLocation}: slotClick query must include activeTitlePillId so interaction content matches the active pill.`);
+            }
+          });
+        }
+      });
+    });
   });
 };
 
@@ -2152,6 +2408,7 @@ validateAllLayoutRows();
 validateSelfDevelopmentExceptionMaps();
 validateStackContract();
 collectWidgets().forEach(({ node, location, span }) => validateWidget(node, location, span));
+await validateRuntimeComponentSlotDataContracts();
 walkVueFiles(widgetComponentsPath).forEach(validateWidgetSource);
 
 warnings.forEach((warning) => console.warn(`[dashboard-contract warning] ${warning}`));

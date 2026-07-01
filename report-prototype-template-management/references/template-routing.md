@@ -14,7 +14,7 @@ Copy the selected asset directory into the target project, or merge its `src/`, 
 
 Default to a selected bundled `frameworkTemplateId`.
 
-In the report development flow, do not choose an alternate shell path. Framework shell, page layout, block area configs, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces must use bundled templates. If the user explicitly asks for 自行设计开发, 自由设计, 自定义开发, 百分百复刻, 像素级复刻, exact restoration, existing shell preservation, or a documented requirement cannot be met by any bundled template, record it as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exception.
+In the report development flow, do not choose an alternate shell path. Framework shell, page layout, block area configs, block-level title/pill/component/summary areas, navigation, filters, toolbar, export, and permission surfaces must use bundled templates. Component-level title/unit/auxiliary/chart/table/list areas must come from registered component examples. If the user explicitly asks for 自行设计开发, 自由设计, 自定义开发, 百分百复刻, 像素级复刻, exact restoration, existing shell preservation, or a documented requirement cannot be met by any bundled template, record it as `blocked`, `deferred-out-of-scope`, template backlog, or non-report-development exception.
 
 Only interaction behavior and registered component examples may be self-developed, and both must be declared in `selfDevelopmentExceptionMap`.
 

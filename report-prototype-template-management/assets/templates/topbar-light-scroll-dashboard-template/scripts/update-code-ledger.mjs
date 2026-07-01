@@ -1,5 +1,4 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import path from 'node:path';
 import process from 'node:process';
@@ -19,6 +18,7 @@ const now = () => new Date().toISOString();
 const versionStamp = () => `v${new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 14)}`;
 const hash = (text) => crypto.createHash('sha256').update(text).digest('hex');
 const lineCount = (text) => (text ? text.split(/\r?\n/).length : 0);
+const toUnifiedPath = (value) => value.replace(/[\\/]+/g, '/');
 const root = process.cwd();
 const fileArg = getArg('--file') || args.find((arg) => !arg.startsWith('--'));
 const stage = getArg('--stage', 'before');
@@ -142,19 +142,72 @@ const readBeforeSnapshot = () => {
   };
 };
 
-const buildUnifiedDiff = () => {
-  try {
-    return execFileSync(
-      'diff',
-      ['-u', '--label', `a/${codeRel}`, '--label', `b/${codeRel}`, beforeSnapshotPath, codePath],
-      { encoding: 'utf8' },
-    );
-  } catch (error) {
-    if (error.status === 1) {
-      return error.stdout || '';
-    }
-    throw error;
+const splitDiffLines = (text) => {
+  if (!text) {
+    return [];
   }
+
+  return text.split(/\r?\n/);
+};
+
+const formatUnifiedRange = (start, count) => (count === 1 ? `${start}` : `${start},${count}`);
+
+const buildUnifiedDiff = (beforeText, afterText) => {
+  const beforeLines = splitDiffLines(beforeText);
+  const afterLines = splitDiffLines(afterText);
+  const contextLines = 3;
+  let prefix = 0;
+
+  while (
+    prefix < beforeLines.length &&
+    prefix < afterLines.length &&
+    beforeLines[prefix] === afterLines[prefix]
+  ) {
+    prefix += 1;
+  }
+
+  let suffix = 0;
+  while (
+    suffix < beforeLines.length - prefix &&
+    suffix < afterLines.length - prefix &&
+    beforeLines[beforeLines.length - suffix - 1] === afterLines[afterLines.length - suffix - 1]
+  ) {
+    suffix += 1;
+  }
+
+  const beforeChangedEnd = beforeLines.length - suffix;
+  const afterChangedEnd = afterLines.length - suffix;
+  const beforeStart = Math.max(prefix - contextLines, 0);
+  const afterStart = Math.max(prefix - contextLines, 0);
+  const beforeEnd = Math.min(beforeChangedEnd + contextLines, beforeLines.length);
+  const afterEnd = Math.min(afterChangedEnd + contextLines, afterLines.length);
+  const beforeCount = beforeEnd - beforeStart;
+  const afterCount = afterEnd - afterStart;
+  const beforeLineStart = beforeCount === 0 ? 0 : beforeStart + 1;
+  const afterLineStart = afterCount === 0 ? 0 : afterStart + 1;
+  const diffLines = [
+    `--- a/${toUnifiedPath(codeRel)}`,
+    `+++ b/${toUnifiedPath(codeRel)}`,
+    `@@ -${formatUnifiedRange(beforeLineStart, beforeCount)} +${formatUnifiedRange(afterLineStart, afterCount)} @@`,
+  ];
+
+  for (let index = beforeStart; index < prefix; index += 1) {
+    diffLines.push(` ${beforeLines[index]}`);
+  }
+
+  for (let index = prefix; index < beforeChangedEnd; index += 1) {
+    diffLines.push(`-${beforeLines[index]}`);
+  }
+
+  for (let index = prefix; index < afterChangedEnd; index += 1) {
+    diffLines.push(`+${afterLines[index]}`);
+  }
+
+  for (let index = beforeChangedEnd; index < beforeEnd; index += 1) {
+    diffLines.push(` ${beforeLines[index]}`);
+  }
+
+  return `${diffLines.join('\n')}\n`;
 };
 
 const inferRangesFromDiff = (diffText) => {
@@ -187,7 +240,7 @@ const changeEvidence = (version) => {
     };
   }
 
-  const diffText = buildUnifiedDiff();
+  const diffText = buildUnifiedDiff(before.text, codeText);
   const maxInlineDiffLines = Number(getArg('--max-inline-diff-lines', '400'));
   const diffLines = diffText.split(/\r?\n/).filter(Boolean);
 

@@ -32,6 +32,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 1. Identify scoped source files: frontend, backend, prototype, config, SQL, or tests that own behavior.
 2. For configured report template projects, run `npm run ledger:init` once when the project is first materialized to generate baseline sidecars, and run `npm run ledger:check` before handoff.
+   For reusable bundled template assets, do not ship internal development history as the user's starting ledger. Keep sidecars in initialized baseline form and let copied/configured projects generate their own project-specific entries.
 3. Locate each sidecar ledger at `<code-file-directory>/__change_logs__/<code-file-name>.changes.md`.
    Do not look for `change_logs` as the default folder; this skill's required folder name is `__change_logs__`.
 4. Before editing, read or create the ledger and inspect functional inventory, known ranges, risks, and prior entries.
@@ -57,3 +58,4 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not replace file-level ledger evidence with only a final chat summary, commit message, PR description, or broad delivery index.
 - Do not treat the absence of a legacy `change_logs` folder as failure. Treat the absence of required `__change_logs__` sidecar ledgers for changed scoped source files as failure.
 - Do not mark a configured report template project ready when `npm run ledger:init` was skipped during initial materialization or `npm run ledger:check` fails before handoff.
+- Do not ship bundled reusable templates with long internal `__change_logs__` histories, patch evidence, or snapshots as if they were the user's project records. Template assets should start with initialized baseline ledgers; copied/configured projects then record real change history.

@@ -33,7 +33,6 @@ import {
 } from '../widgets/localFilters';
 import type {
   RegisteredWidgetConfig,
-  WidgetAuxMetric,
   WidgetContext,
   WidgetLocalFilterConfig,
   WidgetTitlePillOption,
@@ -494,35 +493,6 @@ const getPlaceholderCellInnerStyle = (block: LayoutBlock): Record<string, string
   if (isAutoComponentSlotBlock(block.label)) {
     style['--block-summary-row-size'] = '1fr';
     style['--block-component-row-size'] = `${Math.max(rowSpan - 1, 1)}fr`;
-  }
-
-  return style;
-};
-
-const isUnitAuxMetric = (metric: WidgetAuxMetric) => metric.label.trim() === '单位';
-
-const getAuxMetricLimit = (columnSpan: number) => (columnSpan < 2 ? 0 : 2 + Math.max(columnSpan - 2, 0) * 3);
-
-const getWidgetAuxMetrics = (blockId: string, columnSpan: number): WidgetAuxMetric[] => {
-  const metrics = getWidgetForBlock(blockId)?.auxMetrics?.filter((metric) => metric.label.trim()) ?? [];
-  const unitMetrics = metrics.filter(isUnitAuxMetric);
-  const unitMetric = unitMetrics[unitMetrics.length - 1];
-  const nonUnitMetrics = metrics.filter((metric) => !isUnitAuxMetric(metric)).slice(0, getAuxMetricLimit(columnSpan));
-
-  return unitMetric ? [...nonUnitMetrics, unitMetric] : nonUnitMetrics;
-};
-
-const hasWidgetAuxMetrics = (block: LayoutBlock) => getWidgetAuxMetrics(block.label, getBlockColumnSpan(block)).length > 0;
-
-const getAuxMetricSectionStyle = (block: LayoutBlock): Record<string, string> => {
-  const columnSpan = getBlockColumnSpan(block);
-  const metrics = getWidgetAuxMetrics(block.label, columnSpan);
-  const style: Record<string, string> = {
-    '--aux-metric-count': String(metrics.length),
-  };
-
-  if (isLayoutTemplateBlock(block.label) && metrics.length === 2) {
-    style['--aux-metric-columns'] = `minmax(0, ${Math.max(columnSpan - 1, 1)}fr) minmax(0, 1fr)`;
   }
 
   return style;
@@ -1702,25 +1672,9 @@ watch(
               <div
                 class="placeholder-cell-body"
                 :class="{
-                  'has-aux-metrics': hasWidgetAuxMetrics(block),
                   'has-body-summary': hasWidgetBodySummary(block.label),
                 }"
               >
-                <section
-                  v-if="hasWidgetAuxMetrics(block)"
-                  class="placeholder-cell-body-section placeholder-cell-body-section-1"
-                  :style="getAuxMetricSectionStyle(block)"
-                  aria-label="2-1 附加信息区与 2-2 单位区"
-                >
-                  <span
-                    v-for="metric in getWidgetAuxMetrics(block.label, getBlockColumnSpan(block))"
-                    :key="metric.label"
-                    class="placeholder-cell-aux-metric"
-                  >
-                    <span class="placeholder-cell-aux-label">{{ metric.label }}</span>
-                    <strong v-if="metric.value" class="placeholder-cell-aux-value">{{ metric.value }}</strong>
-                  </span>
-                </section>
                 <section class="placeholder-cell-body-section placeholder-cell-body-section-2" aria-label="3 组件区">
                   <WidgetRenderer
                     :block-size="{ cols: getBlockColumnSpan(block), rows: getBlockRowSpan(block) }"
@@ -1763,10 +1717,17 @@ watch(
   <el-drawer
     v-model="isInteractionDrawerOpen"
     :title="interactionOverlay?.title"
+    class="interaction-overlay-drawer"
+    modal-class="interaction-overlay-scrim"
     size="42%"
     destroy-on-close
   >
     <section class="interaction-overlay-body">
+      <div class="interaction-overlay-summary">
+        <span class="interaction-overlay-kicker">下钻详情</span>
+        <strong>{{ interactionOverlay?.event.name }}</strong>
+        <p>基于当前筛选、分块和槽位上下文生成的经营明细。</p>
+      </div>
       <dl class="interaction-overlay-list">
         <template v-for="[key, value] in interactionOverlayEntries" :key="key">
           <dt>{{ key }}</dt>
@@ -1778,10 +1739,17 @@ watch(
   <el-dialog
     v-model="isInteractionDialogOpen"
     :title="interactionOverlay?.title"
+    class="interaction-overlay-dialog"
+    modal-class="interaction-overlay-scrim"
     width="640px"
     destroy-on-close
   >
     <section class="interaction-overlay-body">
+      <div class="interaction-overlay-summary">
+        <span class="interaction-overlay-kicker">{{ interactionOverlay?.type === 'popup' ? '辅助说明' : '对比弹窗' }}</span>
+        <strong>{{ interactionOverlay?.event.name }}</strong>
+        <p>展示当前组件触发的对比、说明和参数上下文。</p>
+      </div>
       <dl class="interaction-overlay-list">
         <template v-for="[key, value] in interactionOverlayEntries" :key="key">
           <dt>{{ key }}</dt>

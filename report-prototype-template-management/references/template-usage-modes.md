@@ -2,7 +2,7 @@
 
 Use this file when explaining how a selected template should be used in a delivery flow.
 
-Hard rule for report development: all modes use the selected template for shell, page layout, block area configs, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, and permission surfaces. Registered component examples may be self-developed only when the catalog cannot express the slot. Interaction behavior should use configured `actions` first; self-develop it only when shell-default route, external, drawer/drilldown, modal, popover/popup, cross-filter, fullscreen, export, or refresh behavior cannot express the requirement, and declare that exception in `selfDevelopmentExceptionMap`.
+Hard rule for report development: all modes use the selected template for shell, page layout, block area configs, block-level title/pill/component/summary areas, navigation, filters, toolbar, export, and permission surfaces. Component-level title/unit/auxiliary/chart/table/list areas must come from registered component examples. Registered component examples may be self-developed only when the catalog cannot express the slot. Interaction behavior should use configured `actions` first; self-develop it only when shell-default route, external, drawer/drilldown, modal, popover/popup, cross-filter, fullscreen, export, or refresh behavior cannot express the requirement, and declare that exception in `selfDevelopmentExceptionMap`.
 
 ## 1. 零开发 Mode
 
@@ -49,6 +49,7 @@ Required changes:
 - Edit `src/config/dashboard.config.ts` for title, theme, navigation, `layoutRows`, `widgets`, global filters, and toolbar labels, but preserve the selected template's native nav/page shape, filter trigger/panel/popover pattern, toolbar placement, theme fields, and logo slot.
 - Adapt requirement-document title/filter/navigation/toolbar requirements into the selected template's existing config slots. Do not add a second title area, standalone filter bar, extra sidebar, or duplicate toolbar; template-level redesign requests are blockers or out-of-scope exceptions for report development.
 - Put mock/static data in `src/data/dashboard.dataset.json`. Do not create generated `src/widgets/*Data.ts`, `src/data/*.ts`, or other TS fixture modules for rows, arrays, or payloads.
+- When the prototype needs backend-shaped access before real APIs exist, use the built-in npm mock API: keep rows and component props in `dashboard.dataset.json`, run `npm run dev:mock`, configure `filters[].source` / `componentSlots[].data` with `id: 'apiData'` plus `api.url`, `api.query`, and `api.responsePath`, and do not keep static filter options or component props as fallback display data.
 - Register business widgets in `src/widgets/types.ts` and `src/widgets/registry.ts`.
 - Implement visual components under `src/widgets/components/`.
 - Bind ordinary widgets through `widget.data.id` and either `widget.data.params.key` for JSON mode or `widget.data.api` for standard API mode.
@@ -64,6 +65,7 @@ Required changes:
 Data options:
 
 - JSON mode: use built-in `filterData`, `businessData`, or `staticData` resolvers.
+- NPM mock API mode: use `npm run mock:api` for a standalone local API or `npm run dev:mock` for API plus Vite proxy. The mock server reads `dashboard.dataset.json`; filter options return `data.items`, component slots default to `/api/component-props/:componentKey` returning `data.rows`, and component props are read from `rows[0].props` with `dataBinding.propsObjectField: 'props'`. `emptyFilterValues` should include legacy aggregate values such as `all` when needed, but static `filters[].options` and static component demo props are not runtime fallbacks.
 - Standard API mode: use `id: 'apiData'` or `id: 'httpData'`, configure `api.url`, `api.query`, `api.headers`, `api.body`, `api.responsePath`, and optional `api.adapter` directly on `widget.data` or `filters[].source`.
 - Custom provider mode: for signatures, special auth, complex pagination, SDKs, realtime streams, multi-step requests, or scenario data that must change by view/month/organization/status but is not row-filterable, add a resolver in `src/dataSources/registry.ts`, adapt the provider payload to component-ready rows, then reference the resolver id in `widget.data.id` or `filters[].source.id`.
 - Field mapping: if a global filter id differs from a row field for an ordinary widget, use `data.filterFields`; if the widget must respond to a filter, add `requiredFilters`; if a component slot is scoped, map `filters[].scope` to `filterScope`; if it should ignore a global filter, add `ignoredFilters` plus `ignoredFilterReasons` only with an intentional invariant-scope reason.
@@ -88,7 +90,7 @@ Use when:
 
 Implementation rules:
 
-- Preserve the selected template's shell and block contract: logo slot, shell title/control area, navigation model, filter mechanism, `12 * N` grid, widget viewport, 分块配置 supporting areas, 组件示例 optional removable title plus body boundary, non-slot component-owned title/control/local filter tools, and action hook boundary.
+- Preserve the selected template's shell and block contract: logo slot, shell title/control area, navigation model, filter mechanism, `12 * N` grid, widget viewport, 分块配置 title/pill/component/summary areas, 组件示例 optional removable title plus body boundary, component-owned unit/auxiliary metrics, non-slot component-owned title/control/local filter tools, and action hook boundary.
 - Use the built-in `apiData` / `httpData` config for ordinary REST/BFF endpoints; templates use a shared axios instance with request/response interceptors under this data-source boundary. Move complex provider calls into `src/dataSources/registry.ts` or the existing project's equivalent service layer; do not scatter axios or legacy fetch calls inside widgets.
 - Keep adapters at the data-source boundary so widgets receive stable rows/props.
 - Global/page-level filters must be passed through `api.query`, `api.body`, or the provider resolver before shaping component data. Non-slot component-title `localFilters` may filter only the already fetched component dataset; 组件示例 slot fills may not render local filters or control strips.

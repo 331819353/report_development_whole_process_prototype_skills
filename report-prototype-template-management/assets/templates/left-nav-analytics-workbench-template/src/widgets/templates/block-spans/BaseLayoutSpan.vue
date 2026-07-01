@@ -242,6 +242,10 @@ const getSlotComponent = (kind: string) => {
   return widget ? slotComponentRegistry[widget.type] ?? null : null;
 };
 const getSlotWidgetRawProps = (kind: string) => (getSlotWidget(kind)?.props ?? {}) as Record<string, unknown>;
+const getSlotTitleAutoConfig = () =>
+  componentSlotCount.value > 1
+    ? { visible: true }
+    : { visible: false, unitVisible: false };
 const getSlotKeyCandidates = (slot?: ComponentSlot) => [
   slot?.id,
   slot?.regionKey,
@@ -348,6 +352,14 @@ const getDataBoundProps = (kind: string) => {
     return propsFromData;
   }
 
+  if (binding.propsObjectField) {
+    const dataProps = getByPath(getFirstRow(data), binding.propsObjectField);
+
+    if (isRecordValue(dataProps)) {
+      Object.assign(propsFromData, dataProps);
+    }
+  }
+
   if (binding.mode === 'rows' || binding.rowsProp) {
     propsFromData[binding.rowsProp ?? 'rows'] = data;
   }
@@ -409,14 +421,24 @@ const getSlotContentAreaTitle = (kind: string) => {
 };
 const getSlotWidgetProps = (kind: string) => {
   const widgetProps = getSlotWidgetRawProps(kind);
+  const dataBoundProps = getDataBoundProps(kind);
+  const activeTitlePillProps = getActiveTitlePillProps(kind);
 
   return {
     ...widgetProps,
-    ...getDataBoundProps(kind),
-    ...getActiveTitlePillProps(kind),
+    ...dataBoundProps,
+    ...activeTitlePillProps,
+    config: mergeComponentExampleConfig(
+      widgetProps.config,
+      dataBoundProps.config,
+      activeTitlePillProps.config,
+      {
+        title: getSlotTitleAutoConfig(),
+      },
+    ),
     contentAreaTitle: getSlotContentAreaTitle(kind),
     slotCount: componentSlotCount.value,
-    showContentTitle: componentSlotCount.value > 1 && widgetProps.showContentTitle !== false,
+    showContentTitle: componentSlotCount.value > 1,
   };
 };
 const handleSlotDashboardAction = (kind: string, event: DashboardWidgetActionEvent) => {
@@ -435,7 +457,54 @@ const handleSlotDashboardAction = (kind: string, event: DashboardWidgetActionEve
     },
   });
 };
-const hasSlotComponentContent = (kind: string) => Boolean(getSlotComponent(kind));
+const getSlotActions = (kind: string) => getSlotWidget(kind)?.actions ?? getRegionSlot(kind)?.actions;
+const isSlotInteractive = (kind: string) => Boolean(getSlotActions(kind)?.slotClick);
+const shouldIgnoreSlotClick = (event: Event) => {
+  const target = event.target;
+  const currentTarget = event.currentTarget;
+
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  const nestedInteractive = target.closest('button,a,input,select,textarea,[role="button"]');
+
+  return Boolean(nestedInteractive && nestedInteractive !== currentTarget);
+};
+const handleSlotClick = (kind: string, event: Event) => {
+  if (!isSlotInteractive(kind) || shouldIgnoreSlotClick(event)) {
+    return;
+  }
+
+  const slot = getRegionSlot(kind);
+  const widget = getSlotWidget(kind);
+  const widgetProps = (widget?.props ?? {}) as Record<string, unknown>;
+
+  emit('dashboard-action', {
+    name: 'slotClick',
+    sourceSlotId: slot?.id,
+    sourceSlotLabel: slot?.label,
+    sourceComponentExampleId: slot?.componentExampleId,
+    payload: {
+      sourceSlotId: slot?.id,
+      sourceSlotLabel: slot?.label,
+      sourceComponentExampleId: slot?.componentExampleId,
+      componentDataKey: widgetProps.componentDataKey,
+      firstRow: getSlotData(kind)[0],
+      filters: props.context?.filters,
+      activeTitlePillId: props.context?.activeTitlePillId,
+    },
+  });
+};
+const hasSlotComponentContent = (kind: string) => {
+  const widget = getSlotWidget(kind);
+
+  if (!widget || !getSlotComponent(kind)) {
+    return false;
+  }
+
+  return widget.data ? getSlotData(kind).length > 0 : true;
+};
 const shouldShowInlineContentTitle = (kind: string) => componentSlotCount.value > 1 && Boolean(getSlotContent(kind));
 const getSlotContentType = (kind: string) => {
   const type = getSlotContent(kind)?.type;
@@ -498,11 +567,22 @@ const getPercentStyle = (percent?: number) => ({
               v-for="segment in componentRegionSegments"
               :key="segment.key"
               class="layout-zone-cell"
-              :class="[`layout-zone-${segment.kind}`, { 'has-slot-content': hasSlotComponentContent(segment.kind) || getSlotContent(segment.kind) }]"
+              :class="[
+                `layout-zone-${segment.kind}`,
+                {
+                  'has-slot-content': hasSlotComponentContent(segment.kind) || getSlotContent(segment.kind),
+                  'is-slot-interactive': isSlotInteractive(segment.kind),
+                },
+              ]"
               :style="{
                 gridColumn: `${segment.columnStart} / ${segment.columnEnd}`,
                 gridRow: `${segment.rowStart} / ${segment.rowEnd}`,
               }"
+              :role="isSlotInteractive(segment.kind) ? 'button' : undefined"
+              :tabindex="isSlotInteractive(segment.kind) ? 0 : undefined"
+              @click="handleSlotClick(segment.kind, $event)"
+              @keydown.enter="handleSlotClick(segment.kind, $event)"
+              @keydown.space.prevent="handleSlotClick(segment.kind, $event)"
             >
               <component
                 :is="getSlotComponent(segment.kind)"
@@ -789,6 +869,19 @@ const getPercentStyle = (percent?: number) => ({
   border: 1px solid rgba(0, 115, 229, 0.14);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.08);
+}
+
+.layout-zone-cell.is-slot-interactive {
+  cursor: pointer;
+}
+
+.layout-zone-cell.is-slot-interactive:focus-visible {
+  outline: 2px solid rgba(0, 115, 229, 0.45);
+  outline-offset: 2px;
+}
+
+.layout-zone-cell.is-slot-interactive:hover {
+  border-color: rgba(0, 115, 229, 0.34);
 }
 
 .layout-zone-label {

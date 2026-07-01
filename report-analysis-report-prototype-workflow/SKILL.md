@@ -35,14 +35,13 @@ Before starting, require:
 
 `CHILD-PRD-PROTOTYPE` must name this workflow or an accepted mixed-report path with analysis report as the primary execution flow.
 
-The PRD must already contain the thinking output: page content, conclusion/evidence/action reading path, first-viewport priority, visible/non-visible content decisions, and page preview.
+The PRD must already contain the thinking output and executable component mapping: page content, conclusion/evidence/action reading path, first-viewport priority, visible/non-visible content decisions, page preview, `componentSlotConfigMap`, `componentExampleConfigMap`, data/API rows, interaction rows, and `conclusionRuleMap`.
 
 ## Required Capabilities
 
 Use these capabilities as needed:
 
 - `report-prd-document-generation` only to repair missing PRD structure.
-- `report-info-component-mapping` for conclusion/evidence/action component mapping.
 - `report-prototype-template-management` for configurable template implementation.
 - `report-chart-design-spec`, `report-table-design-spec`, `report-filter-control-design-spec`, and `report-component-placement-spec` for specialized component decisions.
 - `frontend-runtime-qa-validation` and `runtime-url-smoke-test` for runnable validation.

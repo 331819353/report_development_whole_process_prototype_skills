@@ -187,6 +187,8 @@ npm run ledger:check
 
 `ledger:init` creates baseline sidecars for scoped source files that do not have them yet. It does not replace the per-file `ledger:code --stage before` and `ledger:code --stage after` commands around actual edits. `ledger:check` should pass before prototype handoff.
 
+For reusable bundled template assets, separate template packaging from copied-project change tracking. The bundled template should ship initialized baseline sidecars only, without internal release chronology, patch files, or pre-edit snapshots. After the template is copied or configured for a real report project, run `ledger:init` and use `ledger:code --stage before/after` to record the user's project-specific changes.
+
 Manual updates are acceptable when the project does not run Python/Node, but the same fields and before/after behavior still apply.
 
 ## Quality Gate
@@ -209,3 +211,5 @@ The following patterns fail readiness:
 - `Modified content: standard refactor` without listing changed sections, dependencies, routes, props, fields, or behavior.
 
 Do not bury this information only in a final chat message, commit message, PR description, or broad delivery index. Those are useful summaries, but they do not replace file-level ledgers.
+
+Do not confuse bundled-template baseline hygiene with project traceability. It is acceptable for reusable templates to contain concise baseline-only ledgers so the user starts clean; it is not acceptable for an active copied/configured project to lose or skip its own real post-change entries.

@@ -570,9 +570,15 @@ export interface ProgressGaugeWidgetProps extends Record<string, unknown> {
 
 export interface RankingCardItem {
   rank?: number;
-  label: string;
+  label?: string;
+  name?: string;
+  regionName?: string;
+  region?: string;
+  areaName?: string;
+  dimension?: string;
   value: number | string;
   suffix?: string;
+  delta?: string;
 }
 
 export interface RankingCardWidgetProps extends Record<string, unknown> {
@@ -899,6 +905,7 @@ export interface WidgetDataBindingItemFields {
 export interface WidgetDataBindingConfig {
   mode?: 'rows' | 'first-row' | 'category-series' | 'items' | 'custom-props';
   rowsProp?: string;
+  propsObjectField?: string;
   firstRowProps?: Record<string, string>;
   categoryField?: string;
   valueField?: string;
@@ -1003,10 +1010,6 @@ export interface WidgetTitlePillOption {
   actions?: DashboardActionMap;
 }
 
-export interface WidgetAuxMetric {
-  label: string;
-  value?: string;
-}
 
 export interface BaseWidgetConfig<TType extends string, TProps extends Record<string, unknown>> {
   type: TType;
@@ -1018,8 +1021,6 @@ export interface BaseWidgetConfig<TType extends string, TProps extends Record<st
   titlePills?: WidgetTitlePillOption[];
   // Optional shell-level text rendered in the top part of the block body.
   bodySummary?: string;
-  // Optional shell-level additional information rendered in the bottom part of the block body. Max 5.
-  auxMetrics?: WidgetAuxMetric[];
   // Semantic metric identity for tooltip, export, drilldown, and口径 disclosure; not always rendered visibly.
   metricName?: string;
   // Metric widgets default this to false when displayTitle/title already identifies the metric.

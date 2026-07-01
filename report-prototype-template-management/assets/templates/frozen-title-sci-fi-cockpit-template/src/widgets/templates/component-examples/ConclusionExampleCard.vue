@@ -217,6 +217,7 @@ const statusLabel = computed(() => props.statusLabel?.trim() || '建议推进');
 const statusTone = computed(() => getTone(props.statusTone));
 const conclusion = computed(() => props.conclusion?.trim() || '整体经营表现稳中向好，收入增长具备持续性，但库存与费用偏差仍需跟进。');
 const emphasis = computed(() => props.emphasis?.trim() || '继续放大高转化渠道，并在本周闭环库存预警。');
+const hasVisibleTitle = computed(() => resolvedTitle.value.visible || resolvedTitle.value.unitVisible);
 const supportGroups = computed(() => {
   const hasGroupedItems = Boolean(props.evidenceItems?.length || props.actionItems?.length);
   const fallbackItems = props.items?.length ? props.items : [...defaultEvidenceItems, ...defaultActionItems];
@@ -243,7 +244,8 @@ const orientation = computed<'vertical' | 'horizontal'>(() => {
 
   const width = containerSize.value.width || 320;
   const height = containerSize.value.height || 188;
-  const contentHeight = Math.max(height - resolvedLayout.value.paddingPx * 2 - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 1);
+  const titleRowHeight = hasVisibleTitle.value ? resolvedLayout.value.titleHeightPx : 0;
+  const contentHeight = Math.max(height - resolvedLayout.value.paddingPx * 2 - titleRowHeight - resolvedLayout.value.gapPx, 1);
 
   return width >= Math.max(260, contentHeight * 1.52) ? 'horizontal' : 'vertical';
 });
@@ -256,7 +258,8 @@ const valueStyle = computed(() => {
   const list = resolvedList.value;
   const titleConfig = resolvedTitle.value;
   const tones = resolvedTones.value;
-  const contentHeight = Math.max(height - layout.paddingPx * 2 - layout.titleHeightPx - layout.gapPx, 1);
+  const titleRowHeight = titleConfig.visible || titleConfig.unitVisible ? layout.titleHeightPx : 0;
+  const contentHeight = Math.max(height - layout.paddingPx * 2 - titleRowHeight - layout.gapPx, 1);
   const horizontal = orientation.value === 'horizontal';
   const coreWidth = horizontal ? Math.max((width - layout.paddingPx * 2 - layout.contentGapPx) / 2, 1) : Math.max(width - layout.paddingPx * 2, 1);
   const verticalCoreRatio = 1.42;
@@ -265,34 +268,46 @@ const valueStyle = computed(() => {
   const coreHeight = horizontal ? contentHeight : Math.max((contentHeight - layout.contentGapPx) * verticalCoreRatio / verticalRatioTotal, 1);
   const supportWidth = horizontal ? coreWidth : Math.max(width - layout.paddingPx * 2, 1);
   const supportHeight = horizontal ? contentHeight : Math.max((contentHeight - layout.contentGapPx) * verticalSupportRatio / verticalRatioTotal, 1);
+  const sectionCount = supportGroups.value.length;
+  const preferredSectionColumns = horizontal && sectionCount > 1 ? sectionCount : 1;
+  const sectionColumns = preferredSectionColumns > 1 && supportWidth / preferredSectionColumns >= 180 ? preferredSectionColumns : 1;
   const listColumns = 1;
   const itemCount = Math.max(visibleItems.value.length, 1);
-  const sectionCount = supportGroups.value.length;
-  const listRows = Math.ceil(itemCount / listColumns);
+  const maxGroupRows = Math.max(...supportGroups.value.map((group) => group.items.length), 1);
+  const listRows = sectionColumns > 1 ? maxGroupRows : Math.ceil(itemCount / listColumns);
   const sectionGap = sectionCount > 1 ? 4 : 0;
-  const sectionTitleHeight = sectionCount * 12;
+  const sectionTitleHeight = (sectionColumns > 1 ? 1 : sectionCount) * 12;
+  const sectionGapTotal = sectionColumns > 1 ? 0 : sectionGap * Math.max(sectionCount - 1, 0);
   const supportHeadingHeight = 0;
   const rawRowHeight = Math.max(
-    (supportHeight - supportHeadingHeight - sectionTitleHeight - sectionGap * Math.max(sectionCount - 1, 0) - 3 * Math.max(listRows - 1, 0)) / Math.max(listRows, 1),
+    (supportHeight - supportHeadingHeight - sectionTitleHeight - sectionGapTotal - 3 * Math.max(listRows - 1, 0)) / Math.max(listRows, 1),
     1,
   );
   const listRowHeight = Math.round(Math.min(Math.max(rawRowHeight, 16), horizontal ? 34 : 28) * 10) / 10;
   const rowHeight = listRowHeight;
   const longestLabel = Math.max(...visibleItems.value.map((item) => getWeightedTextLength(item.label)), 1);
   const longestValue = Math.max(...visibleItems.value.map((item) => getWeightedTextLength(item.value)), 1);
-  const listLabelBudget = Math.max(supportWidth * 0.24, 34);
-  const listValueBudget = Math.max(supportWidth - listLabelBudget - 22, 38);
+  const sectionSupportWidth = sectionColumns > 1
+    ? Math.max((supportWidth - sectionGap * Math.max(sectionCount - 1, 0)) / sectionColumns, 1)
+    : supportWidth;
+  const labelMaxBudget = Math.max(34, Math.min(sectionSupportWidth * 0.34, 64));
+  const desiredLabelBudget = Math.max(longestLabel * list.minFontSizePx * 1.04, 34);
+  const listLabelBudget = Math.round(Math.min(desiredLabelBudget, labelMaxBudget) * 10) / 10;
+  const listValueBudget = Math.max(sectionSupportWidth - listLabelBudget - 31, 34);
   const listLabelSize = listLabelBudget / longestLabel / 1.08;
   const listValueSize = listValueBudget / longestValue / 0.98;
   const coreTextLength = getWeightedTextLength(conclusion.value);
   const coreBudget = Math.max(coreWidth - 20, 40);
   const compactVertical = !horizontal && coreWidth < 230;
-  const coreReservedHeight = compactVertical ? 24 : 35;
-  const coreLineHeightBudget = compactVertical ? 14 : 18;
-  const coreLines = Math.max(compactVertical ? 2 : 1, Math.min(3, Math.floor(Math.max(coreHeight - coreReservedHeight, 28) / coreLineHeightBudget)));
+  const coreReservedHeight = compactVertical ? 22 : 30;
+  const coreLineHeightBudget = compactVertical ? 12 : 13;
+  const coreLines = Math.max(2, Math.min(3, Math.floor(Math.max(coreHeight - coreReservedHeight, 28) / coreLineHeightBudget)));
   const coreSizeByWidth = coreBudget * coreLines / Math.max(coreTextLength, 1) / (compactVertical ? 0.88 : 0.95);
+  const coreLineHeight = coreLines >= 3 ? 1.12 : 1.18;
+  const coreMainHeightBudget = Math.max(coreHeight - (compactVertical ? 38 : 46), 14);
+  const coreSizeByHeight = coreMainHeightBudget / coreLines / coreLineHeight;
   const coreFontSize = Math.round(
-    clampNumber(Math.min(coreHeight * (compactVertical ? 0.24 : 0.22), coreSizeByWidth), core.minFontSizePx, core.maxFontSizePx, core.maxFontSizePx) * 10,
+    clampNumber(Math.min(coreHeight * (compactVertical ? 0.24 : 0.22), coreSizeByWidth, coreSizeByHeight), core.minFontSizePx, core.maxFontSizePx, core.maxFontSizePx) * 10,
   ) / 10;
   const emphasisFontSize = Math.round(
     clampNumber(Math.min(coreFontSize * 0.66, coreHeight * 0.13), core.minEmphasisFontSizePx, core.maxEmphasisFontSizePx, core.maxEmphasisFontSizePx) * 10,
@@ -305,7 +320,7 @@ const valueStyle = computed(() => {
   ) / 10;
 
   return {
-    '--conclusion-title-row': `${layout.titleHeightPx}px`,
+    '--conclusion-title-row': `${titleRowHeight}px`,
     '--conclusion-card-padding': `${layout.paddingPx}px`,
     '--conclusion-card-gap': `${layout.gapPx}px`,
     '--conclusion-content-gap': `${layout.contentGapPx}px`,
@@ -317,10 +332,13 @@ const valueStyle = computed(() => {
     '--conclusion-unit-color': titleConfig.unitColor,
     '--conclusion-core-font-size': `${coreFontSize}px`,
     '--conclusion-core-lines': String(coreLines),
+    '--conclusion-core-line-height': String(coreLineHeight),
     '--conclusion-emphasis-font-size': `${emphasisFontSize}px`,
     '--conclusion-list-columns': String(listColumns),
+    '--conclusion-list-label-width': `${listLabelBudget}px`,
     '--conclusion-list-row-height': `${listRowHeight}px`,
     '--conclusion-section-count': String(Math.max(sectionCount, 1)),
+    '--conclusion-section-columns': String(Math.max(sectionColumns, 1)),
     '--conclusion-section-gap': `${sectionGap}px`,
     '--conclusion-list-font-size': `${listFontSize}px`,
     '--conclusion-list-value-font-size': `${listValueFontSize}px`,
@@ -369,11 +387,11 @@ onBeforeUnmount(() => {
   <section
     ref="rootRef"
     class="conclusion-example-card"
-    :class="[`is-${orientation}`, { 'has-support': supportVisible }]"
+    :class="[`is-${orientation}`, { 'has-support': supportVisible, 'has-title': hasVisibleTitle }]"
     :style="valueStyle"
     aria-label="结论卡片示例"
   >
-    <header v-if="resolvedTitle.visible || resolvedTitle.unitVisible" class="conclusion-example-header">
+    <header v-if="hasVisibleTitle" class="conclusion-example-header">
       <span v-if="resolvedTitle.visible" class="conclusion-example-title" :title="title">{{ title }}</span>
       <span v-if="resolvedTitle.unitVisible" class="conclusion-example-unit" :title="unit">{{ unit }}</span>
     </header>
@@ -484,12 +502,25 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
+.conclusion-example-card:not(.has-title) {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.conclusion-example-card:not(.has-title) .conclusion-example-content {
+  grid-row: 1;
+}
+
 .conclusion-example-card.is-vertical .conclusion-example-content {
   grid-template-rows: minmax(0, 1.42fr) minmax(0, 1.58fr);
 }
 
 .conclusion-example-card.is-horizontal .conclusion-example-content {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.conclusion-example-card.is-horizontal .conclusion-example-support-body {
+  grid-template-columns: repeat(var(--conclusion-section-columns, 1), minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr);
 }
 
@@ -678,7 +709,7 @@ onBeforeUnmount(() => {
 
 .conclusion-example-item {
   display: grid;
-  grid-template-columns: 7px auto minmax(0, 1fr);
+  grid-template-columns: 7px minmax(0, var(--conclusion-list-label-width, 34px)) minmax(0, 1fr);
   align-items: center;
   gap: 5px;
   min-width: 0;

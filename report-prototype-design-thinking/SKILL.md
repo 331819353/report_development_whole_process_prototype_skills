@@ -45,7 +45,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 13. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
 14. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
 15. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, result-content boundary decisions, and unresolved gaps.
-16. Hand off the design-thinking output to `report-type-design`, `report-info-component-mapping`, `report-visual-layout-design`, and `report-prototype-template-management`. When the target is a runnable configurable template, the handoff must explicitly preserve the chain `frameworkTemplateId -> pageLayoutConfig -> blockAreaConfigMap -> componentSlotConfigMap -> componentExampleConfigMap`.
+16. Hand off the design-thinking output to `report-prd-document-generation` for `RTP-*` report-path selection and PRD-owned component mapping, then to `report-visual-layout-design` and `report-prototype-template-management`. When the target is a runnable configurable template, the handoff must explicitly preserve the chain `frameworkTemplateId -> pageLayoutConfig -> blockAreaConfigMap -> componentSlotConfigMap -> componentExampleConfigMap`.
 
 ## Required Output
 

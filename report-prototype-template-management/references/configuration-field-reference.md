@@ -143,7 +143,7 @@ createBlockAreaConfig({
 });
 ```
 
-组件内部短标题改 `slot` 的第二个参数或 `componentWidget` 的第三个参数：
+组件内部短标题的文本来自 `slot` 的第二个参数或 `componentWidget` 的第三个参数；显隐由模板按槽位数量自动决定，不由项目配置手工决定：
 
 ```ts
 slot('A', '收入趋势', 'line-chart-card', componentWidget('LineChartExampleCard', 'line', '收入趋势', props));
@@ -151,8 +151,10 @@ slot('A', '收入趋势', 'line-chart-card', componentWidget('LineChartExampleCa
 
 规则：
 
-- 单槽位大图通常用分块标题作为主标题，组件内标题可用 `config.title.visible: false` 隐藏。
-- 多槽位分块可以保留组件内短标题，帮助区分 A/B/C 槽。
+- 单槽位必须隐藏组件内部短标题，使用分块标题作为主标题。
+- 多槽位必须展示每个组件内部短标题，用于区分 A/B/C 槽；不存在多槽位隐藏短标题的例外。
+- 不要在项目配置里手工设置 `config.title.visible` 来解决排版问题；模板运行时会根据 `slotCount` 自动覆盖标题显隐。
+- 单槽位隐藏组件内部短标题时，组件必须释放标题行高度；不能只 `v-if` 隐藏标题但保留 grid/flex 标题行，也不能让主体内容自动落入隐藏标题行。DOM 校验证据里，组件主体高度应接近槽位可用高度，而不是约 `20px`。
 - 不要把分块标题写进组件 `props.title` 后又在分块 `title` 里重复一遍。
 
 ### 胶囊按钮怎么改
@@ -203,10 +205,13 @@ titlePills: [
 
 ### 说明区怎么改
 
-说明区配置在 `bodySummary`：
+说明区配置在 `bodySummary`。默认展示：如果没有单独写 `bodySummary`，模板应使用分块 `note` 作为说明区内容。内置例外：如果分块包含 `ConclusionExampleCard`，外层 `4 summaryArea` 默认隐藏，因为结论、证据、行动和补充说明由结论卡内部承载；不要删除结论卡内部的补充说明/证据/行动区。其他场景只有用户明确说不展示说明/注释时，才允许 `showSummary: false`，并必须写 `summaryHiddenReason`：
 
 ```ts
 bodySummary: '统计范围：直营门店；收入以财务确认口径为准；异常门店按毛利率低于 15% 识别。',
+// 仅当用户明确要求不展示说明区时：
+showSummary: false,
+summaryHiddenReason: '用户明确要求该分块不展示说明区。',
 ```
 
 适合放：
@@ -230,6 +235,12 @@ bodySummary: '统计范围：直营门店；收入以财务确认口径为准；
 ```ts
 slot(id, label, exampleId, widget, widthUnits, role)
 ```
+
+配置边界：
+
+- 只配置槽位显示哪个注册组件示例、绑定什么数据/API/筛选/交互、业务标题文本和说明文本。
+- 不通过项目配置手工调整槽位高度、标题高度、说明区高度、字号比例、行比例、padding 或 overflow 来解决适配问题。
+- 如果组件在槽位内放不下，应更换注册组件示例，或修复该注册组件示例的 auto-fit 行为。
 
 | 参数 | 含义 |
 | --- | --- |
@@ -360,29 +371,32 @@ filters[]
 | `first-row` | `firstRowProps` 映射出的字段 | KPI、目标进度、单对象卡片。 |
 | `category-series` | `categories` + `series` | 折线、柱状、组合图。 |
 | `items` | `items` | 排名、占比、行动清单、结论列表。 |
-| `custom-props` | `propExpressions` 映射字段 | 自开发组件或特殊组件示例。 |
+| `custom-props` | `propExpressions` 映射字段，或通过 `propsObjectField` 直接读取一整个 props 对象 | 自开发组件、特殊组件示例、`/api/component-props/:componentKey` 返回的组件 props。 |
 
 示例：
 
 ```ts
 const revenueTrendWidget = {
-  ...componentWidget('LineChartExampleCard', 'line', '收入趋势', {
-    unit: '万元',
-    config: { title: { visible: false }, chart: { legendVisible: true } },
-  }),
+  ...componentWidget('LineChartExampleCard', 'line', '收入趋势'),
   data: {
-    id: 'businessData',
-    params: { key: 'revenueRows' },
-    requiredFilters: ['regionId'],
+    id: 'apiData',
+    api: {
+      url: `/api/component-props/${encodeURIComponent('LineChartExampleCard:收入趋势')}`,
+      method: 'GET',
+      query: {
+        period: '$filters.period',
+        region: '$filters.region',
+        metric: '$context.activeTitlePill.params.metric',
+      },
+      responsePath: 'data.rows',
+      adapter: 'rows',
+      emptyFilterValues: ['', '__all', 'all'],
+    },
   },
   filterScope: ['revenue'],
   dataBinding: {
-    mode: 'category-series',
-    categoryField: 'period',
-    series: [
-      { name: '收入', valueField: 'amount', type: 'line', smooth: true, unit: '万元' },
-      { name: '达成率', valueField: 'completion', type: 'line', unit: '%' },
-    ],
+    mode: 'custom-props',
+    propsObjectField: 'props',
   },
 };
 
@@ -406,12 +420,64 @@ slot(
 
 弱模型固定步骤：
 
-1. 先写 `filters[]`，确认每个筛选项的 `id`、`label`、`defaultValue`、`source/options`；需要局部影响时再写 `scope`。
+1. 先写 `filters[]`，确认每个筛选项的 `id`、`label`、`defaultValue`、`source`；需要局部影响时再写 `scope`。mock API 模式不要保留静态 `options` 作为保底。
 2. 在目标组件槽位的 `widget` 上写 `data`；接口参数、`requiredFilters`、`ignoredFilters` 都在这里，不写进组件 props。
 3. 在同一个槽位写 `filterScope`，只填 `filters[].scope` 的值；未设置 scope 的全局筛选不需要重复填。
 4. 按组件示例需要写 `dataBinding`，确认输出 props 和组件 props 表一致。
 5. 写 `actions` 时先使用壳层默认行为；只有默认行为表达不了时才注册 `src/actions/registry.ts` handler。
 6. 在 `template-build-packet.md` 或等价施工包中同步 `filterSurfaceMap`、`componentExampleConfigMap`、`interactionBehaviorMap`，否则不要开始改代码。
+
+### 轻量 API 数据怎么配置
+
+模板内置 `npm run mock:api` 和 `npm run dev:mock`，用于把 `src/data/dashboard.dataset.json` 以接口形式提供给筛选项和组件槽位。mock API 模式下，筛选项选项、组件 rows、图表序列、KPI 值、组件示例 props 都必须来自接口，不保留静态运行时保底数据。真实 API 替换时，优先保持 `id: 'apiData'` 或 `id: 'httpData'`，只调整 `api.url`、`api.responsePath` 和必要的 `adapter`。
+
+筛选项使用 `data.items`：
+
+```ts
+{
+  id: 'region',
+  label: '组织区域',
+  defaultValue: 'all',
+  source: {
+    id: 'apiData',
+    api: {
+      url: '/api/filter-options/region',
+      method: 'GET',
+      responsePath: 'data.items',
+    },
+    labelField: 'label',
+    valueField: 'id',
+    emptyFilterValues: ['', '__all', 'all'],
+  },
+}
+```
+
+组件示例槽位默认使用 `data.rows[0].props`：
+
+```ts
+{
+  data: {
+    id: 'apiData',
+    api: {
+      url: `/api/component-props/${encodeURIComponent('DetailTableExampleCard:收入明细')}`,
+      method: 'GET',
+      query: {
+        period: '$filters.period',
+        region: '$filters.region',
+        project: '$filters.project',
+        channel: '$filters.channel',
+      },
+      responsePath: 'data.rows',
+      adapter: 'rows',
+      emptyFilterValues: ['', '__all', 'all'],
+    },
+  },
+  dataBinding: {
+    mode: 'custom-props',
+    propsObjectField: 'props',
+  },
+}
+```
 
 ### 页面交互怎么通过配置绑定
 
@@ -490,6 +556,10 @@ actions: {
 | `ConclusionExampleCard` | `title`, `unit`, `conclusion`, `emphasis`, `statusLabel`, `statusTone`, `evidenceItems`, `actionItems`, `items`, `config` |
 | `CustomEChartComponentTemplate` | `title`, `unit`, `items`, `auxMetrics`, `config` |
 
+`auxMetrics` is a component-owned auxiliary metric strip used by several chart/table examples. It belongs to the registered component example props/config. The parent block has no separate auxiliary metric slot; do not model component auxiliary information as a block slot.
+
+For chart-like examples that expose component-owned `auxMetrics`, the registered component example owns both the configuration and fit behavior. `config.layout.orientation` controls how the aux strip and chart body sit together. `config.aux.orientation` controls the metric-item layout inside the aux strip: `horizontal`, `vertical`, or `auto`. Explicit `config.aux.orientation` wins; only `auto` may adapt to available space. Do not hide `auxMetrics`, remove the component title, or tune parent block height/summary height to fix this; update the registered component example's auto-fit contract instead.
+
 常用数据结构：
 
 ```ts
@@ -498,6 +568,9 @@ actions: {
 
 // ranking/action/conclusion item
 { label: '华东大区', value: '1280万', tone: 'success' }
+
+// ranking item with backend-friendly dimension name
+{ name: '华东', value: 3860, delta: '+14.8%' }
 
 // table column
 { key: 'revenue', label: '收入', field: 'revenue', align: 'right', formatter: 'currency', unit: '万元' }
@@ -528,6 +601,15 @@ actions: {
 | `developer` | 自开发组件信息，如 `componentId`、`componentName`、`renderMode`。 |
 | `tones` | 控制主题色、状态色和暗/明主题适配色。 |
 
+KPI/core-value fit rule:
+
+- `title.visible` is owned by the slot runtime strategy, not by per-page manual config. Single-slot blocks hide component short titles; multi-slot blocks show them.
+- Component-internal `auxMetrics` is owned by the registered example. It remains valid as component props/config and must not be moved to the parent block. For chart-like examples, set `config.aux.orientation` when the metric items must be forced horizontal or vertical.
+- When the component title is hidden in a single-slot block, the selected component example must release the internal title-row height through its auto-fit implementation.
+- For compact KPI/target-progress slots, the registered component example must auto-fit value size, accessory rows, spark/reflection, and overflow behavior based on actual slot width/height. Do not solve clipping by hand-tuning per-page `value.maxFontSizePx`, `value.heightScale`, `layout.valueRatio`, `layout.accessoryRatio`, padding, or overflow.
+- A `VIS-TEXT-CLIPPED` or `VIS-CONTENT-OVERFLOW` finding inside `.layout-slot-content-widget`, `.kpi-example-card`, `.target-progress-example-card`, `.metric`, `.score`, `.value`, or `.card-value` is a configuration failure even if the generic visual audit marks it as `minor`.
+- Do not treat aligned outer cards as proof of readiness. The main value text, suffix/unit, accessory row, and optional title strip must each fit inside their own visible boxes in the screenshot and DOM rectangles.
+
 示例：
 
 ```ts
@@ -552,6 +634,7 @@ config: {
 
 - 不要在 `config` 中写未被组件读取的字段后假设它会生效。
 - 如果需要新字段，必须同步修改对应 Vue 组件读取逻辑和类型说明。
+- 列表/排行类组件必须清楚说明显示名字段。`label` 是推荐字段；当后端自然返回 `name`、`regionName`、`region`、`areaName` 或 `dimension` 时，组件示例或 adapter 必须归一化，不能只渲染数值而丢失名称。
 - 图表 `grid.containLabel`、外置 label gutter、legend 高度要分开控制，避免重复预留空间。
 
 ## 9. 自开发组件怎么开发
@@ -623,7 +706,7 @@ npm run build:test
 
 Required delivery artifacts:
 
-- `DELIVERY_INDEX.md`: project version memory ledger. Read or initialize it before modifications; append the current change after modifications with changed files, impacted pages/blocks/slots/components, data/API/filter/conclusion impact, validation, data-summary status, and next-change notes.
+- `DELIVERY_INDEX.md`: project version memory ledger for copied/configured user projects. Read or initialize it before modifications; append the current change after modifications with changed files, impacted pages/blocks/slots/components, data/API/filter/conclusion impact, validation, data-summary status, and next-change notes. For reusable bundled templates, keep this file at `template-initialized` baseline so users start with a clean project history.
 - `docs/prototype-data-summary.md`: backend-facing data structure handoff. Keep it current with `dashboard.config.ts`, `business-report-pages.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, component bindings, filters, and interactions.
 
 检查项：

@@ -79,6 +79,7 @@ interface ComboChartExampleToneConfig {
 interface ComboChartExampleAuxConfig {
   visible?: boolean;
   maxItems?: number;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
   labelFontSizePx?: number;
   valueFontSizePx?: number;
   labelColor?: string;
@@ -175,6 +176,7 @@ const defaultToneConfig: Required<ComboChartExampleToneConfig> = {
 const defaultAuxConfig: Required<ComboChartExampleAuxConfig> = {
   visible: true,
   maxItems: 4,
+  orientation: 'auto',
   labelFontSizePx: 9,
   valueFontSizePx: 12,
   labelColor: '#6b7c93',
@@ -192,6 +194,14 @@ const clampNumber = (value: unknown, min: number, max: number, fallback: number)
 };
 
 const normalizeOrientation = (value: unknown): Required<ComboChartExampleLayoutConfig>['orientation'] => {
+  if (value === 'horizontal' || value === 'vertical') {
+    return value;
+  }
+
+  return 'auto';
+};
+
+const normalizeAuxOrientation = (value: unknown): Required<ComboChartExampleAuxConfig>['orientation'] => {
   if (value === 'horizontal' || value === 'vertical') {
     return value;
   }
@@ -228,6 +238,7 @@ const resolvedLayout = computed<Required<ComboChartExampleLayoutConfig>>(() => {
 const resolvedAux = computed<Required<ComboChartExampleAuxConfig>>(() => ({
   ...defaultAuxConfig,
   ...(props.config?.aux ?? {}),
+  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
   maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 8, defaultAuxConfig.maxItems)),
   labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
   valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
@@ -357,8 +368,19 @@ const contentOrientation = computed<'horizontal' | 'vertical'>(() => {
   return containerSize.value.width >= containerSize.value.height ? 'horizontal' : 'vertical';
 });
 
+const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+  const orientation = resolvedAux.value.orientation;
+
+  if (orientation === 'horizontal' || orientation === 'vertical') {
+    return orientation;
+  }
+
+  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+});
+
 const cardClasses = computed(() => ({
   [`is-${contentOrientation.value}`]: true,
+  [`aux-${auxOrientation.value}`]: true,
   'has-aux': visibleAuxMetrics.value.length > 0,
   'has-title': resolvedTitle.value.visible,
 }));
@@ -835,8 +857,8 @@ onBeforeUnmount(() => {
 }
 
 .combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body {
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--combo-chart-horizontal-split);
+  grid-template-columns: var(--combo-chart-horizontal-split);
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .combo-chart-example-card.has-aux.is-vertical .combo-chart-example-body {
@@ -856,14 +878,14 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.combo-chart-example-card.is-horizontal .combo-chart-example-aux {
+.combo-chart-example-card.aux-horizontal .combo-chart-example-aux {
   grid-template-columns: repeat(var(--combo-chart-aux-count), minmax(0, 1fr));
   grid-template-rows: minmax(0, 1fr);
   align-items: center;
   column-gap: 4px;
 }
 
-.combo-chart-example-card.is-vertical .combo-chart-example-aux {
+.combo-chart-example-card.aux-vertical .combo-chart-example-aux {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: repeat(var(--combo-chart-aux-count), minmax(0, 1fr));
   align-items: stretch;
@@ -879,16 +901,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.combo-chart-example-card.is-horizontal .combo-chart-example-aux-item {
+.combo-chart-example-card.aux-horizontal .combo-chart-example-aux-item {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
   justify-items: center;
   text-align: center;
+  row-gap: 1px;
 }
 
-.combo-chart-example-card.is-vertical .combo-chart-example-aux-item {
+.combo-chart-example-card.aux-vertical .combo-chart-example-aux-item {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   justify-content: stretch;
   column-gap: 6px;
+  text-align: left;
 }
 
 .combo-chart-example-aux-item em,
@@ -913,7 +939,7 @@ onBeforeUnmount(() => {
   font-weight: 800;
 }
 
-.combo-chart-example-card.is-vertical .combo-chart-example-aux-item b {
+.combo-chart-example-card.aux-vertical .combo-chart-example-aux-item b {
   justify-self: end;
 }
 

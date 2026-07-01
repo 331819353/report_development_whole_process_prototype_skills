@@ -1,4 +1,0 @@
-interface:
-  display_name: "通用需求转化分析"
-  short_description: "把模糊需求拆成事实、假设、缺口和路由证据，作为 PRD 或后续工作流输入。"
-  default_prompt: "当用户提出需求分析、需求梳理、需求变更、变更影响、模糊需求、业务问题转开发需求、原型/技术方案/API/前端/后端/测试需求、指标口径、数据源、权限或验收标准不清时，使用 report-requirement-structure-extraction 抽取事实、假设、缺口和路由证据；报表原型默认路由为最新配置化模板流程：frameworkTemplateId、pageLayoutConfig、blockAreaConfigMap、槽位、组件示例和发版校验，完整 PRD/产品需求文档转交 report-prd-document-generation。"

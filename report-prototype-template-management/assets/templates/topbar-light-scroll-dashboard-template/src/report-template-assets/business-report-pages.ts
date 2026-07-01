@@ -1,5 +1,12 @@
 import type { DashboardPageConfig } from '../types/dashboard';
-import type { RegisteredWidgetConfig, WidgetMap, WidgetTitlePillOption, WidgetVisualType } from '../widgets/types';
+import type { DashboardDataSourceRef } from '../types/data-source';
+import type {
+  RegisteredWidgetConfig,
+  WidgetDataBindingConfig,
+  WidgetMap,
+  WidgetTitlePillOption,
+  WidgetVisualType,
+} from '../widgets/types';
 import type { LayoutSpanTemplateProps } from '../widgets/templates/block-spans/types';
 import type { ReportTemplateNav } from './types';
 
@@ -22,27 +29,267 @@ interface ProjectReportBlockOptions {
   title: string;
   note: string;
   bodySummary?: string;
+  showSummary?: boolean;
+  summaryHiddenReason?: string;
   titlePills?: WidgetTitlePillOption[];
   componentRegionPattern: string;
   slots: ProjectReportSlot[];
 }
 
+interface ComponentWidgetOptions {
+  data?: DashboardDataSourceRef;
+  dataBinding?: WidgetDataBindingConfig;
+  dataPolicy?: RegisteredWidgetConfig['dataPolicy'];
+}
+
+type ComponentExampleRuntimeConfig = Record<string, Record<string, unknown>>;
+
+const apiEmptyFilterValues = ['', '__all', 'all'];
+const componentPropsDataSource = (key: string): DashboardDataSourceRef => ({
+  id: 'apiData',
+  api: {
+    url: `/api/component-props/${encodeURIComponent(key)}`,
+    method: 'GET',
+    responsePath: 'data.rows',
+    adapter: 'rows',
+    query: {
+      period: '$filters.period',
+      region: '$filters.region',
+      project: '$filters.project',
+      channel: '$filters.channel',
+      metric: '$context.activeTitlePill.params.metric',
+      activeTitlePillId: '$context.activeTitlePillId',
+      activeTitlePillLabel: '$context.activeTitlePillLabel',
+    },
+    emptyFilterValues: apiEmptyFilterValues,
+  },
+  filterFields: {
+    period: 'period',
+    region: 'region',
+    project: 'project',
+    channel: 'channel',
+    metric: 'metric',
+  },
+  emptyFilterValues: apiEmptyFilterValues,
+});
+const componentPropsBinding: WidgetDataBindingConfig = {
+  mode: 'custom-props',
+  propsObjectField: 'props',
+};
+
+const componentTitleBaseConfig = {} as const;
+
+const chartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
+  title: {
+    ...componentTitleBaseConfig,
+  },
+  layout: {
+    paddingPx: 0,
+    gapPx: 0,
+    contentGapPx: 0,
+    orientation: 'auto',
+  },
+  chart: {
+    legendVisible: false,
+    legendPosition: 'hidden',
+    axisVisible: true,
+    axisNameVisible: true,
+    splitLineVisible: true,
+    labelVisible: false,
+    labelLineVisible: false,
+    gridTopPx: 4,
+    gridBottomPx: 14,
+    gridLeftPx: 0,
+    gridRightPx: 4,
+    radiusPercent: 68,
+    outerRadiusPercent: 74,
+  },
+};
+
+const metricSlotDisplayConfig: ComponentExampleRuntimeConfig = {
+  title: {
+    ...componentTitleBaseConfig,
+  },
+  layout: {
+    valueRatio: 3,
+    accessoryRatio: 1,
+    gapPx: 1,
+    paddingPx: 2,
+  },
+  value: {
+    maxFontSizePx: 42,
+    heightScale: 0.45,
+  },
+  accessory: {
+    maxItems: 1,
+    rowMinHeightPx: 20,
+    columns: 1,
+  },
+};
+
+const targetSlotDisplayConfig: ComponentExampleRuntimeConfig = {
+  title: {
+    ...componentTitleBaseConfig,
+  },
+  layout: {
+    bodyRatio: 6,
+    topRatio: 3,
+    progressRatio: 1,
+    valueRatio: 1,
+    detailRatio: 0.8,
+    gapPx: 1,
+    paddingPx: 2,
+  },
+  value: {
+    maxFontSizePx: 54,
+  },
+  detail: {
+    iconSizePx: 18,
+    iconGraphicSizePx: 12,
+    labelFontSizePx: 10,
+    valueFontSizePx: 11,
+  },
+  progress: {
+    labelVisible: false,
+    heightPx: 10,
+  },
+};
+
+const tableSlotDisplayConfig: ComponentExampleRuntimeConfig = {
+  title: {
+    ...componentTitleBaseConfig,
+  },
+  layout: {
+    paddingPx: 0,
+    gapPx: 2,
+    toolbarHeightPx: 22,
+    footerHeightPx: 32,
+    minSheetHeightPx: 140,
+  },
+  table: {
+    pageSize: 4,
+    rowHeightPx: 26,
+    headerHeightPx: 28,
+    maxVisibleColumns: 8,
+  },
+};
+
+const defaultBusinessComponentConfigByType: Partial<Record<RegisteredWidgetConfig['type'], ComponentExampleRuntimeConfig>> = {
+  KpiMetricExampleCard: metricSlotDisplayConfig,
+  TargetProgressExampleCard: targetSlotDisplayConfig,
+  LineChartExampleCard: chartSlotDisplayConfig,
+  BarChartExampleCard: chartSlotDisplayConfig,
+  ComboChartExampleCard: chartSlotDisplayConfig,
+  HeatmapChartExampleCard: chartSlotDisplayConfig,
+  ProportionChartExampleCard: chartSlotDisplayConfig,
+  QuadrantChartExampleCard: chartSlotDisplayConfig,
+  RadarChartExampleCard: chartSlotDisplayConfig,
+  RoundedFunnelChartExampleCard: chartSlotDisplayConfig,
+  CustomEChartComponentTemplate: chartSlotDisplayConfig,
+  DetailTableExampleCard: tableSlotDisplayConfig,
+  ComplexTableExampleCard: tableSlotDisplayConfig,
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value && typeof value === 'object' && !Array.isArray(value));
+
+const mergeRuntimeConfig = (...configs: unknown[]): ComponentExampleRuntimeConfig => {
+  const result: ComponentExampleRuntimeConfig = {};
+
+  configs.forEach((config) => {
+    if (!isRecord(config)) {
+      return;
+    }
+
+    Object.entries(config).forEach(([section, sectionConfig]) => {
+      if (isRecord(sectionConfig)) {
+        result[section] = {
+          ...(result[section] ?? {}),
+          ...sectionConfig,
+        };
+      }
+    });
+  });
+
+  return result;
+};
+
+const getSlotTitleConfig = (slotCount: number) => ({
+  ...componentTitleBaseConfig,
+  visible: slotCount > 1,
+});
+
+const applySlotAutoFitConfig = (
+  widget: RegisteredWidgetConfig,
+  slotCount: number,
+): RegisteredWidgetConfig => {
+  const props = (widget.props ?? {}) as Record<string, unknown>;
+
+  return {
+    ...widget,
+    props: {
+      ...props,
+      config: mergeRuntimeConfig(
+        props.config,
+        {
+          title: getSlotTitleConfig(slotCount),
+        },
+      ),
+      showContentTitle: slotCount > 1,
+    },
+  } as RegisteredWidgetConfig;
+};
+
+const defaultBusinessTitlePills: WidgetTitlePillOption[] = [
+  {
+    id: 'current',
+    label: '本期',
+    params: {
+      metric: 'current',
+      perspective: 'periodActual',
+    },
+  },
+  {
+    id: 'target',
+    label: '目标',
+    params: {
+      metric: 'target',
+      perspective: 'targetGap',
+    },
+  },
+  {
+    id: 'risk',
+    label: '风险',
+    params: {
+      metric: 'risk',
+      perspective: 'riskAction',
+    },
+  },
+];
+
 const componentWidget = (
   type: RegisteredWidgetConfig['type'],
   visualType: WidgetVisualType,
   title: string,
-  props: Record<string, unknown>,
-): RegisteredWidgetConfig =>
-  ({
+  _props: Record<string, unknown>,
+  options: ComponentWidgetOptions = {},
+): RegisteredWidgetConfig => {
+  const data = options.data;
+  const config = mergeRuntimeConfig(defaultBusinessComponentConfigByType[type], _props.config);
+
+  return ({
     type,
     visualType,
-    dataPolicy: 'static',
+    dataPolicy: data ? 'external' : options.dataPolicy ?? 'static',
     displayTitle: title,
+    data,
+    dataBinding: options.dataBinding ?? componentPropsBinding,
     props: {
       title,
-      ...props,
+      ...(Object.keys(config).length ? { config } : {}),
     },
   }) as RegisteredWidgetConfig;
+};
 
 const slot = (
   id: string,
@@ -75,39 +322,77 @@ const createSlotContracts = (slots: ProjectReportSlot[]): LayoutSpanTemplateProp
   }));
 
 const createComponentSlots = (slots: ProjectReportSlot[]): ProjectReportComponentSlot[] =>
-  slots.map((item) => ({
+  slots.map((item) => {
+    const widget = applySlotAutoFitConfig(item.widget, slots.length);
+
+    return ({
     id: item.id,
     label: item.label,
     regionKey: item.regionKey,
     role: item.role,
     componentExampleId: item.componentExampleId,
-    dataPolicy: item.widget.dataPolicy,
-    data: item.widget.data,
-    dataBinding: item.widget.dataBinding,
-    filterScope: item.widget.filterScope,
-    actions: item.widget.actions,
-    widget: item.widget,
-    props: item.widget.props as Record<string, unknown>,
-  }));
+    dataPolicy: widget.dataPolicy,
+    data: widget.data,
+    dataBinding: widget.dataBinding,
+    filterScope: widget.filterScope,
+    actions: widget.actions,
+    widget,
+    props: widget.props as Record<string, unknown>,
+  });
+  });
+
+const getDefaultSlotInteraction = (slot: ProjectReportComponentSlot) => {
+  if (slot.role === 'secondary') {
+    return {
+      interactionType: 'modal' as const,
+      targetType: 'modal' as const,
+      title: '经营对比弹窗',
+    };
+  }
+
+  if (slot.role === 'supporting') {
+    return {
+      interactionType: 'popup' as const,
+      targetType: 'popover' as const,
+      title: '经营辅助弹层',
+    };
+  }
+
+  return {
+    interactionType: 'drilldown' as const,
+    targetType: 'drawer' as const,
+    title: slot.role === 'reference' ? '经营明细下钻' : '经营指标下钻',
+  };
+};
 
 export const createBlockAreaConfig = ({
   title,
   note,
   bodySummary,
+  showSummary = true,
+  summaryHiddenReason,
   titlePills,
   componentRegionPattern,
   slots,
 }: ProjectReportBlockOptions): RegisteredWidgetConfig =>
-  ({
+  {
+    const hasConclusionCardSlot = slots.some((slot) => slot.componentExampleId === componentExampleId('conclusion-card'));
+    const shouldShowSummary = showSummary !== false && !hasConclusionCardSlot;
+    const resolvedSummaryHiddenReason = summaryHiddenReason ?? (hasConclusionCardSlot ? 'Conclusion card owns conclusion evidence and actions; block summary is hidden to avoid duplicate explanation.' : undefined);
+    const resolvedBodySummary = shouldShowSummary ? bodySummary ?? note : undefined;
+
+    return ({
     type: 'BaseLayoutSpan',
     visualType: 'other',
     dataPolicy: 'static',
     displayTitle: title,
-    titlePills,
-    bodySummary,
+    titlePills: titlePills ?? defaultBusinessTitlePills,
+    bodySummary: resolvedBodySummary,
+    summaryHiddenReason: resolvedSummaryHiddenReason,
     props: {
       title,
       note,
+      summaryHiddenReason: resolvedSummaryHiddenReason,
       showChrome: false,
       showFooter: false,
       density: 'auto',
@@ -118,9 +403,116 @@ export const createBlockAreaConfig = ({
       componentSlotGapPx: 10,
       componentSlotContracts: createSlotContracts(slots),
       componentSlots: createComponentSlots(slots),
-      showSummary: Boolean(bodySummary),
+      showSummary: shouldShowSummary && Boolean(resolvedBodySummary),
     },
   }) as RegisteredWidgetConfig;
+  };
+
+const createSlotDefaultActions = (
+  pageId: string,
+  blockId: string,
+  slot: ProjectReportComponentSlot,
+  componentDataKey: string,
+): NonNullable<RegisteredWidgetConfig['actions']> => {
+  const interaction = getDefaultSlotInteraction(slot);
+  const slotRole = slot.role ?? 'supporting';
+
+  return {
+    slotClick: {
+      type: 'dashboardAction',
+      interactionId: `${componentDataKey}.slotClick`,
+      interactionType: interaction.interactionType,
+      triggerOwner: 'templateActionHook',
+      targetType: interaction.targetType,
+      sourcePageId: pageId,
+      sourceBlockId: blockId,
+      sourceSlotId: slot.id,
+      sourceComponentExampleId: slot.componentExampleId,
+      target: `/api/component-props/${componentDataKey}`,
+      query: {
+        componentDataKey,
+        pageId,
+        blockId,
+        slotId: slot.id,
+        slotRole,
+        period: '$filters.period',
+        region: '$filters.region',
+        project: '$filters.project',
+        channel: '$filters.channel',
+        activeTitlePillId: '$context.activeTitlePillId',
+        activeTitlePillLabel: '$context.activeTitlePillLabel',
+      },
+      params: {
+        componentDataKey,
+        sourceSlotLabel: '$context.sourceSlotLabel',
+        sourceSlotRole: slotRole,
+        activeTitlePillId: '$context.activeTitlePillId',
+      },
+      meta: {
+        title: interaction.title,
+        source: 'component-slot-default-action',
+      },
+    },
+  };
+};
+
+const bindComponentSlotDataSources = <T extends Record<string, WidgetMap>>(pageWidgets: T): T =>
+  Object.fromEntries(
+    Object.entries(pageWidgets).map(([pageId, widgets]) => [
+      pageId,
+      Object.fromEntries(
+        Object.entries(widgets).map(([blockId, widget]) => {
+          if (!widget) {
+            return [blockId, widget];
+          }
+
+          const widgetProps = (widget.props ?? {}) as LayoutSpanTemplateProps & Record<string, unknown>;
+          const componentSlots = widgetProps.componentSlots?.map((slotItem) => {
+            const componentDataKey = `${pageId}.${blockId}.${slotItem.id}`;
+            const data = componentPropsDataSource(componentDataKey);
+            const actions = {
+              ...createSlotDefaultActions(pageId, blockId, slotItem, componentDataKey),
+              ...(slotItem.widget?.actions ?? {}),
+              ...(slotItem.actions ?? {}),
+            };
+            const slotWidget = {
+              ...(slotItem.widget ?? {}),
+              dataPolicy: 'external',
+              data,
+              dataBinding: slotItem.widget?.dataBinding ?? componentPropsBinding,
+              actions,
+              props: {
+                ...((slotItem.widget?.props ?? {}) as Record<string, unknown>),
+                title: ((slotItem.widget?.props ?? {}) as Record<string, unknown>).title ?? slotItem.label,
+                componentDataKey,
+              },
+            } as RegisteredWidgetConfig;
+
+            return {
+              ...slotItem,
+              dataPolicy: 'external' as const,
+              data,
+              dataBinding: componentPropsBinding,
+              actions,
+              widget: slotWidget,
+              props: slotWidget.props as Record<string, unknown>,
+            };
+          });
+
+          return [
+            blockId,
+            {
+              ...widget,
+              props: {
+                ...widgetProps,
+                componentSlots,
+              },
+            },
+          ];
+        }),
+      ),
+    ]),
+  ) as T;
 
 const projectBlock = createBlockAreaConfig;
 
@@ -133,6 +525,7 @@ const projectLayoutRows = [
   'GGGGHHHHIIII',
   'GGGGHHHHIIII',
   'GGGGHHHHIIII',
+  'GGGGHHHHIIII',
 ];
 
 const kpi = (
@@ -142,6 +535,7 @@ const kpi = (
   tone: 'primary' | 'success' | 'warning' | 'danger' | 'neutral',
   accessoryMetrics: Array<{ label: string; value: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral'; icon?: 'trend' | 'target' | 'clock' }>,
   sparkValues: number[],
+  options: ComponentWidgetOptions = {},
 ) =>
   componentWidget('KpiMetricExampleCard', 'metric-card', title, {
     value,
@@ -149,7 +543,7 @@ const kpi = (
     tone,
     accessoryMetrics,
     sparkValues,
-  });
+  }, options);
 
 const target = (
   title: string,
@@ -179,13 +573,14 @@ const line = (
   categories: string[],
   series: Array<{ name: string; values: number[]; smooth?: boolean; areaVisible?: boolean }>,
   auxMetrics: Array<{ label: string; value: string | number; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' }> = [],
+  options: ComponentWidgetOptions = {},
 ) =>
   componentWidget('LineChartExampleCard', 'line', title, {
     unit,
     categories,
     series,
     auxMetrics,
-  });
+  }, options);
 
 const combo = (
   title: string,
@@ -260,6 +655,7 @@ const detailTable = (
   title: string,
   rows: Record<string, unknown>[],
   columns: Array<Record<string, unknown>>,
+  options: ComponentWidgetOptions = {},
 ) =>
   componentWidget('DetailTableExampleCard', 'table', title, {
     rowKey: 'id',
@@ -269,7 +665,34 @@ const detailTable = (
       { label: '明细行数', value: rows.length, tone: 'primary' },
       { label: '可下钻', value: '项目/区域', tone: 'success' },
     ],
-  });
+  }, options);
+
+const apiKpi = (
+  metric: 'revenue' | 'completion' | 'profit' | 'risk',
+  title: string,
+  value: number | string,
+  unit: string,
+  tone: 'primary' | 'success' | 'warning' | 'danger' | 'neutral',
+  accessoryMetrics: Array<{ label: string; value: string; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral'; icon?: 'trend' | 'target' | 'clock' }>,
+  sparkValues: number[],
+) =>
+  kpi(title, value, unit, tone, accessoryMetrics, sparkValues);
+
+const apiRevenueLine = (
+  title: string,
+  unit: string,
+  categories: string[],
+  series: Array<{ name: string; values: number[]; smooth?: boolean; areaVisible?: boolean }>,
+  auxMetrics: Array<{ label: string; value: string | number; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'neutral' }> = [],
+) =>
+  line(title, unit, categories, series, auxMetrics);
+
+const apiRevenueDetailTable = (
+  title: string,
+  rows: Record<string, unknown>[],
+  columns: Array<Record<string, unknown>>,
+) =>
+  detailTable(title, rows, columns);
 
 const complexTable = (
   title: string,
@@ -312,6 +735,17 @@ const detailColumns = [
   { key: 'progress', label: '进度', width: 72, align: 'center', formatter: 'text', priority: 2 },
   { key: 'risk', label: '风险', width: 70, align: 'center', formatter: 'status', priority: 1 },
   { key: 'action', label: '下一步动作', width: 150, align: 'left', formatter: 'text', priority: 1 },
+];
+
+const apiRevenueDetailColumns = [
+  { key: 'customerName', label: '对象', width: 170, align: 'left', fixed: 'left', formatter: 'text', priority: 1 },
+  { key: 'regionName', label: '区域', width: 88, align: 'center', formatter: 'text', priority: 1 },
+  { key: 'channelName', label: '渠道', width: 96, align: 'center', formatter: 'text', priority: 1 },
+  { key: 'amount', label: '收入', width: 86, align: 'right', formatter: 'currency', unit: '万', priority: 1 },
+  { key: 'target', label: '目标', width: 86, align: 'right', formatter: 'currency', unit: '万', priority: 2 },
+  { key: 'completion', label: '达成率', width: 84, align: 'right', formatter: 'percent', unit: '%', priority: 1 },
+  { key: 'owner', label: '责任组', width: 104, align: 'center', formatter: 'text', priority: 2 },
+  { key: 'status', label: '状态', width: 76, align: 'center', formatter: 'status', priority: 1 },
 ];
 
 const operatingRows = [
@@ -359,7 +793,7 @@ const overviewWidgets: WidgetMap = {
     note: '收入、利润与现金流三项指标共同判断项目经营健康度。',
     componentRegionPattern: 'ABC',
     slots: [
-      slot('A', '项目收入', 'kpi-metric-card', kpi('项目收入', 12860, '万', 'primary', [{ label: '同比', value: '+12.6%', tone: 'success', icon: 'trend' }], [82, 96, 104, 116, 122, 129]), 1, 'primary'),
+      slot('A', '项目收入', 'kpi-metric-card', apiKpi('revenue', '项目收入', 12860, '万', 'primary', [{ label: '同比', value: '+12.6%', tone: 'success', icon: 'trend' }], [82, 96, 104, 116, 122, 129]), 1, 'primary'),
       slot('B', '经营利润', 'kpi-metric-card', kpi('经营利润', 2460, '万', 'success', [{ label: '利润率', value: '19.1%', tone: 'primary', icon: 'target' }], [16, 18, 20, 21, 23, 25]), 1, 'secondary'),
       slot('C', '经营现金流', 'kpi-metric-card', kpi('经营现金流', 3180, '万', 'warning', [{ label: '回款达成', value: '88.4%', tone: 'warning', icon: 'clock' }], [21, 26, 24, 28, 31, 32]), 1, 'supporting'),
     ],
@@ -387,7 +821,7 @@ const overviewWidgets: WidgetMap = {
     title: '收入趋势',
     note: '跟踪月度收入、目标线和增长拐点。',
     componentRegionPattern: 'A',
-    slots: [slot('A', '月度收入趋势', 'line-chart-card', line('月度收入趋势', '万元', ['1月', '2月', '3月', '4月', '5月', '6月'], [{ name: '实际收入', values: [8600, 9400, 10100, 11200, 11900, 12860], smooth: true, areaVisible: true }, { name: '目标收入', values: [9000, 9600, 10400, 11100, 12000, 13200], smooth: true }], [{ label: '6月收入', value: '12860万', tone: 'primary' }]), 1, 'primary')],
+    slots: [slot('A', '月度收入趋势', 'line-chart-card', apiRevenueLine('月度收入趋势', '万元', ['1月', '2月', '3月', '4月', '5月', '6月'], [{ name: '实际收入', values: [8600, 9400, 10100, 11200, 11900, 12860], smooth: true, areaVisible: true }, { name: '目标收入', values: [9000, 9600, 10400, 11100, 12000, 13200], smooth: true }], [{ label: '6月收入', value: '12860万', tone: 'primary' }]), 1, 'primary')],
   }),
   E: projectBlock({
     title: '收入与毛利联动',
@@ -404,7 +838,7 @@ const overviewWidgets: WidgetMap = {
   G: projectBlock({
     title: '收入结构',
     note: '查看渠道结构是否支撑利润目标。',
-    componentRegionPattern: 'AB',
+    componentRegionPattern: 'A|B',
     slots: [
       slot('A', '渠道占比', 'proportion-chart-card', proportion('渠道收入占比', [{ name: '线上直营', value: 42 }, { name: '门店零售', value: 28 }, { name: '工程客户', value: 18 }, { name: '海外直营', value: 12 }]), 1, 'primary'),
       slot('B', '经营健康度', 'radar-chart-card', radar('经营健康度', ['增长', '毛利', '履约', '回款', '库存'], [86, 78, 82, 72, 68]), 1, 'secondary'),
@@ -425,7 +859,7 @@ const overviewWidgets: WidgetMap = {
     title: '项目明细',
     note: '保留项目级明细，支持会议追问。',
     componentRegionPattern: 'A',
-    slots: [slot('A', '项目经营明细', 'detail-table-card', detailTable('项目经营明细', projectRows, detailColumns), 1, 'reference')],
+    slots: [slot('A', '项目经营明细', 'detail-table-card', apiRevenueDetailTable('项目经营明细', projectRows, apiRevenueDetailColumns), 1, 'reference')],
   }),
 };
 
@@ -439,7 +873,7 @@ const revenueWidgets: WidgetMap = {
   D: projectBlock({ title: '渠道趋势', note: '观察不同渠道的连续增长和波动。', componentRegionPattern: 'A', slots: [slot('A', '渠道收入趋势', 'line-chart-card', line('渠道收入趋势', '万元', ['1月', '2月', '3月', '4月', '5月', '6月'], [{ name: '线上直营', values: [3200, 3480, 3720, 4050, 4380, 4620], smooth: true, areaVisible: true }, { name: '门店零售', values: [2100, 2180, 2240, 2320, 2380, 2480], smooth: true }, { name: '工程客户', values: [1800, 1720, 1680, 1640, 1590, 1510], smooth: true }]), 1, 'primary')] }),
   E: projectBlock({ title: '品类收入', note: '品类结构用于识别增量来源和资源投向。', componentRegionPattern: 'A', slots: [slot('A', '品类收入', 'bar-chart-card', bar('品类收入', ['冰箱', '洗衣机', '空调', '厨电', '热水器'], [2860, 2410, 2180, 1960, 1450], '万元'), 1, 'secondary')] }),
   F: projectBlock({ title: '收入热力', note: '区域与渠道二维交叉定位高低贡献区。', componentRegionPattern: 'A', slots: [slot('A', '区域渠道热力', 'heatmap-chart-card', heatmap('区域渠道热力', ['华东', '华南', '华北', '海外'], ['线上', '门店', '工程'], [[92, 76, 58], [74, 68, 46], [58, 52, 31], [82, 44, 39]]), 1, 'supporting')] }),
-  G: projectBlock({ title: '区域渠道占比', note: '结构占比与排行共同判断资源配置。', componentRegionPattern: 'AB', slots: [
+  G: projectBlock({ title: '区域渠道占比', note: '结构占比与排行共同判断资源配置。', componentRegionPattern: 'A|B', slots: [
     slot('A', '区域占比', 'proportion-chart-card', proportion('区域收入占比', [{ name: '华东', value: 34 }, { name: '海外', value: 27 }, { name: '华南', value: 22 }, { name: '华北', value: 17 }]), 1, 'primary'),
     slot('B', '渠道排行', 'ranking-list-card', ranking('渠道排行', [{ name: '线上直营', value: 4620, delta: '+18.4%' }, { name: '海外直营', value: 3120, delta: '+11.5%' }, { name: '门店零售', value: 2480, delta: '+6.2%' }], '万'), 1, 'secondary'),
   ] }),
@@ -493,29 +927,29 @@ const riskWidgets: WidgetMap = {
 
 export const projectReportPageIds = ['overview', 'revenue', 'profit', 'risk'] as const;
 
-export const blockAreaConfigMap = {
+export const blockAreaConfigMap = bindComponentSlotDataSources({
   overview: overviewWidgets,
   revenue: revenueWidgets,
   profit: profitWidgets,
   risk: riskWidgets,
-} as const;
+} as const);
 
 export const projectReportPages: Record<(typeof projectReportPageIds)[number], DashboardPageConfig> = {
   overview: {
     layoutRows: projectLayoutRows,
-    widgets: overviewWidgets,
+    widgets: blockAreaConfigMap.overview,
   },
   revenue: {
     layoutRows: projectLayoutRows,
-    widgets: revenueWidgets,
+    widgets: blockAreaConfigMap.revenue,
   },
   profit: {
     layoutRows: projectLayoutRows,
-    widgets: profitWidgets,
+    widgets: blockAreaConfigMap.profit,
   },
   risk: {
     layoutRows: projectLayoutRows,
-    widgets: riskWidgets,
+    widgets: blockAreaConfigMap.risk,
   },
 };
 
