@@ -25,7 +25,7 @@ Generic report-design workflows are retired and must not be used as active downs
 Before `report-prototype-implementation-workflow` starts implementation, the PRD bundle must provide:
 
 - `prd/prd-main.md` with a readable business summary, target workflow, page previews, layout summary, metric/data/interaction summary, and gaps.
-- `prd/children/prd-child-prototype.md` with the executable report-development contract.
+- `prd/children/prd-child-prototype.md` with demand framing, design thought selection, storyline, block design reflection, filter/data design, and the executable report-development contract.
 - `prd/execution/prd-targeted-reading-analysis.md`.
 - `prd/execution/prd-template-execution-contract.md`.
 - `prd/execution/prd-template-build-packet-seed.md`.
@@ -41,18 +41,24 @@ Before `report-prototype-implementation-workflow` starts implementation, the PRD
 
 - Target workflow `report-prototype-implementation-workflow` and report type path.
 - Targeted source-material reading and analysis: source material inventory, stage reading plan, evidence-to-decision trace, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows.
+- Demand framing and design thought selection: what the user wants to make, primary reader, scenario, decision/action, primary `DT-*`, optimized/rejected candidates, selected `RTP-*` mapping, and current-design conflict handling.
 - Thinking output from `report-prototype-design-thinking`: page content, first-viewport priority, reading path, visible/non-visible content decisions, conclusion/evidence/action sequence.
+- Storyline output: `storylineMap`, `storyBlockMap`, block internal design reflection, and story completeness/value review.
+- Block geometry and conclusion-card proof: every visible block has `N>=3`; `N=3` blocks avoid vertical/up-down slots; conclusion-card blocks prove hidden说明区, `6<=M<=12`, `N>=3`, 1-3 leading conclusion slots, and non-conclusion remaining slots.
+- Filter and data design: `globalFilterDesignMap`, `localFilterDesignMap`, `pillAreaConfig`, affected metrics/APIs/conclusion rules, `dataDesignMap`, data grain, baselines/thresholds, freshness, permissions, quality/null rules, and mock-to-real status.
 - Page preview references.
 - Selected `frameworkTemplateId`.
 - `pageLayoutConfig`: `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, block coordinates, and first-viewport plan.
+- `blockImplementationInventory`: page/block count, every block coordinate, `M*N` occupancy, row/col span, slot count, slot coordinates, component targets, data/API owners, filter/interaction owners, and gap/status.
 - `blockAreaConfigMap`: per-block title, pill, auxiliary metric, unit, component area, summary/description, source/trust, and optional conclusion-rule binding.
-- Answer atom map and result-content boundary: which business question each visible block/component answers, which content is visible result versus interaction-only/handoff/removed process artifact, and which `RTP-*` / `PATH-*` row it traces to.
+- Answer atom map and result-content boundary: which business question each visible block/component answers, which content is visible result versus interaction-only/handoff/removed process artifact, and which `DT-*`, `STORY-*`, `RTP-*` / `PATH-*` row it traces to.
 - `componentSlotConfigMap`: slot count, slot pattern, slot coordinates, slot roles, slot sizes, required/optional state, and ownership.
 - `componentExampleConfigMap`: one registered component example per declared slot, including `componentExampleId`, Vue file/component, visual type, props/config, data binding, state contract, and compatibility evidence.
 - `customEChartExampleMap` for slots that need a newly registered ECharts component example.
 - `filterSurfaceMap`, `toolbarActionMap`, and `interactionBehaviorMap`.
 - Metric dictionary and metric mounting matrix.
-- Data/API contract and mock/data-source fallback status.
+- Data/API contract, Mock API Design Matrix, and mock/data-source fallback status, including performance expectation, consumer scope, request params, response envelope/path, output fields, filter binding, cache/freshness, permission/error behavior, and target replacement status.
+- `blockConfigurationReview` after implementation: per-block title, pill, summary/conclusion, slot titles, slot auxiliary info, slot chart/table/body area, interaction, filter, data/API, state, issue, and fix/backtrack status.
 - `conclusionRuleMap` for every generated summary, conclusion card, or analysis insight.
 - Permission, export, loading, empty, error, and no-permission behavior.
 - Release validation commands and acceptance evidence expectations.
@@ -64,8 +70,11 @@ Before `report-prototype-implementation-workflow` starts implementation, the PRD
 - Target workflow is `report-prototype-implementation-workflow`.
 - `CHILD-PRD-PROTOTYPE` is present and `synced` or `draft` with non-blocking gaps.
 - `prd/execution/prd-targeted-reading-analysis.md` is present and links source materials to PRD decisions, implementation-critical notes, downstream consumers, and open `ENTRY-*` / `GAP-*` rows.
+- Demand framing, primary `DT-*`, adapted `STORY-*`, story-to-block mapping, block design reflection, global/local filter design, and data design are present and linked to targeted reading rows.
 - Page content and reading path are decided by the thinking output or an explicitly accepted user design idea.
 - The configurable template route is complete enough to implement: `frameworkTemplateId`, `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` are present for every retained page.
+- The implementation workflow can derive `blockImplementationInventory` for every visible block before source edits.
+- Block geometry is ready: no visible block uses `N<3`, no `N=3` block uses vertical/up-down slots, and every conclusion-card block satisfies size, hidden-summary, leading-slot, slot-count, and remaining-slot rules.
 - PRD-owned component mapping rows are complete enough to implement: answer atom map, block-to-component map, component data map, filter/action map, conclusion rule map, and validation map are present or explicitly `draft` with non-blocking gaps.
 - Any missing component has a `customEChartExampleMap` entry and registration plan.
 - Every displayed metric is defined and mounted.
@@ -81,14 +90,17 @@ If the start gate fails, return to `report-prd-document-generation` to complete 
 | --- | --- | --- |
 | Main summary and scope | Business goal, users, phase scope, target workflow, readiness gaps. | `report-prd-document-generation` |
 | Targeted reading and analysis | Source material inventory, source authority, stage-specific reading plan, evidence-to-decision trace, non-authority items, `ENTRY-*` / `GAP-*`. | `report-prd-document-generation`, `quality-gate-validation` |
+| Design thought and storyline | Demand framing, primary `DT-*`, storyline, story block map, block design reflection, and story value review. | `report-prd-document-generation`, `report-prototype-design-thinking` through PRD generation |
 | Thinking output | Page content, reading path, first viewport, conclusion/evidence/action sequence. | `report-prototype-design-thinking` through PRD generation |
 | Target workflow | `report-prototype-implementation-workflow`. | `report-prd-document-generation` |
 | Page layout | `pageLayoutConfig` with section map, layout rows, coordinates, nav/page wiring. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
+| Block inventory | `blockImplementationInventory` with block count, occupancy, slots, component targets, data/API owners, and filter/interaction owners. | target workflow, `report-prototype-template-management` |
 | Block areas | `blockAreaConfigMap` with standard block-area content and rules. | target workflow, `report-prototype-template-management` |
 | Component slots | `componentSlotConfigMap` and `componentExampleConfigMap`. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
 | Custom components | `customEChartExampleMap`, registration path, props/data contract, validation. | target workflow, `report-prototype-template-management` |
 | Metrics | Metric dictionary, formulas, units, source, null rules, mounting. | `report-prd-document-generation`, `metric-number-display-contract` |
-| Data/API | Data objects, request/response, mock/data-source status, permissions, freshness. | `report-prd-document-generation`, target workflow |
+| Data/API | Data objects, request/response, Mock API Design Matrix, mock/data-source status, performance expectation, scope, permissions, freshness. | `report-prd-document-generation`, target workflow |
+| Filter and data design | Global filters, local filters, pill switches, data design rows, metric/API/conclusion impacts, reset/stale behavior, freshness, permissions, quality/null rules. | `report-prd-document-generation`, target workflow |
 | Interactions | Filters, pills, toolbar actions, drilldown/jump/drawer/modal/export/state behavior. | `report-prd-document-generation`, target workflow |
 | Conclusions | `conclusionRuleMap` and generated conclusion bindings. | `report-prd-document-generation`, target workflow |
 | Release | Validation commands, URL/screenshot/data evidence, readiness status. | target workflow |
@@ -100,8 +112,9 @@ If the start gate fails, return to `report-prd-document-generation` to complete 
 - Every required PRD execution row is consumed or explicitly `deferred-out-of-scope`.
 - Targeted reading rows that affect implementation are consumed or explicitly deferred with `GAP-*`.
 - `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` match the implemented template files.
+- Every visible block has a current `blockImplementationInventory` row and post-implementation `blockConfigurationReview` row.
 - Every declared slot has a registered component example or newly registered custom ECharts example.
-- Data, filters, widgets, generated conclusion rules, interactions, and permission states are reflected in `docs/prototype-data-summary.md` when a runnable project is produced.
+- Data, filters, widgets, generated conclusion rules, interactions, mock API design, replacement status, and permission states are reflected in `docs/prototype-data-summary.md` when a runnable project is produced.
 - Validation/build/release commands have passed or the blocker is explicit.
 
 Rows with `draft` or `blocked` status keep readiness `partial` or `blocked`.

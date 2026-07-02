@@ -15,7 +15,7 @@ Use this copy only inside the prototype skill bundle. Treat technical solution, 
 
 Use this skill before report prototype layout, chart selection, component mapping, template selection, or implementation. It owns the product-manager thinking layer: what story the prototype must make clear, who uses the report, in what scenario, and what decision or action the user should take.
 
-Default policy: this is the thinking layer used inside `report-prd-document-generation` to decide report content, story, reading path, and page structure before the unified implementation workflow starts. Report type differences such as self-service analysis, KPI dashboard, analysis report, detail query, cockpit, risk monitor, closure board, or review/export report are expressed as `RTP-*` and `PATH-*` decisions in the PRD; `report-prototype-implementation-workflow` consumes those decisions instead of recreating the thinking step from scratch.
+Default policy: this is the thinking layer used inside `report-prd-document-generation` to decide report content, story, reading path, and page structure before the unified implementation workflow starts. When invoked by PRD generation, the output must support `report-prd-document-generation/references/report-design-storyline-contract.md`: demand framing, primary design thought candidate, adapted storyline, block order, and visible/non-visible content boundaries. Report type differences such as self-service analysis, KPI dashboard, analysis report, detail query, cockpit, risk monitor, closure board, or review/export report are expressed as `DT-*`, `STORY-*`, `RTP-*`, and `PATH-*` decisions in the PRD; `report-prototype-implementation-workflow` consumes those decisions instead of recreating the thinking step from scratch.
 
 ## Reference Loading
 
@@ -41,11 +41,13 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 9. Run the good-report decision-path gate: one primary decision question, conclusion-before-evidence order, What/Why/So what coverage, comparison baseline, metric relationship network, drilldown/action path, and 3-second self-check.
 10. Build the conclusion explanation chain before layout: `overallConclusion -> supportingSections -> sectionConclusion -> evidenceComponents`. The overall conclusion is the report's total judgment; each section explains one reason, risk, trust point, detail route, or action behind that conclusion; each component explains one section conclusion.
 11. Classify proposed content as `visible-result`, `interaction-or-contract`, `supplemental-handoff`, or `remove`. Design-process artifacts such as 下钻链路清单, 指标清单, component mapping, binding matrix, workflow/gate checklists, dataset field catalogues, and implementation notes are not visible results by default.
-12. Define the analysis path before layout. A common report path is: overall state -> trend -> dimension/driver split -> ranking/anomaly -> detail/action.
-13. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
-14. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
-15. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, result-content boundary decisions, and unresolved gaps.
-16. Hand off the design-thinking output to `report-prd-document-generation` for `RTP-*` report-path selection and PRD-owned component mapping, then to `report-visual-layout-design` and `report-prototype-template-management`. When the target is a runnable configurable template, the handoff must explicitly preserve the chain `frameworkTemplateId -> pageLayoutConfig -> blockAreaConfigMap -> componentSlotConfigMap -> componentExampleConfigMap`.
+12. When the output feeds PRD generation, name the closest mainstream design thought candidate: conclusion-first, overview-analysis-detail, metric tree, funnel, business process, lifecycle, PDCA, diagnostic, comparison, monitoring, data storytelling, decision support, goal tracking, attribution, or forecast.
+13. Define the analysis path before layout. A common report path is: overall state -> trend -> dimension/driver split -> ranking/anomaly -> detail/action.
+14. Decide whether the page should be an information-flow report, KPI dashboard, detail/query report, analysis narrative, or cockpit/status monitor. Default to information flow unless current-state monitoring is the central decision.
+15. Choose components and charts by analysis purpose, not visual variety. KPI cards are only for primary decision metrics; do not turn every metric, explanation, detail, action, or trust note into a card/tile.
+16. Record filters, drilldowns, exports, permissions, data口径, freshness, empty/error/no-permission states, brand-vs-status color rules, result-content boundary decisions, and unresolved gaps.
+17. Capture candidate global/local filters, block pills, component controls, drill-context filters, and data feasibility signals for PRD handoff.
+18. Hand off the design-thinking output to `report-prd-document-generation` for `DT-*` design-thought selection, `STORY-*` storyline adaptation, `RTP-*` report-path selection, PRD-owned filter/data design, and PRD-owned component mapping, then to `report-visual-layout-design` and `report-prototype-template-management`. When the target is a runnable configurable template, the handoff must explicitly preserve the chain `frameworkTemplateId -> pageLayoutConfig -> blockAreaConfigMap -> componentSlotConfigMap -> componentExampleConfigMap`.
 
 ## Required Output
 
@@ -56,12 +58,14 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Metric/field layering: core metrics, analysis metrics, detail fields, dimensions, baselines, thresholds, and known口径 gaps.
 - Good report decision path: one primary decision question, 3-second main point, What/Why/So what coverage, comparison baseline, metric relationship network, drilldown/action path, and `RPT-*` gaps.
 - Conclusion explanation chain: `overallConclusion`, supporting sections, each section conclusion, reason role, evidence components, evidence role, and any `RPT-NO-OVERALL-CONCLUSION` / `RPT-ORPHAN-SECTION` / `RPT-ORPHAN-COMPONENT` gaps.
+- PRD-ready design-story input when applicable: recommended design thought candidate, storyline steps, block order from top-to-bottom and left-to-right, and conflicts/gaps that should become `ENTRY-*` or `GAP-*`.
 - Result-content boundary: which conclusions, insights, evidence, trust cues, or actions stay visible because they help business judgment; which process artifacts move to interaction contract, tooltip/detail/dictionary, validation, appendix/handoff, or removal.
 - Analysis path and first-viewport answer.
 - Page rhythm decision: information-flow report vs KPI/dashboard grid, KPI scope boundary, and card-border reduction direction.
 - Page block proposal with each block's business purpose.
 - Component/chart choice rationale tied to the question it answers.
 - Filter, drilldown, export, save/share, permission, refresh, and state requirements.
+- Global/local filter and data-design handoff candidates for the PRD-owned contracts.
 - Downstream handoff notes for report type, component mapping, layout, template, data/API, and testing.
 - Configurable-template handoff when applicable: candidate framework/template family, page/block intent, slot intent, and component-example gaps to resolve through the latest zero-to-one flow.
 
@@ -71,7 +75,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not treat the prototype as only a UI drawing. It must help reviewers understand product value without the designer standing beside it.
 - Do not average-weight every feature. Separate protagonist functions, supporting functions, and information display.
 - Do not skip entry path, first action, result feedback, or key states when they affect whether the story can be understood.
-- Do not treat "报表" as one fixed page shape. When the user explicitly needs monitoring, explanation, exploration, or exact record verification, record the corresponding `RTP-*` path and reading-path implication for `report-prd-document-generation`; do not branch to a separate implementation path from this skill.
+- Do not treat "报表" as one fixed page shape. When the user explicitly needs monitoring, explanation, exploration, or exact record verification, record the corresponding design-thought candidate, `RTP-*` path, and reading-path implication for `report-prd-document-generation`; do not branch to a separate implementation path from this skill.
 - Do not place all requested fields on the main canvas. Detail fields belong in detail tables, drawers, exports, or appendix unless they are needed for the first decision.
 - Do not accept a report prototype whose primary metrics are isolated numbers without target/baseline/benchmark/denominator/threshold comparison.
 - Do not accept a flat metric list as the core report structure. Core metrics need driver, dimension, detail, action, or trust relationships.

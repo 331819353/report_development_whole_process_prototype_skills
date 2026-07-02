@@ -7,8 +7,8 @@ This contract follows:
 ```text
 frameworkTemplateId
   -> templateAssetUnderstandingMap
+  -> designThoughtSelectionMap / storylineMap
   -> pageLayoutConfig
-  -> blockAreaConfigMap
   -> blockAreaConfigMap
   -> componentSlotConfigMap
   -> componentExampleConfigMap
@@ -26,7 +26,7 @@ Use these terms exactly:
 | --- | --- | --- |
 | `frameworkTemplateId` / 框架模板 | Bundled runtime shell: title, navigation, filters, toolbar, theme, logo, stack. | One bundled template id and why it fits the report scenario. |
 | `pageLayoutConfig` / 页面布局配置 | Page-level 12-column grid, readable sections, `layoutRows`, block ids, spans, and scroll policy. | Page ID, nav entry, `layoutSectionMap`, exact `layoutRows`, `blockMap`, `layoutCoordinateMap`. |
-| `blockAreaConfigMap` / 分块配置 | Block area configs created by `createBlockAreaConfig` and rendered by `BaseLayoutSpan.vue`. | Block coordinates, spans, area config, slot pattern, slot contracts, and slot list. |
+| `blockAreaConfigMap` / 分块配置 | Block area configs created by `createBlockAreaConfig` and rendered by `BaseLayoutSpan.vue`. | Block coordinates, spans, storyline role, area config, slot pattern, slot contracts, and slot list. |
 | 槽位配置 | `componentSlots` inside `3 componentArea`. | `R-B-S` coordinate, role, slot key, required status, and binding owner. |
 | `componentExampleConfigMap` / 组件示例配置 | Registered component examples mounted into slots. | `componentExampleId`, Vue export/registry proof, visual type, props/config/data binding, states. |
 | 自开发 ECharts 组件示例 | New registered component example created only when the catalog has no fit. | File path, export, schema, registry, data contract, validation proof. |
@@ -69,7 +69,7 @@ Before `pageLayoutConfig`, write `templateAssetUnderstandingMap` to `prd/executi
 | `assetRoot` | `report-prototype-template-management/assets/templates/<template-id>/`. |
 | `shellConfigSource` | `src/config/dashboard.config.ts`. |
 | `pageConfigSource` | `src/report-template-assets/business-report-pages.ts`. |
-| `gridContract` | 12 columns, page rows `N >= 8`, exact row strings, and visible top-level block row span `N >= 3`. |
+| `gridContract` | 12 columns, page rows `N >= 8`, exact row strings, visible top-level block row span `N >= 3`, and no vertical/up-down slot structure for `N < 4` blocks. |
 | `dynamicBlockRuntimeSource` | `src/widgets/templates/block-spans/BaseLayoutSpan.vue`. |
 | `dynamicBlockCreationApi` | `createBlockAreaConfig`. |
 | `dynamicBlockCollectionExport` | `blockAreaConfigMap`. |
@@ -86,7 +86,7 @@ Before technical tables, every retained page or navigation tab needs a reader-fa
 
 - Visible filters and toolbar actions.
 - First-viewport blocks and their business purpose.
-- The reading path from conclusion to evidence, cause, detail, and action.
+- The selected design thought and storyline order from conclusion/status to evidence, cause, detail, trust, and action.
 - Major interaction entry points.
 
 Raw IDs, full `layoutRows`, component example binding, data/API matrices, and Template Build Packet rows belong in execution files and child PRDs, not in the readable main PRD body.
@@ -95,8 +95,8 @@ Raw IDs, full `layoutRows`, component example binding, data/API matrices, and Te
 
 Before raw `layoutRows`, write a readable `layoutSectionMap`.
 
-| Page ID | Section No (`R`) | Section name | Business purpose | Section grid | Row count | Local row preview | Global row range | Block coordinates |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Page ID | Section No (`R`) | Section name | Storyline step(s) | Business purpose | Section grid | Row count | Local row preview | Global row range | Block coordinates |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
@@ -104,7 +104,9 @@ Rules:
 - The page total row count is the sum of section row counts and must be `N >= 8`.
 - Local previews may reuse letters for readability, but final machine `layoutRows` must use globally unique block ids or a section-scoped mapping.
 - `Section No` is the `R` in block coordinate `R-B` and slot coordinate `R-B-S`.
+- Every section should carry one or more `STORY-*` steps, or be marked support/export/trust-only with a reason.
 - Section examples must not imply an implementable top-level block with row span `N < 3`. If a source asks for a shorter strip, fold it into a legal `N >= 3` block or treat it as internal component/sub-block sizing.
+- Section examples must not imply vertical/up-down slot structures inside an `N=3` block. Use horizontal/single-slot structure or increase the block height to `N >= 4`.
 
 ## Page Layout Rows
 
@@ -127,6 +129,7 @@ Rules:
 - A page with fewer than 8 rows is invalid.
 - Each block must form one rectangle.
 - Every visible block's `rowSpan` is the block `N` in `M*N` and must be `N >= 3`.
+- If a visible block has `rowSpan < 4`, its `componentSlotPattern` must not be vertical/up-down. Use one slot, horizontal/side-by-side slots, or increase `rowSpan` to `N >= 4`.
 - A source/requested `N < 3` top-level block is invalid for handoff until normalized to a legal block, merged into adjacent content, represented as internal component/sub-block sizing, or recorded as a blocker.
 - Every visible block has one `blockMap` row and one `blockAreaConfigMap` row.
 - Proportional prose such as `8+4`, screenshots, or preview diagrams can explain intent but cannot replace `layoutRows`.
@@ -137,8 +140,8 @@ In the PRD and Template Build Packet, name this section `blockAreaConfigMap`.
 
 For every visible block:
 
-| Block ID | Block coordinate | Page ID | Section No | `PATH-*` source | 4B gate IDs | Business purpose | Row start | Row span | Col start | Col span | `componentRegionPattern` | Slot count | `componentSlotPattern` | Slot coordinate list | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | Page ID | Section No | `STORY-*` source | `PATH-*` source | Business purpose | Row/col span | `titleAreaConfig` | `pillAreaConfig` | `summaryAreaConfig` / conclusion decision | Conclusion card rule | `componentRegionPattern` | Slot count/pattern | Slot coordinate list | Component-owned unit/aux evidence | Local filter/data impact | Interaction decision | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
@@ -148,19 +151,13 @@ Rules:
 - `componentRegionPattern` only describes internal slot geometry.
 - `Slot count` equals distinct slot groups in the pattern.
 - `Slot coordinate list` enumerates all declared slots, such as `2-2-1`, `2-2-2`, `2-2-3`.
-- A block is not ready when it lacks `PATH-*` source unless it is explicitly support/source/export/permission-only.
-
-## Block Area Config Map
-
-For every block, write `blockAreaConfigMap`.
-
-| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `summaryAreaConfig` | Component-owned unit/aux evidence | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-
-Rules:
-
-- `titleAreaConfig` is required.
-- Optional areas are configured or set to `null` with `notNeededReason`.
+- A block is not ready when it lacks `STORY-*` and `PATH-*` source unless it is explicitly support/source/export/permission-only.
+- `titleAreaConfig` is required and must name the business question or result; chart-type/source-table-only titles are not ready.
+- `pillAreaConfig` must reference `FILTER-LOCAL-*`, define affected slots/components, API/metric params, reset/stale behavior, and conclusion recompute/clear behavior; use `null` with `notNeededReason` when not needed.
+- `summaryAreaConfig` must be a dynamic `RULE-*`, source/trust/static caveat, or explicit `null` with `notNeededReason`.
+- `Conclusion card rule` is `none` when no conclusion-card component exists. When a conclusion card exists, it must state `summaryAreaHidden`, `6<=M<=12`, `N>=3`, `conclusionSlotCount=1..3`, `firstSlot=true`, and `remainingSlots=nonConclusion`.
+- `Interaction decision` must reference `INT-*` rows or a non-clickable/disabled reason for every interactive-looking surface.
+- If any component slot in the block contains a conclusion-card component, `summaryAreaConfig` must be `null` or hidden with `notNeededReason=conclusionCardOwnsConclusion`; do not also render a visible block-level说明区.
 - Business conclusions in `summaryAreaConfig` must reference `conclusionRuleId`.
 - When `summaryAreaConfig` is visible, its height/ratio follows the template runtime default of `1/(N+1)` for the block row span `N`; PRD text must not specify a stale fixed row or fixed-pixel summary ratio.
 - Do not put parent-block title, pills, filters, descriptions, or summary/explanation copy into component slots.
@@ -171,15 +168,19 @@ Rules:
 
 For every `3 componentArea` slot:
 
-| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot key | Slot role | Required? | Component slot size | Expected visual/evidence role | Data owner | Interaction owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot ID | Slot coordinate | Block ID | Block coordinate | Storyline step | Slot key | Slot order | Slot role | Required? | Component slot size | Expected visual/evidence role | Data owner | Interaction owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - `Slot coordinate` uses `R-B-S`.
 - Slot rows must trace to a declared `Slot coordinate list` in `blockAreaConfigMap`.
+- Slot rows must trace to a `STORY-*` step or to a support/export/trust-only reason.
 - Slot rows are empty containers until `componentExampleConfigMap` binds a registered component example.
 - Text, prose, placeholder copy, `visualType` alone, or inline widget objects do not fill a slot.
+- Slot count, slot size, and slot information must match the block design reflection in `CHILD-PRD-PROTOTYPE`.
+- When a block contains conclusion-card slots, those slots must have the lowest/leading `Slot order`, occupy 1-3 leading slot positions, and all later slots must be non-conclusion components.
+- When a block has `rowSpan < 4`, slot rows must not describe a vertical/up-down split.
 
 ## Component Example Config Map
 
@@ -242,16 +243,21 @@ Do not hardcode final normal-state business conclusions in mock data, static pro
 ## Readiness Gates
 
 - Every retained page has a reader-facing preview before technical tables.
+- Every retained page and visible block preserves the selected design thought and `STORY-*` ordering from `CHILD-PRD-PROTOTYPE`.
 - `templateAssetUnderstandingMap` is current and written back to all required PRD artifacts.
 - Every page has `layoutSectionMap`, exact `layoutRows`, `blockMap`, and `layoutCoordinateMap`.
 - Every visible block has one `blockAreaConfigMap` row created for `createBlockAreaConfig`.
+- Every visible block has title rationale, conclusion/description-area decision, slot count, slot size, slot information, metric/data binding, interaction ownership, and reflection status.
 - Every visible top-level block has `rowSpan >= 3`; no ready PRD artifact contains an implementable `M*N` block where `N < 3`.
+- Every visible top-level block with `rowSpan < 4` avoids vertical/up-down slot structure.
+- Every conclusion-card block has `6 <= colSpan <= 12`, `rowSpan >= 3`, hidden/null `summaryAreaConfig`, 1-3 leading conclusion-card slots, and non-conclusion remaining slots.
 - Visible `summaryAreaConfig` rows inherit the template `1/(N+1)` ratio and do not carry stale fixed-height summary sizing.
+- Visible `summaryAreaConfig` is invalid in a block that contains a conclusion-card component.
 - Every block has `blockAreaConfigMap`.
 - Every component slot has one `componentSlotConfigMap` row.
 - Every filled slot has one `componentExampleConfigMap` row with schema/export/registry proof.
 - Every custom ECharts component is registered as a component example before the slot is ready.
 - No fixed retired fixed-size wrappers wrapper or legacy component example map is used as an active implementation target.
 - No component slot carries title/pill/filter/aux/unit/summary content.
-- Every filter, pill, toolbar action, and component interaction has visible owner, affected data/API params, refresh scope, states, and QA case.
+- Every filter, pill, toolbar action, and component interaction has visible owner, affected data/API params, refresh scope, conclusion recompute/stale behavior, states, and QA case.
 - Template-backed PRD handoff includes a Template Build Packet seed aligned with `report-prototype-template-management/references/template-build-packet-contract.md`.

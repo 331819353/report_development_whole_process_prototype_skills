@@ -29,6 +29,7 @@ Do not implement directly from scattered prose, screenshots, PRD paragraphs, or 
 - Use `TBD(GAP-*)` for missing implementation-critical values.
 - Use `none` only when truly not applicable.
 - Do not edit source files until packet sections 0-10 are `ready` or explicitly `deferred` for the affected scope.
+- Before editing source files, complete the block inventory and occupancy rows so the implementer knows exactly how many blocks exist, where they sit, and which slots/data/interactions each block owns.
 
 ## Required Packet Sections
 
@@ -106,6 +107,19 @@ Rules:
 - Each page has at least 8 rows.
 - Every block letter forms a rectangle.
 
+### 4A. Block Implementation Inventory
+
+Complete this before source edits. It is the implementation checklist for how many blocks exist and how much space each block owns.
+
+| Page ID | Block count on page | Block ID | Block coordinate | Business name | `M*N` occupancy | Row/col span | Slot count | Slot coordinate list | Required component examples | Data/API owners | Filter/interaction owners | Gap/status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- Every visible block from `layoutRows` must have one inventory row.
+- `M*N` must match `colSpan * rowSpan`; row span must satisfy the template layout gates.
+- Inventory is not ready when block count, occupancy, slot count, component example target, data/API owner, or filter/interaction owner is unknown.
+
 ### 5. Block Area Config Map
 
 | Block ID | Block coordinate | Page ID | Section No | Business name | Reading path source | Gate source | Row start | Row span | Col start | Col span | `componentRegionPattern` | Slot count | Component slot pattern | Slot coordinate list | Status |
@@ -132,8 +146,8 @@ Rules:
 
 ### 7. Component Slot Example Fills
 
-| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot pattern code | Slot role | Component slot size | `componentExampleId` | Component type | Vue file/export | Registry proof | Visual type | Props/config | Metric IDs | Data object/API | `filterScope` | `dataBinding` | `actions` | State contract | `conclusionRuleId` | Fallback |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Slot ID | Slot coordinate | Block ID | Block coordinate | Slot pattern code | Slot role | Slot title | Slot auxiliary info | Slot chart/table/body area | Component slot size | `componentExampleId` | Component type | Vue file/export | Registry proof | Visual type | Props/config | Metric IDs | Data object/API | `filterScope` | `dataBinding` | `actions` | State contract | `conclusionRuleId` | Fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
@@ -145,20 +159,44 @@ Rules:
 - `filterScope` lists `filters[].scope` values, not raw filter ids unless the scope deliberately equals the id.
 - `actions` names component event names and maps them to route, external, drawer/drilldown, modal, popover/popup, cross-filter, fullscreen, export, refresh, or a custom registry handler.
 - If no existing component example fits, register a custom ECharts component example before treating the slot as filled.
+- Slot title, auxiliary information, and chart/table/body area must be configured through the registered component example contract. Do not put slot title or auxiliary information into parent block areas unless the component example explicitly has no such surface and the PRD allows it.
+
+### 7A. Block Configuration Review
+
+Write this after each block is configured. It is the look-back gate before moving to the next block.
+
+| Review ID | Block ID | Block coordinate | PRD rows consumed | Title ready | Pill ready | Summary/conclusion ready | Slot titles ready | Slot aux info ready | Slot chart/table/body ready | Interactions ready | Filters ready | Data/API ready | States ready | Issue found | Fix/backtrack action | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- Do not mark a block ready when any slot lacks a registered component example, slot title decision, auxiliary info decision, body/chart/table binding, interaction decision, filter binding, data/API binding, or state contract.
+- If a later global filter, mock API, or interaction changes a block, update that block's review row instead of leaving stale evidence.
 
 ### 8. Data, API, Filters, And Interactions
 
 #### Data/API
 
-| Data/API ID | Type | Grain | Required fields | Metrics/conclusion inputs | Source file/API | Used by slot coordinates | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Data/API ID | Type | Grain | Performance expectation | Scope | Request params | Required fields | Response envelope/path | Metrics/conclusion inputs | Source file/API | Used by slot coordinates | Filter binding | Cache/freshness | Permission/error behavior | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
-- For lightweight prototype API mode, list `scripts/mock-api-server.mjs`, `scripts/dev-with-mock-api.mjs`, npm commands (`mock:api`, `dev:mock`), endpoint path, `responsePath`, and the backing `dashboard.dataset.json` collection.
+- For lightweight prototype API mode, list `scripts/mock-api-server.mjs`, `scripts/dev-with-mock-api.mjs`, npm commands (`mock:api`, `dev:mock`), endpoint path, scope, request params, response envelope, `responsePath`, performance expectation, cache/freshness, permission/error behavior, and the backing `dashboard.dataset.json` collection.
 - Filter option APIs should declare response path `data.items`; component row APIs should declare response path `data.rows`; component-example props should default to `/api/component-props/:componentKey` with `dataBinding.propsObjectField: 'props'`.
 - In mock API mode, mark static `filters[].options`, static widget rows, chart series, KPI values, or component demo props as invalid runtime fallback data.
 - A row is not ready until the matching `filters[].source` or component `data` config references this API and the used slot coordinates are listed.
+
+#### Mock API Design Matrix
+
+| Mock API ID | Method/path | Consumer scope | Request params | Bound filters/pills | Response envelope/path | Output fields | Performance expectation | Cache/freshness | Permission/no-permission/error behavior | Target HTTP replacement | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+Rules:
+
+- Every mock endpoint must state the consumer scope: global filter option, scoped filter option, block, slot, conclusion, detail interaction, or export.
+- Request params must include global filters, local filters, active pill params, pagination/sort/export params, and inherited drilldown context when relevant.
+- Output fields must satisfy the component-required shape and the Metric To Interface And Source Mapping. Missing target HTTP details use `TBD(GAP-*)`.
 
 #### Filters And Actions
 
@@ -220,13 +258,16 @@ Required validation:
 The packet is not ready when:
 
 - Any page lacks exact 12-column `layoutRows`.
+- Any visible block lacks a `Block Implementation Inventory` row with count, occupancy, slots, component target, data/API owner, and filter/interaction owner.
 - Any block lacks a block area config row.
+- Any block lacks a `Block Configuration Review` row after implementation.
 - Any slot lacks `componentExampleId`.
 - Any `componentExampleId` is missing from schema/export/registry.
 - A fixed block wrapper is used as the report block implementation.
 - A component slot carries parent-block title, pill, filter, control, summary, description, or help content instead of a registered component example contract.
 - A data-bound component slot lacks `data`, `dataBinding`, filter binding path, or a documented static-data reason.
 - A scoped filter lacks a row in the Filter Binding Matrix.
+- A mock API lacks performance expectation, consumer scope, request params, response envelope/path, filter binding, output fields, cache/freshness, permission/error behavior, or target replacement status.
 - An interaction lacks source slot/block coordinate, event name, action placement, target type, handler mode, state response, or QA case.
 - A custom ECharts component is not registered.
 - Validation commands are missing.

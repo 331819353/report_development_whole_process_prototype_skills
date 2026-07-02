@@ -22,11 +22,17 @@ Keep the tables compact but specific. Replace every `TBD(GAP-*)` before marking 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `SRC-REQ-001` | user request / requirement file / screenshot / HTML / data / API / mock | PRD / brief / note / screenshot / HTML / code / data / API / mock | user / repo / system | confirmed / inferred / sample-only / stale / conflicting | section, screenshot area, code path, dataset key | business scope / metric / layout / API / interaction / permission / QA | none / `ENTRY-*` / `GAP-*` |
 
+## 1A. Demand And Design Storyline Trace
+
+| Trace ID | Decision area | Current design decision | Source IDs | Why this source is authoritative | Conflict handling | Gap |
+| --- | --- | --- | --- | --- | --- | --- |
+| `READ-DESIGN-001` | demand / reader / scenario / decision-action / `DT-*` / `STORY-*` / block order / global filter / local filter / data design | current PRD design decision | `SRC-*` | latest user instruction / source authority / metric evidence / safe inference | none / current design overrides stale source / `ENTRY-*` | none / `GAP-*` |
+
 ## 2. Targeted Reading Plan By Stage
 
 | Stage | Must read | Read for | Must extract | Do not infer from | Output artifact/row |
 | --- | --- | --- | --- | --- | --- |
-| Prototype | selected `SRC-*`, `prd/children/prd-child-prototype.md`, template execution rows | report path, page story, layout, slots, component examples, data summary | page/block/slot ids, component data keys, conclusion rules, custom example gaps | screenshots alone, visible labels alone, copied SVG/canvas marks | template config, `docs/prototype-data-summary.md` |
+| Prototype | selected `SRC-*`, `READ-DESIGN-*`, `prd/children/prd-child-prototype.md`, template execution rows | demand framing, design thought, page story, layout, filters, slots, component examples, data summary | primary `DT-*`, `STORY-*`, global/local filters, page/block/slot ids, component data keys, conclusion rules, data design rows, custom example gaps | screenshots alone, visible labels alone, copied SVG/canvas marks | template config, `docs/prototype-data-summary.md` |
 | Technical solution | this file, PRD execution files, data/API files | architecture, API/model ownership, runtime/NFR, source authority | scope boundaries, endpoint families, source conflicts, environment assumptions | final DOM, mock data alone | architecture blueprint, API inventory, model plan |
 | Backend/API | this file, metric/data/API files, replacement rows | source feasibility, API shape, response compatibility | metrics, grain, filters, permissions, source fields, replacement rows, data-version rules | frontend labels, local mock JSON alone | API docs, data model, backend implementation |
 | Frontend | this file, child frontend/prototype files, API contracts | route/component/provider implementation | component data keys, slots, filters, states, retained mock exceptions, conclusion inputs | business prose alone, screenshot chart shape alone | frontend function description, runtime QA |
@@ -36,12 +42,14 @@ Keep the tables compact but specific. Replace every `TBD(GAP-*)` before marking 
 
 | Decision ID | Decision | Source IDs | Analysis summary | Confidence | Affected PRD files/rows | Downstream consumers | Gap/conflict |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `READ-DECISION-001` | report type / metric formula / page block / API group / interaction / permission / QA case | `SRC-*` | what was concluded and why | confirmed / inferred / blocked | file path + row/ID | prototype / technical-solution / backend / frontend / testing | none / `ENTRY-*` / `GAP-*` |
+| `READ-DECISION-001` | demand / scenario / selected `DT-*` / `STORY-*` / report type / metric formula / page block / global-local filter / data design / API group / interaction / permission / QA case | `SRC-*`, `READ-DESIGN-*` | what was concluded and why | confirmed / inferred / blocked | file path + row/ID | prototype / technical-solution / backend / frontend / testing | none / `ENTRY-*` / `GAP-*` |
 
 ## 4. Implementation Critical Reading Notes
 
 | Area | What must be understood | Evidence | Risk if missed | Owning stage | Gate |
 | --- | --- | --- | --- | --- | --- |
+| Design thought and storyline | primary reader, scenario, selected `DT-*`, adapted `STORY-*`, block order | `SRC-*`, `READ-DESIGN-*`, `DT-*`, `STORY-*` | generic dashboard or broken story | prototype / testing | story value review |
+| Filter and data design | global/local filter scope, pill behavior, data grain, baselines, freshness, permission, quality/null rules | `SRC-*`, `READ-DESIGN-*`, `FILTER-*`, `DATA-DESIGN-*` | wrong context, stale data, misleading conclusions | prototype / backend / frontend / testing | filter/data consistency |
 | Metric formula | numerator, denominator, unit, null rule | `SRC-*`, `MET-*` | wrong value or display | backend / frontend / testing | numeric display / data consistency |
 | Component data key | data key, slot, API row, replacement row | `SLOT-*`, `API-*`, `READ-*` | stale mock or adapter mismatch | prototype / frontend / backend / testing | mock-to-real / data consistency |
 | Filter behavior | global/local/perspective/drilldown scope | `INT-*`, filter map, `READ-*` | selected-state-only filter | frontend / backend / testing | filter completeness |
@@ -70,6 +78,7 @@ Keep the tables compact but specific. Replace every `TBD(GAP-*)` before marking 
 - Missing targeted reading file: yes / no
 - Generic broad-read rows present: yes / no
 - Every authoritative source has `SRC-*`: yes / no
+- Demand, reader, scenario, selected design thought, storyline, filters, and data design have `READ-DESIGN-*`: yes / no
 - Every PRD decision with source evidence has `READ-*`: yes / no
 - Non-authority items are explicit: yes / no
 - Downstream stages consume or defer relevant rows: yes / no

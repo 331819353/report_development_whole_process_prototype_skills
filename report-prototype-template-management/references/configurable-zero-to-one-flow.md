@@ -86,13 +86,14 @@ Output:
 - `layoutSectionMap`
 - `layoutRows`
 - `layoutCoordinateMap`
+- `blockImplementationInventory`: page/block count, each block coordinate, `M*N` occupancy, slot count, slot coordinate list, component example target, data/API owner, filter/interaction owner, and gap/status.
 - `filterSurfaceMap`
 - `toolbarActionMap`
 - `page/nav wiring`
 
 ## Step 3. Configure Block Areas
 
-For every block letter from `layoutRows`, create one widget with `createBlockAreaConfig`.
+For every block letter from `layoutRows`, create one widget with `createBlockAreaConfig`. Work from `blockImplementationInventory`; do not start source edits when the block count, occupancy, slot count, or slot coordinates are still unclear.
 
 Required fields:
 
@@ -124,13 +125,14 @@ Rules:
 - `componentRegionPattern` only describes internal component-area slot geometry.
 - Supported slot patterns include `A`, `AB`, `ABC`, and row patterns such as `AAB|CCD`.
 - `componentSlotContracts` and `componentSlots` are generated from `slots`.
+- Configure one block at a time. Before moving on, verify its title, pill area, summary/conclusion area, slot list, data/API owner, filter owner, and interaction owner are all known or explicitly blocked.
 
 Output:
 
 - `blockAreaConfigMap`
 - `componentSlotConfigMap`
 
-## Step 4. Configure Block Areas
+## Step 4. Configure Standard Block Areas
 
 Block areas stay on the block area, not inside component slots:
 
@@ -190,10 +192,15 @@ Component title visibility is automatic: single-slot parent blocks hide componen
 
 Component examples may also define component-owned internal unit and auxiliary metrics such as `unit` and `auxMetrics` for chart/table/composite cards. These are component-internal areas, not block-level areas. Keep parent block title, pills, filters, controls, and summaries out of `componentSlots`, but do not strip internal `unit` or `auxMetrics` from a registered example when they are part of that component's props and auto-fit layout.
 
+For every slot, explicitly decide the slot title, component-owned auxiliary information, and chart/table/body area. A slot is not ready when its title/aux/body surfaces are implied by a screenshot or by generic component defaults instead of the selected registered component example contract.
+
+After finishing each block, write or update `blockConfigurationReview`: title ready, pill ready, summary/conclusion ready, slot titles ready, slot auxiliary info ready, slot chart/table/body ready, interactions ready, filters ready, data/API ready, states ready, issue found, and fix/backtrack action. If a later global filter, mock API, or interaction changes the block, revisit the review row.
+
 Output:
 
 - `componentExampleConfigMap`
 - one row for every declared slot
+- `blockConfigurationReview`
 
 ## Step 6. Self-Develop Only When No Example Fits
 
@@ -228,7 +235,7 @@ Output:
 
 ## Step 7. Bind Data, Filters, And Interactions
 
-Use template-owned surfaces first:
+Use template-owned surfaces first. Configure global filters, toolbar actions, export, refresh, permissions, and shell state after block-level ownership is known, then revisit affected block review rows.
 
 - Global/page filters: `dashboard.config.ts` `filters[]`.
 - Topbar/left-nav/fixed cockpit navigation: template shell config.
@@ -256,9 +263,9 @@ For existing component examples, use this binding algorithm:
 6. Set `componentSlots[].actions[eventName]`, block `actions[eventName]`, or `titlePills[].actions.titlePillChange` for interaction events. Shell defaults handle `route`, `external`, `drawer`/`drilldown`, `modal`, `popover`/`popup`, `cross-filter`, `fullscreen`, `export`, and `refresh`; registry handlers override defaults.
 7. Verify representative interactions in the running page. A configured interaction is ready only when clicking or keyboard-activating the source block/slot produces the expected visible route, drawer, modal, popover, cross-filter, refresh, fullscreen, export, or external-open state.
 
-When backend-shaped data is needed before real backend delivery, use the bundled npm mock API route: keep filter options, component props, and mock rows in `src/data/dashboard.dataset.json`, start with `npm run dev:mock`, configure `filters[].source.api.responsePath: 'data.items'` and component `data.api.responsePath: 'data.rows'`, and for component-example slots prefer `/api/component-props/:componentKey` with `dataBinding.propsObjectField: 'props'`. Do not retain static filter options, widget rows, chart series, KPI values, or component demo props as runtime fallback data. Document endpoints in `docs/mock-api-contract.md` and document the mock-to-real HTTP replacement path in `docs/prototype-data-summary.md`.
+When backend-shaped data is needed before real backend delivery, use the bundled npm mock API route: keep filter options, component props, and mock rows in `src/data/dashboard.dataset.json`, start with `npm run dev:mock`, configure `filters[].source.api.responsePath: 'data.items'` and component `data.api.responsePath: 'data.rows'`, and for component-example slots prefer `/api/component-props/:componentKey` with `dataBinding.propsObjectField: 'props'`. Each mock endpoint must state performance expectation, consumer scope, request params, bound filters/pills, response envelope/path, output fields, cache/freshness, permission/no-permission/error behavior, and target HTTP replacement status. Do not retain static filter options, widget rows, chart series, KPI values, or component demo props as runtime fallback data. Document endpoints in `docs/mock-api-contract.md` and document the mock-to-real HTTP replacement path in `docs/prototype-data-summary.md`.
 
-Mock API readiness is not just a successful Vite page load. Verify `/api/health`, at least one `/api/filter-options/*` endpoint, and at least one `/api/component-props/:componentDataKey` endpoint before browser review. If the page shows repeated generic request-failure messages, stop and diagnose startup mode, proxy/base URL, endpoint path, response envelope, and component `dataBinding` before judging visual or interaction quality.
+Mock API readiness is not just a successful Vite page load. Verify `/api/health`, at least one `/api/filter-options/*` endpoint, and at least one `/api/component-props/:componentDataKey` endpoint before browser review. If the page shows repeated generic request-failure messages, stop and diagnose startup mode, proxy/base URL, endpoint path, request params, response envelope/path, filter binding, and component `dataBinding` before judging visual or interaction quality.
 
 ## Step 8. Validate Runtime Mounting
 
@@ -288,7 +295,7 @@ After data, filters, widgets, generated conclusions, and interactions are config
 docs/prototype-data-summary.md
 ```
 
-The summary must name actual data files, datasets, fields, component bindings, filters, interaction payloads, Metric To Interface And Source Mapping, a Mock API To HTTP API Replacement Matrix, backend interface method contracts, backend API/model suggestions, gaps, and verification. The metric mapping matrix is the priority output for backend table matching: every displayed metric, KPI, chart/table measure, ranking value, generated conclusion variable, target/reference value, and derived status must state metric name/id, interface/service, response field, source table/view/model, source columns, formula, grain, dimensions, filters, and related `GAP-*`. The replacement matrix is the priority output when mock API mode is used: every global/scoped filter, summary or conclusion variable, chart/table/KPI/list/component slot, detail interaction, and export surface must state the current mock endpoint, mock params, mock `responsePath`, component-required shape, target HTTP API, request DTO, response DTO, direct-vs-adapter decision, config/code change, permission/cache/error notes, and related `GAP-*`. Backend-facing method rows must include suggested service method name, HTTP path, request DTO, response DTO, frontend consumers, binding/adapter mapping, permission/cache/error notes, and mock-to-real replacement guidance.
+The summary must name actual data files, datasets, fields, component bindings, filters, interaction payloads, Metric To Interface And Source Mapping, a Mock API To HTTP API Replacement Matrix, backend interface method contracts, backend API/model suggestions, gaps, and verification. The metric mapping matrix is the priority output for backend table matching: every displayed metric, KPI, chart/table measure, ranking value, generated conclusion variable, target/reference value, and derived status must state metric name/id, interface/service, response field, source table/view/model, source columns, formula, grain, dimensions, filters, and related `GAP-*`. The replacement matrix is the priority output when mock API mode is used: every global/scoped filter, summary or conclusion variable, chart/table/KPI/list/component slot, detail interaction, and export surface must state the current mock endpoint, consumer scope, mock params, bound filters/pills, mock `responsePath`, output fields, component-required shape, performance/cache/freshness expectation, target HTTP API, request DTO, response DTO, direct-vs-adapter decision, config/code change, permission/cache/error notes, and related `GAP-*`. Backend-facing method rows must include suggested service method name, HTTP path, request DTO, response DTO, frontend consumers, binding/adapter mapping, permission/cache/error notes, and mock-to-real replacement guidance.
 
 Run inside every affected template project:
 

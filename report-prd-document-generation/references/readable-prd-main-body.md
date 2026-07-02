@@ -11,9 +11,9 @@ Do not mix both layers into one long table-heavy document.
 ## Reader-Facing Rules
 
 - Use plain Chinese section titles and business names in the main document.
-- Do not expose raw codes such as `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `BLK-*`, or `SLOT-*` as the primary wording in the main body.
+- Do not expose raw codes such as `DT-*`, `STORY-*`, `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `BLK-*`, or `SLOT-*` as the primary wording in the main body.
 - When an ID is needed in the main body, put it in a final column named `开发引用ID`, and always pair it with a readable Chinese name.
-- Keep the main body focused on: why, who, scope, report implementation thought, page preview, layout summary, metric/data/interaction summary, child PRD routing, and acceptance.
+- Keep the main body focused on: why, who, scenario, selected design thought, report implementation thought, storyline summary, page preview, layout summary, metric/data/interaction summary, child PRD routing, and acceptance.
 - Put long matrices, machine IDs, slot maps, metric formulas, API field tables, and PRD-to-workflow execution rows in the required files under `prd/execution/`.
 - Put all machine-checkable execution detail in execution files or child PRDs. The main body should not contain full `layoutRows`, full metric dictionaries, API field tables, interaction maps, conclusion rule maps, or Template Build Packet sections.
 - Every page and navigation tab must have a Markdown preview before the technical layout table.
@@ -35,7 +35,7 @@ This section is required when the PRD will feed more than one downstream stage. 
 
 | 阶段 | 使用子 PRD | 子 PRD 作用 | 读取内容 | 阶段输出 | 同步规则 |
 | --- | --- | --- | --- | --- | --- |
-| 原型 | `CHILD-PRD-PROTOTYPE` | 配置原型页面、模板、分块、槽位、交互、动态结论和数据摘要 | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-template-execution-contract.md` and `prd/execution/prd-template-build-packet-seed.md` | 原型、Template Build Packet、prototype-data-summary | 源材料、页面、布局、指标/API/交互/结论变化时同步 |
+| 原型 | `CHILD-PRD-PROTOTYPE` | 配置原型页面、设计思路、故事线、模板、分块、槽位、交互、动态结论和数据摘要 | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-template-execution-contract.md` and `prd/execution/prd-template-build-packet-seed.md` | 原型、Template Build Packet、prototype-data-summary | 源材料、设计思路、故事线、页面、布局、指标/API/交互/结论变化时同步 |
 | 前端 | `CHILD-PRD-FRONTEND` | 指导前端路由、组件、接口适配、状态、权限和运行 QA | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-metric-dictionary-and-mounting.md`, `prd/execution/prd-data-api-contract.md`, `prd/execution/prd-interaction-contract.md`, and `prd/execution/prd-conclusion-rules.md` + 原型输出 | 前端功能实现和 QA | 源材料、页面/组件/API/权限/状态变化时同步 |
 | 后端 | `CHILD-PRD-BACKEND` | 指导 API、数据模型、指标计算、权限、导出和缓存 | 主 PRD 0/1/3/7/8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-metric-dictionary-and-mounting.md` and `prd/execution/prd-data-api-contract.md` | API/数据服务实现输入 | 源材料、指标/数据源/API/筛选/权限变化时同步 |
 | 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | 指导架构、技术选型、边界、环境、NFR、风险和实施计划 | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + 子 PRD 状态 | 技术方案和实施路线 | 源材料、范围/架构/环境/NFR/风险变化时同步 |
@@ -49,7 +49,7 @@ Explain why the report exists, who uses it, what management problem it solves, a
 
 ### 2. 用户角色与场景
 
-Use one role table and one scenario table. Use business role names, not only role IDs.
+Use one role table and one scenario table. Use business role names, not only role IDs. This section must make clear what the user wants to make, who reads it, which scenario it fits, and what decision/action the reader should take.
 
 ### 3. 一期范围边界
 
@@ -62,11 +62,17 @@ Separate:
 
 ### 4. 报表实现思路
 
-Write the selected report type in natural language:
+Write the selected design thought and report type in natural language:
 
-| 报表类型 | 推荐阅读顺序 | 为什么适合 | 需要校验的点 |
+| 设计思路 | 报表类型 | 推荐阅读顺序 | 为什么适合 | 需要校验的点 |
+| --- | --- | --- | --- | --- |
+| 结论驱动型 | 看板/驾驶舱 | 先看结论 -> 看原因 -> 看过程 -> 看动作 | 管理层需要快速判断健康度和风险 | 首屏是否 3 秒能回答问题 |
+
+Also include a compact storyline summary:
+
+| 故事线阶段 | 要回答的问题 | 主要证据 | 下一步动作 |
 | --- | --- | --- | --- |
-| 看板/驾驶舱 | 先看结论 -> 看原因 -> 看过程 -> 看动作 | 管理层需要快速判断健康度和风险 | 首屏是否 3 秒能回答问题 |
+| 核心结论 | 当前是否健康 | KPI、目标差距、异常信号 | 查看原因或责任对象 |
 
 If the user supplied a thought, validate it in a short table:
 
@@ -86,7 +92,7 @@ flowchart LR
   C --> D["明细查询"]
 ```
 
-Then write one preview per navigation page. The preview must show visible filters, toolbar actions, major blocks, and the business content inside each block.
+Then write one preview per navigation page. The preview must show visible filters, toolbar actions, major blocks, the selected storyline order, and the business content inside each block. Information importance runs from top to bottom and left to right unless the template or language direction requires a documented exception.
 
 Use this format:
 
@@ -113,10 +119,10 @@ flowchart TB
 
 Then add the block summary:
 
-| 页面区域 | 展示内容 | 使用模板 | 交互 | 说明 |
-| --- | --- | --- | --- | --- |
-| 筛选区 | 期间、业务线、区域 | 框架模板筛选区 | 切换后刷新全页 | 不自建筛选栏 |
-| 核心结论 | 前端按数据生成一句结论和证据 | 分块布局 + 结论组件示例 | 点击看证据 | 结论不是固定文案 |
+| 页面区域 | 故事线作用 | 展示内容 | 使用模板 | 交互 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| 筛选区 | 限定判断范围 | 期间、业务线、区域 | 框架模板筛选区 | 切换后刷新全页 | 不自建筛选栏 |
+| 核心结论 | 回答首要问题 | 前端按数据生成一句结论和证据 | 分块布局 + 结论组件示例 | 点击看证据 | 结论不是固定文案 |
 
 ### 6. 模板布局摘要
 
@@ -127,10 +133,10 @@ For each page, keep the reader-facing layout short. This section tells people wh
 - Layout section decomposition: show how the page is split into `12*K` parts, such as `12*3 + 12*3 + 12*3`, and what each part is for.
 - 12-column grid summary: total rows, every visible top-level block row span `N >= 3`, and whether the audit is ready/draft/blocked.
 - Layout coordinate explanation: mention `R-B` for a block and `R-B-S` for a component slot, with one example only.
-- Block area choice: readable block name, span, `createBlockAreaConfig` config, slot count, slot pattern such as `AB` / `AAB` / `AABBCC`, and reason. Retired fixed-wrapper evidence may be noted only as migration context or a gap, not as the ready implementation.
+- Block area choice: readable block name, storyline role, span, `createBlockAreaConfig` config, slot count, slot pattern such as `AB` / `AAB` / `AABBCC`, and reason. Retired fixed-wrapper evidence may be noted only as migration context or a gap, not as the ready implementation.
 - Standard block areas: title, pill, auxiliary info, unit, component area, summary.
 
-Put the full `layoutRows`, `layoutCoordinateMap`, block IDs, slot IDs, and raw template maps in `prd/execution/prd-template-execution-contract.md`.
+Put the full `layoutRows`, `layoutCoordinateMap`, block IDs, slot IDs, raw template maps, design thought selection map, storyline map, story block map, block design reflection, filter design, and data design in `prd/execution/prd-template-execution-contract.md`, `prd/execution/prd-interaction-contract.md`, `prd/execution/prd-data-api-contract.md`, and `prd/children/prd-child-prototype.md`.
 
 ### 7. 指标、数据与交互摘要
 
@@ -141,8 +147,10 @@ Recommended columns:
 | 主题 | 主体内容 | 页面/位置 | 数据或规则来源 | 子 PRD 负责方 |
 | --- | --- | --- | --- | --- |
 | 核心指标 | 关键指标名称、业务含义、方向 | 哪些页面/模块展示 | `prd/execution/prd-metric-dictionary-and-mounting.md` / 后端子 PRD | 原型、前端、后端、测试 |
-| 数据/API | API 分组和数据域 | 哪些页面调用 | `prd/execution/prd-data-api-contract.md` / 后端子 PRD | 前端、后端、技术方案、测试 |
-| 交互 | 筛选、胶囊、排名点击、下钻、跳转、弹窗、导出 | 显示位置和影响范围 | `prd/execution/prd-interaction-contract.md` / 原型和前端子 PRD | 原型、前端、测试 |
+| 数据/API | API 分组、数据域、粒度、刷新、权限和质量规则摘要 | 哪些页面调用 | `prd/execution/prd-data-api-contract.md` / 后端子 PRD | 前端、后端、技术方案、测试 |
+| 全局筛选 | 日期、组织、业务线、角色范围等整页或多页上下文 | 模板筛选区 | `prd/execution/prd-interaction-contract.md` / 原型和前端子 PRD | 原型、前端、后端、测试 |
+| 局部筛选/胶囊 | 分块胶囊、组件内切换、局部视角和钻取上下文 | 目标块、槽位或抽屉 | `prd/execution/prd-interaction-contract.md` / 原型和前端子 PRD | 原型、前端、测试 |
+| 交互 | 排名点击、下钻、跳转、弹窗、导出 | 显示位置和影响范围 | `prd/execution/prd-interaction-contract.md` / 原型和前端子 PRD | 原型、前端、测试 |
 | 动态结论 | 结论卡/说明区根据数据生成 | 目标块或组件 | `prd/execution/prd-conclusion-rules.md` / 原型和前端子 PRD | 原型、前端、测试 |
 
 For interaction examples, keep only readable user actions:
@@ -152,7 +160,7 @@ For interaction examples, keep only readable user actions:
 | 切换业务线 | 筛选区 | 全页指标和结论刷新 | 全部页面块 | 无数据时显示空态 |
 | 点击排名 | 排名块 | 打开明细抽屉 | 当前业务线和期间 | 无权限时提示 |
 
-Put complete metric口径 in `prd/execution/prd-metric-dictionary-and-mounting.md`, request/response fields in `prd/execution/prd-data-api-contract.md`, `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, and `interactionBehaviorMap` in `prd/execution/prd-interaction-contract.md`, and full `conclusionRuleMap` in `prd/execution/prd-conclusion-rules.md`.
+Put complete metric口径 in `prd/execution/prd-metric-dictionary-and-mounting.md`, `dataDesignMap` and request/response fields in `prd/execution/prd-data-api-contract.md`, `globalFilterDesignMap`, `localFilterDesignMap`, `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, and `interactionBehaviorMap` in `prd/execution/prd-interaction-contract.md`, and full `conclusionRuleMap` in `prd/execution/prd-conclusion-rules.md`.
 
 ### 8. 验收标准与待确认
 
@@ -164,11 +172,11 @@ The execution files are required but must not be merged into the main document.
 
 Use these files:
 
-- `prd/execution/prd-targeted-reading-analysis.md`: Source material inventory, targeted reading plan by stage, evidence-to-decision trace, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows.
-- `prd/execution/prd-template-execution-contract.md`: Template execution contract, including `templateAssetUnderstandingMap`, IDs, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config map with direct template availability and slot count/pattern, component slot map with visual-type size compatibility, and registered component example map.
+- `prd/execution/prd-targeted-reading-analysis.md`: Source material inventory, targeted reading plan by stage, evidence-to-decision trace for demand/scenario/design-thought/storyline decisions, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows.
+- `prd/execution/prd-template-execution-contract.md`: Template execution contract, including `templateAssetUnderstandingMap`, IDs, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, storyline-to-block coverage, block area config map with direct template availability and slot count/pattern, component slot map with visual-type size compatibility, and registered component example map.
 - `prd/execution/prd-metric-dictionary-and-mounting.md`: Metric dictionary and metric mounting matrix.
-- `prd/execution/prd-data-api-contract.md`: Data object and API field contracts.
-- `prd/execution/prd-interaction-contract.md`: Filter, pill, toolbar, and interaction maps.
+- `prd/execution/prd-data-api-contract.md`: Data design, data object, and API field contracts.
+- `prd/execution/prd-interaction-contract.md`: Global filter, local filter, pill, toolbar, and interaction maps.
 - `prd/execution/prd-conclusion-rules.md`: Dynamic conclusion rules.
 - `prd/execution/prd-workflow-execution-matrix.md`: PRD-to-workflow execution matrix.
 - `prd/execution/prd-template-build-packet-seed.md`: Template Build Packet seed, using the fixed sections from `report-prototype-template-management` `references/template-build-packet-contract.md` so downstream implementation can create `docs/template-build-packet.md` without rereading the whole PRD.

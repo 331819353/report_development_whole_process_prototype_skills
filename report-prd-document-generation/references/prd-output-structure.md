@@ -46,7 +46,7 @@ Rules:
 ## Main PRD Rules
 
 - `prd-main.md` uses readable Chinese names for report type, navigation pages, blocks, metrics, controls, and interactions.
-- Raw codes such as `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `PAGE-*`, `BLK-*`, `SLOT-*`, `MET-*`, `API-*`, and `RULE-*` are execution handles. Keep them out of headings and out of primary prose.
+- Raw codes such as `DT-*`, `STORY-*`, `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, `MEET-*`, `PAGE-*`, `BLK-*`, `SLOT-*`, `MET-*`, `API-*`, and `RULE-*` are execution handles. Keep them out of headings and out of primary prose.
 - If an ID must appear in `prd-main.md`, put it after the readable name or in a final column named `开发引用ID`.
 - Every retained navigation page must have a Markdown/mermaid preview before any template/layout summary.
 - Do not put full metric formulas, `layoutRows`, API field tables, interaction maps, conclusion rule maps, workflow matrices, or Template Build Packet sections in `prd-main.md`.
@@ -105,17 +105,23 @@ Also state the prototype output boundary in plain language: runnable prototypes 
 
 ### 4. 报表实现思路
 
-Write the selected report type and reading path in natural language.
+Write the selected design thought, report type, and reading path in natural language. This section answers why the PRD chose this way of telling the report story.
 
-| 报表类型 | 推荐阅读顺序 | 为什么适合 | 需要校验的点 |
-| --- | --- | --- | --- |
+| 设计思路 | 报表类型 | 推荐阅读顺序 | 为什么适合 | 需要校验的点 |
+| --- | --- | --- | --- | --- |
 
 If the user supplied an implementation thought, validate it:
 
 | 用户想法 | 判断 | 优化建议 | 原因 |
 | --- | --- | --- | --- |
 
-Detailed `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` rows go to `children/prd-child-prototype.md`, `children/prd-child-testing.md`, and execution files.
+Rules:
+
+- First summarize what the user wants to make, who reads it, and which scenario/action it supports.
+- State the selected primary design thought and why it fits; the full design thought catalog lives in `report-design-storyline-contract.md`.
+- Use the selected design thought to explain the story order; use the report type to explain the implementation path.
+- If sources, old drafts, or generic defaults conflict with this design, say which current design is authoritative and link the full conflict to `ENTRY-*` in execution files.
+- Detailed `DT-*`, `RTP-*`, `PATH-*`, `ESG-*`, `SEV-*`, `ACT-*`, `TRUST-*`, and `MEET-*` rows go to `children/prd-child-prototype.md`, `children/prd-child-testing.md`, and execution files.
 
 ### 5. 导航页与页面预览
 
@@ -128,7 +134,7 @@ flowchart LR
   C --> D["明细查询页"]
 ```
 
-Then write one preview per retained navigation page:
+Then write one preview per retained navigation page. The preview must follow the selected storyline, with information importance from top to bottom and left to right:
 
 ```mermaid
 flowchart TB
@@ -149,25 +155,25 @@ flowchart TB
 
 Add a compact table after each preview:
 
-| 页面区域 | 展示内容 | 模板使用 | 交互入口 | 说明 |
-| --- | --- | --- | --- | --- |
-| 筛选区 | 日期、业务线、区域 | 框架模板筛选区 | 切换后刷新页面 | 不自建筛选栏 |
-| 核心结论 | 前端按数据生成结论和证据 | 分块布局 + 结论组件示例 | 点击查看证据 | 结论不是固定文案 |
+| 页面区域 | 故事线作用 | 展示内容 | 模板使用 | 交互入口 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| 筛选区 | 限定当前判断范围 | 日期、业务线、区域 | 框架模板筛选区 | 切换后刷新页面 | 不自建筛选栏 |
+| 核心结论 | 回答首要问题 | 前端按数据生成结论和证据 | 分块布局 + 结论组件示例 | 点击查看证据 | 结论不是固定文案 |
 
 ### 6. 模板布局摘要
 
 Keep this section understandable. Do not write the full machine layout here.
 
-| 页面 | 框架模板 | 页面分区 | 主要分块 | 分块模板摘要 | 槽位摘要 | 模板资产状态 |
-| --- | --- | --- | --- | --- | --- | --- |
+| 页面 | 框架模板 | 页面分区 | 主要分块 | 故事线覆盖 | 分块模板摘要 | 槽位摘要 | 模板资产状态 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - Show `12*K` section split such as `12*3 + 12*3 + 12*3`.
-- State that total page rows must be at least 8, every row is exactly 12 columns, and every visible top-level block has row span `N >= 3`.
+- State the layout readiness summary and whether the canonical block geometry/conclusion-card gates passed.
 - Use readable block coordinates only as examples: `R-B` for block, `R-B-S` for component slot.
 - Mention block area configs and slot patterns such as `AB`, `AAB`, or `AABBCC`.
-- Move full `templateAssetUnderstandingMap`, `layoutRows`, block map, standard area config, component slot map, registered component example map, and validation rows to `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, and `children/prd-child-prototype.md`.
+- Move full `templateAssetUnderstandingMap`, `layoutRows`, block maps, slot maps, registered component example maps, design/story/filter/data maps, and validation rows to execution files and `children/prd-child-prototype.md`.
 
 ### 7. 指标、数据与交互摘要
 
@@ -177,10 +183,12 @@ Use one summary table:
 | --- | --- | --- | --- | --- |
 | 核心指标 | Metric names, business meaning, direction | Page/block summary | `execution/prd-metric-dictionary-and-mounting.md` | 原型、前端、后端、测试 |
 | 数据/API | API groups and data domains | Pages that call them | `execution/prd-data-api-contract.md` | 前端、后端、技术方案、测试 |
-| 交互 | Filters, pills, ranking click, drilldown, jump, drawer/popup/modal, export | Visible locations | `execution/prd-interaction-contract.md` | 原型、前端、测试 |
+| 全局筛选 | 日期、组织、业务线、角色范围等影响整页或多页的筛选 | 模板筛选区 | `execution/prd-interaction-contract.md` | 原型、前端、后端、测试 |
+| 局部筛选/胶囊 | 分块胶囊、组件内切换、局部视角和钻取上下文 | 目标块/槽位/抽屉 | `execution/prd-interaction-contract.md` | 原型、前端、测试 |
+| 交互 | ranking click, drilldown, jump, drawer/popup/modal, export | Visible locations | `execution/prd-interaction-contract.md` | 原型、前端、测试 |
 | 动态结论 | Summary areas and conclusion cards generated from data | Target blocks/components | `execution/prd-conclusion-rules.md` | 原型、前端、测试 |
 
-Keep complete metric formulas, denominator/sample size, null rules, source lineage, API fields, interaction payloads, and conclusion rule logic out of `prd-main.md`.
+Keep complete metric formulas, denominator/sample size, null rules, source lineage, API fields, filter maps, interaction payloads, and conclusion rule logic out of `prd-main.md`.
 
 ### 8. 验收标准与待确认
 
@@ -198,11 +206,11 @@ The execution files are mandatory when the PRD feeds implementation, but they ar
 
 | File | Purpose | Main consumers |
 | --- | --- | --- |
-| `execution/prd-targeted-reading-analysis.md` | Source material inventory, targeted reading plan by stage, evidence-to-decision trace, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows. | 原型、技术方案、前端、后端、测试、QA |
-| `execution/prd-template-execution-contract.md` | `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config availability, block map with row-span `N >= 3` proof, standard area config including summary-area `1/(N+1)` inheritance, component slot map, registered component example map, visual-type size compatibility. | 原型 |
+| `execution/prd-targeted-reading-analysis.md` | Source material inventory, targeted reading plan by stage, evidence-to-decision trace for user/scenario/design-thought/storyline decisions, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows. | 原型、技术方案、前端、后端、测试、QA |
+| `execution/prd-template-execution-contract.md` | `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config availability, block map with row-span `N >= 3` proof, storyline-to-block coverage, standard area config including summary-area `1/(N+1)` inheritance, component slot map, registered component example map, visual-type size compatibility. | 原型 |
 | `execution/prd-metric-dictionary-and-mounting.md` | Full metric口径, formula, unit, direction, source, refresh, denominator/sample, null rule, page/block/slot/API mounting. | 原型、前端、后端、测试 |
-| `execution/prd-data-api-contract.md` | Data grain, dimensions, fields, request/response, permissions, pagination/sort, cache/freshness, empty/error, lineage. | 前端、后端、技术方案、测试 |
-| `execution/prd-interaction-contract.md` | `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, `interactionBehaviorMap`, drilldown/jump/drawer/popup/modal/export behavior. | 原型、前端、测试 |
+| `execution/prd-data-api-contract.md` | `dataDesignMap`, data grain, dimensions, fields, baselines/thresholds, request/response, permissions, pagination/sort, cache/freshness, empty/error, lineage, mock-to-real status. | 前端、后端、技术方案、测试 |
+| `execution/prd-interaction-contract.md` | `globalFilterDesignMap`, `localFilterDesignMap`, `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, `interactionBehaviorMap`, drilldown/jump/drawer/popup/modal/export behavior. | 原型、前端、测试 |
 | `execution/prd-conclusion-rules.md` | `conclusionRuleMap` for summary areas, conclusion cards, and analysis insight components. | 原型、前端、测试 |
 | `execution/prd-workflow-execution-matrix.md` | Every PRD file, executable ID, downstream owner, artifact, blocker, and status. | All stages |
 | `execution/prd-template-build-packet-seed.md` | Fixed packet sections from `report-prototype-template-management/references/template-build-packet-contract.md`. | 原型 |
@@ -213,7 +221,7 @@ The final PRD output must include `prd/children/prd-child-prototype.md`. Generat
 
 | Child PRD | Stage | Required detail |
 | --- | --- | --- |
-| `children/prd-child-prototype.md` | 原型 | Required. Full template/layout/slot/component/conclusion/interaction packet, Template Build Packet seed, prototype data summary expectation. |
+| `children/prd-child-prototype.md` | 原型 | Required. Full design thought, storyline, block reflection, filter/data design, template/layout/slot/component/conclusion/interaction packet, Template Build Packet seed, prototype data summary expectation. |
 | `children/prd-child-frontend.md` | 前端 | Conditional. Route/component/API adapter/state/permission/formatter/runtime QA contract. |
 | `children/prd-child-backend.md` | 后端 | Conditional. Data objects, source mapping, metric computation, endpoints, cache, export, security, errors. |
 | `children/prd-child-technical-solution.md` | 技术方案 | Conditional. Architecture, system boundary, technology choices, data flow, NFR, environment, risks, plan. |
@@ -243,11 +251,16 @@ Use stable IDs in execution files and child PRDs so downstream agents can refere
 | Component slot | `SLOT-` | `SLOT-HEALTH-KPI-A` |
 | Metric | `MET-` | `MET-NPS` |
 | Data object | `OBJ-` | `OBJ-EXPERIENCE-MONTHLY` |
+| Data design row | `DATA-DESIGN-` | `DATA-DESIGN-OVERVIEW-MONTHLY` |
 | API | `API-` | `API-OVERVIEW-SUMMARY` |
+| Filter | `FILTER-` | `FILTER-GLOBAL-BIZLINE`, `FILTER-LOCAL-RANK-METRIC` |
 | Interaction | `INT-` | `INT-BIZLINE-SWITCH` |
 | Role | `ROLE-` | `ROLE-GROUP-MANAGER` |
 | Dynamic conclusion rule | `RULE-` | `RULE-HEALTH-RISK-SUMMARY` |
 | Report type implementation path | `RTP-` / `PATH-` | `RTP-KPI-DASHBOARD`, `PATH-DASH-RESULT` |
+| Design thought | `DT-` | `DT-CONCLUSION-FIRST` |
+| Storyline step | `STORY-` | `STORY-PRIMARY-JUDGMENT` |
+| Block design reflection | `BDR-` | `BDR-HEALTH-KPI` |
 | Executive satisfaction gate | `ESG-` | `ESG-GROUP-MGMT-DECISION` |
 | Priority/severity rule | `SEV-` | `SEV-EXPERIENCE-RISK-HIGH` |
 | Action closure item | `ACT-` | `ACT-RISK-CLOSURE-OWNER` |
@@ -273,10 +286,13 @@ Rules:
 - `prd-main.md` is invalid if it is dominated by raw IDs or dense execution tables.
 - The PRD bundle is invalid if any required execution file or child PRD file is missing, reduced to a filename, or replaced by a section inside `prd-main.md`.
 - The PRD bundle is invalid if `execution/prd-targeted-reading-analysis.md` is missing, generic, or not linked to source materials, PRD decisions, downstream consumers, and `ENTRY-*` / `GAP-*` rows.
+- The PRD bundle is invalid if it does not state the user demand, primary reader, usage scenario, selected primary design thought, adapted storyline, and story value review.
 - The PRD bundle is invalid if `prd-main.md`, execution files, and child PRD files disagree on child PRD IDs, purposes, sync status, or blocking gaps.
 - The PRD bundle is invalid if a retained navigation page lacks a Markdown/mermaid preview with filters, toolbar actions, major blocks, block business content, and interaction entries.
+- The PRD bundle is invalid if a visible block in `children/prd-child-prototype.md` or `execution/prd-template-execution-contract.md` lacks storyline role, title rationale, pill-area decision, conclusion/description-area decision, slot count, slot size, slot information, metric/data binding, interaction ownership, and reflection status.
+- The PRD bundle is invalid if global filters, local filters, block pills, and data design are missing or are not linked to affected metrics, APIs, conclusion rules, permissions, states, and story steps.
 - A template-backed PRD is not ready when `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, or `children/prd-child-prototype.md` lacks a current `templateAssetUnderstandingMap`, exact-12 and minimum-8 `layoutRows` proof, block area configs, component slot size, visual-type size compatibility, component slot config, or registered component example evidence.
-- A template-backed PRD is not ready when any visible top-level block has `rowSpan < 3`, any ready `M*N` block uses `N < 3`, or any visible `summaryAreaConfig` contradicts the template `1/(N+1)` summary-area ratio.
+- A template-backed PRD is not ready when it fails the canonical block geometry, summary-area, or conclusion-card gates in `references/template-layout-prd-contract.md`.
 - A template-backed PRD is not ready when `templateAssetUnderstandingMap` is missing, stale, incomplete, inconsistent with the selected template asset root, or not written back to `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, and `children/prd-child-prototype.md`.
 - A template-backed PRD is not ready when a prose block grid, ratio split, or preview diagram replaces machine-checkable `layoutRows`. Such material may supplement `layoutRows` only.
 - A template-backed PRD is not ready when any `3 componentArea` slot is filled by prose, text copy, visual type alone, an inline widget object, or an unregistered fallback. Every slot must use a registered component example or a registered standalone custom registered component example with ID, file, copy/registration path, props/state, data/API, and visual-size evidence.

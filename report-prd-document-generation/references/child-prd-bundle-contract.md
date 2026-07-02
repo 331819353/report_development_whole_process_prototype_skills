@@ -7,7 +7,7 @@ Use this reference when the main PRD would become too large for humans if it car
 The parent/child structure has two audiences:
 
 1. `prd/prd-main.md`: human/business document. It explains business intent, scope, target workflow, page previews, layout summary, metric/data/interaction summary, and gaps.
-2. `prd/children/*` plus `prd/execution/*`: AI/workflow execution documents. They contain dense IDs, mapping tables, layout/config rows, data/API contracts, interaction contracts, and validation gates.
+2. `prd/children/*` plus `prd/execution/*`: AI/workflow execution documents. They contain dense IDs, demand framing, design thought selection, storyline maps, mapping tables, layout/config rows, data/API contracts, interaction contracts, and validation gates.
 
 Child PRDs refine execution only. They must not override the main PRD's business goal, scope, user, or acceptance boundary.
 
@@ -19,20 +19,16 @@ Child PRDs refine execution only. They must not override the main PRD's business
 | --- | --- | --- | --- |
 | `CHILD-PRD-PROTOTYPE` | `prd/children/prd-child-prototype.md` | Convert the ordinary PRD into executable input for the unified implementation workflow and template configuration. | `report-prototype-implementation-workflow`, `report-prototype-template-management` |
 
-The prototype child PRD must include:
+The prototype child PRD must include these grouped contracts:
 
-- Target workflow `report-prototype-implementation-workflow`, primary `RTP-*` path, and why that report classification was selected.
-- Thinking output: page content, report story, first-viewport priority, reading path, conclusion/evidence/action sequence, visible versus non-visible content decisions.
-- Targeted source-material reading and analysis rows consumed: `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows from `prd/execution/prd-targeted-reading-analysis.md` that justify report type, page story, layout, component, metric, data/API, interaction, permission, and QA decisions.
-- Page preview references from `prd-main.md`.
-- `frameworkTemplateId`.
-- `pageLayoutConfig` with `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, and block coordinates.
-- `blockAreaConfigMap` for title, pill, component area, and summary/description decisions; component-owned unit and auxiliary metrics belong in `componentExampleConfigMap`.
-- Answer atom map and result-content boundary: visible business result, interaction-only contract, supplemental handoff, removed process artifacts, and source `RTP-*` / `PATH-*` rows.
-- `componentSlotConfigMap` with slot count, slot pattern, slot coordinates, slot role, size, and ownership.
-- `componentExampleConfigMap` with registered `componentExampleId`, standalone Vue file/component, visual type, props/config, data binding, state, and visual-size compatibility evidence.
-- `customEChartExampleMap` when no registered example fits.
-- Metric mounting, data/API, filter/action map, interaction behavior, permission, export, conclusion rules, validation map, and release validation expectations.
+| Group | Must cover | Canonical reference |
+| --- | --- | --- |
+| Target and path | Target workflow, primary `RTP-*`, page preview references, answer atom map, result-content boundary. | `report-type-implementation-patterns.md`, `prototype-workflow-execution-map.md` |
+| Demand and story | Demand framing, primary `DT-*`, storyline, `storyBlockMap`, block reflection, story value review, current-design override decisions. | `report-design-storyline-contract.md` |
+| Template layout | `frameworkTemplateId`, `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, `componentExampleConfigMap`, custom ECharts gaps, and block geometry/conclusion-card gates. | `template-layout-prd-contract.md` |
+| Evidence trace | Consumed `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows that justify report type, story, layout, metric, API, interaction, permission, and QA decisions. | `targeted-reading-analysis-contract.md` |
+| Metrics/data/interactions | Metric mounting, data/API contracts, global/local filters, pill behavior, interactions, permissions, export, and dynamic conclusion rules. | `metric-api-interaction-matrices.md` |
+| Validation | Validation map, release expectations, and blocking/non-blocking gap status. | `prd-output-structure.md` |
 
 ## Conditional Child PRDs
 
@@ -67,7 +63,7 @@ Every generated child PRD must start with:
 | Stage | Report development, frontend, backend, technical solution, or testing. |
 | Parent PRD | Main PRD name and version. |
 | Parent sections consumed | Exact parent sections/IDs consumed. |
-| Targeted reading rows consumed | `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows from `prd/execution/prd-targeted-reading-analysis.md` that the child PRD relies on. |
+| Targeted reading rows consumed | `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows from `prd/execution/prd-targeted-reading-analysis.md` that the child PRD relies on, including demand/scenario/design-thought/storyline decisions. |
 | Generated from parent version | Version or timestamp. |
 | Sync status | `synced`, `draft`, `stale`, `blocked`, or `not-in-current-scope`. |
 | Owner workflow | Downstream workflow/capability that consumes it. |
@@ -78,7 +74,7 @@ Every generated child PRD must start with:
 
 - Do not mark a report-development PRD ready when `prd/children/prd-child-prototype.md` is missing.
 - Do not mark a child PRD ready when it does not state which targeted reading rows it consumes, or when it repeats source evidence without linking back to `prd/execution/prd-targeted-reading-analysis.md`.
-- Do not mark `CHILD-PRD-PROTOTYPE` ready when it lacks target workflow, thinking output, page content map, answer atom map, result-content boundary, layout config, block area config, slot config, component example map, metric mounting, data/API, filter/action map, interactions, conclusion rules, validation map, or release validation.
+- Do not mark `CHILD-PRD-PROTOTYPE` ready when any grouped contract above is missing, or when the canonical story, template, metric/data, filter/interaction, conclusion, or validation gates fail.
 - Do not force downstream child PRDs into every report-development PRD. Generate conditional children only when they are in the current scope.
 - Do not use a child PRD registry as a substitute for the required `CHILD-PRD-PROTOTYPE` body.
 - Do not let child PRDs drift silently. If the parent PRD changes, update affected child PRDs and execution files in the same delivery or mark them `stale` with a concrete `GAP-*`.

@@ -41,6 +41,7 @@ Rules:
 
 - Use `Standard area = 3 componentArea` when the metric, unit, or auxiliary information is rendered by a registered component example.
 - Use `Standard area = 4 summaryArea` only for a `RULE-*` driven narrative conclusion when no conclusion component already owns the conclusion, or for static text/caveat/source/action note.
+- When the same block contains a conclusion-card component, do not mount any visible metric or conclusion to `4 summaryArea`; the block-level说明区 must be hidden and the conclusion rule must bind to the conclusion-card slot.
 - Use `none` in `Component slot` when the metric is not in `3 componentArea`.
 - Use `Block coordinate = R-B` for every mounted metric, and use `Slot coordinate = R-B-S` whenever `Standard area = 3 componentArea`.
 - Use `Area coordinate = blockCoordinate + areaName`, such as `1-2:summaryArea`, only when the metric lives outside `3 componentArea`.
@@ -59,6 +60,7 @@ Rules:
 
 - `Rule ID` must use the `RULE-*` prefix and be referenced by `summaryAreaConfig.conclusionRuleId`, conclusion-card slot props, or `analysisInsightContract`.
 - `Display target` must be one of `summaryArea`, `conclusionCard`, `analysisInsight`, or a more specific component target approved by the registered component example.
+- `Display target = conclusionCard` requires the block to be `6<=M<=12` and `N>=3`, the target slot to be the first/leading slot, the conclusion-card slot count in that block to be 1-3, the block `summaryAreaConfig` to be hidden/null, and remaining slots to be non-conclusion evidence/cause/action/trust/detail components.
 - `Input metric IDs` must exist in the metric list, and each metric must also appear in the metric mounting matrix when it is visible or drives visible text.
 - `Rule logic/threshold` must include the comparison baseline, period behavior, direction, denominator-zero handling, top-N/ranking rule when relevant, and priority when multiple rules match.
 - `Output fields or sentence template` is a template for frontend generation, not the final fixed conclusion. Use placeholders such as `{metricName}`, `{value}`, `{baseline}`, `{delta}`, `{dimensionName}`, `{reason}`, and `{action}` when useful.
@@ -78,6 +80,21 @@ Data object rules:
 - Grain must be precise: one row per month/business line, one row per issue, one row per region ranking item, etc.
 - Permission fields must support role/data-scope filtering when the report has multiple roles.
 - Data quality rules should include missing source, duplicate key, delayed refresh, denominator zero, and abnormal value handling when relevant.
+
+## Data Design Map
+
+Before API fields are finalized, write a data design row for every data object that supports the selected story.
+
+| Data design ID | Data object | Story/block usage | Grain | Dimensions | Measures | Required baselines/thresholds | Source/API | Freshness | Permission scope | Quality/null rule | Mock-to-real status | Gap |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `DATA-DESIGN-*` | `OBJ-*` | `STORY-*`, `BLK-*`, `SLOT-*` | one row per... | dimensions | `MET-*` / fields | target, benchmark, prior period, denominator | `API-*` / source | refresh rule | role/data scope | null, duplicate, delay, denominator zero | mock / real / replacement-needed | none / `GAP-*` |
+
+Rules:
+
+- `dataDesignMap` is the bridge between story feasibility and API implementation; do not rely on API prose alone.
+- Every primary `STORY-*` step must have at least one data design row or a `GAP-*`.
+- Baselines, thresholds, denominators, and comparison periods must be explicit when a metric or conclusion needs judgment.
+- Mock data can only seed shape. If real source/API replacement is unknown, mark `replacement-needed` and create a `GAP-*`.
 
 ## API Requirements
 
@@ -109,10 +126,20 @@ Also output these named maps for template-based report prototypes:
 
 | Map | Required fields |
 | --- | --- |
+| `globalFilterDesignMap` | Filter id, filter type, visible label, scope, default value, option source, affected pages/blocks/slots, query/API params, metric/formula impact, story/conclusion impact, reset/stale rule, permission/state, status. |
+| `localFilterDesignMap` | Local filter id, owner, control surface, visible label, scope, default value, affected slots/components, API/metric params, interaction id, conclusion impact, reset/stale rule, disabled/empty/no-permission state, status. |
 | `filterSurfaceMap` | Template filter id, visible label, control type, option source, default, affected blocks/components, query params, permission scope, reset behavior, loading/empty/error behavior. |
-| `pillAreaConfig` | Block id, `blockCoordinate`, pill id, label, default active value, template area code `1-2 pillArea`, area coordinate such as `1-2:pillArea`, affected metric/component/API params, state reset, response, or `null` plus `notNeededReason`. |
+| `pillAreaConfig` | Block id, `blockCoordinate`, pill id, label, default active value, template area code `1-2 pillArea`, area coordinate such as `1-2:pillArea`, linked `FILTER-LOCAL-*`, affected metric/component/API params, state reset, conclusion recompute/stale behavior, response, or `null` plus `notNeededReason`. |
 | `toolbarActionMap` | Action id, label/icon, template toolbar slot, permission, payload, target, export/fullscreen/refresh behavior, success/failure behavior. |
 | `interactionBehaviorMap` | Trigger, owner, source page/block/slot/template id, `blockCoordinate`, `slotCoordinate` when the trigger is inside `3 componentArea`, target type, payload fields, context inheritance, state sync, close/back behavior, permission rule, QA case. |
+
+Global/local filter rules:
+
+- Global filters own the report context and live on the template filter surface. They must not be duplicated as block pills or component controls.
+- Local filters own one block, slot, component, drawer, or drill view. They must not silently change report-level URL/query context.
+- A block pill is a local filter unless it is only a visual mode toggle with no data impact; even then, record `FILTER-LOCAL-*` with `apiId=none` and explicit state behavior.
+- Every filter or pill that changes formulas, denominators, metric direction, data grain, module visibility, or conclusion output must reference affected `MET-*`, `API-*`, `RULE-*`, and `STORY-*` rows.
+- Every filter must define reset behavior, stale-selection behavior, loading/empty/error/no-permission states, and whether it clears drilldown or drawer state.
 
 Add this self-developed interaction contract for every 下钻, 跳转, 弹窗/抽屉/modal, or component-owned deep interaction. Keep the exact field names because template validators use these names:
 

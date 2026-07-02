@@ -32,6 +32,8 @@ The specialized PRD must answer four implementation questions before any workflo
 - Use `report-prototype-design-thinking` during PRD generation to decide the page content, report story, decision path, and reading sequence. Thinking is part of PRD compilation, not a replacement for template configuration.
 - Set the implementation target to `report-prototype-implementation-workflow` and choose exactly one primary `RTP-*` report path inside the PRD. Secondary `RTP-*` modules are allowed only when they support the primary path.
 - Own the full intake, gap, and report-path decision inside this PRD skill. Extract facts, assumptions, missing gaps, attachment evidence, target report path, and target workflow here instead of routing to separate requirement-extraction or report-type skills.
+- Before choosing a template or final `RTP-*` path, understand what the user wants to make, who will read it, and which scenario/action it supports; then select one primary `DT-*` design thought and adapt it into a complete storyline.
+- Treat the current project design produced in this PRD pass as authoritative when it conflicts with older source material, generic defaults, or earlier PRD sections. Record the conflict as `ENTRY-*`, and normalize or block any part that conflicts with template hard constraints.
 - Create a targeted reading and analysis contract for downstream stages. The PRD must say what source materials were read, what was concluded, what remains uncertain, and which prototype/technical/backend/frontend/testing artifacts must consume each conclusion.
 - Do not route new work to retired generic report-design paths.
 - Do not route new work to retired historical requirement-intake or standalone report-type entry skills.
@@ -50,7 +52,8 @@ frameworkTemplateId
 ```
 
 - Do not expose retired block-template catalogs as PRD deliverables. Page block size comes from `pageLayoutConfig.layoutRows`; block content and standard areas live in `blockAreaConfigMap`; slot ownership lives in `componentSlotConfigMap`; visual content is mounted through `componentExampleConfigMap`.
-- Page block notation uses `M*N`, where `M` is the page-grid column span and `N` is the page-grid row span. Every visible top-level block must use `N >= 3`; do not pass through source or design wording that asks implementation to create `N < 3` blocks. Normalize to a legal block, merge the content into an adjacent legal block, express the smaller need as internal component/sub-block sizing, or mark a blocker.
+- Page block notation uses `M*N`, where `M` is the page-grid column span and `N` is the page-grid row span. Every visible top-level block must use `N >= 3`; source/requested `N < 3` blocks must be normalized to a legal block, merged, expressed as internal component/sub-block sizing, or marked as blockers. When `N < 4`, the component slot pattern must not be vertical/up-down.
+- If a block contains a conclusion-card component, its block size must be `6 <= M <= 12` and `N >= 3`; its `summaryAreaConfig` / visible说明区 must be hidden or `null` with `notNeededReason=conclusionCardOwnsConclusion`; the conclusion card must occupy 1-3 leading component slots starting at the first slot position, and all remaining slots must contain non-conclusion evidence/cause/action/trust/detail components.
 - Framework shell, page layout, block areas, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, permission, and shell state must use the bundled templates. Only interaction behavior and registered component examples may be self-developed.
 - If no existing component example fits a slot, define a `customEChartExampleMap` row and require a registered standalone Vue/ECharts component example before the slot is considered filled.
 
@@ -64,6 +67,7 @@ Read these references before finalizing the PRD:
 - `references/prd-output-structure.md`
 - `references/targeted-reading-analysis-contract.md`
 - `references/targeted-reading-analysis-template.md`
+- `references/report-design-storyline-contract.md`
 - `references/report-type-implementation-patterns.md`
 - `references/component-mapping-prd-contract.md`
 - `references/executive-satisfaction-design-gate.md` for management-facing reports
@@ -86,22 +90,37 @@ Use these capabilities as needed:
 1. Intake the ordinary PRD and evidence.
    Extract confirmed facts, assumptions, missing gaps, source materials, report users, business scenarios, metric families, existing reports, screenshots, and explicit exclusions.
 
-2. Create targeted source-material reading and analysis.
+2. Understand user demand and scenario.
+   Use `references/report-design-storyline-contract.md` to answer what the user wants to make, who will read it, which usage scenario it serves, which decision/action it supports, managed object, time scope, output/reuse form, and blocking gaps.
+
+3. Select the report design thought.
+   Compare the requirement against the `DT-*` design thought catalog, choose one primary design thought, record rejected/optimized candidates, and map the selected thought to the primary `RTP-*` implementation path. If sources conflict, keep the current design direction and record `ENTRY-*`.
+
+4. Create targeted source-material reading and analysis.
    Produce `prd/execution/prd-targeted-reading-analysis.md` from `references/targeted-reading-analysis-template.md` with source material inventory, targeted reading plan by stage, evidence-to-decision trace, implementation-critical reading notes, non-authority items, downstream consumption matrix, readiness gate, and `ENTRY-*` / `GAP-*` rows.
 
-3. Determine the report classification and implementation target.
+5. Determine the report classification and implementation target.
    Classify the requirement into one primary `RTP-*` path such as KPI dashboard, cockpit, analysis report, detail query, self-service analysis, risk monitor, closure board, or review/export report. Set the implementation target to `report-prototype-implementation-workflow`.
 
-4. Run the thinking step inside PRD generation.
-   Use `report-prototype-design-thinking` to decide page content, first-viewport priority, reading path, conclusion/evidence/action sequence, and which content should be visible versus moved to tooltip/detail/export/handoff.
+6. Run the thinking step inside PRD generation.
+   Use `report-prototype-design-thinking` plus the selected `DT-*` design thought to decide page content, first-viewport priority, reading path, conclusion/evidence/action sequence, and which content should be visible versus moved to tooltip/detail/export/handoff.
 
-5. Write the reader-facing main PRD.
-   Keep `prd/prd-main.md` concise: background, users, scope, target workflow, report content summary, page preview, layout summary, metric/data/interaction summary, child/execution file registry, and readiness gaps.
+7. Adapt the selected design thought into a complete storyline.
+   Create `storylineMap`, then design blocks top-to-bottom and left-to-right with title, pill button area, conclusion/description area, slot count, slot size, slot information, metric/data binding, interaction, and reflection status.
 
-6. Create `CHILD-PRD-PROTOTYPE`.
+8. Design filters and data before final layout.
+   Define global filters, local filters, block-level pill switches, data objects, data grain, baselines/thresholds, freshness, permissions, quality/null rules, and mock-to-real replacement status. Connect every filter and data decision to affected metrics, APIs, conclusions, interactions, and story steps.
+
+9. Run the story completeness and value review.
+   Confirm the selected story is complete, valuable, filter-aware, data-feasible, and template-feasible. Adjust block order, block contents, filters, data design, or readiness status before final layout.
+
+10. Write the reader-facing main PRD.
+   Keep `prd/prd-main.md` concise: background, users, scope, selected design thought and report content summary, page preview, layout summary, metric/data/interaction summary, child/execution file registry, and readiness gaps.
+
+11. Create `CHILD-PRD-PROTOTYPE`.
    This is the executable input for `report-prototype-implementation-workflow`. It must include target workflow, thinking output, report type path, page content map, page preview references, layout contract, block area plan, component slot plan, registered component example map, custom component gaps, data/API requirements, interaction behavior, conclusion rules, permissions, and release validation expectations.
 
-7. Create execution files.
+12. Create execution files.
    At minimum, write:
 
    - `prd/execution/prd-targeted-reading-analysis.md`
@@ -110,22 +129,23 @@ Use these capabilities as needed:
    - `prd/execution/prd-metric-dictionary-and-mounting.md`
    - `prd/execution/prd-data-api-contract.md`
    - `prd/execution/prd-interaction-contract.md`
-
-8. When local files are available, run `python3 report-prd-document-generation/scripts/validate_targeted_reading.py <bundle-root>` before marking the PRD bundle ready. Use `--strict-child` when downstream child PRDs are generated in the same bundle.
    - `prd/execution/prd-conclusion-rules.md`
    - `prd/execution/prd-workflow-execution-matrix.md`
 
-8. Define the configurable template route.
+13. Define the configurable template route.
    Select one `frameworkTemplateId`, write `pageLayoutConfig`, then define `blockAreaConfigMap`, `componentSlotConfigMap`, `componentExampleConfigMap`, optional `customEChartExampleMap`, and `releaseValidation`.
 
-9. Fill component slots.
+14. Fill component slots.
    Every declared slot must map to a registered `componentExampleId`, visual type, component slot size, data/metric binding, props/state contract, and source/registration evidence. Prose, visual type labels, inline widget objects, and unregistered Vue files are not valid slot fills.
 
-10. Define metrics, data/API, interactions, and dynamic conclusions.
+15. Define metrics, data/API, interactions, and dynamic conclusions.
    Every displayed metric needs definition, formula, unit, source, refresh, null rule, mount location, data/API source, and interaction impact. Every visible conclusion or insight must bind to `conclusionRuleMap`; fixed normal-state business conclusions are invalid.
 
-11. Create the PRD-to-workflow matrix.
+16. Create the PRD-to-workflow matrix.
     Map every PRD file and executable row, including targeted reading rows, to `report-prototype-implementation-workflow`, the PRD-owned component mapping contract, template-management capability, validation artifact, downstream stage, and blocker rule.
+
+17. Validate local PRD bundles when files are available.
+    Run `python3 report-prd-document-generation/scripts/validate_targeted_reading.py <bundle-root>` before marking the PRD bundle ready. Use `--strict-child` when downstream child PRDs are generated in the same bundle.
 
 ## Required Output
 
@@ -153,17 +173,11 @@ Conditional child PRDs:
 
 ## Quality Gate
 
-- Do not hand off to `report-prototype-implementation-workflow` until `CHILD-PRD-PROTOTYPE` and the execution matrix are ready or explicitly `draft` with non-blocking gaps.
-- Do not mark the PRD ready when `prd/execution/prd-targeted-reading-analysis.md` is missing, generic, or not linked to source materials, PRD decisions, downstream consumers, and `ENTRY-*` / `GAP-*` rows.
-- Do not mark the PRD ready when `validate_targeted_reading.py` reports errors for a local bundle.
-- Do not let `prd-main.md` become the execution manual. Move dense layout rows, metric dictionaries, API fields, interaction maps, slot maps, and validation rows into execution files or child PRDs.
-- Do not hand off a template-backed PRD when any visible top-level block has `rowSpan < 3`, any ready `M*N` block uses `N < 3`, or any PRD example asks downstream implementation to create an `N < 3` block.
-- Do not output a single Markdown PRD when the result must feed implementation.
-- Do not mark the PRD ready when the target workflow is not `report-prototype-implementation-workflow`.
-- Do not mention retired generic report-design paths as active downstream routes.
-- Do not mark the PRD ready when page content was not decided through the thinking step or an equivalent validated report story.
-- Do not mark the PRD ready when `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, or `componentExampleConfigMap` is missing for any retained page.
-- Do not mark the PRD ready when any slot lacks a registered component example or a defined custom ECharts example to be registered.
-- Do not use retired block-template deliverables, fixed block-size catalogs, component-content templates, static HTML, blank Vue projects, custom shells, custom page layout systems, or unregistered component fills as active implementation routes.
+- Do not output a single Markdown PRD when the result must feed implementation, and do not hand off until `CHILD-PRD-PROTOTYPE` plus required execution files are ready or explicitly `draft` with non-blocking gaps.
+- Do not mark the PRD ready when the target workflow is not `report-prototype-implementation-workflow`, or when retired report-design paths, fixed block catalogs, static HTML, blank Vue projects, custom shells, or unregistered component fills appear as active implementation routes.
+- Do not mark the PRD ready when targeted reading is missing/generic, disconnected from `SRC-*` / `READ-*` / `ENTRY-*` / `GAP-*`, or fails `validate_targeted_reading.py` for a local bundle.
+- Do not mark the PRD ready when demand framing, primary `DT-*`, storyline, story-to-block map, filter/data design, story value review, or block reflection is missing; the canonical requirements are in `references/report-design-storyline-contract.md`.
+- Do not mark a template-backed PRD ready when `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, `componentExampleConfigMap`, registered component examples, or the canonical block geometry/conclusion-card gates in `references/template-layout-prd-contract.md` are missing or failed.
+- Do not let `prd-main.md` become the execution manual. Move dense layout rows, metric dictionaries, API fields, interaction maps, slot maps, validation rows, and implementation matrices into execution files or child PRDs.
 - Do not mark a management-facing PRD ready without first-viewport answer, cause path, action path, trust/source, and review/export expectations.
 - Do not leave required table cells blank. Use `TBD(GAP-*)` for unknown blockers and `none` only when truly not applicable.
