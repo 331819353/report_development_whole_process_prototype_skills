@@ -14,7 +14,7 @@
 | `src/report-template-assets/business-report-pages.ts` | Business report pages, `layoutRows`, `blockAreaConfigMap`, component slots | static config + API-bound slots | Component slots default to `/api/component-props/:componentDataKey`, where the key is stable `page.block.slot`. |
 | `src/data/dashboard.dataset.json` | Mock API backing store | JSON fixture behind API | Owns `filterData.*Options`, `businessData.componentProps`, and sample report rows. |
 | `scripts/mock-api-server.mjs` | Lightweight Node API service | npm mock API | Exposes filter option, component props, and sample report endpoints. |
-| `scripts/dev-with-mock-api.mjs` | API plus Vite startup | npm orchestration | Sets `VITE_API_BASE_URL` and proxies `/api`. |
+| `scripts/dev-with-mock-api.mjs` | API plus Vite startup | npm orchestration | Sets non-client `MOCK_API_BASE_URL` for the Vite `/api` proxy. |
 | `src/dataSources/registry.ts` | Data source resolver and adapter registry | runtime data boundary | Keeps API/http/custom-provider behavior outside components. |
 | `src/widgets/templates/block-spans/BaseLayoutSpan.vue` | Block runtime and slot data binding | runtime binding | Reads slot API rows and maps `rows[0].props` through `dataBinding.propsObjectField`. |
 | `src/widgets/types.ts` | Widget/data-binding type contract | type contract | Declares `propsObjectField`. |
@@ -162,7 +162,7 @@ This section is the backend handoff surface. It translates the prototype's curre
 
 | Check | Status | Evidence |
 | --- | --- | --- |
-| Mock API | required | `npm run mock:api`; `npm run dev:mock` for API plus Vite |
+| Mock API | required | `npm run mock:api`; `npm run dev` / `npm run dev:mock` for API plus Vite |
 | Filter options | required | direct requests to `/api/filter-options/*` |
 | Component props | required | direct request to `/api/component-props/:componentDataKey` with filters and active pill query |
 | Slot interaction | required | `actions.slotClick` opens shell drawer/modal/popup metadata by slot role using `componentDataKey`, filters, active pill, and source slot fields |

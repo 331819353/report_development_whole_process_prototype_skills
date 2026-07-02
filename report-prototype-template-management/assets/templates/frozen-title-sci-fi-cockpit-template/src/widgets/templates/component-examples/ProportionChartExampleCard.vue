@@ -138,7 +138,7 @@ const defaultLayoutConfig: Required<ProportionChartExampleLayoutConfig> = {
 
 const defaultChartConfig: Required<ProportionChartExampleChartConfig> = {
   legendVisible: true,
-  legendPosition: 'auto',
+  legendPosition: 'right',
   legendWidthPx: 58,
   labelVisible: true,
   labelLineVisible: true,
@@ -383,7 +383,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -437,11 +437,11 @@ const chartScale = computed(() => {
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const chartConfig = resolvedChart.value;
   const effectiveLegendPosition = chartConfig.legendPosition === 'auto'
-    ? (contentOrientation.value === 'vertical' ? 'top' : 'right')
+    ? 'right'
     : chartConfig.legendPosition;
   const legendVisible = chartConfig.legendVisible
     && effectiveLegendPosition !== 'hidden'
-    && visibleItems.value.length > 1
+    && visibleItems.value.length > 0
     && width >= 160
     && height >= 100;
   const rightLegendVisible = legendVisible && effectiveLegendPosition === 'right';
@@ -863,14 +863,11 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.proportion-chart-example-card.has-aux.is-horizontal .proportion-chart-example-body {
-  grid-template-columns: var(--proportion-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.proportion-chart-example-card.has-aux.is-horizontal .proportion-chart-example-body,
 .proportion-chart-example-card.has-aux.is-vertical .proportion-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--proportion-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--proportion-chart-content-gap), 2px);
 }
 
 .proportion-chart-example-card:not(.has-aux) .proportion-chart-example-body {

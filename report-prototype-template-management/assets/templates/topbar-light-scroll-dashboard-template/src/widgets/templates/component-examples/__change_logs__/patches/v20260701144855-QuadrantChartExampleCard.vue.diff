@@ -1,0 +1,1426 @@
+--- a/src/widgets/templates/component-examples/QuadrantChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/QuadrantChartExampleCard.vue
+@@ -441,714 +441,715 @@
+     return orientation;
+   }
+ 
+-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+-});
+-
+-const cardClasses = computed(() => ({
+-  [`is-${contentOrientation.value}`]: true,
+-  [`aux-${auxOrientation.value}`]: true,
+-  'has-aux': visibleAuxMetrics.value.length > 0,
+-  'has-title': resolvedTitle.value.visible,
+-}));
+-
+-const pointColorPalette = computed(() => [
+-  resolvedTones.value.primary,
+-  resolvedTones.value.secondary,
+-  resolvedTones.value.tertiary,
+-  '#7c3aed',
+-  '#f59e0b',
+-  '#ef4444',
+-  '#14b8a6',
+-  '#64748b',
+-  '#db2777',
+-  '#84cc16',
+-  '#0f766e',
+-  '#f97316',
+-  '#2563eb',
+-  '#9333ea',
+-  '#dc2626',
+-  '#0891b2',
+-  '#65a30d',
+-  '#c2410c',
+-  '#4f46e5',
+-  '#be185d',
+-  '#16a34a',
+-  '#ca8a04',
+-  '#0284c7',
+-  resolvedTones.value.quaternary,
+-]);
+-
+-const getPointColor = (point: QuadrantChartExamplePoint, index: number) =>
+-  point.color ?? pointColorPalette.value[index % pointColorPalette.value.length];
+-
+-const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
+-
+-const hexToRgba = (color: string, opacity: number) => {
+-  const normalized = normalizeColor(color).replace('#', '');
+-  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
+-  const numeric = Number.parseInt(expanded, 16);
+-
+-  if (!Number.isFinite(numeric)) {
+-    return `rgba(0, 87, 217, ${opacity})`;
+-  }
+-
+-  const r = (numeric >> 16) & 255;
+-  const g = (numeric >> 8) & 255;
+-  const b = numeric & 255;
+-
+-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+-};
+-
+-const chartScale = computed(() => {
+-  const chartConfig = resolvedChart.value;
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
+-  const height = chartSize.value.height || fallbackHeight;
+-  const compact = Math.min(width / 280, height / 170);
+-  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
+-  const axisVisible = chartConfig.axisVisible && width >= 150 && height >= 92;
+-  const legendVisible = chartConfig.legendVisible && width >= 150 && height >= 80;
+-  const legendRowHeight = Math.max(16, chartConfig.legendFontSizePx + 9);
+-  const estimatedLegendWidth = points.value.reduce((total, point) => (
+-    total + Math.max(30, point.name.length * chartConfig.legendFontSizePx * 0.74 + 16) + chartConfig.legendItemGapPx
+-  ), 0);
+-  const estimatedLegendRows = legendVisible
+-    ? Math.ceil(estimatedLegendWidth / Math.max(width - 12, 80))
+-    : 0;
+-  const maxLegendRows = height < 125 ? 2 : height < 175 ? 3 : 4;
+-  const legendRows = Math.round(clampNumber(estimatedLegendRows, 1, maxLegendRows, 1));
+-  const legendHeight = legendVisible ? legendRowHeight * legendRows : 0;
+-  const axisSplitNumber = width < 220 ? 4 : width < 320 ? 5 : 6;
+-  const axisLabelGutter = axisVisible ? Math.max(chartConfig.gridLeftPx, width < 220 ? 18 : 22) : 0;
+-
+-  return {
+-    fontSize,
+-    axisFontSize: Math.max(8, fontSize - 1),
+-    axisVisible,
+-    axisNameVisible: false,
+-    axisLabelInside: false,
+-    axisLabelMargin: 3,
+-    axisSplitNumber,
+-    showMaxAxisLabel: width >= 220,
+-    legendVisible,
+-    legendWidth: Math.max(width - 14, 80),
+-    legendHeight,
+-    legendFontSize: chartConfig.legendFontSizePx,
+-    pointLabelVisible: chartConfig.pointLabelVisible && width >= 250 && height >= 140,
+-    symbolMin: width < 230 ? 6 : 8,
+-    symbolMax: width < 230 ? 14 : 22,
+-    gridTop: legendVisible ? legendHeight + 6 : chartConfig.gridTopPx,
+-    gridBottom: axisVisible ? (width < 220 ? 6 : 8) : 6,
+-    gridLeft: axisLabelGutter,
+-    gridRight: width < 220 ? 4 : chartConfig.gridRightPx,
+-    containLabel: false,
+-  };
+-});
+-
+-const pointSizeRange = computed(() => {
+-  const sizes = points.value.map((point) => point.size ?? 1).filter((value) => Number.isFinite(value));
+-
+-  return {
+-    min: Math.min(...sizes, 1),
+-    max: Math.max(...sizes, 1),
+-  };
+-});
+-
+-const getSymbolSize = (size: number | undefined) => {
+-  const value = Number.isFinite(size) ? Number(size) : pointSizeRange.value.min;
+-  const range = pointSizeRange.value.max - pointSizeRange.value.min;
+-
+-  if (range <= 0) {
+-    return chartScale.value.symbolMin + 2;
+-  }
+-
+-  return chartScale.value.symbolMin + ((value - pointSizeRange.value.min) / range) * (chartScale.value.symbolMax - chartScale.value.symbolMin);
+-};
+-
+-const quadrantGraphics = computed(() => {
+-  const chartConfig = resolvedChart.value;
+-  const labels = chartConfig.quadrantLabels;
+-  const tones = resolvedTones.value;
+-  const scale = chartScale.value;
+-  const domain = axisDomain.value;
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const height = chartSize.value.height || 140;
+-  const visible = chartConfig.quadrantAreaVisible && width >= 150 && height >= 92;
+-
+-  if (!visible) {
+-    return [];
+-  }
+-
+-  const axisLabelReserve = scale.axisVisible ? 2 : 0;
+-  const axisOriginX = scale.gridLeft;
+-  const axisOriginY = height - scale.gridBottom;
+-  const plotLeft = axisOriginX + axisLabelReserve + 2;
+-  const plotRight = Math.max(width - scale.gridRight - 4, plotLeft + 60);
+-  const plotTop = scale.gridTop + 2;
+-  const plotBottom = Math.max(axisOriginY - 10, plotTop + 42);
+-  const plotWidth = Math.max(plotRight - plotLeft, 1);
+-  const plotHeight = Math.max(plotBottom - plotTop, 1);
+-  const xRange = Math.max(domain.xMax - domain.xMin, 1);
+-  const yRange = Math.max(domain.yMax - domain.yMin, 1);
+-  const xSplitRatio = clampNumber((chartConfig.xThreshold - domain.xMin) / xRange, 0.12, 0.88, 0.5);
+-  const ySplitRatioFromTop = clampNumber((domain.yMax - chartConfig.yThreshold) / yRange, 0.12, 0.88, 0.5);
+-  const xSplit = plotLeft + plotWidth * xSplitRatio;
+-  const ySplit = plotTop + plotHeight * ySplitRatioFromTop;
+-  const topCenterY = plotTop + (ySplit - plotTop) / 2;
+-  const bottomCenterY = ySplit + (plotBottom - ySplit) / 2;
+-  const leftCenterX = plotLeft + (xSplit - plotLeft) / 2;
+-  const rightCenterX = xSplit + (plotRight - xSplit) / 2;
+-
+-  return [
+-    { left: rightCenterX, top: topCenterY, text: labels[0], color: tones.primary, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
+-    { left: leftCenterX, top: topCenterY, text: labels[1], color: tones.secondary, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
+-    { left: leftCenterX, top: bottomCenterY, text: labels[2], color: tones.axis, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
+-    { left: rightCenterX, top: bottomCenterY, text: labels[3], color: tones.tertiary, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
+-  ].map((item) => ({
+-    type: 'text',
+-    left: item.left,
+-    top: item.top,
+-    silent: true,
+-    style: {
+-      text: item.text,
+-      fill: hexToRgba(item.color, 0.46),
+-      fontSize: chartScale.value.axisFontSize,
+-      fontWeight: item.fontWeight,
+-      align: item.align,
+-      verticalAlign: item.verticalAlign,
+-    },
+-  }));
+-});
+-
+-const formatTooltip = (params: unknown) => {
+-  const item = Array.isArray(params) ? params[0] : params;
+-
+-  if (!isRecord(item)) {
+-    return '';
+-  }
+-
+-  const value = Array.isArray(item.value) ? item.value : [];
+-  const data = isRecord(item.data) ? item.data : {};
+-  const marker = typeof item.marker === 'string' ? item.marker : '';
+-  const name = String(item.name ?? data.name ?? '');
+-  const group = String(value[3] ?? data.group ?? '');
+-  const size = Number(value[2] ?? data.size);
+-  const chartConfig = resolvedChart.value;
+-  const lines = [
+-    `${marker}${name}`,
+-    `${chartConfig.xAxisName}: ${formatMetricNumber(Number(value[0]), chartConfig.xUnit)}`,
+-    `${chartConfig.yAxisName}: ${formatMetricNumber(Number(value[1]), chartConfig.yUnit)}`,
+-  ];
+-
+-  if (group) {
+-    lines.push(`${group}`);
+-  }
+-
+-  if (Number.isFinite(size) && chartConfig.sizeUnit) {
+-    lines.push(`${formatMetricNumber(size, chartConfig.sizeUnit)}`);
+-  }
+-
+-  return lines.join('<br/>');
+-};
+-
+-const chartOption = computed<EChartsOption>(() => {
+-  const chartConfig = resolvedChart.value;
+-  const tones = resolvedTones.value;
+-  const domain = axisDomain.value;
+-  const scale = chartScale.value;
+-  const quadrantColors = [tones.primary, tones.secondary, tones.quaternary, tones.tertiary];
+-  const quadrantLabels = chartConfig.quadrantLabels;
+-  const formatXAxisLabel = (value: number) => {
+-    return formatAxisNumber(value);
+-  };
+-  const formatYAxisLabel = (value: number) => {
+-    return formatAxisNumber(value);
+-  };
+-  const getQuadrantIndex = (point: QuadrantChartExamplePoint) => {
+-    if (point.x >= chartConfig.xThreshold && point.y >= chartConfig.yThreshold) {
+-      return 0;
+-    }
+-
+-    if (point.x < chartConfig.xThreshold && point.y >= chartConfig.yThreshold) {
+-      return 1;
+-    }
+-
+-    if (point.x < chartConfig.xThreshold && point.y < chartConfig.yThreshold) {
+-      return 2;
+-    }
+-
+-    return 3;
+-  };
+-  const scatterSeries = points.value.map((point, index) => {
+-    const quadrantIndex = getQuadrantIndex(point);
+-    const color = getPointColor(point, index);
+-    const pointData = {
+-      name: point.name,
+-      value: [point.x, point.y, point.size ?? 1, point.group ?? quadrantLabels[quadrantIndex]],
+-      group: point.group ?? quadrantLabels[quadrantIndex],
+-      itemStyle: {
+-        color,
+-        borderColor: '#ffffff',
+-        borderWidth: 1,
+-        shadowBlur: 0,
+-      },
+-      label: {
+-        show: scale.pointLabelVisible,
+-        formatter: '{b}',
+-        color: tones.text,
+-        fontSize: scale.fontSize,
+-        fontWeight: 700,
+-        position: 'top',
+-      },
+-    };
+-
+-    return {
+-      name: point.name,
+-      type: 'scatter',
+-      data: [pointData],
+-      symbol: 'circle',
+-      symbolSize: (rawValue: unknown) => {
+-        const value = Array.isArray(rawValue) ? rawValue : [];
+-        return getSymbolSize(Number(value[2]));
+-      },
+-      itemStyle: {
+-        color,
+-        borderColor: '#ffffff',
+-        borderWidth: 1,
+-        shadowBlur: 0,
+-      },
+-      emphasis: {
+-        focus: 'series',
+-        scale: 1.12,
+-      },
+-      ...(index === 0
+-        ? {
+-            markLine: {
+-              silent: true,
+-              symbol: 'none',
+-              label: { show: false },
+-              lineStyle: {
+-                color: hexToRgba(tones.primary, 0.38),
+-                width: 1,
+-                type: 'dashed',
+-              },
+-              data: [
+-                { xAxis: chartConfig.xThreshold },
+-                { yAxis: chartConfig.yThreshold },
+-              ],
+-            },
+-            markArea: chartConfig.quadrantAreaVisible
+-              ? {
+-                  silent: true,
+-                  label: { show: false },
+-                  itemStyle: {
+-                    color: 'transparent',
+-                  },
+-                  data: [
+-                    [
+-                      { xAxis: chartConfig.xThreshold, yAxis: chartConfig.yThreshold, itemStyle: { color: hexToRgba(tones.primary, 0.06) } },
+-                      { xAxis: domain.xMax, yAxis: domain.yMax },
+-                    ],
+-                    [
+-                      { xAxis: domain.xMin, yAxis: chartConfig.yThreshold, itemStyle: { color: hexToRgba(tones.secondary, 0.055) } },
+-                      { xAxis: chartConfig.xThreshold, yAxis: domain.yMax },
+-                    ],
+-                    [
+-                      { xAxis: domain.xMin, yAxis: domain.yMin, itemStyle: { color: hexToRgba(tones.quaternary, 0.065) } },
+-                      { xAxis: chartConfig.xThreshold, yAxis: chartConfig.yThreshold },
+-                    ],
+-                    [
+-                      { xAxis: chartConfig.xThreshold, yAxis: domain.yMin, itemStyle: { color: hexToRgba(tones.tertiary, 0.05) } },
+-                      { xAxis: domain.xMax, yAxis: chartConfig.yThreshold },
+-                    ],
+-                  ],
+-                }
+-              : undefined,
+-          }
+-        : {}),
+-    };
+-  });
+-  const legendLabels = points.value.map((point) => point.name);
+-
+-  return {
+-    animation: true,
+-    animationDuration: 420,
+-    legend: {
+-      show: scale.legendVisible,
+-      top: chartConfig.legendTopPx,
+-      left: 'center',
+-      orient: 'horizontal',
+-      width: scale.legendWidth,
+-      height: scale.legendHeight,
+-      icon: 'circle',
+-      itemWidth: 6,
+-      itemHeight: 6,
+-      itemGap: chartConfig.legendItemGapPx,
+-      selectedMode: false,
+-      data: legendLabels,
+-      textStyle: {
+-        color: tones.axis,
+-        fontSize: scale.legendFontSize,
+-        fontWeight: 700,
+-      },
+-    },
+-    grid: {
+-      top: scale.gridTop,
+-      bottom: scale.gridBottom,
+-      left: scale.gridLeft,
+-      right: scale.gridRight,
+-      containLabel: scale.containLabel,
+-    },
+-    tooltip: {
+-      trigger: 'item',
+-      appendToBody: true,
+-      confine: true,
+-      formatter: formatTooltip,
+-      backgroundColor: 'rgba(255, 255, 255, 0.96)',
+-      borderColor: 'rgba(0, 87, 217, 0.16)',
+-      textStyle: {
+-        color: tones.text,
+-        fontSize: 11,
+-      },
+-    },
+-    graphic: quadrantGraphics.value as EChartsOption['graphic'],
+-    xAxis: {
+-      type: 'value',
+-      min: domain.xMin,
+-      max: domain.xMax,
+-      splitNumber: scale.axisSplitNumber,
+-      name: scale.axisNameVisible ? chartConfig.xAxisName : '',
+-      nameLocation: 'middle',
+-      nameGap: 0,
+-      axisLine: {
+-        show: scale.axisVisible,
+-        lineStyle: { color: hexToRgba(tones.axis, 0.45) },
+-      },
+-      axisTick: { show: false },
+-      axisLabel: {
+-        show: scale.axisVisible,
+-        color: tones.axis,
+-        fontSize: scale.axisFontSize,
+-        inside: scale.axisLabelInside,
+-        margin: scale.axisLabelMargin,
+-        hideOverlap: true,
+-        showMinLabel: true,
+-        showMaxLabel: scale.showMaxAxisLabel,
+-        formatter: formatXAxisLabel,
+-      },
+-      splitLine: {
+-        show: chartConfig.splitLineVisible,
+-        lineStyle: {
+-          color: tones.splitLine,
+-          type: 'dashed',
+-        },
+-      },
+-    },
+-    yAxis: {
+-      type: 'value',
+-      min: domain.yMin,
+-      max: domain.yMax,
+-      splitNumber: scale.axisSplitNumber,
+-      name: scale.axisNameVisible ? chartConfig.yAxisName : '',
+-      nameGap: 0,
+-      axisLine: {
+-        show: scale.axisVisible,
+-        lineStyle: { color: hexToRgba(tones.axis, 0.45) },
+-      },
+-      axisTick: { show: false },
+-      axisLabel: {
+-        show: scale.axisVisible,
+-        color: tones.axis,
+-        fontSize: scale.axisFontSize,
+-        inside: scale.axisLabelInside,
+-        margin: scale.axisLabelMargin,
+-        align: 'right',
+-        hideOverlap: true,
+-        showMinLabel: false,
+-        showMaxLabel: true,
+-        formatter: formatYAxisLabel,
+-      },
+-      splitLine: {
+-        show: chartConfig.splitLineVisible,
+-        lineStyle: {
+-          color: tones.splitLine,
+-          type: 'dashed',
+-        },
+-      },
+-    },
+-    series: scatterSeries as EChartsOption['series'],
+-  };
+-});
+-
+-const cardStyle = computed(() => ({
+-  '--quadrant-padding': `${resolvedLayout.value.paddingPx}px`,
+-  '--quadrant-gap': `${resolvedLayout.value.gapPx}px`,
+-  '--quadrant-title-height': resolvedTitle.value.visible ? `${resolvedLayout.value.titleHeightPx}px` : '0px',
+-  '--quadrant-content-gap': `${resolvedLayout.value.contentGapPx}px`,
+-  '--quadrant-title-color': resolvedTitle.value.color || resolvedTones.value.text,
+-  '--quadrant-unit-color': resolvedTitle.value.unitColor || resolvedTones.value.unit,
+-  '--quadrant-aux-label-color': resolvedAux.value.labelColor,
+-  '--quadrant-aux-value-color': resolvedAux.value.valueColor,
+-  '--quadrant-horizontal-aux-ratio': `${resolvedLayout.value.horizontalAuxRatio}fr`,
+-  '--quadrant-horizontal-chart-ratio': `${resolvedLayout.value.horizontalChartRatio}fr`,
+-  '--quadrant-vertical-aux-ratio': `${resolvedLayout.value.verticalAuxRatio}fr`,
+-  '--quadrant-vertical-chart-ratio': `${resolvedLayout.value.verticalChartRatio}fr`,
+-}));
+-
+-const titleStyle = computed(() => ({
+-  fontSize: `${resolvedTitle.value.fontSizePx}px`,
+-  lineHeight: `${resolvedTitle.value.lineHeightPx}px`,
+-}));
+-
+-const unitStyle = computed(() => ({
+-  fontSize: `${resolvedTitle.value.unitFontSizePx}px`,
+-}));
+-
+-const auxMetricValueStyle = computed(() => ({
+-  fontSize: `${resolvedAux.value.valueFontSizePx}px`,
+-}));
+-
+-const auxMetricLabelStyle = computed(() => ({
+-  fontSize: `${resolvedAux.value.labelFontSizePx}px`,
+-}));
+-
+-const updateSizes = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rootRect = rootRef.value.getBoundingClientRect();
+-  const nextContainerSize = {
+-    width: Math.round(rootRect.width),
+-    height: Math.round(rootRect.height),
+-  };
+-
+-  if (
+-    nextContainerSize.width !== containerSize.value.width ||
+-    nextContainerSize.height !== containerSize.value.height
+-  ) {
+-    containerSize.value = nextContainerSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateSizes();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(chartOption.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRender = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateSizes();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRender();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRender();
+-});
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-
+-watch(chartOption, () => {
+-  void scheduleRender();
+-}, { deep: true, flush: 'post' });
+-</script>
+-
+-<template>
+-  <article ref="rootRef" class="quadrant-chart-example-card" :class="cardClasses" :style="cardStyle">
+-    <header v-if="resolvedTitle.visible" class="quadrant-chart-example-card__header">
+-      <div class="quadrant-chart-example-card__title-zone">
+-        <span
+-          class="quadrant-chart-example-card__title"
+-          :class="{ 'has-underline': resolvedTitle.underline }"
+-          :style="titleStyle"
+-        >
+-          {{ title }}
+-        </span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="quadrant-chart-example-card__unit" :style="unitStyle">
+-        {{ unit }}
+-      </span>
+-    </header>
+-
+-    <section class="quadrant-chart-example-card__body">
+-      <div v-if="visibleAuxMetrics.length" class="quadrant-chart-example-card__aux">
+-        <div
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}-${metric.value}`"
+-          class="quadrant-chart-example-card__aux-item"
+-          :class="`is-${metric.tone ?? 'neutral'}`"
+-        >
+-          <span class="quadrant-chart-example-card__aux-label" :style="auxMetricLabelStyle">{{ metric.label }}</span>
+-          <strong class="quadrant-chart-example-card__aux-value" :style="auxMetricValueStyle">{{ metric.value }}</strong>
+-        </div>
+-      </div>
+-
+-      <div class="quadrant-chart-example-card__chart-shell">
+-        <div v-show="hasRenderableData" ref="chartRef" class="quadrant-chart-example-card__chart" />
+-        <div v-if="!hasRenderableData" class="quadrant-chart-example-card__empty">{{ text.noData }}</div>
+-      </div>
+-    </section>
+-  </article>
+-</template>
+-
+-<style scoped>
+-.quadrant-chart-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: flex;
+-  flex-direction: column;
+-  gap: var(--quadrant-gap);
+-  padding: var(--quadrant-padding);
+-  overflow: hidden;
+-  color: var(--quadrant-title-color);
+-  background: transparent;
+-}
+-
+-.quadrant-chart-example-card__header {
+-  flex: 0 0 var(--quadrant-title-height);
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: center;
+-  column-gap: 4px;
+-}
+-
+-.quadrant-chart-example-card__title-zone {
+-  min-width: 0;
+-  display: flex;
+-  align-items: center;
+-}
+-
+-.quadrant-chart-example-card__title {
+-  position: relative;
+-  display: inline-flex;
+-  flex: 0 1 auto;
+-  max-width: 100%;
+-  align-items: center;
+-  color: var(--quadrant-title-color);
+-  font-weight: 700;
+-  white-space: nowrap;
+-}
+-
+-.quadrant-chart-example-card__title.has-underline::after {
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  content: "";
+-  background: linear-gradient(90deg, rgba(0, 87, 217, 0.82), rgba(25, 168, 255, 0.08));
+-}
+-
+-.quadrant-chart-example-card__unit {
+-  min-width: 0;
+-  color: var(--quadrant-unit-color);
+-  text-align: right;
+-  white-space: nowrap;
+-}
+-
+-.quadrant-chart-example-card__body {
+-  flex: 1 1 auto;
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--quadrant-content-gap);
+-}
+-
+-.quadrant-chart-example-card.is-horizontal.has-aux .quadrant-chart-example-card__body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: var(--quadrant-horizontal-aux-ratio) minmax(0, var(--quadrant-horizontal-chart-ratio));
+-}
+-
+-.quadrant-chart-example-card.is-vertical.has-aux .quadrant-chart-example-card__body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: var(--quadrant-vertical-aux-ratio) minmax(0, var(--quadrant-vertical-chart-ratio));
+-}
+-
+-.quadrant-chart-example-card:not(.has-aux) .quadrant-chart-example-card__body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.quadrant-chart-example-card__aux {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: 2px;
+-  align-content: center;
+-}
+-
+-.quadrant-chart-example-card.aux-horizontal .quadrant-chart-example-card__aux {
+-  grid-template-columns: repeat(var(--quadrant-aux-count), minmax(0, 1fr));
+-  grid-template-rows: minmax(0, 1fr);
+-  align-items: center;
+-  column-gap: 4px;
+-}
+-
+-.quadrant-chart-example-card.aux-vertical .quadrant-chart-example-card__aux {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: repeat(var(--quadrant-aux-count), minmax(0, 1fr));
+-  align-items: stretch;
+-  row-gap: 2px;
+-}
+-
+-.quadrant-chart-example-card__aux-item {
+-  min-width: 0;
+-  min-height: 0;
+-  display: flex;
+-  flex-direction: column;
++  return contentOrientation.value;
++});
++
++const cardClasses = computed(() => ({
++  [`is-${contentOrientation.value}`]: true,
++  [`aux-${auxOrientation.value}`]: true,
++  'has-aux': visibleAuxMetrics.value.length > 0,
++  'has-title': resolvedTitle.value.visible,
++}));
++
++const pointColorPalette = computed(() => [
++  resolvedTones.value.primary,
++  resolvedTones.value.secondary,
++  resolvedTones.value.tertiary,
++  '#7c3aed',
++  '#f59e0b',
++  '#ef4444',
++  '#14b8a6',
++  '#64748b',
++  '#db2777',
++  '#84cc16',
++  '#0f766e',
++  '#f97316',
++  '#2563eb',
++  '#9333ea',
++  '#dc2626',
++  '#0891b2',
++  '#65a30d',
++  '#c2410c',
++  '#4f46e5',
++  '#be185d',
++  '#16a34a',
++  '#ca8a04',
++  '#0284c7',
++  resolvedTones.value.quaternary,
++]);
++
++const getPointColor = (point: QuadrantChartExamplePoint, index: number) =>
++  point.color ?? pointColorPalette.value[index % pointColorPalette.value.length];
++
++const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
++
++const hexToRgba = (color: string, opacity: number) => {
++  const normalized = normalizeColor(color).replace('#', '');
++  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
++  const numeric = Number.parseInt(expanded, 16);
++
++  if (!Number.isFinite(numeric)) {
++    return `rgba(0, 87, 217, ${opacity})`;
++  }
++
++  const r = (numeric >> 16) & 255;
++  const g = (numeric >> 8) & 255;
++  const b = numeric & 255;
++
++  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
++};
++
++const chartScale = computed(() => {
++  const chartConfig = resolvedChart.value;
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
++  const height = chartSize.value.height || fallbackHeight;
++  const compact = Math.min(width / 280, height / 170);
++  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
++  const axisVisible = chartConfig.axisVisible && width >= 150 && height >= 92;
++  const legendVisible = chartConfig.legendVisible && width >= 150 && height >= 80;
++  const legendRowHeight = Math.max(16, chartConfig.legendFontSizePx + 9);
++  const estimatedLegendWidth = points.value.reduce((total, point) => (
++    total + Math.max(30, point.name.length * chartConfig.legendFontSizePx * 0.74 + 16) + chartConfig.legendItemGapPx
++  ), 0);
++  const estimatedLegendRows = legendVisible
++    ? Math.ceil(estimatedLegendWidth / Math.max(width - 12, 80))
++    : 0;
++  const maxLegendRows = height < 125 ? 2 : height < 175 ? 3 : 4;
++  const legendRows = Math.round(clampNumber(estimatedLegendRows, 1, maxLegendRows, 1));
++  const legendHeight = legendVisible ? legendRowHeight * legendRows : 0;
++  const axisSplitNumber = width < 220 ? 4 : width < 320 ? 5 : 6;
++  const axisLabelGutter = axisVisible ? Math.max(chartConfig.gridLeftPx, width < 220 ? 18 : 22) : 0;
++
++  return {
++    fontSize,
++    axisFontSize: Math.max(8, fontSize - 1),
++    axisVisible,
++    axisNameVisible: false,
++    axisLabelInside: false,
++    axisLabelMargin: 3,
++    axisSplitNumber,
++    showMaxAxisLabel: width >= 220,
++    legendVisible,
++    legendWidth: Math.max(width - 14, 80),
++    legendHeight,
++    legendFontSize: chartConfig.legendFontSizePx,
++    pointLabelVisible: chartConfig.pointLabelVisible && width >= 250 && height >= 140,
++    symbolMin: width < 230 ? 6 : 8,
++    symbolMax: width < 230 ? 14 : 22,
++    gridTop: legendVisible ? legendHeight + 6 : chartConfig.gridTopPx,
++    gridBottom: axisVisible ? (width < 220 ? 6 : 8) : 6,
++    gridLeft: axisLabelGutter,
++    gridRight: width < 220 ? 4 : chartConfig.gridRightPx,
++    containLabel: false,
++  };
++});
++
++const pointSizeRange = computed(() => {
++  const sizes = points.value.map((point) => point.size ?? 1).filter((value) => Number.isFinite(value));
++
++  return {
++    min: Math.min(...sizes, 1),
++    max: Math.max(...sizes, 1),
++  };
++});
++
++const getSymbolSize = (size: number | undefined) => {
++  const value = Number.isFinite(size) ? Number(size) : pointSizeRange.value.min;
++  const range = pointSizeRange.value.max - pointSizeRange.value.min;
++
++  if (range <= 0) {
++    return chartScale.value.symbolMin + 2;
++  }
++
++  return chartScale.value.symbolMin + ((value - pointSizeRange.value.min) / range) * (chartScale.value.symbolMax - chartScale.value.symbolMin);
++};
++
++const quadrantGraphics = computed(() => {
++  const chartConfig = resolvedChart.value;
++  const labels = chartConfig.quadrantLabels;
++  const tones = resolvedTones.value;
++  const scale = chartScale.value;
++  const domain = axisDomain.value;
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const height = chartSize.value.height || 140;
++  const visible = chartConfig.quadrantAreaVisible && width >= 150 && height >= 92;
++
++  if (!visible) {
++    return [];
++  }
++
++  const axisLabelReserve = scale.axisVisible ? 2 : 0;
++  const axisOriginX = scale.gridLeft;
++  const axisOriginY = height - scale.gridBottom;
++  const plotLeft = axisOriginX + axisLabelReserve + 2;
++  const plotRight = Math.max(width - scale.gridRight - 4, plotLeft + 60);
++  const plotTop = scale.gridTop + 2;
++  const plotBottom = Math.max(axisOriginY - 10, plotTop + 42);
++  const plotWidth = Math.max(plotRight - plotLeft, 1);
++  const plotHeight = Math.max(plotBottom - plotTop, 1);
++  const xRange = Math.max(domain.xMax - domain.xMin, 1);
++  const yRange = Math.max(domain.yMax - domain.yMin, 1);
++  const xSplitRatio = clampNumber((chartConfig.xThreshold - domain.xMin) / xRange, 0.12, 0.88, 0.5);
++  const ySplitRatioFromTop = clampNumber((domain.yMax - chartConfig.yThreshold) / yRange, 0.12, 0.88, 0.5);
++  const xSplit = plotLeft + plotWidth * xSplitRatio;
++  const ySplit = plotTop + plotHeight * ySplitRatioFromTop;
++  const topCenterY = plotTop + (ySplit - plotTop) / 2;
++  const bottomCenterY = ySplit + (plotBottom - ySplit) / 2;
++  const leftCenterX = plotLeft + (xSplit - plotLeft) / 2;
++  const rightCenterX = xSplit + (plotRight - xSplit) / 2;
++
++  return [
++    { left: rightCenterX, top: topCenterY, text: labels[0], color: tones.primary, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
++    { left: leftCenterX, top: topCenterY, text: labels[1], color: tones.secondary, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
++    { left: leftCenterX, top: bottomCenterY, text: labels[2], color: tones.axis, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
++    { left: rightCenterX, top: bottomCenterY, text: labels[3], color: tones.tertiary, fontWeight: 700, align: 'center', verticalAlign: 'middle' },
++  ].map((item) => ({
++    type: 'text',
++    left: item.left,
++    top: item.top,
++    silent: true,
++    style: {
++      text: item.text,
++      fill: hexToRgba(item.color, 0.46),
++      fontSize: chartScale.value.axisFontSize,
++      fontWeight: item.fontWeight,
++      align: item.align,
++      verticalAlign: item.verticalAlign,
++    },
++  }));
++});
++
++const formatTooltip = (params: unknown) => {
++  const item = Array.isArray(params) ? params[0] : params;
++
++  if (!isRecord(item)) {
++    return '';
++  }
++
++  const value = Array.isArray(item.value) ? item.value : [];
++  const data = isRecord(item.data) ? item.data : {};
++  const marker = typeof item.marker === 'string' ? item.marker : '';
++  const name = String(item.name ?? data.name ?? '');
++  const group = String(value[3] ?? data.group ?? '');
++  const size = Number(value[2] ?? data.size);
++  const chartConfig = resolvedChart.value;
++  const lines = [
++    `${marker}${name}`,
++    `${chartConfig.xAxisName}: ${formatMetricNumber(Number(value[0]), chartConfig.xUnit)}`,
++    `${chartConfig.yAxisName}: ${formatMetricNumber(Number(value[1]), chartConfig.yUnit)}`,
++  ];
++
++  if (group) {
++    lines.push(`${group}`);
++  }
++
++  if (Number.isFinite(size) && chartConfig.sizeUnit) {
++    lines.push(`${formatMetricNumber(size, chartConfig.sizeUnit)}`);
++  }
++
++  return lines.join('<br/>');
++};
++
++const chartOption = computed<EChartsOption>(() => {
++  const chartConfig = resolvedChart.value;
++  const tones = resolvedTones.value;
++  const domain = axisDomain.value;
++  const scale = chartScale.value;
++  const quadrantColors = [tones.primary, tones.secondary, tones.quaternary, tones.tertiary];
++  const quadrantLabels = chartConfig.quadrantLabels;
++  const formatXAxisLabel = (value: number) => {
++    return formatAxisNumber(value);
++  };
++  const formatYAxisLabel = (value: number) => {
++    return formatAxisNumber(value);
++  };
++  const getQuadrantIndex = (point: QuadrantChartExamplePoint) => {
++    if (point.x >= chartConfig.xThreshold && point.y >= chartConfig.yThreshold) {
++      return 0;
++    }
++
++    if (point.x < chartConfig.xThreshold && point.y >= chartConfig.yThreshold) {
++      return 1;
++    }
++
++    if (point.x < chartConfig.xThreshold && point.y < chartConfig.yThreshold) {
++      return 2;
++    }
++
++    return 3;
++  };
++  const scatterSeries = points.value.map((point, index) => {
++    const quadrantIndex = getQuadrantIndex(point);
++    const color = getPointColor(point, index);
++    const pointData = {
++      name: point.name,
++      value: [point.x, point.y, point.size ?? 1, point.group ?? quadrantLabels[quadrantIndex]],
++      group: point.group ?? quadrantLabels[quadrantIndex],
++      itemStyle: {
++        color,
++        borderColor: '#ffffff',
++        borderWidth: 1,
++        shadowBlur: 0,
++      },
++      label: {
++        show: scale.pointLabelVisible,
++        formatter: '{b}',
++        color: tones.text,
++        fontSize: scale.fontSize,
++        fontWeight: 700,
++        position: 'top',
++      },
++    };
++
++    return {
++      name: point.name,
++      type: 'scatter',
++      data: [pointData],
++      symbol: 'circle',
++      symbolSize: (rawValue: unknown) => {
++        const value = Array.isArray(rawValue) ? rawValue : [];
++        return getSymbolSize(Number(value[2]));
++      },
++      itemStyle: {
++        color,
++        borderColor: '#ffffff',
++        borderWidth: 1,
++        shadowBlur: 0,
++      },
++      emphasis: {
++        focus: 'series',
++        scale: 1.12,
++      },
++      ...(index === 0
++        ? {
++            markLine: {
++              silent: true,
++              symbol: 'none',
++              label: { show: false },
++              lineStyle: {
++                color: hexToRgba(tones.primary, 0.38),
++                width: 1,
++                type: 'dashed',
++              },
++              data: [
++                { xAxis: chartConfig.xThreshold },
++                { yAxis: chartConfig.yThreshold },
++              ],
++            },
++            markArea: chartConfig.quadrantAreaVisible
++              ? {
++                  silent: true,
++                  label: { show: false },
++                  itemStyle: {
++                    color: 'transparent',
++                  },
++                  data: [
++                    [
++                      { xAxis: chartConfig.xThreshold, yAxis: chartConfig.yThreshold, itemStyle: { color: hexToRgba(tones.primary, 0.06) } },
++                      { xAxis: domain.xMax, yAxis: domain.yMax },
++                    ],
++                    [
++                      { xAxis: domain.xMin, yAxis: chartConfig.yThreshold, itemStyle: { color: hexToRgba(tones.secondary, 0.055) } },
++                      { xAxis: chartConfig.xThreshold, yAxis: domain.yMax },
++                    ],
++                    [
++                      { xAxis: domain.xMin, yAxis: domain.yMin, itemStyle: { color: hexToRgba(tones.quaternary, 0.065) } },
++                      { xAxis: chartConfig.xThreshold, yAxis: chartConfig.yThreshold },
++                    ],
++                    [
++                      { xAxis: chartConfig.xThreshold, yAxis: domain.yMin, itemStyle: { color: hexToRgba(tones.tertiary, 0.05) } },
++                      { xAxis: domain.xMax, yAxis: chartConfig.yThreshold },
++                    ],
++                  ],
++                }
++              : undefined,
++          }
++        : {}),
++    };
++  });
++  const legendLabels = points.value.map((point) => point.name);
++
++  return {
++    animation: true,
++    animationDuration: 420,
++    legend: {
++      show: scale.legendVisible,
++      top: chartConfig.legendTopPx,
++      left: 'center',
++      orient: 'horizontal',
++      width: scale.legendWidth,
++      height: scale.legendHeight,
++      icon: 'circle',
++      itemWidth: 6,
++      itemHeight: 6,
++      itemGap: chartConfig.legendItemGapPx,
++      selectedMode: false,
++      data: legendLabels,
++      textStyle: {
++        color: tones.axis,
++        fontSize: scale.legendFontSize,
++        fontWeight: 700,
++      },
++    },
++    grid: {
++      top: scale.gridTop,
++      bottom: scale.gridBottom,
++      left: scale.gridLeft,
++      right: scale.gridRight,
++      containLabel: scale.containLabel,
++    },
++    tooltip: {
++      trigger: 'item',
++      appendToBody: true,
++      confine: true,
++      formatter: formatTooltip,
++      backgroundColor: 'rgba(255, 255, 255, 0.96)',
++      borderColor: 'rgba(0, 87, 217, 0.16)',
++      textStyle: {
++        color: tones.text,
++        fontSize: 11,
++      },
++    },
++    graphic: quadrantGraphics.value as EChartsOption['graphic'],
++    xAxis: {
++      type: 'value',
++      min: domain.xMin,
++      max: domain.xMax,
++      splitNumber: scale.axisSplitNumber,
++      name: scale.axisNameVisible ? chartConfig.xAxisName : '',
++      nameLocation: 'middle',
++      nameGap: 0,
++      axisLine: {
++        show: scale.axisVisible,
++        lineStyle: { color: hexToRgba(tones.axis, 0.45) },
++      },
++      axisTick: { show: false },
++      axisLabel: {
++        show: scale.axisVisible,
++        color: tones.axis,
++        fontSize: scale.axisFontSize,
++        inside: scale.axisLabelInside,
++        margin: scale.axisLabelMargin,
++        hideOverlap: true,
++        showMinLabel: true,
++        showMaxLabel: scale.showMaxAxisLabel,
++        formatter: formatXAxisLabel,
++      },
++      splitLine: {
++        show: chartConfig.splitLineVisible,
++        lineStyle: {
++          color: tones.splitLine,
++          type: 'dashed',
++        },
++      },
++    },
++    yAxis: {
++      type: 'value',
++      min: domain.yMin,
++      max: domain.yMax,
++      splitNumber: scale.axisSplitNumber,
++      name: scale.axisNameVisible ? chartConfig.yAxisName : '',
++      nameGap: 0,
++      axisLine: {
++        show: scale.axisVisible,
++        lineStyle: { color: hexToRgba(tones.axis, 0.45) },
++      },
++      axisTick: { show: false },
++      axisLabel: {
++        show: scale.axisVisible,
++        color: tones.axis,
++        fontSize: scale.axisFontSize,
++        inside: scale.axisLabelInside,
++        margin: scale.axisLabelMargin,
++        align: 'right',
++        hideOverlap: true,
++        showMinLabel: false,
++        showMaxLabel: true,
++        formatter: formatYAxisLabel,
++      },
++      splitLine: {
++        show: chartConfig.splitLineVisible,
++        lineStyle: {
++          color: tones.splitLine,
++          type: 'dashed',
++        },
++      },
++    },
++    series: scatterSeries as EChartsOption['series'],
++  };
++});
++
++const cardStyle = computed(() => ({
++  '--quadrant-padding': `${resolvedLayout.value.paddingPx}px`,
++  '--quadrant-gap': `${resolvedLayout.value.gapPx}px`,
++  '--quadrant-title-height': resolvedTitle.value.visible ? `${resolvedLayout.value.titleHeightPx}px` : '0px',
++  '--quadrant-content-gap': `${resolvedLayout.value.contentGapPx}px`,
++  '--quadrant-title-color': resolvedTitle.value.color || resolvedTones.value.text,
++  '--quadrant-unit-color': resolvedTitle.value.unitColor || resolvedTones.value.unit,
++  '--quadrant-aux-label-color': resolvedAux.value.labelColor,
++  '--quadrant-aux-value-color': resolvedAux.value.valueColor,
++  '--quadrant-horizontal-aux-ratio': `${resolvedLayout.value.horizontalAuxRatio}fr`,
++  '--quadrant-horizontal-chart-ratio': `${resolvedLayout.value.horizontalChartRatio}fr`,
++  '--quadrant-vertical-aux-ratio': `${resolvedLayout.value.verticalAuxRatio}fr`,
++  '--quadrant-vertical-chart-ratio': `${resolvedLayout.value.verticalChartRatio}fr`,
++}));
++
++const titleStyle = computed(() => ({
++  fontSize: `${resolvedTitle.value.fontSizePx}px`,
++  lineHeight: `${resolvedTitle.value.lineHeightPx}px`,
++}));
++
++const unitStyle = computed(() => ({
++  fontSize: `${resolvedTitle.value.unitFontSizePx}px`,
++}));
++
++const auxMetricValueStyle = computed(() => ({
++  fontSize: `${resolvedAux.value.valueFontSizePx}px`,
++}));
++
++const auxMetricLabelStyle = computed(() => ({
++  fontSize: `${resolvedAux.value.labelFontSizePx}px`,
++}));
++
++const updateSizes = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rootRect = rootRef.value.getBoundingClientRect();
++  const nextContainerSize = {
++    width: Math.round(rootRect.width),
++    height: Math.round(rootRect.height),
++  };
++
++  if (
++    nextContainerSize.width !== containerSize.value.width ||
++    nextContainerSize.height !== containerSize.value.height
++  ) {
++    containerSize.value = nextContainerSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateSizes();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(chartOption.value, true);
++  chart.resize();
++};
++
++const scheduleRender = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateSizes();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRender();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRender();
++});
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++
++watch(chartOption, () => {
++  void scheduleRender();
++}, { deep: true, flush: 'post' });
++</script>
++
++<template>
++  <article ref="rootRef" class="quadrant-chart-example-card" :class="cardClasses" :style="cardStyle">
++    <header v-if="resolvedTitle.visible" class="quadrant-chart-example-card__header">
++      <div class="quadrant-chart-example-card__title-zone">
++        <span
++          class="quadrant-chart-example-card__title"
++          :class="{ 'has-underline': resolvedTitle.underline }"
++          :style="titleStyle"
++        >
++          {{ title }}
++        </span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="quadrant-chart-example-card__unit" :style="unitStyle">
++        {{ unit }}
++      </span>
++    </header>
++
++    <section class="quadrant-chart-example-card__body">
++      <div v-if="visibleAuxMetrics.length" class="quadrant-chart-example-card__aux">
++        <div
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}-${metric.value}`"
++          class="quadrant-chart-example-card__aux-item"
++          :class="`is-${metric.tone ?? 'neutral'}`"
++        >
++          <span class="quadrant-chart-example-card__aux-label" :style="auxMetricLabelStyle">{{ metric.label }}</span>
++          <strong class="quadrant-chart-example-card__aux-value" :style="auxMetricValueStyle">{{ metric.value }}</strong>
++        </div>
++      </div>
++
++      <div class="quadrant-chart-example-card__chart-shell">
++        <div v-show="hasRenderableData" ref="chartRef" class="quadrant-chart-example-card__chart" />
++        <div v-if="!hasRenderableData" class="quadrant-chart-example-card__empty">{{ text.noData }}</div>
++      </div>
++    </section>
++  </article>
++</template>
++
++<style scoped>
++.quadrant-chart-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: flex;
++  flex-direction: column;
++  gap: var(--quadrant-gap);
++  padding: var(--quadrant-padding);
++  overflow: hidden;
++  color: var(--quadrant-title-color);
++  background: transparent;
++}
++
++.quadrant-chart-example-card__header {
++  flex: 0 0 var(--quadrant-title-height);
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: center;
++  column-gap: 4px;
++}
++
++.quadrant-chart-example-card__title-zone {
++  min-width: 0;
++  display: flex;
++  align-items: center;
++}
++
++.quadrant-chart-example-card__title {
++  position: relative;
++  display: inline-flex;
++  flex: 0 1 auto;
++  max-width: 100%;
++  align-items: center;
++  color: var(--quadrant-title-color);
++  font-weight: 700;
++  white-space: nowrap;
++}
++
++.quadrant-chart-example-card__title.has-underline::after {
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  content: "";
++  background: linear-gradient(90deg, rgba(0, 87, 217, 0.82), rgba(25, 168, 255, 0.08));
++}
++
++.quadrant-chart-example-card__unit {
++  min-width: 0;
++  color: var(--quadrant-unit-color);
++  text-align: right;
++  white-space: nowrap;
++}
++
++.quadrant-chart-example-card__body {
++  flex: 1 1 auto;
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--quadrant-content-gap);
++}
++
++.quadrant-chart-example-card.is-horizontal.has-aux .quadrant-chart-example-card__body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--quadrant-content-gap), 2px);
++}
++
++.quadrant-chart-example-card.is-vertical.has-aux .quadrant-chart-example-card__body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--quadrant-content-gap), 2px);
++}
++
++.quadrant-chart-example-card:not(.has-aux) .quadrant-chart-example-card__body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.quadrant-chart-example-card__aux {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: 2px;
++  align-content: center;
++}
++
++.quadrant-chart-example-card.aux-horizontal .quadrant-chart-example-card__aux {
++  grid-template-columns: repeat(var(--quadrant-aux-count), minmax(0, 1fr));
++  grid-template-rows: minmax(0, 1fr);
++  align-items: center;
++  column-gap: 4px;
++}
++
++.quadrant-chart-example-card.aux-vertical .quadrant-chart-example-card__aux {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: repeat(var(--quadrant-aux-count), minmax(0, 1fr));
++  align-items: stretch;
++  row-gap: 2px;
++}
++
++.quadrant-chart-example-card__aux-item {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
+   justify-content: center;
+   gap: 1px;
+ }

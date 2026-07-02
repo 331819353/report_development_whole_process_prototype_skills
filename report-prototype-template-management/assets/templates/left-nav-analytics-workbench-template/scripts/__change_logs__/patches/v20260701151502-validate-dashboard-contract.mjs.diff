@@ -1,0 +1,541 @@
+--- a/scripts/validate-dashboard-contract.mjs
++++ b/scripts/validate-dashboard-contract.mjs
+@@ -308,269 +308,275 @@
+ const visibleGridRows = 8;
+ const minimumLayoutRows = visibleGridRows;
+ const minimumSpanColumns = 2;
+-const rowHeightTolerance = 1;
+-const minimumAxisChartContainerWidth = 300;
+-const warningAxisChartContainerWidth = 400;
+-const denseAxisChartContainerWidth = 500;
+-const minimumAxisChartContainerHeight = 200;
+-const warningAxisChartContainerHeight = 250;
+-const minimumAxisChartBodyHeight = 180;
+-const minimumAxisPlotHeight = 120;
+-const denseAxisPlotHeight = 140;
+-const reservedActionHooks = new Set(['dashboardAction']);
+-const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'customEChartComponent']);
+-const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
+-const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
+-const allowedInteractionTargetTypes = new Set(['route', 'drawer', 'modal', 'popover', 'external', 'cross-filter', 'fullscreen', 'export']);
+-const requiredStackDependencies = ['vue', '@vitejs/plugin-vue', 'vite', 'typescript', 'vue-tsc', 'element-plus', 'echarts', 'axios'];
+-const chartVisualTypes = new Set([
+-  'line',
+-  'bar',
+-  'combo',
+-  'compact-sparkline',
+-  'candlestick',
+-  'heatmap',
+-  'pie',
+-  'radar',
+-  'path',
+-  'sunburst',
+-  'gauge',
+-  'scatter',
+-  'boxplot',
+-  'parallel',
+-  'map',
+-  'graph',
+-  'tree',
+-  'treemap',
+-  'sankey',
+-  'funnel',
+-]);
+-const axisChartVisualTypes = new Set(['line', 'bar', 'combo']);
+-const listLikeVisualTypes = new Set(['operational-list', 'action-recommendation-card', 'ranking-list']);
+-const listContractFieldNames = {
+-  rowHeightPx: ['rowHeightPx', 'rowHeight', 'itemRowHeightPx'],
+-  visibleRowCount: ['visibleRowCount', 'maxVisibleRows', 'visibleRows'],
+-  overflowStrategy: ['overflowStrategy', 'overflowMode', 'overflowBehavior'],
+-};
+-const listContractNodeNames = [
+-  'listGeometryContract',
+-  'listContract',
+-  'operationalListContract',
+-  'actionListContract',
+-  'rowLayoutContract',
+-  'displayBudget',
+-];
+-const chartContractNodeNames = ['chartGeometryContract', 'chartContract', 'plotContract', 'displayBudget'];
+-const hiddenOverflowPattern = /^(?:hidden|clip|overflow-hidden|truncate|none)$/i;
+-const actionDisclosureOverflowPattern = /(?:detail|drawer|tooltip|popover|collapse|view-all|table|详情|抽屉|提示|查看全部|明细)/i;
+-const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
+-
+-const allowedSpansByVisualType = {
+-  line: ['3x2', '4x2', '3x3', '4x3'],
+-  bar: ['3x2', '4x2', '3x3', '4x3'],
+-  combo: ['3x2', '4x2', '3x3', '4x3'],
+-  'compact-sparkline': ['2x1', '3x1', '4x1', '3x2', '4x2'],
+-  candlestick: ['3x2', '4x2', '3x3', '4x3'],
+-  heatmap: ['3x2', '4x2', '3x3', '4x3'],
+-  pie: ['3x2', '3x3', '4x3'],
+-  radar: ['3x2', '3x3', '4x3'],
+-  path: ['3x2', '3x3', '4x3'],
+-  sunburst: ['3x2', '3x3', '4x3'],
+-  gauge: ['3x2', '3x3', '4x3'],
+-  scatter: ['3x2', '4x2', '3x3', '4x3'],
+-  boxplot: ['3x2', '4x2', '3x3', '4x3'],
+-  parallel: ['3x2', '4x2', '3x3', '4x3'],
+-  map: ['3x2', '3x3', '4x3'],
+-  graph: ['3x2', '3x3', '4x3'],
+-  tree: ['3x2', '3x3', '4x3'],
+-  treemap: ['3x2', '3x3', '4x3'],
+-  sankey: ['3x2', '3x3', '4x3'],
+-  funnel: ['3x2', '3x3', '4x3'],
+-  'metric-card': ['2x1', '3x2'],
+-  'text-summary': ['3x2', '4x1', '4x2', '6x1', '6x2', '8x1', '8x2', '12x1', '12x2'],
+-  'operational-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
+-  'action-recommendation-card': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
+-  'ranking-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
+-  table: ['3x2', '4x2', '6x2', '8x2', '12x2', '4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
+-  pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
+-  other: ['2x1', '3x2', '4x2', '3x3', '4x3', '6x3', '12x3'],
+-};
+-
+-const emptyGridMarks = new Set(['.', ' ']);
+-
+-const formatAllowedSpans = (visualType) => allowedSpansByVisualType[visualType]?.join(', ') ?? '';
+-
+-const roundPx = (value) => Math.round(value * 10) / 10;
+-
+-const getPrimaryGridConfig = () =>
+-  gridConfigs.find(({ contentWidth, rowHeight }) => contentWidth !== undefined && rowHeight !== undefined) ??
+-  gridConfigs[0] ??
+-  {};
+-
+-const estimateBlockContentSize = (span) => {
+-  if (!span) {
+-    return undefined;
+-  }
+-
+-  const { contentWidth, rowHeight, cellPadding = 0 } = getPrimaryGridConfig();
+-
+-  if (contentWidth === undefined || rowHeight === undefined) {
+-    return undefined;
+-  }
+-
+-  const columnWidth = contentWidth / requiredGridColumns;
+-
+-  return {
+-    width: roundPx(Math.max(0, columnWidth * span.columns - cellPadding * 2)),
+-    height: roundPx(Math.max(0, rowHeight * span.rows - cellPadding * 2)),
+-  };
+-};
+-
+-const formatBlockSize = (size) => `${size.width}px x ${size.height}px`;
+-
+-const axisSqueezeStrategyFields = [
+-  'squeezeStrategy',
+-  'axisLabelStrategy',
+-  'denseLabelStrategy',
+-  'labelOverflowStrategy',
+-  'categoryDensityStrategy',
+-  'xAxisLabelStrategy',
+-  'dataZoomStrategy',
+-  'chartFallback',
+-  'fallbackStrategy',
+-  'visualDensityStrategy',
+-];
+-
+-const hasAxisSqueezeStrategy = (contractScopes, widgetText) =>
+-  hasPropertyInAny(contractScopes, axisSqueezeStrategyFields) ||
+-  /(?:squeezeStrategy|axisLabelStrategy|denseLabelStrategy|categoryDensityStrategy|labelOverflowStrategy|dataZoomStrategy|chartFallback|fallbackStrategy|visualDensityStrategy|dataZoom\s*:|axisLabel\s*:[\s\S]{0,700}(?:hideOverlap\s*:\s*true|rotate\s*:\s*(?:[1-9]\d?))|labelLayout\s*:[\s\S]{0,500}hideOverlap\s*:\s*true|\bsampling\s*:|\blabelStep\b|labelInterval\s*:\s*(?!0\b)|axisLabelInterval\s*:\s*(?!0\b)|Top\s*N|TopN|visibleCategoryLimit|categoryLimit|maxVisibleCategories|tableFallback|drawer|fullscreen|horizontalScroll|横向滚动|抽屉|详情|全屏|采样|标签旋转|自动隐藏|防重叠)/i.test(
+-    widgetText,
+-  );
+-
+-const getAxisCategoryDensity = (contractScopes, widgetText, size) => {
+-  const categoryCount = getNumberFromAny(contractScopes, [
+-    'categoryCount',
+-    'xAxisCategoryCount',
+-    'maxCategoryCount',
+-    'visibleCategoryCount',
+-    'dataPointCount',
+-    'pointCount',
+-  ]);
+-  const labelMaxChars = getNumberFromAny(contractScopes, [
+-    'xAxisLabelMaxChars',
+-    'maxXAxisLabelChars',
+-    'categoryLabelMaxChars',
+-    'maxCategoryLabelChars',
+-    'labelMaxChars',
+-  ]);
+-  const denseDeclared =
+-    getBooleanFromAny(contractScopes, ['denseData', 'denseAxis', 'longLabels', 'highDensity']) === true ||
+-    /(?:denseData|denseAxis|longLabels|highDensity|标签过长|类目密集|数据密集)/i.test(widgetText);
+-  const perLabelWidth = labelMaxChars === undefined ? 56 : labelMaxChars > 6 ? 72 : labelMaxChars > 4 ? 56 : 44;
+-  const requiredWidth = categoryCount === undefined ? undefined : categoryCount * perLabelWidth;
+-  const labelBudgetFails = size?.width !== undefined && requiredWidth !== undefined && requiredWidth > size.width;
+-  const unknownNarrowDensity = size?.width !== undefined && size.width < denseAxisChartContainerWidth && categoryCount === undefined;
+-
+-  return {
+-    categoryCount,
+-    labelMaxChars,
+-    isDense: Boolean(denseDeclared || labelBudgetFails || (labelMaxChars !== undefined && labelMaxChars > 6)),
+-    unknownNarrowDensity,
+-    requiredWidth,
+-  };
+-};
+-
+-const buildLayoutBlockSpans = (rowsToBuild, location) => {
+-  const cells = new Map();
+-  const spans = new Map();
+-
+-  if (rowsToBuild.length < minimumLayoutRows) {
+-    errors.push(
+-      `${location}: 12*N page layout must include at least ${minimumLayoutRows} rows; received ${rowsToBuild.length}.`,
+-    );
+-  }
+-
+-  rowsToBuild.forEach((row, rowIndex) => {
+-    const rowLabels = Array.from(row);
+-
+-    if (rowLabels.length > requiredGridColumns) {
+-      errors.push(
+-        `${location}[${rowIndex}]: layoutRows must not exceed ${requiredGridColumns} columns; received ${rowLabels.length}.`,
+-      );
+-    } else if (rowLabels.length < requiredGridColumns) {
+-      errors.push(`${location}[${rowIndex}]: layoutRows must use ${requiredGridColumns} columns; received ${rowLabels.length}.`);
+-    }
+-
+-    rowLabels.forEach((label, columnIndex) => {
+-      if (!emptyGridMarks.has(label)) {
+-        cells.set(`${rowIndex}:${columnIndex}`, label);
+-      }
+-    });
+-  });
+-
+-  const visited = new Set();
+-  const directions = [
+-    [1, 0],
+-    [-1, 0],
+-    [0, 1],
+-    [0, -1],
+-  ];
+-  const toKey = (row, column) => `${row}:${column}`;
+-
+-  cells.forEach((label, cellKey) => {
+-    if (visited.has(cellKey)) {
+-      return;
+-    }
+-
+-    const queue = [cellKey];
+-    const component = [];
+-    visited.add(cellKey);
+-
+-    while (queue.length > 0) {
+-      const currentKey = queue.shift();
+-
+-      if (!currentKey) {
+-        continue;
+-      }
+-
+-      const [row, column] = currentKey.split(':').map(Number);
+-      component.push([row, column]);
+-
+-      directions.forEach(([rowOffset, columnOffset]) => {
+-        const nextKey = toKey(row + rowOffset, column + columnOffset);
+-
+-        if (!visited.has(nextKey) && cells.get(nextKey) === label) {
+-          visited.add(nextKey);
+-          queue.push(nextKey);
+-        }
+-      });
+-    }
+-
+-    const rows = component.map(([row]) => row);
+-    const columns = component.map(([, column]) => column);
+-    const minRow = Math.min(...rows);
+-    const maxRow = Math.max(...rows);
+-    const minColumn = Math.min(...columns);
+-    const maxColumn = Math.max(...columns);
+-    const isRectangle = component.length === (maxRow - minRow + 1) * (maxColumn - minColumn + 1);
+-
+-    if (!isRectangle) {
+-      errors.push(`${location}: layout block "${label}" must form one rectangle.`);
+-      return;
+-    }
+-
+-    if (spans.has(label)) {
+-      errors.push(`${location}: layout block "${label}" appears in disconnected rectangles; use unique block ids.`);
+-      return;
+-    }
+-
+-    const span = {
+-      columns: maxColumn - minColumn + 1,
+-      rows: maxRow - minRow + 1,
+-    };
+-
+-    if (span.columns < minimumSpanColumns) {
+-      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x1.`);
++const minimumSpanRows = 3;
++const rowHeightTolerance = 1;
++const minimumAxisChartContainerWidth = 300;
++const warningAxisChartContainerWidth = 400;
++const denseAxisChartContainerWidth = 500;
++const minimumAxisChartContainerHeight = 200;
++const warningAxisChartContainerHeight = 250;
++const minimumAxisChartBodyHeight = 180;
++const minimumAxisPlotHeight = 120;
++const denseAxisPlotHeight = 140;
++const reservedActionHooks = new Set(['dashboardAction']);
++const allowedSelfDevelopmentExceptionTypes = new Set(['interactionBehavior', 'customEChartComponent']);
++const allowedInteractionTypes = new Set(['drilldown', 'jump', 'modal', 'drawer', 'popup', 'crossFilter']);
++const allowedInteractionTriggerOwners = new Set(['templateActionHook', 'componentOwnedEvent', 'widgetEvent']);
++const allowedInteractionTargetTypes = new Set(['route', 'drawer', 'modal', 'popover', 'external', 'cross-filter', 'fullscreen', 'export']);
++const requiredStackDependencies = ['vue', '@vitejs/plugin-vue', 'vite', 'typescript', 'vue-tsc', 'element-plus', 'echarts', 'axios'];
++const chartVisualTypes = new Set([
++  'line',
++  'bar',
++  'combo',
++  'compact-sparkline',
++  'candlestick',
++  'heatmap',
++  'pie',
++  'radar',
++  'path',
++  'sunburst',
++  'gauge',
++  'scatter',
++  'boxplot',
++  'parallel',
++  'map',
++  'graph',
++  'tree',
++  'treemap',
++  'sankey',
++  'funnel',
++]);
++const axisChartVisualTypes = new Set(['line', 'bar', 'combo']);
++const listLikeVisualTypes = new Set(['operational-list', 'action-recommendation-card', 'ranking-list']);
++const listContractFieldNames = {
++  rowHeightPx: ['rowHeightPx', 'rowHeight', 'itemRowHeightPx'],
++  visibleRowCount: ['visibleRowCount', 'maxVisibleRows', 'visibleRows'],
++  overflowStrategy: ['overflowStrategy', 'overflowMode', 'overflowBehavior'],
++};
++const listContractNodeNames = [
++  'listGeometryContract',
++  'listContract',
++  'operationalListContract',
++  'actionListContract',
++  'rowLayoutContract',
++  'displayBudget',
++];
++const chartContractNodeNames = ['chartGeometryContract', 'chartContract', 'plotContract', 'displayBudget'];
++const hiddenOverflowPattern = /^(?:hidden|clip|overflow-hidden|truncate|none)$/i;
++const actionDisclosureOverflowPattern = /(?:detail|drawer|tooltip|popover|collapse|view-all|table|详情|抽屉|提示|查看全部|明细)/i;
++const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
++
++const allowedSpansByVisualType = {
++  line: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  bar: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  combo: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  'compact-sparkline': ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  candlestick: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  heatmap: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  pie: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  radar: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  path: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  sunburst: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  gauge: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  scatter: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  boxplot: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  parallel: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  map: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  graph: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  tree: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  treemap: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  sankey: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  funnel: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  'metric-card': ['3x3', '4x3', '6x3'],
++  'text-summary': ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  'operational-list': ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  'action-recommendation-card': ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  'ranking-list': ['3x3', '4x3', '6x3', '8x3', '12x3'],
++  table: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
++  pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
++  other: ['3x3', '4x3', '6x3', '8x3', '12x3'],
++};
++
++const emptyGridMarks = new Set(['.', ' ']);
++
++const formatAllowedSpans = (visualType) => allowedSpansByVisualType[visualType]?.join(', ') ?? '';
++
++const roundPx = (value) => Math.round(value * 10) / 10;
++
++const getPrimaryGridConfig = () =>
++  gridConfigs.find(({ contentWidth, rowHeight }) => contentWidth !== undefined && rowHeight !== undefined) ??
++  gridConfigs[0] ??
++  {};
++
++const estimateBlockContentSize = (span) => {
++  if (!span) {
++    return undefined;
++  }
++
++  const { contentWidth, rowHeight, cellPadding = 0 } = getPrimaryGridConfig();
++
++  if (contentWidth === undefined || rowHeight === undefined) {
++    return undefined;
++  }
++
++  const columnWidth = contentWidth / requiredGridColumns;
++
++  return {
++    width: roundPx(Math.max(0, columnWidth * span.columns - cellPadding * 2)),
++    height: roundPx(Math.max(0, rowHeight * span.rows - cellPadding * 2)),
++  };
++};
++
++const formatBlockSize = (size) => `${size.width}px x ${size.height}px`;
++
++const axisSqueezeStrategyFields = [
++  'squeezeStrategy',
++  'axisLabelStrategy',
++  'denseLabelStrategy',
++  'labelOverflowStrategy',
++  'categoryDensityStrategy',
++  'xAxisLabelStrategy',
++  'dataZoomStrategy',
++  'chartFallback',
++  'fallbackStrategy',
++  'visualDensityStrategy',
++];
++
++const hasAxisSqueezeStrategy = (contractScopes, widgetText) =>
++  hasPropertyInAny(contractScopes, axisSqueezeStrategyFields) ||
++  /(?:squeezeStrategy|axisLabelStrategy|denseLabelStrategy|categoryDensityStrategy|labelOverflowStrategy|dataZoomStrategy|chartFallback|fallbackStrategy|visualDensityStrategy|dataZoom\s*:|axisLabel\s*:[\s\S]{0,700}(?:hideOverlap\s*:\s*true|rotate\s*:\s*(?:[1-9]\d?))|labelLayout\s*:[\s\S]{0,500}hideOverlap\s*:\s*true|\bsampling\s*:|\blabelStep\b|labelInterval\s*:\s*(?!0\b)|axisLabelInterval\s*:\s*(?!0\b)|Top\s*N|TopN|visibleCategoryLimit|categoryLimit|maxVisibleCategories|tableFallback|drawer|fullscreen|horizontalScroll|横向滚动|抽屉|详情|全屏|采样|标签旋转|自动隐藏|防重叠)/i.test(
++    widgetText,
++  );
++
++const getAxisCategoryDensity = (contractScopes, widgetText, size) => {
++  const categoryCount = getNumberFromAny(contractScopes, [
++    'categoryCount',
++    'xAxisCategoryCount',
++    'maxCategoryCount',
++    'visibleCategoryCount',
++    'dataPointCount',
++    'pointCount',
++  ]);
++  const labelMaxChars = getNumberFromAny(contractScopes, [
++    'xAxisLabelMaxChars',
++    'maxXAxisLabelChars',
++    'categoryLabelMaxChars',
++    'maxCategoryLabelChars',
++    'labelMaxChars',
++  ]);
++  const denseDeclared =
++    getBooleanFromAny(contractScopes, ['denseData', 'denseAxis', 'longLabels', 'highDensity']) === true ||
++    /(?:denseData|denseAxis|longLabels|highDensity|标签过长|类目密集|数据密集)/i.test(widgetText);
++  const perLabelWidth = labelMaxChars === undefined ? 56 : labelMaxChars > 6 ? 72 : labelMaxChars > 4 ? 56 : 44;
++  const requiredWidth = categoryCount === undefined ? undefined : categoryCount * perLabelWidth;
++  const labelBudgetFails = size?.width !== undefined && requiredWidth !== undefined && requiredWidth > size.width;
++  const unknownNarrowDensity = size?.width !== undefined && size.width < denseAxisChartContainerWidth && categoryCount === undefined;
++
++  return {
++    categoryCount,
++    labelMaxChars,
++    isDense: Boolean(denseDeclared || labelBudgetFails || (labelMaxChars !== undefined && labelMaxChars > 6)),
++    unknownNarrowDensity,
++    requiredWidth,
++  };
++};
++
++const buildLayoutBlockSpans = (rowsToBuild, location) => {
++  const cells = new Map();
++  const spans = new Map();
++
++  if (rowsToBuild.length < minimumLayoutRows) {
++    errors.push(
++      `${location}: 12*N page layout must include at least ${minimumLayoutRows} rows; received ${rowsToBuild.length}.`,
++    );
++  }
++
++  rowsToBuild.forEach((row, rowIndex) => {
++    const rowLabels = Array.from(row);
++
++    if (rowLabels.length > requiredGridColumns) {
++      errors.push(
++        `${location}[${rowIndex}]: layoutRows must not exceed ${requiredGridColumns} columns; received ${rowLabels.length}.`,
++      );
++    } else if (rowLabels.length < requiredGridColumns) {
++      errors.push(`${location}[${rowIndex}]: layoutRows must use ${requiredGridColumns} columns; received ${rowLabels.length}.`);
++    }
++
++    rowLabels.forEach((label, columnIndex) => {
++      if (!emptyGridMarks.has(label)) {
++        cells.set(`${rowIndex}:${columnIndex}`, label);
++      }
++    });
++  });
++
++  const visited = new Set();
++  const directions = [
++    [1, 0],
++    [-1, 0],
++    [0, 1],
++    [0, -1],
++  ];
++  const toKey = (row, column) => `${row}:${column}`;
++
++  cells.forEach((label, cellKey) => {
++    if (visited.has(cellKey)) {
++      return;
++    }
++
++    const queue = [cellKey];
++    const component = [];
++    visited.add(cellKey);
++
++    while (queue.length > 0) {
++      const currentKey = queue.shift();
++
++      if (!currentKey) {
++        continue;
++      }
++
++      const [row, column] = currentKey.split(':').map(Number);
++      component.push([row, column]);
++
++      directions.forEach(([rowOffset, columnOffset]) => {
++        const nextKey = toKey(row + rowOffset, column + columnOffset);
++
++        if (!visited.has(nextKey) && cells.get(nextKey) === label) {
++          visited.add(nextKey);
++          queue.push(nextKey);
++        }
++      });
++    }
++
++    const rows = component.map(([row]) => row);
++    const columns = component.map(([, column]) => column);
++    const minRow = Math.min(...rows);
++    const maxRow = Math.max(...rows);
++    const minColumn = Math.min(...columns);
++    const maxColumn = Math.max(...columns);
++    const isRectangle = component.length === (maxRow - minRow + 1) * (maxColumn - minColumn + 1);
++
++    if (!isRectangle) {
++      errors.push(`${location}: layout block "${label}" must form one rectangle.`);
++      return;
++    }
++
++    if (spans.has(label)) {
++      errors.push(`${location}: layout block "${label}" appears in disconnected rectangles; use unique block ids.`);
++      return;
++    }
++
++    const span = {
++      columns: maxColumn - minColumn + 1,
++      rows: maxRow - minRow + 1,
++    };
++
++    if (span.columns < minimumSpanColumns) {
++      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x${minimumSpanRows}.`);
++      return;
++    }
++
++    if (span.rows < minimumSpanRows) {
++      errors.push(`${location}: layout block "${label}" spans ${span.rows} row(s); minimum block span is ${minimumSpanColumns}x${minimumSpanRows}.`);
+       return;
+     }
+ 

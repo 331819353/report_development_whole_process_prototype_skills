@@ -51,6 +51,9 @@ interface SunburstChartExampleAuxConfig {
 }
 
 interface SunburstChartExampleChartConfig {
+  legendVisible?: boolean;
+  legendPosition?: 'auto' | 'right' | 'top' | 'hidden';
+  legendWidthPx?: number;
   topN?: number;
   maxDepth?: number;
   innerRadiusPercent?: number;
@@ -182,6 +185,9 @@ const defaultAuxConfig: Required<SunburstChartExampleAuxConfig> = {
 };
 
 const defaultChartConfig: Required<SunburstChartExampleChartConfig> = {
+  legendVisible: true,
+  legendPosition: 'right',
+  legendWidthPx: 58,
   topN: 7,
   maxDepth: 3,
   innerRadiusPercent: 18,
@@ -243,6 +249,14 @@ const normalizeSort = (value: unknown): Required<SunburstChartExampleChartConfig
   return defaultChartConfig.sort;
 };
 
+const normalizeLegendPosition = (value: unknown): Required<SunburstChartExampleChartConfig>['legendPosition'] => {
+  if (value === 'auto' || value === 'right' || value === 'top' || value === 'hidden') {
+    return value;
+  }
+
+  return defaultChartConfig.legendPosition;
+};
+
 const resolvedTitle = computed<Required<SunburstChartExampleTitleConfig>>(() => ({
   ...defaultTitleConfig,
   ...(props.config?.title ?? {}),
@@ -281,6 +295,8 @@ const resolvedAux = computed<Required<SunburstChartExampleAuxConfig>>(() => ({
 const resolvedChart = computed<Required<SunburstChartExampleChartConfig>>(() => ({
   ...defaultChartConfig,
   ...(props.config?.chart ?? {}),
+  legendPosition: normalizeLegendPosition(props.config?.chart?.legendPosition),
+  legendWidthPx: clampNumber(props.config?.chart?.legendWidthPx, 42, 120, defaultChartConfig.legendWidthPx),
   topN: Math.round(clampNumber(props.config?.chart?.topN, 2, 12, defaultChartConfig.topN)),
   maxDepth: Math.round(clampNumber(props.config?.chart?.maxDepth, 2, 4, defaultChartConfig.maxDepth)),
   innerRadiusPercent: clampNumber(props.config?.chart?.innerRadiusPercent, 0, 45, defaultChartConfig.innerRadiusPercent),
@@ -436,6 +452,8 @@ const defaultAuxMetrics = computed<SunburstChartExampleAuxMetric[]>(() => [
   { label: text.depth, value: maxDepth.value, tone: 'warning' },
 ]);
 
+const rootLegendItems = computed(() => chartData.value.map((item) => item.name).filter(Boolean));
+
 const visibleAuxMetrics = computed(() => {
   if (!resolvedAux.value.visible) {
     return [];
@@ -469,7 +487,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -514,13 +532,27 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const chartConfig = resolvedChart.value;
-  const labelVisible = chartConfig.labelVisible && width >= 160 && height >= 112;
-  const centerVisible = chartConfig.centerVisible && width >= 150 && height >= 110;
-  const radiusLimit = width < 160 || height < 96 ? 90 : width < 240 || height < 130 ? 94 : 96;
+  const effectiveLegendPosition = chartConfig.legendPosition === 'auto' ? 'right' : chartConfig.legendPosition;
+  const legendVisible = chartConfig.legendVisible && effectiveLegendPosition !== 'hidden' && rootLegendItems.value.length > 0 && width >= 160 && height >= 100;
+  const legendTopVisible = legendVisible && effectiveLegendPosition === 'top';
+  const legendRightVisible = legendVisible && effectiveLegendPosition === 'right';
+  const maxLegendNameLength = Math.max(1, ...rootLegendItems.value.map((item) => item.length));
+  const legendTextWidth = Math.max(34, Math.min(74, maxLegendNameLength * fontSize * 0.7 + 10));
+  const legendWidth = legendRightVisible
+    ? Math.min(Math.max(chartConfig.legendWidthPx, legendTextWidth + 18), Math.max(52, width * 0.34))
+    : 0;
+  const legendHeight = legendTopVisible ? Math.max(16, fontSize + 8) : 0;
+  const chartWidth = legendRightVisible ? Math.max(width - legendWidth - 4, 90) : width;
+  const labelVisible = chartConfig.labelVisible && chartWidth >= 160 && height >= 112;
+  const centerVisible = chartConfig.centerVisible && chartWidth >= 150 && height >= 110;
+  const radiusLimit = chartWidth < 160 || height < 96 ? 90 : chartWidth < 240 || height < 130 ? 94 : 96;
   const outerLimit = Math.min(radiusLimit, chartConfig.outerRadiusPercent);
   const outerRadius = Math.min(chartConfig.outerRadiusPercent, outerLimit);
   const innerRadius = Math.min(chartConfig.innerRadiusPercent, outerRadius - 32);
   const middleRadius = Math.round(innerRadius + (outerRadius - innerRadius) * 0.44);
+  const centerX = legendRightVisible
+    ? `${Math.round(clampNumber(((chartWidth * 0.5) / width) * 100, 32, 48, 42))}%`
+    : '50%';
 
   return {
     fontSize,
@@ -529,9 +561,15 @@ const chartScale = computed(() => {
     centerValueFontSize: Math.max(10, fontSize + 1),
     labelVisible,
     centerVisible,
+    legendVisible,
+    legendTopVisible,
+    legendRightVisible,
+    legendWidth,
+    legendTextWidth,
+    legendHeight,
     labelWidth: width < 230 ? 42 : 58,
-    centerX: '50%',
-    centerY: height < 110 ? '54%' : '53%',
+    centerX,
+    centerY: legendTopVisible ? (height < 135 ? '60%' : '57%') : height < 110 ? '54%' : '53%',
     innerRadius,
     middleRadius,
     outerRadius,
@@ -584,6 +622,24 @@ const option = computed<EChartsOption>(() => {
       textStyle: {
         color: tones.text,
         fontSize: 11,
+      },
+    },
+    legend: {
+      show: scale.legendVisible,
+      data: rootLegendItems.value,
+      top: scale.legendRightVisible ? 'middle' : 0,
+      right: scale.legendRightVisible ? 0 : undefined,
+      left: scale.legendTopVisible ? 'center' : undefined,
+      orient: scale.legendRightVisible ? 'vertical' : 'horizontal',
+      width: scale.legendRightVisible ? scale.legendWidth : undefined,
+      itemWidth: 7,
+      itemHeight: 7,
+      itemGap: scale.legendRightVisible ? 5 : 8,
+      textStyle: {
+        color: tones.axis,
+        fontSize: scale.fontSize,
+        width: scale.legendRightVisible ? scale.legendTextWidth : undefined,
+        overflow: 'truncate',
       },
     },
     series: [
@@ -899,14 +955,11 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.sunburst-chart-example-card.has-aux.is-horizontal .sunburst-chart-example-body {
-  grid-template-columns: var(--sunburst-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.sunburst-chart-example-card.has-aux.is-horizontal .sunburst-chart-example-body,
 .sunburst-chart-example-card.has-aux.is-vertical .sunburst-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--sunburst-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--sunburst-chart-content-gap), 2px);
 }
 
 .sunburst-chart-example-card:not(.has-aux) .sunburst-chart-example-body {

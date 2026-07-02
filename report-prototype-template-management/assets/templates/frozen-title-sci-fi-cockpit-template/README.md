@@ -19,11 +19,15 @@ This template is a Vue 3 + TypeScript + Vite report prototype shell.
 
 ```bash
 npm run dev
+npm run dev:vite
 npm run build:preview
 npm run build:test
 npm run build:prod
 npm run preview
 ```
+
+- `npm run dev` starts the mock API and Vite together, with Vite `/api` proxied to the mock service.
+- `npm run dev:vite` starts only Vite and is for shell-only debugging; API-backed filters and components will not be ready.
 
 ## Structure
 

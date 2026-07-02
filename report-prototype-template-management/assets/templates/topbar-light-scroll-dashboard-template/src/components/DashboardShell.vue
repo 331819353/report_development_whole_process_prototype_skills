@@ -431,10 +431,8 @@ const getPlaceholderCellInnerStyle = (block: LayoutBlock): Record<string, string
     '--block-row-span': String(rowSpan),
   };
 
-  if (isAutoComponentSlotBlock(block.label)) {
-    style['--block-summary-row-size'] = '1fr';
-    style['--block-component-row-size'] = `${Math.max(rowSpan - 1, 1)}fr`;
-  }
+  style['--block-summary-row-size'] = '1fr';
+  style['--block-component-row-size'] = `${Math.max(rowSpan, 1)}fr`;
 
   return style;
 };

@@ -372,7 +372,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -886,8 +886,9 @@ onBeforeUnmount(() => {
 
 .custom-echart-template-card.has-aux.is-horizontal .custom-echart-template-body,
 .custom-echart-template-card.has-aux.is-vertical .custom-echart-template-body {
-  grid-template-columns: var(--custom-echart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--custom-echart-content-gap), 2px);
 }
 
 .custom-echart-template-card:not(.has-aux) .custom-echart-template-body {

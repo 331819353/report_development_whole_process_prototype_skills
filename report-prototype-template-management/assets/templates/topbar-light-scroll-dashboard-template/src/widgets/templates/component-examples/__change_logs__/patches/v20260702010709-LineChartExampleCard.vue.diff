@@ -1,0 +1,475 @@
+--- a/src/widgets/templates/component-examples/LineChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/LineChartExampleCard.vue
+@@ -514,237 +514,241 @@
+   const titleConfig = resolvedTitle.value;
+   const auxConfig = resolvedAux.value;
+   const tones = resolvedTones.value;
+-
+-  return {
+-    '--line-chart-card-padding': `${layout.paddingPx}px`,
+-    '--line-chart-card-gap': `${layout.gapPx}px`,
+-    '--line-chart-content-gap': `${layout.contentGapPx}px`,
+-    '--line-chart-title-row': `${layout.titleHeightPx}px`,
+-    '--line-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
+-    '--line-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
+-    '--line-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
+-    '--line-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
+-    '--line-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
+-    '--line-chart-aux-label-color': auxConfig.labelColor,
+-    '--line-chart-aux-value-color': auxConfig.valueColor,
+-    '--line-chart-title-font-size': `${titleConfig.fontSizePx}px`,
+-    '--line-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
+-    '--line-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
+-    '--line-chart-title-color': titleConfig.color || tones.text,
+-    '--line-chart-unit-color': titleConfig.unitColor || tones.unit,
+-    '--line-chart-primary': tones.primary,
+-    '--line-chart-primary-soft': hexToRgba(tones.primary, 0.2),
+-  };
+-});
+-
+-const updateContainerSize = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rect = rootRef.value.getBoundingClientRect();
+-  const nextSize = {
+-    width: Math.round(rect.width),
+-    height: Math.round(rect.height),
+-  };
+-
+-  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
+-    containerSize.value = nextSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateContainerSize();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(option.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRenderChart = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateContainerSize();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRenderChart();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRenderChart();
+-});
+-
+-watch(option, () => {
+-  void scheduleRenderChart();
+-}, { deep: true, flush: 'post' });
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-</script>
+-
+-<template>
+-  <section ref="rootRef" class="line-chart-example-card" :class="cardClasses" :style="cardStyle" aria-label="折线图卡片">
+-    <header v-if="resolvedTitle.visible" class="line-chart-example-header">
+-      <div class="line-chart-example-title-wrap">
+-        <span class="line-chart-example-title">{{ title }}</span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="line-chart-example-unit">{{ unit }}</span>
+-    </header>
+-    <div class="line-chart-example-body">
+-      <div v-if="visibleAuxMetrics.length" class="line-chart-example-aux" aria-label="附加指标">
+-        <span
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}:${metric.value}`"
+-          class="line-chart-example-aux-item"
+-          :class="`tone-${metric.tone ?? 'neutral'}`"
+-        >
+-          <em>{{ metric.label }}</em>
+-          <b>{{ metric.value }}</b>
+-        </span>
+-      </div>
+-      <div class="line-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
+-        <div v-if="hasRenderableData" ref="chartRef" class="line-chart-example-canvas" />
+-        <div v-else class="line-chart-example-empty">暂无数据</div>
+-      </div>
+-    </div>
+-  </section>
+-</template>
+-
+-<style scoped>
+-.line-chart-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: grid;
+-  grid-template-rows: var(--line-chart-title-row) minmax(0, 1fr);
+-  row-gap: var(--line-chart-card-gap);
+-  padding: var(--line-chart-card-padding);
+-  overflow: hidden;
+-  background: transparent;
+-  color: var(--line-chart-title-color);
+-}
+-
+-.line-chart-example-card:not(.has-title) {
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.line-chart-example-header {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: start;
+-  column-gap: 8px;
+-}
+-
+-.line-chart-example-title-wrap {
+-  min-width: 0;
+-  display: flex;
+-  align-items: flex-start;
+-}
+-
+-.line-chart-example-title {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  max-width: 100%;
+-  min-width: 0;
+-  color: var(--line-chart-title-color);
+-  font-size: var(--line-chart-title-font-size);
+-  line-height: var(--line-chart-title-line-height);
+-  font-weight: 700;
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-}
+-
+-.line-chart-example-title::after {
+-  content: '';
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  border-radius: 999px;
+-  background: linear-gradient(90deg, var(--line-chart-primary) 0%, var(--line-chart-primary-soft) 72%, transparent 100%);
+-}
+-
+-.line-chart-example-unit {
+-  justify-self: stretch;
+-  min-width: 0;
+-  width: 100%;
+-  color: var(--line-chart-unit-color);
+-  font-size: var(--line-chart-unit-font-size);
+-  line-height: var(--line-chart-title-line-height);
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-  text-align: right;
+-}
+-
+-.line-chart-example-body {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--line-chart-content-gap);
+-  overflow: hidden;
+-}
+-
+-.line-chart-example-card.has-aux.is-horizontal .line-chart-example-body,
+-.line-chart-example-card.has-aux.is-vertical .line-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: max-content minmax(0, 1fr);
+-  gap: min(var(--line-chart-content-gap), 2px);
+-}
+-
+-.line-chart-example-card:not(.has-aux) .line-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.line-chart-example-card:not(.has-title).has-aux .line-chart-example-aux {
+-  margin-top: 10px;
++  const titlelessAuxGapPx = Math.round(
++    clampNumber(containerSize.value.height > 0 ? containerSize.value.height * 0.035 : undefined, 6, 14, 8),
++  );
++
++  return {
++    '--line-chart-card-padding': `${layout.paddingPx}px`,
++    '--line-chart-card-gap': `${layout.gapPx}px`,
++    '--line-chart-content-gap': `${layout.contentGapPx}px`,
++    '--line-chart-title-row': `${layout.titleHeightPx}px`,
++    '--line-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
++    '--line-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
++    '--line-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
++    '--line-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
++    '--line-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
++    '--line-chart-aux-label-color': auxConfig.labelColor,
++    '--line-chart-aux-value-color': auxConfig.valueColor,
++    '--line-chart-titleless-aux-gap': `${titlelessAuxGapPx}px`,
++    '--line-chart-title-font-size': `${titleConfig.fontSizePx}px`,
++    '--line-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
++    '--line-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
++    '--line-chart-title-color': titleConfig.color || tones.text,
++    '--line-chart-unit-color': titleConfig.unitColor || tones.unit,
++    '--line-chart-primary': tones.primary,
++    '--line-chart-primary-soft': hexToRgba(tones.primary, 0.2),
++  };
++});
++
++const updateContainerSize = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rect = rootRef.value.getBoundingClientRect();
++  const nextSize = {
++    width: Math.round(rect.width),
++    height: Math.round(rect.height),
++  };
++
++  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
++    containerSize.value = nextSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateContainerSize();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(option.value, true);
++  chart.resize();
++};
++
++const scheduleRenderChart = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateContainerSize();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRenderChart();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRenderChart();
++});
++
++watch(option, () => {
++  void scheduleRenderChart();
++}, { deep: true, flush: 'post' });
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++</script>
++
++<template>
++  <section ref="rootRef" class="line-chart-example-card" :class="cardClasses" :style="cardStyle" aria-label="折线图卡片">
++    <header v-if="resolvedTitle.visible" class="line-chart-example-header">
++      <div class="line-chart-example-title-wrap">
++        <span class="line-chart-example-title">{{ title }}</span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="line-chart-example-unit">{{ unit }}</span>
++    </header>
++    <div class="line-chart-example-body">
++      <div v-if="visibleAuxMetrics.length" class="line-chart-example-aux" aria-label="附加指标">
++        <span
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}:${metric.value}`"
++          class="line-chart-example-aux-item"
++          :class="`tone-${metric.tone ?? 'neutral'}`"
++        >
++          <em>{{ metric.label }}</em>
++          <b>{{ metric.value }}</b>
++        </span>
++      </div>
++      <div class="line-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
++        <div v-if="hasRenderableData" ref="chartRef" class="line-chart-example-canvas" />
++        <div v-else class="line-chart-example-empty">暂无数据</div>
++      </div>
++    </div>
++  </section>
++</template>
++
++<style scoped>
++.line-chart-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: grid;
++  grid-template-rows: var(--line-chart-title-row) minmax(0, 1fr);
++  row-gap: var(--line-chart-card-gap);
++  padding: var(--line-chart-card-padding);
++  overflow: hidden;
++  background: transparent;
++  color: var(--line-chart-title-color);
++}
++
++.line-chart-example-card:not(.has-title) {
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.line-chart-example-header {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: start;
++  column-gap: 8px;
++}
++
++.line-chart-example-title-wrap {
++  min-width: 0;
++  display: flex;
++  align-items: flex-start;
++}
++
++.line-chart-example-title {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  min-width: 0;
++  color: var(--line-chart-title-color);
++  font-size: var(--line-chart-title-font-size);
++  line-height: var(--line-chart-title-line-height);
++  font-weight: 700;
++  white-space: normal;
++  overflow-wrap: anywhere;
++}
++
++.line-chart-example-title::after {
++  content: '';
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  border-radius: 999px;
++  background: linear-gradient(90deg, var(--line-chart-primary) 0%, var(--line-chart-primary-soft) 72%, transparent 100%);
++}
++
++.line-chart-example-unit {
++  justify-self: stretch;
++  min-width: 0;
++  width: 100%;
++  color: var(--line-chart-unit-color);
++  font-size: var(--line-chart-unit-font-size);
++  line-height: var(--line-chart-title-line-height);
++  white-space: normal;
++  overflow-wrap: anywhere;
++  text-align: right;
++}
++
++.line-chart-example-body {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--line-chart-content-gap);
++  overflow: hidden;
++}
++
++.line-chart-example-card.has-aux.is-horizontal .line-chart-example-body,
++.line-chart-example-card.has-aux.is-vertical .line-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--line-chart-content-gap), 2px);
++}
++
++.line-chart-example-card:not(.has-aux) .line-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.line-chart-example-card:not(.has-title).has-aux .line-chart-example-aux {
++  margin-top: var(--line-chart-titleless-aux-gap);
+ }
+ 
+ .line-chart-example-aux {

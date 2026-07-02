@@ -59,6 +59,7 @@ interface DetailTableExampleLayoutConfig {
 interface DetailTableExampleAuxConfig {
   visible?: boolean;
   maxItems?: number;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
   labelFontSizePx?: number;
   valueFontSizePx?: number;
   labelColor?: string;
@@ -195,6 +196,7 @@ const defaultLayoutConfig: Required<DetailTableExampleLayoutConfig> = {
 const defaultAuxConfig: Required<DetailTableExampleAuxConfig> = {
   visible: true,
   maxItems: 4,
+  orientation: 'auto',
   labelFontSizePx: 9,
   valueFontSizePx: 12,
   labelColor: '#6b7c93',
@@ -243,6 +245,14 @@ const clampNumber = (value: unknown, min: number, max: number, fallback: number)
   return Math.min(Math.max(numberValue, min), max);
 };
 
+const normalizeAuxOrientation = (value: unknown): Required<DetailTableExampleAuxConfig>['orientation'] => {
+  if (value === 'horizontal' || value === 'vertical') {
+    return value;
+  }
+
+  return 'auto';
+};
+
 const title = computed(() => props.title?.trim() || text.title);
 const unit = computed(() => props.unit?.trim() || text.unit);
 const rowKey = computed(() => props.rowKey?.trim() || 'orderId');
@@ -270,6 +280,7 @@ const resolvedLayout = computed<Required<DetailTableExampleLayoutConfig>>(() => 
 const resolvedAux = computed<Required<DetailTableExampleAuxConfig>>(() => ({
   ...defaultAuxConfig,
   ...(props.config?.aux ?? {}),
+  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
   maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 6, defaultAuxConfig.maxItems)),
   labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
   valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
@@ -440,6 +451,20 @@ const visibleAuxMetrics = computed(() => {
     .slice(0, resolvedAux.value.maxItems);
 });
 
+const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+  const orientation = resolvedAux.value.orientation;
+
+  if (orientation === 'horizontal' || orientation === 'vertical') {
+    return orientation;
+  }
+
+  if (!rootSize.value.width || !rootSize.value.height) {
+    return 'horizontal';
+  }
+
+  return rootSize.value.width >= rootSize.value.height ? 'horizontal' : 'vertical';
+});
+
 const hasSourceData = computed(() => sourceRows.value.length > 0 && columns.value.length > 0);
 const hasRenderableData = computed(() => pagedRows.value.length > 0 && columns.value.length > 0);
 const stateTitle = computed(() => (hasSourceData.value ? text.noMatch : text.noData));
@@ -604,7 +629,22 @@ const cardClasses = computed(() => ({
   'has-title': resolvedTitle.value.visible,
   'has-title-underline': resolvedTitle.value.underline,
   'has-aux': visibleAuxMetrics.value.length > 0,
+  [`aux-${auxOrientation.value}`]: true,
 }));
+
+const auxRowHeightPx = computed(() => {
+  if (!visibleAuxMetrics.value.length) {
+    return 0;
+  }
+
+  const baseHeight = resolvedLayout.value.auxHeightPx;
+
+  if (auxOrientation.value === 'horizontal') {
+    return baseHeight;
+  }
+
+  return Math.max(baseHeight, visibleAuxMetrics.value.length * 20);
+});
 
 const cardStyle = computed(() => {
   const layout = resolvedLayout.value;
@@ -617,7 +657,7 @@ const cardStyle = computed(() => {
     '--detail-table-card-padding': `${layout.paddingPx}px`,
     '--detail-table-card-gap': `${layout.gapPx}px`,
     '--detail-table-title-row': `${layout.titleHeightPx}px`,
-    '--detail-table-aux-row': `${visibleAuxMetrics.value.length ? layout.auxHeightPx : 0}px`,
+    '--detail-table-aux-row': `${auxRowHeightPx.value}px`,
     '--detail-table-toolbar-row': `${layout.toolbarHeightPx}px`,
     '--detail-table-footer-row': `${layout.footerHeightPx}px`,
     '--detail-table-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
@@ -1010,10 +1050,19 @@ onBeforeUnmount(() => {
   min-width: 0;
   min-height: 0;
   display: grid;
+  overflow: hidden;
+}
+
+.detail-table-example-card.aux-horizontal .detail-table-example-aux {
   grid-template-columns: repeat(var(--detail-table-aux-count), minmax(0, 1fr));
   align-items: center;
   column-gap: 4px;
-  overflow: hidden;
+}
+
+.detail-table-example-card.aux-vertical .detail-table-example-aux {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(var(--detail-table-aux-count), minmax(0, 1fr));
+  row-gap: 2px;
 }
 
 .detail-table-example-aux-item {
@@ -1021,9 +1070,21 @@ onBeforeUnmount(() => {
   min-height: 0;
   display: grid;
   align-content: center;
+  color: var(--detail-table-aux-value-color);
+  overflow: hidden;
+}
+
+.detail-table-example-card.aux-horizontal .detail-table-example-aux-item {
   justify-items: center;
   text-align: center;
-  overflow: hidden;
+}
+
+.detail-table-example-card.aux-vertical .detail-table-example-aux-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+  column-gap: 6px;
+  text-align: left;
 }
 
 .detail-table-example-aux-item em,
@@ -1047,6 +1108,10 @@ onBeforeUnmount(() => {
   color: var(--detail-table-aux-value-color);
   font-size: var(--detail-table-aux-value-font-size);
   font-weight: 800;
+}
+
+.detail-table-example-card.aux-vertical .detail-table-example-aux-item b {
+  justify-self: end;
 }
 
 .detail-table-example-aux-item.tone-neutral b {

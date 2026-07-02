@@ -1,0 +1,1131 @@
+--- a/src/widgets/templates/component-examples/SunburstChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/SunburstChartExampleCard.vue
+@@ -51,539 +51,595 @@
+ }
+ 
+ interface SunburstChartExampleChartConfig {
+-  topN?: number;
+-  maxDepth?: number;
+-  innerRadiusPercent?: number;
+-  outerRadiusPercent?: number;
+-  centerVisible?: boolean;
+-  labelVisible?: boolean;
+-  borderRadiusPx?: number;
+-  borderWidthPx?: number;
+-  minLabelAngle?: number;
+-  valueUnit?: string;
+-  percentDigits?: number;
+-  sort?: 'desc' | 'asc' | 'none';
+-}
+-
+-interface SunburstChartExampleToneConfig {
+-  primary?: string;
+-  secondary?: string;
+-  tertiary?: string;
+-  quaternary?: string;
+-  axis?: string;
+-  text?: string;
+-  unit?: string;
+-}
+-
+-interface SunburstChartExampleCardConfig {
+-  title?: SunburstChartExampleTitleConfig;
+-  layout?: SunburstChartExampleLayoutConfig;
+-  aux?: SunburstChartExampleAuxConfig;
+-  chart?: SunburstChartExampleChartConfig;
+-  tones?: SunburstChartExampleToneConfig;
+-}
+-
+-interface Props {
+-  context: WidgetContext;
+-  data?: unknown[];
+-  title?: string;
+-  unit?: string;
+-  totalLabel?: string;
+-  nodes?: SunburstChartExampleNode[];
+-  auxMetrics?: SunburstChartExampleAuxMetric[];
+-  config?: SunburstChartExampleCardConfig;
+-}
+-
+-const props = defineProps<Props>();
+-
+-const rootRef = ref<HTMLElement | null>(null);
+-const chartRef = ref<HTMLDivElement | null>(null);
+-const containerSize = ref({ width: 0, height: 0 });
+-const chartSize = ref({ width: 0, height: 0 });
+-let chart: ECharts | null = null;
+-let resizeObserver: ResizeObserver | null = null;
+-
+-const text = {
+-  title: '\u65ed\u65e5\u56fe\u5361\u7247',
+-  unit: '\u5355\u4f4d\uff1a\u503c',
+-  total: '\u5408\u8ba1',
+-  topNode: '\u6700\u5927\u7c7b',
+-  leafCount: '\u53f6\u5b50\u6570',
+-  depth: '\u5c42\u7ea7',
+-  noData: '\u6682\u65e0\u65ed\u65e5\u56fe\u6570\u636e',
+-  other: '\u5176\u4ed6',
+-};
+-
+-const defaultNodes: SunburstChartExampleNode[] = [
+-  {
+-    name: '\u7ebf\u4e0a\u6e20\u9053',
+-    children: [
+-      { name: '\u76f4\u8425', value: 42 },
+-      { name: '\u5e73\u53f0', value: 24 },
+-      { name: '\u79c1\u57df', value: 14 },
+-    ],
+-  },
+-  {
+-    name: '\u95e8\u5e97\u96f6\u552e',
+-    children: [
+-      { name: '\u65d7\u8230\u5e97', value: 28 },
+-      { name: '\u793e\u533a\u5e97', value: 18 },
+-      { name: '\u4e34\u65f6\u5e97', value: 8 },
+-    ],
+-  },
+-  {
+-    name: '\u7ecf\u9500\u6e20\u9053',
+-    children: [
+-      { name: '\u7701\u4ee3', value: 22 },
+-      { name: '\u57ce\u5e02\u4ee3', value: 17 },
+-      { name: '\u96f6\u552e\u5546', value: 11 },
+-    ],
+-  },
+-  {
+-    name: '\u5de5\u7a0b\u5ba2\u6237',
+-    children: [
+-      { name: '\u5927\u5ba2\u6237', value: 16 },
+-      { name: '\u9879\u76ee\u5ba2\u6237', value: 12 },
+-    ],
+-  },
+-];
+-
+-const defaultTitleConfig: Required<SunburstChartExampleTitleConfig> = {
+-  visible: true,
+-  underline: true,
+-  fontSizePx: 10,
+-  lineHeightPx: 13,
+-  color: '',
+-  unitVisible: true,
+-  unitFontSizePx: 9,
+-  unitColor: '#667085',
+-};
+-
+-const defaultLayoutConfig: Required<SunburstChartExampleLayoutConfig> = {
+-  paddingPx: 5,
+-  gapPx: 2,
+-  titleHeightPx: 20,
+-  contentGapPx: 6,
+-  orientation: 'auto',
+-  horizontalAuxRatio: 1,
+-  horizontalChartRatio: 3,
+-  verticalAuxRatio: 1,
+-  verticalChartRatio: 2,
+-};
+-
+-const defaultAuxConfig: Required<SunburstChartExampleAuxConfig> = {
+-  visible: true,
+-  maxItems: 4,
+-  orientation: 'auto',
+-  labelFontSizePx: 9,
+-  valueFontSizePx: 12,
+-  labelColor: '#6b7c93',
+-  valueColor: '#0057d9',
+-};
+-
+-const defaultChartConfig: Required<SunburstChartExampleChartConfig> = {
+-  topN: 7,
+-  maxDepth: 3,
+-  innerRadiusPercent: 18,
+-  outerRadiusPercent: 96,
+-  centerVisible: false,
+-  labelVisible: true,
+-  borderRadiusPx: 5,
+-  borderWidthPx: 1.2,
+-  minLabelAngle: 12,
+-  valueUnit: '',
+-  percentDigits: 1,
+-  sort: 'desc',
+-};
+-
+-const defaultToneConfig: Required<SunburstChartExampleToneConfig> = {
+-  primary: '#0057d9',
+-  secondary: '#2f8ee5',
+-  tertiary: '#00a870',
+-  quaternary: '#f59e0b',
+-  axis: '#7a8aa0',
+-  text: '#15304f',
+-  unit: '#667085',
+-};
+-
+-const isRecord = (value: unknown): value is Record<string, unknown> =>
+-  Boolean(value && typeof value === 'object' && !Array.isArray(value));
+-
+-const clampNumber = (value: unknown, min: number, max: number, fallback: number) => {
+-  const numberValue = Number(value);
+-
+-  if (!Number.isFinite(numberValue)) {
+-    return fallback;
+-  }
+-
+-  return Math.min(Math.max(numberValue, min), max);
+-};
+-
+-const normalizeOrientation = (value: unknown): Required<SunburstChartExampleLayoutConfig>['orientation'] => {
+-  if (value === 'horizontal' || value === 'vertical') {
+-    return value;
+-  }
+-
+-  return 'auto';
+-};
+-
+-const normalizeAuxOrientation = (value: unknown): Required<SunburstChartExampleAuxConfig>['orientation'] => {
+-  if (value === 'horizontal' || value === 'vertical') {
+-    return value;
+-  }
+-
+-  return 'auto';
+-};
+-
+-const normalizeSort = (value: unknown): Required<SunburstChartExampleChartConfig>['sort'] => {
+-  if (value === 'asc' || value === 'desc' || value === 'none') {
+-    return value;
+-  }
+-
+-  return defaultChartConfig.sort;
+-};
+-
+-const resolvedTitle = computed<Required<SunburstChartExampleTitleConfig>>(() => ({
+-  ...defaultTitleConfig,
+-  ...(props.config?.title ?? {}),
+-  fontSizePx: clampNumber(props.config?.title?.fontSizePx, 8, 22, defaultTitleConfig.fontSizePx),
+-  lineHeightPx: clampNumber(props.config?.title?.lineHeightPx, 10, 28, defaultTitleConfig.lineHeightPx),
+-  unitFontSizePx: clampNumber(props.config?.title?.unitFontSizePx, 8, 18, defaultTitleConfig.unitFontSizePx),
+-}));
+-
+-const resolvedLayout = computed<Required<SunburstChartExampleLayoutConfig>>(() => {
+-  const config = props.config?.layout ?? {};
+-
+-  return {
+-    ...defaultLayoutConfig,
+-    ...config,
+-    paddingPx: clampNumber(config.paddingPx, 0, 24, defaultLayoutConfig.paddingPx),
+-    gapPx: clampNumber(config.gapPx, 0, 16, defaultLayoutConfig.gapPx),
+-    titleHeightPx: clampNumber(config.titleHeightPx, 16, 40, defaultLayoutConfig.titleHeightPx),
+-    contentGapPx: clampNumber(config.contentGapPx, 0, 18, defaultLayoutConfig.contentGapPx),
+-    orientation: normalizeOrientation(config.orientation),
+-    horizontalAuxRatio: clampNumber(config.horizontalAuxRatio, 0.5, 4, defaultLayoutConfig.horizontalAuxRatio),
+-    horizontalChartRatio: clampNumber(config.horizontalChartRatio, 0.5, 5, defaultLayoutConfig.horizontalChartRatio),
+-    verticalAuxRatio: clampNumber(config.verticalAuxRatio, 0.5, 4, defaultLayoutConfig.verticalAuxRatio),
+-    verticalChartRatio: clampNumber(config.verticalChartRatio, 0.5, 5, defaultLayoutConfig.verticalChartRatio),
+-  };
+-});
+-
+-const resolvedAux = computed<Required<SunburstChartExampleAuxConfig>>(() => ({
+-  ...defaultAuxConfig,
+-  ...(props.config?.aux ?? {}),
+-  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
+-  maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 8, defaultAuxConfig.maxItems)),
+-  labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
+-  valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
+-}));
+-
+-const resolvedChart = computed<Required<SunburstChartExampleChartConfig>>(() => ({
+-  ...defaultChartConfig,
+-  ...(props.config?.chart ?? {}),
+-  topN: Math.round(clampNumber(props.config?.chart?.topN, 2, 12, defaultChartConfig.topN)),
+-  maxDepth: Math.round(clampNumber(props.config?.chart?.maxDepth, 2, 4, defaultChartConfig.maxDepth)),
+-  innerRadiusPercent: clampNumber(props.config?.chart?.innerRadiusPercent, 0, 45, defaultChartConfig.innerRadiusPercent),
+-  outerRadiusPercent: clampNumber(props.config?.chart?.outerRadiusPercent, 46, 98, defaultChartConfig.outerRadiusPercent),
+-  borderRadiusPx: clampNumber(props.config?.chart?.borderRadiusPx, 0, 12, defaultChartConfig.borderRadiusPx),
+-  borderWidthPx: clampNumber(props.config?.chart?.borderWidthPx, 0, 4, defaultChartConfig.borderWidthPx),
+-  minLabelAngle: clampNumber(props.config?.chart?.minLabelAngle, 4, 28, defaultChartConfig.minLabelAngle),
+-  percentDigits: Math.round(clampNumber(props.config?.chart?.percentDigits, 0, 2, defaultChartConfig.percentDigits)),
+-  sort: normalizeSort(props.config?.chart?.sort),
+-}));
+-
+-const resolvedTones = computed<Required<SunburstChartExampleToneConfig>>(() => ({
+-  ...defaultToneConfig,
+-  ...(props.config?.tones ?? {}),
+-}));
+-
+-const title = computed(() => props.title?.trim() || text.title);
+-const unit = computed(() => props.unit?.trim() || text.unit);
+-const totalLabel = computed(() => props.totalLabel?.trim() || text.total);
+-const valueUnit = computed(() => {
+-  const configured = resolvedChart.value.valueUnit.trim();
+-
+-  if (configured) {
+-    return configured;
+-  }
+-
+-  return unit.value.replace(/^\u5355\u4f4d[:\uff1a]?/, '').trim();
+-});
+-
+-const sourceNodes = computed<SunburstChartExampleNode[]>(() => {
+-  if (props.nodes?.length) {
+-    return props.nodes;
+-  }
+-
+-  const dataNodes = (props.data ?? []).reduce<SunburstChartExampleNode[]>((nodes, item, index) => {
+-    if (!isRecord(item)) {
+-      return nodes;
+-    }
+-
+-    const group = String(item.group ?? item.parent ?? text.other);
+-    const existing = nodes.find((node) => node.name === group);
+-    const child = {
+-      name: String(item.name ?? item.label ?? `${text.other} ${index + 1}`),
+-      value: Number(item.value ?? item.amount ?? 0),
+-    };
+-
+-    if (existing) {
+-      existing.children = [...(existing.children ?? []), child];
+-    } else {
+-      nodes.push({ name: group, children: [child] });
+-    }
+-
+-    return nodes;
+-  }, []);
+-
+-  return dataNodes.length ? dataNodes : defaultNodes;
+-});
+-
+-const sumNodeValue = (node: SunburstChartExampleNode): number => {
+-  const childTotal = (node.children ?? []).reduce((sum, child) => sum + sumNodeValue(child), 0);
+-
+-  if (childTotal > 0) {
+-    return childTotal;
+-  }
+-
+-  return Math.max(0, Number(node.value ?? 0));
+-};
+-
+-const sortNodes = (nodes: SunburstChartExampleNode[]) => {
+-  if (resolvedChart.value.sort === 'none') {
+-    return nodes;
+-  }
+-
+-  return [...nodes].sort((a, b) => {
+-    const diff = sumNodeValue(b) - sumNodeValue(a);
+-    return resolvedChart.value.sort === 'asc' ? -diff : diff;
+-  });
+-};
+-
+-const normalizeNodes = (nodes: SunburstChartExampleNode[], depth = 1): SunburstChartExampleNode[] => {
+-  const chartConfig = resolvedChart.value;
+-  const sorted = sortNodes(nodes)
+-    .map((node) => {
+-      const children = node.children?.length && depth < chartConfig.maxDepth
+-        ? normalizeNodes(node.children, depth + 1)
+-        : undefined;
+-      const value = children?.length
+-        ? children.reduce((sum, child) => sum + Number(child.value ?? 0), 0)
+-        : Math.max(0, Number(node.value ?? 0));
+-
+-      return {
+-        name: node.name?.trim() || text.other,
+-        value,
+-        itemStyle: node.color ? { color: node.color } : undefined,
+-        children,
+-      };
+-    })
+-    .filter((node) => node.name && Number(node.value) > 0);
+-
+-  if (sorted.length <= chartConfig.topN) {
+-    return sorted;
+-  }
+-
+-  const visibleCount = Math.max(1, chartConfig.topN - 1);
+-  const visible = sorted.slice(0, visibleCount);
+-  const otherValue = sorted.slice(visibleCount).reduce((sum, node) => sum + Number(node.value ?? 0), 0);
+-
+-  return otherValue > 0
+-    ? [...visible, { name: text.other, value: otherValue }]
+-    : visible;
+-};
+-
+-const chartData = computed(() => normalizeNodes(sourceNodes.value));
+-const totalValue = computed(() => chartData.value.reduce((sum, node) => sum + Number(node.value ?? 0), 0));
+-const hasRenderableData = computed(() => totalValue.value > 0 && chartData.value.length > 0);
+-
+-const flattenNodes = (nodes: SunburstChartExampleNode[], depth = 1): Array<SunburstChartExampleNode & { depth: number }> =>
+-  nodes.flatMap((node) => [
+-    { ...node, depth },
+-    ...flattenNodes(node.children ?? [], depth + 1),
+-  ]);
+-
+-const allNodes = computed(() => flattenNodes(chartData.value));
+-const leafNodes = computed(() => allNodes.value.filter((node) => !(node.children?.length)));
+-const maxDepth = computed(() => Math.max(0, ...allNodes.value.map((node) => node.depth)));
+-const topNode = computed(() => sortNodes(chartData.value)[0]);
+-
+-const formatNumber = (value: number | undefined, suffix = valueUnit.value) => {
+-  if (!Number.isFinite(value)) {
+-    return '--';
+-  }
+-
+-  const numeric = Number(value);
+-  const formatted = Math.abs(numeric) >= 1000
+-    ? Math.round(numeric).toLocaleString('zh-CN')
+-    : `${Math.round(numeric * 10) / 10}`;
+-
+-  return `${formatted}${suffix}`;
+-};
+-
+-const formatPercent = (value: number) => {
+-  if (!Number.isFinite(value)) {
+-    return '--';
+-  }
+-
+-  return `${value.toFixed(resolvedChart.value.percentDigits)}%`;
+-};
+-
+-const defaultAuxMetrics = computed<SunburstChartExampleAuxMetric[]>(() => [
+-  { label: text.total, value: formatNumber(totalValue.value), tone: 'primary' },
+-  { label: text.topNode, value: topNode.value?.name ?? '--', tone: 'success' },
+-  { label: text.leafCount, value: leafNodes.value.length, tone: 'neutral' },
+-  { label: text.depth, value: maxDepth.value, tone: 'warning' },
+-]);
+-
+-const visibleAuxMetrics = computed(() => {
+-  if (!resolvedAux.value.visible) {
+-    return [];
+-  }
+-
+-  const metrics = props.auxMetrics?.length ? props.auxMetrics : defaultAuxMetrics.value;
+-
+-  return metrics
+-    .filter((metric) => metric.label.trim() || String(metric.value).trim())
+-    .slice(0, resolvedAux.value.maxItems);
+-});
+-
+-const contentOrientation = computed<'horizontal' | 'vertical'>(() => {
+-  const orientation = resolvedLayout.value.orientation;
+-
+-  if (orientation === 'horizontal' || orientation === 'vertical') {
+-    return orientation;
+-  }
+-
+-  if (!containerSize.value.width || !containerSize.value.height) {
+-    return 'horizontal';
+-  }
+-
+-  return containerSize.value.width >= containerSize.value.height ? 'horizontal' : 'vertical';
+-});
+-
+-const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+-  const orientation = resolvedAux.value.orientation;
+-
+-  if (orientation === 'horizontal' || orientation === 'vertical') {
+-    return orientation;
+-  }
+-
+-  return contentOrientation.value;
+-});
+-
+-const cardClasses = computed(() => ({
+-  [`is-${contentOrientation.value}`]: true,
+-  [`aux-${auxOrientation.value}`]: true,
+-  'has-aux': visibleAuxMetrics.value.length > 0,
+-  'has-title': resolvedTitle.value.visible,
+-  'has-title-underline': resolvedTitle.value.underline,
+-}));
+-
+-const palette = computed(() => [
+-  resolvedTones.value.primary,
+-  resolvedTones.value.secondary,
+-  resolvedTones.value.tertiary,
+-  resolvedTones.value.quaternary,
+-  '#7bb6df',
+-  '#b8c3d1',
+-]);
+-
+-const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
+-
+-const hexToRgba = (color: string, opacity: number) => {
+-  const normalized = normalizeColor(color).replace('#', '');
+-  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
+-  const numeric = Number.parseInt(expanded, 16);
+-
+-  if (!Number.isFinite(numeric)) {
+-    return `rgba(0, 87, 217, ${opacity})`;
+-  }
+-
+-  const r = (numeric >> 16) & 255;
+-  const g = (numeric >> 8) & 255;
+-  const b = numeric & 255;
+-
+-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+-};
+-
+-const chartScale = computed(() => {
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
+-  const height = chartSize.value.height || fallbackHeight;
+-  const compact = Math.min(width / 280, height / 170);
+-  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
+-  const chartConfig = resolvedChart.value;
+-  const labelVisible = chartConfig.labelVisible && width >= 160 && height >= 112;
+-  const centerVisible = chartConfig.centerVisible && width >= 150 && height >= 110;
+-  const radiusLimit = width < 160 || height < 96 ? 90 : width < 240 || height < 130 ? 94 : 96;
+-  const outerLimit = Math.min(radiusLimit, chartConfig.outerRadiusPercent);
+-  const outerRadius = Math.min(chartConfig.outerRadiusPercent, outerLimit);
+-  const innerRadius = Math.min(chartConfig.innerRadiusPercent, outerRadius - 32);
+-  const middleRadius = Math.round(innerRadius + (outerRadius - innerRadius) * 0.44);
+-
+-  return {
+-    fontSize,
+-    labelFontSize: Math.max(8, fontSize - 0.5),
+-    centerLabelFontSize: Math.max(8, fontSize - 1),
+-    centerValueFontSize: Math.max(10, fontSize + 1),
+-    labelVisible,
+-    centerVisible,
+-    labelWidth: width < 230 ? 42 : 58,
+-    centerX: '50%',
+-    centerY: height < 110 ? '54%' : '53%',
+-    innerRadius,
+-    middleRadius,
+-    outerRadius,
+-    radius: [`${Math.max(innerRadius, 0)}%`, `${outerRadius}%`] as [string, string],
+-  };
+-});
+-
+-const tooltipFormatter = (params: unknown) => {
+-  if (!isRecord(params)) {
+-    return '';
+-  }
+-
+-  const name = String(params.name ?? '');
+-  const value = Number(params.value ?? 0);
+-  const treePathInfo = Array.isArray(params.treePathInfo) ? params.treePathInfo : [];
+-  const path = treePathInfo
+-    .map((item) => (isRecord(item) ? String(item.name ?? '') : ''))
+-    .filter(Boolean)
+-    .join(' / ');
+-  const parent = treePathInfo.length > 1 && isRecord(treePathInfo[treePathInfo.length - 2])
+-    ? treePathInfo[treePathInfo.length - 2]
+-    : undefined;
+-  const parentValue = Number(parent?.value ?? totalValue.value);
+-  const totalShare = totalValue.value ? (value / totalValue.value) * 100 : 0;
+-  const parentShare = parentValue ? (value / parentValue) * 100 : 0;
+-
+-  return [
+-    path || name,
+-    `${text.total}: ${formatNumber(value)}`,
+-    `\u603b\u5360\u6bd4: ${formatPercent(totalShare)}`,
+-    `\u7236\u7ea7\u5360\u6bd4: ${formatPercent(parentShare)}`,
+-  ].join('<br/>');
+-};
+-
+-const option = computed<EChartsOption>(() => {
+-  const scale = chartScale.value;
+-  const tones = resolvedTones.value;
+-  const chartConfig = resolvedChart.value;
+-
+-  return {
+-    animationDuration: 520,
+-    color: palette.value,
+-    tooltip: {
+-      trigger: 'item',
+-      confine: true,
+-      appendToBody: true,
+-      formatter: tooltipFormatter,
+-      backgroundColor: 'rgba(255, 255, 255, 0.96)',
+-      borderColor: 'rgba(0, 87, 217, 0.16)',
+-      textStyle: {
+-        color: tones.text,
+-        fontSize: 11,
++  legendVisible?: boolean;
++  legendPosition?: 'auto' | 'right' | 'top' | 'hidden';
++  legendWidthPx?: number;
++  topN?: number;
++  maxDepth?: number;
++  innerRadiusPercent?: number;
++  outerRadiusPercent?: number;
++  centerVisible?: boolean;
++  labelVisible?: boolean;
++  borderRadiusPx?: number;
++  borderWidthPx?: number;
++  minLabelAngle?: number;
++  valueUnit?: string;
++  percentDigits?: number;
++  sort?: 'desc' | 'asc' | 'none';
++}
++
++interface SunburstChartExampleToneConfig {
++  primary?: string;
++  secondary?: string;
++  tertiary?: string;
++  quaternary?: string;
++  axis?: string;
++  text?: string;
++  unit?: string;
++}
++
++interface SunburstChartExampleCardConfig {
++  title?: SunburstChartExampleTitleConfig;
++  layout?: SunburstChartExampleLayoutConfig;
++  aux?: SunburstChartExampleAuxConfig;
++  chart?: SunburstChartExampleChartConfig;
++  tones?: SunburstChartExampleToneConfig;
++}
++
++interface Props {
++  context: WidgetContext;
++  data?: unknown[];
++  title?: string;
++  unit?: string;
++  totalLabel?: string;
++  nodes?: SunburstChartExampleNode[];
++  auxMetrics?: SunburstChartExampleAuxMetric[];
++  config?: SunburstChartExampleCardConfig;
++}
++
++const props = defineProps<Props>();
++
++const rootRef = ref<HTMLElement | null>(null);
++const chartRef = ref<HTMLDivElement | null>(null);
++const containerSize = ref({ width: 0, height: 0 });
++const chartSize = ref({ width: 0, height: 0 });
++let chart: ECharts | null = null;
++let resizeObserver: ResizeObserver | null = null;
++
++const text = {
++  title: '\u65ed\u65e5\u56fe\u5361\u7247',
++  unit: '\u5355\u4f4d\uff1a\u503c',
++  total: '\u5408\u8ba1',
++  topNode: '\u6700\u5927\u7c7b',
++  leafCount: '\u53f6\u5b50\u6570',
++  depth: '\u5c42\u7ea7',
++  noData: '\u6682\u65e0\u65ed\u65e5\u56fe\u6570\u636e',
++  other: '\u5176\u4ed6',
++};
++
++const defaultNodes: SunburstChartExampleNode[] = [
++  {
++    name: '\u7ebf\u4e0a\u6e20\u9053',
++    children: [
++      { name: '\u76f4\u8425', value: 42 },
++      { name: '\u5e73\u53f0', value: 24 },
++      { name: '\u79c1\u57df', value: 14 },
++    ],
++  },
++  {
++    name: '\u95e8\u5e97\u96f6\u552e',
++    children: [
++      { name: '\u65d7\u8230\u5e97', value: 28 },
++      { name: '\u793e\u533a\u5e97', value: 18 },
++      { name: '\u4e34\u65f6\u5e97', value: 8 },
++    ],
++  },
++  {
++    name: '\u7ecf\u9500\u6e20\u9053',
++    children: [
++      { name: '\u7701\u4ee3', value: 22 },
++      { name: '\u57ce\u5e02\u4ee3', value: 17 },
++      { name: '\u96f6\u552e\u5546', value: 11 },
++    ],
++  },
++  {
++    name: '\u5de5\u7a0b\u5ba2\u6237',
++    children: [
++      { name: '\u5927\u5ba2\u6237', value: 16 },
++      { name: '\u9879\u76ee\u5ba2\u6237', value: 12 },
++    ],
++  },
++];
++
++const defaultTitleConfig: Required<SunburstChartExampleTitleConfig> = {
++  visible: true,
++  underline: true,
++  fontSizePx: 10,
++  lineHeightPx: 13,
++  color: '',
++  unitVisible: true,
++  unitFontSizePx: 9,
++  unitColor: '#667085',
++};
++
++const defaultLayoutConfig: Required<SunburstChartExampleLayoutConfig> = {
++  paddingPx: 5,
++  gapPx: 2,
++  titleHeightPx: 20,
++  contentGapPx: 6,
++  orientation: 'auto',
++  horizontalAuxRatio: 1,
++  horizontalChartRatio: 3,
++  verticalAuxRatio: 1,
++  verticalChartRatio: 2,
++};
++
++const defaultAuxConfig: Required<SunburstChartExampleAuxConfig> = {
++  visible: true,
++  maxItems: 4,
++  orientation: 'auto',
++  labelFontSizePx: 9,
++  valueFontSizePx: 12,
++  labelColor: '#6b7c93',
++  valueColor: '#0057d9',
++};
++
++const defaultChartConfig: Required<SunburstChartExampleChartConfig> = {
++  legendVisible: true,
++  legendPosition: 'right',
++  legendWidthPx: 58,
++  topN: 7,
++  maxDepth: 3,
++  innerRadiusPercent: 18,
++  outerRadiusPercent: 96,
++  centerVisible: false,
++  labelVisible: true,
++  borderRadiusPx: 5,
++  borderWidthPx: 1.2,
++  minLabelAngle: 12,
++  valueUnit: '',
++  percentDigits: 1,
++  sort: 'desc',
++};
++
++const defaultToneConfig: Required<SunburstChartExampleToneConfig> = {
++  primary: '#0057d9',
++  secondary: '#2f8ee5',
++  tertiary: '#00a870',
++  quaternary: '#f59e0b',
++  axis: '#7a8aa0',
++  text: '#15304f',
++  unit: '#667085',
++};
++
++const isRecord = (value: unknown): value is Record<string, unknown> =>
++  Boolean(value && typeof value === 'object' && !Array.isArray(value));
++
++const clampNumber = (value: unknown, min: number, max: number, fallback: number) => {
++  const numberValue = Number(value);
++
++  if (!Number.isFinite(numberValue)) {
++    return fallback;
++  }
++
++  return Math.min(Math.max(numberValue, min), max);
++};
++
++const normalizeOrientation = (value: unknown): Required<SunburstChartExampleLayoutConfig>['orientation'] => {
++  if (value === 'horizontal' || value === 'vertical') {
++    return value;
++  }
++
++  return 'auto';
++};
++
++const normalizeAuxOrientation = (value: unknown): Required<SunburstChartExampleAuxConfig>['orientation'] => {
++  if (value === 'horizontal' || value === 'vertical') {
++    return value;
++  }
++
++  return 'auto';
++};
++
++const normalizeSort = (value: unknown): Required<SunburstChartExampleChartConfig>['sort'] => {
++  if (value === 'asc' || value === 'desc' || value === 'none') {
++    return value;
++  }
++
++  return defaultChartConfig.sort;
++};
++
++const normalizeLegendPosition = (value: unknown): Required<SunburstChartExampleChartConfig>['legendPosition'] => {
++  if (value === 'auto' || value === 'right' || value === 'top' || value === 'hidden') {
++    return value;
++  }
++
++  return defaultChartConfig.legendPosition;
++};
++
++const resolvedTitle = computed<Required<SunburstChartExampleTitleConfig>>(() => ({
++  ...defaultTitleConfig,
++  ...(props.config?.title ?? {}),
++  fontSizePx: clampNumber(props.config?.title?.fontSizePx, 8, 22, defaultTitleConfig.fontSizePx),
++  lineHeightPx: clampNumber(props.config?.title?.lineHeightPx, 10, 28, defaultTitleConfig.lineHeightPx),
++  unitFontSizePx: clampNumber(props.config?.title?.unitFontSizePx, 8, 18, defaultTitleConfig.unitFontSizePx),
++}));
++
++const resolvedLayout = computed<Required<SunburstChartExampleLayoutConfig>>(() => {
++  const config = props.config?.layout ?? {};
++
++  return {
++    ...defaultLayoutConfig,
++    ...config,
++    paddingPx: clampNumber(config.paddingPx, 0, 24, defaultLayoutConfig.paddingPx),
++    gapPx: clampNumber(config.gapPx, 0, 16, defaultLayoutConfig.gapPx),
++    titleHeightPx: clampNumber(config.titleHeightPx, 16, 40, defaultLayoutConfig.titleHeightPx),
++    contentGapPx: clampNumber(config.contentGapPx, 0, 18, defaultLayoutConfig.contentGapPx),
++    orientation: normalizeOrientation(config.orientation),
++    horizontalAuxRatio: clampNumber(config.horizontalAuxRatio, 0.5, 4, defaultLayoutConfig.horizontalAuxRatio),
++    horizontalChartRatio: clampNumber(config.horizontalChartRatio, 0.5, 5, defaultLayoutConfig.horizontalChartRatio),
++    verticalAuxRatio: clampNumber(config.verticalAuxRatio, 0.5, 4, defaultLayoutConfig.verticalAuxRatio),
++    verticalChartRatio: clampNumber(config.verticalChartRatio, 0.5, 5, defaultLayoutConfig.verticalChartRatio),
++  };
++});
++
++const resolvedAux = computed<Required<SunburstChartExampleAuxConfig>>(() => ({
++  ...defaultAuxConfig,
++  ...(props.config?.aux ?? {}),
++  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
++  maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 8, defaultAuxConfig.maxItems)),
++  labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
++  valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
++}));
++
++const resolvedChart = computed<Required<SunburstChartExampleChartConfig>>(() => ({
++  ...defaultChartConfig,
++  ...(props.config?.chart ?? {}),
++  legendPosition: normalizeLegendPosition(props.config?.chart?.legendPosition),
++  legendWidthPx: clampNumber(props.config?.chart?.legendWidthPx, 42, 120, defaultChartConfig.legendWidthPx),
++  topN: Math.round(clampNumber(props.config?.chart?.topN, 2, 12, defaultChartConfig.topN)),
++  maxDepth: Math.round(clampNumber(props.config?.chart?.maxDepth, 2, 4, defaultChartConfig.maxDepth)),
++  innerRadiusPercent: clampNumber(props.config?.chart?.innerRadiusPercent, 0, 45, defaultChartConfig.innerRadiusPercent),
++  outerRadiusPercent: clampNumber(props.config?.chart?.outerRadiusPercent, 46, 98, defaultChartConfig.outerRadiusPercent),
++  borderRadiusPx: clampNumber(props.config?.chart?.borderRadiusPx, 0, 12, defaultChartConfig.borderRadiusPx),
++  borderWidthPx: clampNumber(props.config?.chart?.borderWidthPx, 0, 4, defaultChartConfig.borderWidthPx),
++  minLabelAngle: clampNumber(props.config?.chart?.minLabelAngle, 4, 28, defaultChartConfig.minLabelAngle),
++  percentDigits: Math.round(clampNumber(props.config?.chart?.percentDigits, 0, 2, defaultChartConfig.percentDigits)),
++  sort: normalizeSort(props.config?.chart?.sort),
++}));
++
++const resolvedTones = computed<Required<SunburstChartExampleToneConfig>>(() => ({
++  ...defaultToneConfig,
++  ...(props.config?.tones ?? {}),
++}));
++
++const title = computed(() => props.title?.trim() || text.title);
++const unit = computed(() => props.unit?.trim() || text.unit);
++const totalLabel = computed(() => props.totalLabel?.trim() || text.total);
++const valueUnit = computed(() => {
++  const configured = resolvedChart.value.valueUnit.trim();
++
++  if (configured) {
++    return configured;
++  }
++
++  return unit.value.replace(/^\u5355\u4f4d[:\uff1a]?/, '').trim();
++});
++
++const sourceNodes = computed<SunburstChartExampleNode[]>(() => {
++  if (props.nodes?.length) {
++    return props.nodes;
++  }
++
++  const dataNodes = (props.data ?? []).reduce<SunburstChartExampleNode[]>((nodes, item, index) => {
++    if (!isRecord(item)) {
++      return nodes;
++    }
++
++    const group = String(item.group ?? item.parent ?? text.other);
++    const existing = nodes.find((node) => node.name === group);
++    const child = {
++      name: String(item.name ?? item.label ?? `${text.other} ${index + 1}`),
++      value: Number(item.value ?? item.amount ?? 0),
++    };
++
++    if (existing) {
++      existing.children = [...(existing.children ?? []), child];
++    } else {
++      nodes.push({ name: group, children: [child] });
++    }
++
++    return nodes;
++  }, []);
++
++  return dataNodes.length ? dataNodes : defaultNodes;
++});
++
++const sumNodeValue = (node: SunburstChartExampleNode): number => {
++  const childTotal = (node.children ?? []).reduce((sum, child) => sum + sumNodeValue(child), 0);
++
++  if (childTotal > 0) {
++    return childTotal;
++  }
++
++  return Math.max(0, Number(node.value ?? 0));
++};
++
++const sortNodes = (nodes: SunburstChartExampleNode[]) => {
++  if (resolvedChart.value.sort === 'none') {
++    return nodes;
++  }
++
++  return [...nodes].sort((a, b) => {
++    const diff = sumNodeValue(b) - sumNodeValue(a);
++    return resolvedChart.value.sort === 'asc' ? -diff : diff;
++  });
++};
++
++const normalizeNodes = (nodes: SunburstChartExampleNode[], depth = 1): SunburstChartExampleNode[] => {
++  const chartConfig = resolvedChart.value;
++  const sorted = sortNodes(nodes)
++    .map((node) => {
++      const children = node.children?.length && depth < chartConfig.maxDepth
++        ? normalizeNodes(node.children, depth + 1)
++        : undefined;
++      const value = children?.length
++        ? children.reduce((sum, child) => sum + Number(child.value ?? 0), 0)
++        : Math.max(0, Number(node.value ?? 0));
++
++      return {
++        name: node.name?.trim() || text.other,
++        value,
++        itemStyle: node.color ? { color: node.color } : undefined,
++        children,
++      };
++    })
++    .filter((node) => node.name && Number(node.value) > 0);
++
++  if (sorted.length <= chartConfig.topN) {
++    return sorted;
++  }
++
++  const visibleCount = Math.max(1, chartConfig.topN - 1);
++  const visible = sorted.slice(0, visibleCount);
++  const otherValue = sorted.slice(visibleCount).reduce((sum, node) => sum + Number(node.value ?? 0), 0);
++
++  return otherValue > 0
++    ? [...visible, { name: text.other, value: otherValue }]
++    : visible;
++};
++
++const chartData = computed(() => normalizeNodes(sourceNodes.value));
++const totalValue = computed(() => chartData.value.reduce((sum, node) => sum + Number(node.value ?? 0), 0));
++const hasRenderableData = computed(() => totalValue.value > 0 && chartData.value.length > 0);
++
++const flattenNodes = (nodes: SunburstChartExampleNode[], depth = 1): Array<SunburstChartExampleNode & { depth: number }> =>
++  nodes.flatMap((node) => [
++    { ...node, depth },
++    ...flattenNodes(node.children ?? [], depth + 1),
++  ]);
++
++const allNodes = computed(() => flattenNodes(chartData.value));
++const leafNodes = computed(() => allNodes.value.filter((node) => !(node.children?.length)));
++const maxDepth = computed(() => Math.max(0, ...allNodes.value.map((node) => node.depth)));
++const topNode = computed(() => sortNodes(chartData.value)[0]);
++
++const formatNumber = (value: number | undefined, suffix = valueUnit.value) => {
++  if (!Number.isFinite(value)) {
++    return '--';
++  }
++
++  const numeric = Number(value);
++  const formatted = Math.abs(numeric) >= 1000
++    ? Math.round(numeric).toLocaleString('zh-CN')
++    : `${Math.round(numeric * 10) / 10}`;
++
++  return `${formatted}${suffix}`;
++};
++
++const formatPercent = (value: number) => {
++  if (!Number.isFinite(value)) {
++    return '--';
++  }
++
++  return `${value.toFixed(resolvedChart.value.percentDigits)}%`;
++};
++
++const defaultAuxMetrics = computed<SunburstChartExampleAuxMetric[]>(() => [
++  { label: text.total, value: formatNumber(totalValue.value), tone: 'primary' },
++  { label: text.topNode, value: topNode.value?.name ?? '--', tone: 'success' },
++  { label: text.leafCount, value: leafNodes.value.length, tone: 'neutral' },
++  { label: text.depth, value: maxDepth.value, tone: 'warning' },
++]);
++
++const rootLegendItems = computed(() => chartData.value.map((item) => item.name).filter(Boolean));
++
++const visibleAuxMetrics = computed(() => {
++  if (!resolvedAux.value.visible) {
++    return [];
++  }
++
++  const metrics = props.auxMetrics?.length ? props.auxMetrics : defaultAuxMetrics.value;
++
++  return metrics
++    .filter((metric) => metric.label.trim() || String(metric.value).trim())
++    .slice(0, resolvedAux.value.maxItems);
++});
++
++const contentOrientation = computed<'horizontal' | 'vertical'>(() => {
++  const orientation = resolvedLayout.value.orientation;
++
++  if (orientation === 'horizontal' || orientation === 'vertical') {
++    return orientation;
++  }
++
++  if (!containerSize.value.width || !containerSize.value.height) {
++    return 'horizontal';
++  }
++
++  return containerSize.value.width >= containerSize.value.height ? 'horizontal' : 'vertical';
++});
++
++const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
++  const orientation = resolvedAux.value.orientation;
++
++  if (orientation === 'horizontal' || orientation === 'vertical') {
++    return orientation;
++  }
++
++  return contentOrientation.value;
++});
++
++const cardClasses = computed(() => ({
++  [`is-${contentOrientation.value}`]: true,
++  [`aux-${auxOrientation.value}`]: true,
++  'has-aux': visibleAuxMetrics.value.length > 0,
++  'has-title': resolvedTitle.value.visible,
++  'has-title-underline': resolvedTitle.value.underline,
++}));
++
++const palette = computed(() => [
++  resolvedTones.value.primary,
++  resolvedTones.value.secondary,
++  resolvedTones.value.tertiary,
++  resolvedTones.value.quaternary,
++  '#7bb6df',
++  '#b8c3d1',
++]);
++
++const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
++
++const hexToRgba = (color: string, opacity: number) => {
++  const normalized = normalizeColor(color).replace('#', '');
++  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
++  const numeric = Number.parseInt(expanded, 16);
++
++  if (!Number.isFinite(numeric)) {
++    return `rgba(0, 87, 217, ${opacity})`;
++  }
++
++  const r = (numeric >> 16) & 255;
++  const g = (numeric >> 8) & 255;
++  const b = numeric & 255;
++
++  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
++};
++
++const chartScale = computed(() => {
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
++  const height = chartSize.value.height || fallbackHeight;
++  const compact = Math.min(width / 280, height / 170);
++  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
++  const chartConfig = resolvedChart.value;
++  const effectiveLegendPosition = chartConfig.legendPosition === 'auto' ? 'right' : chartConfig.legendPosition;
++  const legendVisible = chartConfig.legendVisible && effectiveLegendPosition !== 'hidden' && rootLegendItems.value.length > 1 && width >= 160 && height >= 100;
++  const legendTopVisible = legendVisible && effectiveLegendPosition === 'top';
++  const legendRightVisible = legendVisible && effectiveLegendPosition === 'right';
++  const maxLegendNameLength = Math.max(1, ...rootLegendItems.value.map((item) => item.length));
++  const legendTextWidth = Math.max(34, Math.min(74, maxLegendNameLength * fontSize * 0.7 + 10));
++  const legendWidth = legendRightVisible
++    ? Math.min(Math.max(chartConfig.legendWidthPx, legendTextWidth + 18), Math.max(52, width * 0.34))
++    : 0;
++  const legendHeight = legendTopVisible ? Math.max(16, fontSize + 8) : 0;
++  const chartWidth = legendRightVisible ? Math.max(width - legendWidth - 4, 90) : width;
++  const labelVisible = chartConfig.labelVisible && chartWidth >= 160 && height >= 112;
++  const centerVisible = chartConfig.centerVisible && chartWidth >= 150 && height >= 110;
++  const radiusLimit = chartWidth < 160 || height < 96 ? 90 : chartWidth < 240 || height < 130 ? 94 : 96;
++  const outerLimit = Math.min(radiusLimit, chartConfig.outerRadiusPercent);
++  const outerRadius = Math.min(chartConfig.outerRadiusPercent, outerLimit);
++  const innerRadius = Math.min(chartConfig.innerRadiusPercent, outerRadius - 32);
++  const middleRadius = Math.round(innerRadius + (outerRadius - innerRadius) * 0.44);
++  const centerX = legendRightVisible
++    ? `${Math.round(clampNumber(((chartWidth * 0.5) / width) * 100, 32, 48, 42))}%`
++    : '50%';
++
++  return {
++    fontSize,
++    labelFontSize: Math.max(8, fontSize - 0.5),
++    centerLabelFontSize: Math.max(8, fontSize - 1),
++    centerValueFontSize: Math.max(10, fontSize + 1),
++    labelVisible,
++    centerVisible,
++    legendVisible,
++    legendTopVisible,
++    legendRightVisible,
++    legendWidth,
++    legendTextWidth,
++    legendHeight,
++    labelWidth: width < 230 ? 42 : 58,
++    centerX,
++    centerY: legendTopVisible ? (height < 135 ? '60%' : '57%') : height < 110 ? '54%' : '53%',
++    innerRadius,
++    middleRadius,
++    outerRadius,
++    radius: [`${Math.max(innerRadius, 0)}%`, `${outerRadius}%`] as [string, string],
++  };
++});
++
++const tooltipFormatter = (params: unknown) => {
++  if (!isRecord(params)) {
++    return '';
++  }
++
++  const name = String(params.name ?? '');
++  const value = Number(params.value ?? 0);
++  const treePathInfo = Array.isArray(params.treePathInfo) ? params.treePathInfo : [];
++  const path = treePathInfo
++    .map((item) => (isRecord(item) ? String(item.name ?? '') : ''))
++    .filter(Boolean)
++    .join(' / ');
++  const parent = treePathInfo.length > 1 && isRecord(treePathInfo[treePathInfo.length - 2])
++    ? treePathInfo[treePathInfo.length - 2]
++    : undefined;
++  const parentValue = Number(parent?.value ?? totalValue.value);
++  const totalShare = totalValue.value ? (value / totalValue.value) * 100 : 0;
++  const parentShare = parentValue ? (value / parentValue) * 100 : 0;
++
++  return [
++    path || name,
++    `${text.total}: ${formatNumber(value)}`,
++    `\u603b\u5360\u6bd4: ${formatPercent(totalShare)}`,
++    `\u7236\u7ea7\u5360\u6bd4: ${formatPercent(parentShare)}`,
++  ].join('<br/>');
++};
++
++const option = computed<EChartsOption>(() => {
++  const scale = chartScale.value;
++  const tones = resolvedTones.value;
++  const chartConfig = resolvedChart.value;
++
++  return {
++    animationDuration: 520,
++    color: palette.value,
++    tooltip: {
++      trigger: 'item',
++      confine: true,
++      appendToBody: true,
++      formatter: tooltipFormatter,
++      backgroundColor: 'rgba(255, 255, 255, 0.96)',
++      borderColor: 'rgba(0, 87, 217, 0.16)',
++      textStyle: {
++        color: tones.text,
++        fontSize: 11,
++      },
++    },
++    legend: {
++      show: scale.legendVisible,
++      data: rootLegendItems.value,
++      top: scale.legendRightVisible ? 'middle' : 0,
++      right: scale.legendRightVisible ? 0 : undefined,
++      left: scale.legendTopVisible ? 'center' : undefined,
++      orient: scale.legendRightVisible ? 'vertical' : 'horizontal',
++      width: scale.legendRightVisible ? scale.legendWidth : undefined,
++      itemWidth: 7,
++      itemHeight: 7,
++      itemGap: scale.legendRightVisible ? 5 : 8,
++      textStyle: {
++        color: tones.axis,
++        fontSize: scale.fontSize,
++        width: scale.legendRightVisible ? scale.legendTextWidth : undefined,
++        overflow: 'truncate',
+       },
+     },
+     series: [

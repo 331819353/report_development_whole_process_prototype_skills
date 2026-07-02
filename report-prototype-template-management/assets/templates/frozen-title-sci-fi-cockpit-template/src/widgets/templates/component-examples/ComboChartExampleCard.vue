@@ -375,7 +375,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -385,6 +385,14 @@ const cardClasses = computed(() => ({
   'has-title': resolvedTitle.value.visible,
 }));
 
+const isCompactChart = computed(() => {
+  const height =
+    chartSize.value.height ||
+    Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 0);
+
+  return height > 0 && height < 200;
+});
+
 const chartScale = computed(() => {
   const width = chartSize.value.width || containerSize.value.width || 240;
   const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
@@ -392,7 +400,7 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
-  const legendVisible = resolvedChart.value.legendVisible && visibleSeriesRows.value.length > 1 && width >= 240 && height >= 130;
+  const legendVisible = resolvedChart.value.legendVisible && visibleSeriesRows.value.length > 0 && width >= 240 && height >= 130;
   const hasRightAxis = resolvedChart.value.rightAxisVisible && visibleSeriesRows.value.some((item) => (item.yAxisIndex ?? 0) === 1);
   const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
   const rightAxisGutter = axisVisible && hasRightAxis ? Math.max(resolvedChart.value.gridRightPx, width < 260 ? 26 : 34) : resolvedChart.value.gridRightPx;
@@ -639,6 +647,9 @@ const cardStyle = computed(() => {
   const titleConfig = resolvedTitle.value;
   const auxConfig = resolvedAux.value;
   const tones = resolvedTones.value;
+  const titlelessAuxGapPx = Math.round(
+    clampNumber(containerSize.value.height > 0 ? containerSize.value.height * 0.035 : undefined, 6, 14, 8),
+  );
 
   return {
     '--combo-chart-card-padding': `${layout.paddingPx}px`,
@@ -652,6 +663,7 @@ const cardStyle = computed(() => {
     '--combo-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
     '--combo-chart-aux-label-color': auxConfig.labelColor,
     '--combo-chart-aux-value-color': auxConfig.valueColor,
+    '--combo-chart-titleless-aux-gap': `${titlelessAuxGapPx}px`,
     '--combo-chart-title-font-size': `${titleConfig.fontSizePx}px`,
     '--combo-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
     '--combo-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
@@ -768,7 +780,7 @@ onBeforeUnmount(() => {
           <b>{{ metric.value }}</b>
         </span>
       </div>
-      <div class="combo-chart-example-chart-pane">
+      <div class="combo-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
         <div v-if="hasRenderableData" ref="chartRef" class="combo-chart-example-canvas" />
         <div v-else class="combo-chart-example-empty">暂无数据</div>
       </div>
@@ -856,19 +868,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body {
-  grid-template-columns: var(--combo-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body,
 .combo-chart-example-card.has-aux.is-vertical .combo-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--combo-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--combo-chart-content-gap), 2px);
 }
 
 .combo-chart-example-card:not(.has-aux) .combo-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
+}
+
+.combo-chart-example-card:not(.has-title).has-aux .combo-chart-example-aux {
+  margin-top: var(--combo-chart-titleless-aux-gap);
 }
 
 .combo-chart-example-aux {

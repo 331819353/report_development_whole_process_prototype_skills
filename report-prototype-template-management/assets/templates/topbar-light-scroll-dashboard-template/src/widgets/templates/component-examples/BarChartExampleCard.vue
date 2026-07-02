@@ -131,7 +131,7 @@ const defaultLayoutConfig: Required<BarChartExampleLayoutConfig> = {
 };
 
 const defaultChartConfig: Required<BarChartExampleChartConfig> = {
-  legendVisible: false,
+  legendVisible: true,
   barWidthPx: 0,
   barMaxWidthPx: 18,
   barGap: '24%',
@@ -328,7 +328,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -338,6 +338,14 @@ const cardClasses = computed(() => ({
   'has-title': resolvedTitle.value.visible,
 }));
 
+const isCompactChart = computed(() => {
+  const height =
+    chartSize.value.height ||
+    Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 0);
+
+  return height > 0 && height < 200;
+});
+
 const chartScale = computed(() => {
   const width = chartSize.value.width || containerSize.value.width || 240;
   const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
@@ -345,7 +353,7 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
-  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 1 && width >= 240 && height >= 130;
+  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 0 && width >= 240 && height >= 130;
   const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
   const visibleCategoryCount = Math.max(categories.value.length, 1);
   const visibleSeriesCount = Math.max(seriesRows.value.length, 1);
@@ -507,6 +515,9 @@ const cardStyle = computed(() => {
   const titleConfig = resolvedTitle.value;
   const auxConfig = resolvedAux.value;
   const tones = resolvedTones.value;
+  const titlelessAuxGapPx = Math.round(
+    clampNumber(containerSize.value.height > 0 ? containerSize.value.height * 0.035 : undefined, 6, 14, 8),
+  );
 
   return {
     '--bar-chart-card-padding': `${layout.paddingPx}px`,
@@ -520,6 +531,7 @@ const cardStyle = computed(() => {
     '--bar-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
     '--bar-chart-aux-label-color': auxConfig.labelColor,
     '--bar-chart-aux-value-color': auxConfig.valueColor,
+    '--bar-chart-titleless-aux-gap': `${titlelessAuxGapPx}px`,
     '--bar-chart-title-font-size': `${titleConfig.fontSizePx}px`,
     '--bar-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
     '--bar-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
@@ -636,7 +648,7 @@ onBeforeUnmount(() => {
           <b>{{ metric.value }}</b>
         </span>
       </div>
-      <div class="bar-chart-example-chart-pane">
+      <div class="bar-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
         <div v-if="hasRenderableData" ref="chartRef" class="bar-chart-example-canvas" />
         <div v-else class="bar-chart-example-empty">暂无数据</div>
       </div>
@@ -724,19 +736,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.bar-chart-example-card.has-aux.is-horizontal .bar-chart-example-body {
-  grid-template-columns: var(--bar-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.bar-chart-example-card.has-aux.is-horizontal .bar-chart-example-body,
 .bar-chart-example-card.has-aux.is-vertical .bar-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--bar-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--bar-chart-content-gap), 2px);
 }
 
 .bar-chart-example-card:not(.has-aux) .bar-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
+}
+
+.bar-chart-example-card:not(.has-title).has-aux .bar-chart-example-aux {
+  margin-top: var(--bar-chart-titleless-aux-gap);
 }
 
 .bar-chart-example-aux {

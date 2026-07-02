@@ -308,6 +308,7 @@ const requiredGridColumns = 12;
 const visibleGridRows = 8;
 const minimumLayoutRows = visibleGridRows;
 const minimumSpanColumns = 2;
+const minimumSpanRows = 3;
 const rowHeightTolerance = 1;
 const minimumAxisChartContainerWidth = 300;
 const warningAxisChartContainerWidth = 400;
@@ -366,34 +367,34 @@ const actionDisclosureOverflowPattern = /(?:detail|drawer|tooltip|popover|collap
 const sourceFileExtensions = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs']);
 
 const allowedSpansByVisualType = {
-  line: ['3x2', '4x2', '3x3', '4x3'],
-  bar: ['3x2', '4x2', '3x3', '4x3'],
-  combo: ['3x2', '4x2', '3x3', '4x3'],
-  'compact-sparkline': ['2x1', '3x1', '4x1', '3x2', '4x2'],
-  candlestick: ['3x2', '4x2', '3x3', '4x3'],
-  heatmap: ['3x2', '4x2', '3x3', '4x3'],
-  pie: ['3x2', '3x3', '4x3'],
-  radar: ['3x2', '3x3', '4x3'],
-  path: ['3x2', '3x3', '4x3'],
-  sunburst: ['3x2', '3x3', '4x3'],
-  gauge: ['3x2', '3x3', '4x3'],
-  scatter: ['3x2', '4x2', '3x3', '4x3'],
-  boxplot: ['3x2', '4x2', '3x3', '4x3'],
-  parallel: ['3x2', '4x2', '3x3', '4x3'],
-  map: ['3x2', '3x3', '4x3'],
-  graph: ['3x2', '3x3', '4x3'],
-  tree: ['3x2', '3x3', '4x3'],
-  treemap: ['3x2', '3x3', '4x3'],
-  sankey: ['3x2', '3x3', '4x3'],
-  funnel: ['3x2', '3x3', '4x3'],
-  'metric-card': ['2x1', '3x2'],
-  'text-summary': ['3x2', '4x1', '4x2', '6x1', '6x2', '8x1', '8x2', '12x1', '12x2'],
-  'operational-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
-  'action-recommendation-card': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
-  'ranking-list': ['3x2', '4x2', '3x3', '4x3', '6x2', '6x3'],
-  table: ['3x2', '4x2', '6x2', '8x2', '12x2', '4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
+  line: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  bar: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  combo: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  'compact-sparkline': ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  candlestick: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  heatmap: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  pie: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  radar: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  path: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  sunburst: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  gauge: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  scatter: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  boxplot: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  parallel: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  map: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  graph: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  tree: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  treemap: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  sankey: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  funnel: ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  'metric-card': ['3x3', '4x3', '6x3'],
+  'text-summary': ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  'operational-list': ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  'action-recommendation-card': ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  'ranking-list': ['3x3', '4x3', '6x3', '8x3', '12x3'],
+  table: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4'],
   pivot: ['4x3', '6x3', '8x3', '12x3', '6x4', '8x4', '12x4', '6x5', '8x5', '12x5'],
-  other: ['2x1', '3x2', '4x2', '3x3', '4x3'],
+  other: ['3x3', '4x3', '6x3', '8x3', '12x3'],
 };
 
 const emptyGridMarks = new Set(['.', ' ']);
@@ -570,7 +571,12 @@ const buildLayoutBlockSpans = (rowsToBuild, location) => {
     };
 
     if (span.columns < minimumSpanColumns) {
-      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x1.`);
+      errors.push(`${location}: layout block "${label}" spans ${span.columns} column(s); minimum block span is ${minimumSpanColumns}x${minimumSpanRows}.`);
+      return;
+    }
+
+    if (span.rows < minimumSpanRows) {
+      errors.push(`${location}: layout block "${label}" spans ${span.rows} row(s); minimum block span is ${minimumSpanColumns}x${minimumSpanRows}.`);
       return;
     }
 

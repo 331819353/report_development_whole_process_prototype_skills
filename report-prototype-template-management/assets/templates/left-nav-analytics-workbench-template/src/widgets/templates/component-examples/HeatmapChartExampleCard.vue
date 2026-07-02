@@ -449,7 +449,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -859,14 +859,11 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.heatmap-chart-example-card.has-aux.is-horizontal .heatmap-chart-example-body {
-  grid-template-columns: var(--heatmap-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.heatmap-chart-example-card.has-aux.is-horizontal .heatmap-chart-example-body,
 .heatmap-chart-example-card.has-aux.is-vertical .heatmap-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--heatmap-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--heatmap-chart-content-gap), 2px);
 }
 
 .heatmap-chart-example-card:not(.has-aux) .heatmap-chart-example-body {

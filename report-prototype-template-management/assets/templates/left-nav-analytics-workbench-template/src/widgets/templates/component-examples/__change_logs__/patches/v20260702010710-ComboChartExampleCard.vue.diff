@@ -1,0 +1,475 @@
+--- a/src/widgets/templates/component-examples/ComboChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/ComboChartExampleCard.vue
+@@ -647,237 +647,241 @@
+   const titleConfig = resolvedTitle.value;
+   const auxConfig = resolvedAux.value;
+   const tones = resolvedTones.value;
+-
+-  return {
+-    '--combo-chart-card-padding': `${layout.paddingPx}px`,
+-    '--combo-chart-card-gap': `${layout.gapPx}px`,
+-    '--combo-chart-content-gap': `${layout.contentGapPx}px`,
+-    '--combo-chart-title-row': `${layout.titleHeightPx}px`,
+-    '--combo-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
+-    '--combo-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
+-    '--combo-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
+-    '--combo-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
+-    '--combo-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
+-    '--combo-chart-aux-label-color': auxConfig.labelColor,
+-    '--combo-chart-aux-value-color': auxConfig.valueColor,
+-    '--combo-chart-title-font-size': `${titleConfig.fontSizePx}px`,
+-    '--combo-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
+-    '--combo-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
+-    '--combo-chart-title-color': titleConfig.color || tones.text,
+-    '--combo-chart-unit-color': titleConfig.unitColor || tones.unit,
+-    '--combo-chart-primary': tones.primary,
+-    '--combo-chart-primary-soft': hexToRgba(tones.primary, 0.2),
+-  };
+-});
+-
+-const updateContainerSize = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rect = rootRef.value.getBoundingClientRect();
+-  const nextSize = {
+-    width: Math.round(rect.width),
+-    height: Math.round(rect.height),
+-  };
+-
+-  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
+-    containerSize.value = nextSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateContainerSize();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(option.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRenderChart = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateContainerSize();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRenderChart();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRenderChart();
+-});
+-
+-watch(option, () => {
+-  void scheduleRenderChart();
+-}, { deep: true, flush: 'post' });
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-</script>
+-
+-<template>
+-  <section ref="rootRef" class="combo-chart-example-card" :class="cardClasses" :style="cardStyle" aria-label="组合图卡片">
+-    <header v-if="resolvedTitle.visible" class="combo-chart-example-header">
+-      <div class="combo-chart-example-title-wrap">
+-        <span class="combo-chart-example-title">{{ title }}</span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="combo-chart-example-unit">{{ unit }}</span>
+-    </header>
+-    <div class="combo-chart-example-body">
+-      <div v-if="visibleAuxMetrics.length" class="combo-chart-example-aux" aria-label="附加指标">
+-        <span
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}:${metric.value}`"
+-          class="combo-chart-example-aux-item"
+-          :class="`tone-${metric.tone ?? 'neutral'}`"
+-        >
+-          <em>{{ metric.label }}</em>
+-          <b>{{ metric.value }}</b>
+-        </span>
+-      </div>
+-      <div class="combo-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
+-        <div v-if="hasRenderableData" ref="chartRef" class="combo-chart-example-canvas" />
+-        <div v-else class="combo-chart-example-empty">暂无数据</div>
+-      </div>
+-    </div>
+-  </section>
+-</template>
+-
+-<style scoped>
+-.combo-chart-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: grid;
+-  grid-template-rows: var(--combo-chart-title-row) minmax(0, 1fr);
+-  row-gap: var(--combo-chart-card-gap);
+-  padding: var(--combo-chart-card-padding);
+-  overflow: hidden;
+-  background: transparent;
+-  color: var(--combo-chart-title-color);
+-}
+-
+-.combo-chart-example-card:not(.has-title) {
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.combo-chart-example-header {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: start;
+-  column-gap: 8px;
+-}
+-
+-.combo-chart-example-title-wrap {
+-  min-width: 0;
+-  display: flex;
+-  align-items: flex-start;
+-}
+-
+-.combo-chart-example-title {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  max-width: 100%;
+-  min-width: 0;
+-  color: var(--combo-chart-title-color);
+-  font-size: var(--combo-chart-title-font-size);
+-  line-height: var(--combo-chart-title-line-height);
+-  font-weight: 700;
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-}
+-
+-.combo-chart-example-title::after {
+-  content: '';
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  border-radius: 999px;
+-  background: linear-gradient(90deg, var(--combo-chart-primary) 0%, var(--combo-chart-primary-soft) 72%, transparent 100%);
+-}
+-
+-.combo-chart-example-unit {
+-  justify-self: stretch;
+-  min-width: 0;
+-  width: 100%;
+-  color: var(--combo-chart-unit-color);
+-  font-size: var(--combo-chart-unit-font-size);
+-  line-height: var(--combo-chart-title-line-height);
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-  text-align: right;
+-}
+-
+-.combo-chart-example-body {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--combo-chart-content-gap);
+-  overflow: hidden;
+-}
+-
+-.combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body,
+-.combo-chart-example-card.has-aux.is-vertical .combo-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: max-content minmax(0, 1fr);
+-  gap: min(var(--combo-chart-content-gap), 2px);
+-}
+-
+-.combo-chart-example-card:not(.has-aux) .combo-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.combo-chart-example-card:not(.has-title).has-aux .combo-chart-example-aux {
+-  margin-top: 10px;
++  const titlelessAuxGapPx = Math.round(
++    clampNumber(containerSize.value.height > 0 ? containerSize.value.height * 0.035 : undefined, 6, 14, 8),
++  );
++
++  return {
++    '--combo-chart-card-padding': `${layout.paddingPx}px`,
++    '--combo-chart-card-gap': `${layout.gapPx}px`,
++    '--combo-chart-content-gap': `${layout.contentGapPx}px`,
++    '--combo-chart-title-row': `${layout.titleHeightPx}px`,
++    '--combo-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
++    '--combo-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
++    '--combo-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
++    '--combo-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
++    '--combo-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
++    '--combo-chart-aux-label-color': auxConfig.labelColor,
++    '--combo-chart-aux-value-color': auxConfig.valueColor,
++    '--combo-chart-titleless-aux-gap': `${titlelessAuxGapPx}px`,
++    '--combo-chart-title-font-size': `${titleConfig.fontSizePx}px`,
++    '--combo-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
++    '--combo-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
++    '--combo-chart-title-color': titleConfig.color || tones.text,
++    '--combo-chart-unit-color': titleConfig.unitColor || tones.unit,
++    '--combo-chart-primary': tones.primary,
++    '--combo-chart-primary-soft': hexToRgba(tones.primary, 0.2),
++  };
++});
++
++const updateContainerSize = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rect = rootRef.value.getBoundingClientRect();
++  const nextSize = {
++    width: Math.round(rect.width),
++    height: Math.round(rect.height),
++  };
++
++  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
++    containerSize.value = nextSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateContainerSize();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(option.value, true);
++  chart.resize();
++};
++
++const scheduleRenderChart = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateContainerSize();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRenderChart();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRenderChart();
++});
++
++watch(option, () => {
++  void scheduleRenderChart();
++}, { deep: true, flush: 'post' });
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++</script>
++
++<template>
++  <section ref="rootRef" class="combo-chart-example-card" :class="cardClasses" :style="cardStyle" aria-label="组合图卡片">
++    <header v-if="resolvedTitle.visible" class="combo-chart-example-header">
++      <div class="combo-chart-example-title-wrap">
++        <span class="combo-chart-example-title">{{ title }}</span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="combo-chart-example-unit">{{ unit }}</span>
++    </header>
++    <div class="combo-chart-example-body">
++      <div v-if="visibleAuxMetrics.length" class="combo-chart-example-aux" aria-label="附加指标">
++        <span
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}:${metric.value}`"
++          class="combo-chart-example-aux-item"
++          :class="`tone-${metric.tone ?? 'neutral'}`"
++        >
++          <em>{{ metric.label }}</em>
++          <b>{{ metric.value }}</b>
++        </span>
++      </div>
++      <div class="combo-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
++        <div v-if="hasRenderableData" ref="chartRef" class="combo-chart-example-canvas" />
++        <div v-else class="combo-chart-example-empty">暂无数据</div>
++      </div>
++    </div>
++  </section>
++</template>
++
++<style scoped>
++.combo-chart-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: grid;
++  grid-template-rows: var(--combo-chart-title-row) minmax(0, 1fr);
++  row-gap: var(--combo-chart-card-gap);
++  padding: var(--combo-chart-card-padding);
++  overflow: hidden;
++  background: transparent;
++  color: var(--combo-chart-title-color);
++}
++
++.combo-chart-example-card:not(.has-title) {
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.combo-chart-example-header {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: start;
++  column-gap: 8px;
++}
++
++.combo-chart-example-title-wrap {
++  min-width: 0;
++  display: flex;
++  align-items: flex-start;
++}
++
++.combo-chart-example-title {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  min-width: 0;
++  color: var(--combo-chart-title-color);
++  font-size: var(--combo-chart-title-font-size);
++  line-height: var(--combo-chart-title-line-height);
++  font-weight: 700;
++  white-space: normal;
++  overflow-wrap: anywhere;
++}
++
++.combo-chart-example-title::after {
++  content: '';
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  border-radius: 999px;
++  background: linear-gradient(90deg, var(--combo-chart-primary) 0%, var(--combo-chart-primary-soft) 72%, transparent 100%);
++}
++
++.combo-chart-example-unit {
++  justify-self: stretch;
++  min-width: 0;
++  width: 100%;
++  color: var(--combo-chart-unit-color);
++  font-size: var(--combo-chart-unit-font-size);
++  line-height: var(--combo-chart-title-line-height);
++  white-space: normal;
++  overflow-wrap: anywhere;
++  text-align: right;
++}
++
++.combo-chart-example-body {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--combo-chart-content-gap);
++  overflow: hidden;
++}
++
++.combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body,
++.combo-chart-example-card.has-aux.is-vertical .combo-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--combo-chart-content-gap), 2px);
++}
++
++.combo-chart-example-card:not(.has-aux) .combo-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.combo-chart-example-card:not(.has-title).has-aux .combo-chart-example-aux {
++  margin-top: var(--combo-chart-titleless-aux-gap);
+ }
+ 
+ .combo-chart-example-aux {

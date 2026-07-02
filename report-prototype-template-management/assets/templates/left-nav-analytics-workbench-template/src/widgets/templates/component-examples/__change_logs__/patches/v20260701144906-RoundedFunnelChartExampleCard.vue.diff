@@ -1,0 +1,942 @@
+--- a/src/widgets/templates/component-examples/RoundedFunnelChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/RoundedFunnelChartExampleCard.vue
+@@ -324,472 +324,473 @@
+     return orientation;
+   }
+ 
+-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+-});
+-
+-const cardClasses = computed(() => ({
+-  [`is-${contentOrientation.value}`]: true,
+-  [`aux-${auxOrientation.value}`]: true,
+-  'has-aux': visibleAuxMetrics.value.length > 0,
+-  'has-title': resolvedTitle.value.visible,
+-}));
+-
+-const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
+-
+-const hexToRgba = (color: string, opacity: number) => {
+-  const normalized = normalizeColor(color).replace('#', '');
+-  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
+-  const numeric = Number.parseInt(expanded, 16);
+-
+-  if (!Number.isFinite(numeric)) {
+-    return `rgba(0, 87, 217, ${opacity})`;
+-  }
+-
+-  const r = (numeric >> 16) & 255;
+-  const g = (numeric >> 8) & 255;
+-  const b = numeric & 255;
+-
+-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+-};
+-
+-const palette = computed(() => [
+-  resolvedTones.value.primary,
+-  resolvedTones.value.secondary,
+-  resolvedTones.value.tertiary,
+-  resolvedTones.value.quaternary,
+-]);
+-
+-const chartScale = computed(() => {
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
+-  const height = chartSize.value.height || fallbackHeight;
+-  const itemCount = Math.max(normalizedStages.value.length, 1);
+-  const compact = Math.min(width / 280, height / 160);
+-  const autoBarHeight = Math.floor((height - resolvedChart.value.gridTopPx - resolvedChart.value.gridBottomPx) / (itemCount * 1.7));
+-  const barHeight = resolvedChart.value.barHeightPx
+-    || clampNumber(autoBarHeight, 12, resolvedChart.value.maxBarHeightPx, 18);
+-  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
+-
+-  return {
+-    barHeight,
+-    radius: Math.min(resolvedChart.value.borderRadiusPx, Math.round(barHeight / 2)),
+-    fontSize,
+-    valueFontSize: Math.max(8, fontSize - 0.4),
+-    labelVisible: resolvedChart.value.labelVisible && width >= 150 && height >= 74,
+-    conversionVisible: resolvedChart.value.conversionVisible && width >= 210 && height >= 104,
+-    labelPadding: width < 210 ? 6 : 9,
+-    gridTop: resolvedChart.value.gridTopPx,
+-    gridBottom: resolvedChart.value.gridBottomPx,
+-    gridLeft: resolvedChart.value.gridLeftPx,
+-    gridRight: resolvedChart.value.gridRightPx,
+-  };
+-});
+-
+-const makeStageGradient = (color: string) =>
+-  new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+-    { offset: 0, color },
+-    { offset: 0.68, color: hexToRgba(color, 0.76) },
+-    { offset: 1, color: hexToRgba(color, 0.34) },
+-  ]);
+-
+-const truncateText = (value: string, maxLength: number) => {
+-  if (value.length <= maxLength) {
+-    return value;
+-  }
+-
+-  return `${value.slice(0, Math.max(1, maxLength - 1))}…`;
+-};
+-
+-const option = computed<EChartsOption>(() => {
+-  const scale = chartScale.value;
+-  const chartConfig = resolvedChart.value;
+-  const tones = resolvedTones.value;
+-  const rows = normalizedStages.value;
+-  const data = rows.map((stage) => ({
+-    name: stage.name,
+-    value: [stage.percent, stage.index, stage.value],
+-    rawValue: stage.formattedValue,
+-    conversion: stage.conversion,
+-    detail: stage.detail,
+-  }));
+-  const roundedFunnelSeries = {
+-    type: 'custom',
+-    coordinateSystem: 'cartesian2d',
+-    encode: { x: 0, y: 1 },
+-    data,
+-    renderItem: (_params: unknown, api: any) => {
+-      const stageIndex = Number(api.value(1));
+-      const stage = rows[stageIndex];
+-
+-      if (!stage) {
+-        return null;
+-      }
+-
+-      const start = api.coord([0, stageIndex]);
+-      const end = api.coord([100, stageIndex]);
+-      const fullWidth = Math.max(1, end[0] - start[0]);
+-      const width = Math.max(24, fullWidth * (stage.percent / 100));
+-      const x = start[0] + (fullWidth - width) / 2;
+-      const y = start[1] - scale.barHeight / 2;
+-      const color = stage.color ?? palette.value[stageIndex % palette.value.length];
+-      const maxLabelChars = width < 88 ? 2 : width < 132 ? 4 : 8;
+-      const stageLabel = truncateText(stage.name, maxLabelChars);
+-      const conversionLabel = stageIndex === 0 ? '' : formatPercent(stage.conversion);
+-      const children: any[] = [];
+-
+-      if (chartConfig.trackVisible) {
+-        children.push({
+-          type: 'rect',
+-          silent: true,
+-          shape: {
+-            x: start[0],
+-            y,
+-            width: fullWidth,
+-            height: scale.barHeight,
+-            r: scale.radius,
+-          },
+-          style: {
+-            fill: tones.track,
+-          },
+-        });
+-      }
+-
+-      children.push({
+-        type: 'rect',
+-        shape: {
+-          x,
+-          y,
+-          width,
+-          height: scale.barHeight,
+-          r: scale.radius,
+-        },
+-        style: {
+-          fill: makeStageGradient(color),
+-          shadowBlur: 6,
+-          shadowColor: hexToRgba(color, 0.18),
+-        },
+-      });
+-
+-      if (scale.labelVisible) {
+-        children.push({
+-          type: 'text',
+-          silent: true,
+-          style: {
+-            x: x + scale.labelPadding,
+-            y: y + scale.barHeight / 2,
+-            text: stageLabel,
+-            fill: '#ffffff',
+-            font: `700 ${scale.fontSize}px sans-serif`,
+-            align: 'left',
+-            verticalAlign: 'middle',
+-          },
+-        });
+-        children.push({
+-          type: 'text',
+-          silent: true,
+-          style: {
+-            x: x + width - scale.labelPadding,
+-            y: y + scale.barHeight / 2,
+-            text: stage.formattedValue,
+-            fill: '#ffffff',
+-            font: `800 ${scale.valueFontSize}px sans-serif`,
+-            align: 'right',
+-            verticalAlign: 'middle',
+-          },
+-        });
+-      }
+-
+-      if (scale.conversionVisible && conversionLabel) {
+-        children.push({
+-          type: 'text',
+-          silent: true,
+-          style: {
+-            x: end[0] - 2,
+-            y: y + scale.barHeight / 2,
+-            text: conversionLabel,
+-            fill: tones.unit,
+-            font: `700 ${Math.max(8, scale.fontSize - 1)}px sans-serif`,
+-            align: 'right',
+-            verticalAlign: 'middle',
+-          },
+-        });
+-      }
+-
+-      return {
+-        type: 'group',
+-        children,
+-      };
+-    },
+-  } as any;
+-
+-  return {
+-    animationDuration: 520,
+-    animationEasing: 'cubicOut',
+-    grid: {
+-      top: scale.gridTop,
+-      right: scale.gridRight,
+-      bottom: scale.gridBottom,
+-      left: scale.gridLeft,
+-      containLabel: false,
+-    },
+-    tooltip: {
+-      trigger: 'item',
+-      confine: true,
+-      appendToBody: true,
+-      formatter: (params: unknown) => {
+-        const item = params as { name?: string; data?: { rawValue?: string; conversion?: number; detail?: string } };
+-        const conversionText = item.data?.conversion === undefined ? '' : `阶段转化：${formatPercent(item.data.conversion)}`;
+-
+-        return [
+-          item.name ?? '',
+-          `数值：${item.data?.rawValue ?? '--'}${unitSuffix.value}`,
+-          conversionText,
+-          item.data?.detail,
+-        ].filter(Boolean).join('<br/>');
+-      },
+-    },
+-    xAxis: {
+-      type: 'value',
+-      min: 0,
+-      max: 100,
+-      show: false,
+-    },
+-    yAxis: {
+-      type: 'category',
+-      inverse: true,
+-      data: rows.map((stage) => stage.name),
+-      show: false,
+-    },
+-    series: [roundedFunnelSeries],
+-  } as EChartsOption;
+-});
+-
+-const cardStyle = computed(() => {
+-  const layout = resolvedLayout.value;
+-  const titleConfig = resolvedTitle.value;
+-  const auxConfig = resolvedAux.value;
+-  const tones = resolvedTones.value;
+-
+-  return {
+-    '--rounded-funnel-card-padding': `${layout.paddingPx}px`,
+-    '--rounded-funnel-card-gap': `${layout.gapPx}px`,
+-    '--rounded-funnel-content-gap': `${layout.contentGapPx}px`,
+-    '--rounded-funnel-title-row': `${layout.titleHeightPx}px`,
+-    '--rounded-funnel-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
+-    '--rounded-funnel-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
+-    '--rounded-funnel-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
+-    '--rounded-funnel-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
+-    '--rounded-funnel-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
+-    '--rounded-funnel-aux-label-color': auxConfig.labelColor,
+-    '--rounded-funnel-aux-value-color': auxConfig.valueColor,
+-    '--rounded-funnel-title-font-size': `${titleConfig.fontSizePx}px`,
+-    '--rounded-funnel-title-line-height': `${titleConfig.lineHeightPx}px`,
+-    '--rounded-funnel-unit-font-size': `${titleConfig.unitFontSizePx}px`,
+-    '--rounded-funnel-title-color': titleConfig.color || tones.text,
+-    '--rounded-funnel-unit-color': titleConfig.unitColor || tones.unit,
+-    '--rounded-funnel-primary': tones.primary,
+-    '--rounded-funnel-primary-soft': hexToRgba(tones.primary, 0.2),
+-  };
+-});
+-
+-const updateContainerSize = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rect = rootRef.value.getBoundingClientRect();
+-  const nextSize = {
+-    width: Math.round(rect.width),
+-    height: Math.round(rect.height),
+-  };
+-
+-  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
+-    containerSize.value = nextSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateContainerSize();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(option.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRenderChart = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateContainerSize();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRenderChart();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRenderChart();
+-});
+-
+-watch(option, () => {
+-  void scheduleRenderChart();
+-}, { deep: true, flush: 'post' });
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-</script>
+-
+-<template>
+-  <section ref="rootRef" class="rounded-funnel-example-card" :class="cardClasses" :style="cardStyle" aria-label="圆角漏斗图卡片">
+-    <header v-if="resolvedTitle.visible" class="rounded-funnel-example-header">
+-      <div class="rounded-funnel-example-title-wrap">
+-        <span class="rounded-funnel-example-title" :class="{ 'has-underline': resolvedTitle.underline }">{{ title }}</span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="rounded-funnel-example-unit">{{ unit }}</span>
+-    </header>
+-    <div class="rounded-funnel-example-body">
+-      <div v-if="visibleAuxMetrics.length" class="rounded-funnel-example-aux" aria-label="附加指标">
+-        <span
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}:${metric.value}`"
+-          class="rounded-funnel-example-aux-item"
+-          :class="`tone-${metric.tone ?? 'neutral'}`"
+-        >
+-          <em>{{ metric.label }}</em>
+-          <b>{{ metric.value }}</b>
+-        </span>
+-      </div>
+-      <div class="rounded-funnel-example-chart-pane">
+-        <div v-if="hasRenderableData" ref="chartRef" class="rounded-funnel-example-canvas" />
+-        <div v-else class="rounded-funnel-example-empty">暂无数据</div>
+-      </div>
+-    </div>
+-  </section>
+-</template>
+-
+-<style scoped>
+-.rounded-funnel-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: grid;
+-  grid-template-rows: var(--rounded-funnel-title-row) minmax(0, 1fr);
+-  row-gap: var(--rounded-funnel-card-gap);
+-  padding: var(--rounded-funnel-card-padding);
+-  overflow: hidden;
+-  background: transparent;
+-  color: var(--rounded-funnel-title-color);
+-}
+-
+-.rounded-funnel-example-card:not(.has-title) {
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.rounded-funnel-example-header {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: start;
+-  column-gap: 8px;
+-}
+-
+-.rounded-funnel-example-title-wrap {
+-  min-width: 0;
+-  display: flex;
+-  align-items: flex-start;
+-}
+-
+-.rounded-funnel-example-title {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  max-width: 100%;
+-  min-width: 0;
+-  color: var(--rounded-funnel-title-color);
+-  font-size: var(--rounded-funnel-title-font-size);
+-  line-height: var(--rounded-funnel-title-line-height);
+-  font-weight: 700;
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-}
+-
+-.rounded-funnel-example-title.has-underline::after {
+-  content: '';
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  border-radius: 999px;
+-  background: linear-gradient(90deg, var(--rounded-funnel-primary) 0%, var(--rounded-funnel-primary-soft) 72%, transparent 100%);
+-}
+-
+-.rounded-funnel-example-unit {
+-  justify-self: stretch;
+-  min-width: 0;
+-  width: 100%;
+-  color: var(--rounded-funnel-unit-color);
+-  font-size: var(--rounded-funnel-unit-font-size);
+-  line-height: var(--rounded-funnel-title-line-height);
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-  text-align: right;
+-}
+-
+-.rounded-funnel-example-body {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--rounded-funnel-content-gap);
+-  overflow: hidden;
+-}
+-
+-.rounded-funnel-example-card.has-aux.is-horizontal .rounded-funnel-example-body,
+-.rounded-funnel-example-card.has-aux.is-vertical .rounded-funnel-example-body {
+-  grid-template-columns: var(--rounded-funnel-horizontal-split);
+-  grid-template-rows: minmax(0, 1fr);
++  return contentOrientation.value;
++});
++
++const cardClasses = computed(() => ({
++  [`is-${contentOrientation.value}`]: true,
++  [`aux-${auxOrientation.value}`]: true,
++  'has-aux': visibleAuxMetrics.value.length > 0,
++  'has-title': resolvedTitle.value.visible,
++}));
++
++const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
++
++const hexToRgba = (color: string, opacity: number) => {
++  const normalized = normalizeColor(color).replace('#', '');
++  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
++  const numeric = Number.parseInt(expanded, 16);
++
++  if (!Number.isFinite(numeric)) {
++    return `rgba(0, 87, 217, ${opacity})`;
++  }
++
++  const r = (numeric >> 16) & 255;
++  const g = (numeric >> 8) & 255;
++  const b = numeric & 255;
++
++  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
++};
++
++const palette = computed(() => [
++  resolvedTones.value.primary,
++  resolvedTones.value.secondary,
++  resolvedTones.value.tertiary,
++  resolvedTones.value.quaternary,
++]);
++
++const chartScale = computed(() => {
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
++  const height = chartSize.value.height || fallbackHeight;
++  const itemCount = Math.max(normalizedStages.value.length, 1);
++  const compact = Math.min(width / 280, height / 160);
++  const autoBarHeight = Math.floor((height - resolvedChart.value.gridTopPx - resolvedChart.value.gridBottomPx) / (itemCount * 1.7));
++  const barHeight = resolvedChart.value.barHeightPx
++    || clampNumber(autoBarHeight, 12, resolvedChart.value.maxBarHeightPx, 18);
++  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
++
++  return {
++    barHeight,
++    radius: Math.min(resolvedChart.value.borderRadiusPx, Math.round(barHeight / 2)),
++    fontSize,
++    valueFontSize: Math.max(8, fontSize - 0.4),
++    labelVisible: resolvedChart.value.labelVisible && width >= 150 && height >= 74,
++    conversionVisible: resolvedChart.value.conversionVisible && width >= 210 && height >= 104,
++    labelPadding: width < 210 ? 6 : 9,
++    gridTop: resolvedChart.value.gridTopPx,
++    gridBottom: resolvedChart.value.gridBottomPx,
++    gridLeft: resolvedChart.value.gridLeftPx,
++    gridRight: resolvedChart.value.gridRightPx,
++  };
++});
++
++const makeStageGradient = (color: string) =>
++  new echarts.graphic.LinearGradient(0, 0, 1, 0, [
++    { offset: 0, color },
++    { offset: 0.68, color: hexToRgba(color, 0.76) },
++    { offset: 1, color: hexToRgba(color, 0.34) },
++  ]);
++
++const truncateText = (value: string, maxLength: number) => {
++  if (value.length <= maxLength) {
++    return value;
++  }
++
++  return `${value.slice(0, Math.max(1, maxLength - 1))}…`;
++};
++
++const option = computed<EChartsOption>(() => {
++  const scale = chartScale.value;
++  const chartConfig = resolvedChart.value;
++  const tones = resolvedTones.value;
++  const rows = normalizedStages.value;
++  const data = rows.map((stage) => ({
++    name: stage.name,
++    value: [stage.percent, stage.index, stage.value],
++    rawValue: stage.formattedValue,
++    conversion: stage.conversion,
++    detail: stage.detail,
++  }));
++  const roundedFunnelSeries = {
++    type: 'custom',
++    coordinateSystem: 'cartesian2d',
++    encode: { x: 0, y: 1 },
++    data,
++    renderItem: (_params: unknown, api: any) => {
++      const stageIndex = Number(api.value(1));
++      const stage = rows[stageIndex];
++
++      if (!stage) {
++        return null;
++      }
++
++      const start = api.coord([0, stageIndex]);
++      const end = api.coord([100, stageIndex]);
++      const fullWidth = Math.max(1, end[0] - start[0]);
++      const width = Math.max(24, fullWidth * (stage.percent / 100));
++      const x = start[0] + (fullWidth - width) / 2;
++      const y = start[1] - scale.barHeight / 2;
++      const color = stage.color ?? palette.value[stageIndex % palette.value.length];
++      const maxLabelChars = width < 88 ? 2 : width < 132 ? 4 : 8;
++      const stageLabel = truncateText(stage.name, maxLabelChars);
++      const conversionLabel = stageIndex === 0 ? '' : formatPercent(stage.conversion);
++      const children: any[] = [];
++
++      if (chartConfig.trackVisible) {
++        children.push({
++          type: 'rect',
++          silent: true,
++          shape: {
++            x: start[0],
++            y,
++            width: fullWidth,
++            height: scale.barHeight,
++            r: scale.radius,
++          },
++          style: {
++            fill: tones.track,
++          },
++        });
++      }
++
++      children.push({
++        type: 'rect',
++        shape: {
++          x,
++          y,
++          width,
++          height: scale.barHeight,
++          r: scale.radius,
++        },
++        style: {
++          fill: makeStageGradient(color),
++          shadowBlur: 6,
++          shadowColor: hexToRgba(color, 0.18),
++        },
++      });
++
++      if (scale.labelVisible) {
++        children.push({
++          type: 'text',
++          silent: true,
++          style: {
++            x: x + scale.labelPadding,
++            y: y + scale.barHeight / 2,
++            text: stageLabel,
++            fill: '#ffffff',
++            font: `700 ${scale.fontSize}px sans-serif`,
++            align: 'left',
++            verticalAlign: 'middle',
++          },
++        });
++        children.push({
++          type: 'text',
++          silent: true,
++          style: {
++            x: x + width - scale.labelPadding,
++            y: y + scale.barHeight / 2,
++            text: stage.formattedValue,
++            fill: '#ffffff',
++            font: `800 ${scale.valueFontSize}px sans-serif`,
++            align: 'right',
++            verticalAlign: 'middle',
++          },
++        });
++      }
++
++      if (scale.conversionVisible && conversionLabel) {
++        children.push({
++          type: 'text',
++          silent: true,
++          style: {
++            x: end[0] - 2,
++            y: y + scale.barHeight / 2,
++            text: conversionLabel,
++            fill: tones.unit,
++            font: `700 ${Math.max(8, scale.fontSize - 1)}px sans-serif`,
++            align: 'right',
++            verticalAlign: 'middle',
++          },
++        });
++      }
++
++      return {
++        type: 'group',
++        children,
++      };
++    },
++  } as any;
++
++  return {
++    animationDuration: 520,
++    animationEasing: 'cubicOut',
++    grid: {
++      top: scale.gridTop,
++      right: scale.gridRight,
++      bottom: scale.gridBottom,
++      left: scale.gridLeft,
++      containLabel: false,
++    },
++    tooltip: {
++      trigger: 'item',
++      confine: true,
++      appendToBody: true,
++      formatter: (params: unknown) => {
++        const item = params as { name?: string; data?: { rawValue?: string; conversion?: number; detail?: string } };
++        const conversionText = item.data?.conversion === undefined ? '' : `阶段转化：${formatPercent(item.data.conversion)}`;
++
++        return [
++          item.name ?? '',
++          `数值：${item.data?.rawValue ?? '--'}${unitSuffix.value}`,
++          conversionText,
++          item.data?.detail,
++        ].filter(Boolean).join('<br/>');
++      },
++    },
++    xAxis: {
++      type: 'value',
++      min: 0,
++      max: 100,
++      show: false,
++    },
++    yAxis: {
++      type: 'category',
++      inverse: true,
++      data: rows.map((stage) => stage.name),
++      show: false,
++    },
++    series: [roundedFunnelSeries],
++  } as EChartsOption;
++});
++
++const cardStyle = computed(() => {
++  const layout = resolvedLayout.value;
++  const titleConfig = resolvedTitle.value;
++  const auxConfig = resolvedAux.value;
++  const tones = resolvedTones.value;
++
++  return {
++    '--rounded-funnel-card-padding': `${layout.paddingPx}px`,
++    '--rounded-funnel-card-gap': `${layout.gapPx}px`,
++    '--rounded-funnel-content-gap': `${layout.contentGapPx}px`,
++    '--rounded-funnel-title-row': `${layout.titleHeightPx}px`,
++    '--rounded-funnel-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
++    '--rounded-funnel-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
++    '--rounded-funnel-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
++    '--rounded-funnel-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
++    '--rounded-funnel-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
++    '--rounded-funnel-aux-label-color': auxConfig.labelColor,
++    '--rounded-funnel-aux-value-color': auxConfig.valueColor,
++    '--rounded-funnel-title-font-size': `${titleConfig.fontSizePx}px`,
++    '--rounded-funnel-title-line-height': `${titleConfig.lineHeightPx}px`,
++    '--rounded-funnel-unit-font-size': `${titleConfig.unitFontSizePx}px`,
++    '--rounded-funnel-title-color': titleConfig.color || tones.text,
++    '--rounded-funnel-unit-color': titleConfig.unitColor || tones.unit,
++    '--rounded-funnel-primary': tones.primary,
++    '--rounded-funnel-primary-soft': hexToRgba(tones.primary, 0.2),
++  };
++});
++
++const updateContainerSize = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rect = rootRef.value.getBoundingClientRect();
++  const nextSize = {
++    width: Math.round(rect.width),
++    height: Math.round(rect.height),
++  };
++
++  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
++    containerSize.value = nextSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateContainerSize();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(option.value, true);
++  chart.resize();
++};
++
++const scheduleRenderChart = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateContainerSize();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRenderChart();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRenderChart();
++});
++
++watch(option, () => {
++  void scheduleRenderChart();
++}, { deep: true, flush: 'post' });
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++</script>
++
++<template>
++  <section ref="rootRef" class="rounded-funnel-example-card" :class="cardClasses" :style="cardStyle" aria-label="圆角漏斗图卡片">
++    <header v-if="resolvedTitle.visible" class="rounded-funnel-example-header">
++      <div class="rounded-funnel-example-title-wrap">
++        <span class="rounded-funnel-example-title" :class="{ 'has-underline': resolvedTitle.underline }">{{ title }}</span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="rounded-funnel-example-unit">{{ unit }}</span>
++    </header>
++    <div class="rounded-funnel-example-body">
++      <div v-if="visibleAuxMetrics.length" class="rounded-funnel-example-aux" aria-label="附加指标">
++        <span
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}:${metric.value}`"
++          class="rounded-funnel-example-aux-item"
++          :class="`tone-${metric.tone ?? 'neutral'}`"
++        >
++          <em>{{ metric.label }}</em>
++          <b>{{ metric.value }}</b>
++        </span>
++      </div>
++      <div class="rounded-funnel-example-chart-pane">
++        <div v-if="hasRenderableData" ref="chartRef" class="rounded-funnel-example-canvas" />
++        <div v-else class="rounded-funnel-example-empty">暂无数据</div>
++      </div>
++    </div>
++  </section>
++</template>
++
++<style scoped>
++.rounded-funnel-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: grid;
++  grid-template-rows: var(--rounded-funnel-title-row) minmax(0, 1fr);
++  row-gap: var(--rounded-funnel-card-gap);
++  padding: var(--rounded-funnel-card-padding);
++  overflow: hidden;
++  background: transparent;
++  color: var(--rounded-funnel-title-color);
++}
++
++.rounded-funnel-example-card:not(.has-title) {
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.rounded-funnel-example-header {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: start;
++  column-gap: 8px;
++}
++
++.rounded-funnel-example-title-wrap {
++  min-width: 0;
++  display: flex;
++  align-items: flex-start;
++}
++
++.rounded-funnel-example-title {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  min-width: 0;
++  color: var(--rounded-funnel-title-color);
++  font-size: var(--rounded-funnel-title-font-size);
++  line-height: var(--rounded-funnel-title-line-height);
++  font-weight: 700;
++  white-space: normal;
++  overflow-wrap: anywhere;
++}
++
++.rounded-funnel-example-title.has-underline::after {
++  content: '';
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  border-radius: 999px;
++  background: linear-gradient(90deg, var(--rounded-funnel-primary) 0%, var(--rounded-funnel-primary-soft) 72%, transparent 100%);
++}
++
++.rounded-funnel-example-unit {
++  justify-self: stretch;
++  min-width: 0;
++  width: 100%;
++  color: var(--rounded-funnel-unit-color);
++  font-size: var(--rounded-funnel-unit-font-size);
++  line-height: var(--rounded-funnel-title-line-height);
++  white-space: normal;
++  overflow-wrap: anywhere;
++  text-align: right;
++}
++
++.rounded-funnel-example-body {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--rounded-funnel-content-gap);
++  overflow: hidden;
++}
++
++.rounded-funnel-example-card.has-aux.is-horizontal .rounded-funnel-example-body,
++.rounded-funnel-example-card.has-aux.is-vertical .rounded-funnel-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--rounded-funnel-content-gap), 2px);
+ }
+ 
+ .rounded-funnel-example-card:not(.has-aux) .rounded-funnel-example-body {

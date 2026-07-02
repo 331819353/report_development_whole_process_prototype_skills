@@ -82,7 +82,7 @@ const viteDev = startChild(
   ],
   {
     ...process.env,
-    VITE_API_BASE_URL: apiBaseUrl,
+    MOCK_API_BASE_URL: apiBaseUrl,
   },
 );
 

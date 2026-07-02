@@ -15,7 +15,7 @@ const isElementPlusAnnotationWarning = (warning: RollupLog) => {
 
 export default defineConfig(({ mode }) => {
   const envConfig = loadEnv(mode, process.cwd(), '');
-  const apiBaseUrl = envConfig.VITE_API_BASE_URL;
+  const mockApiBaseUrl = process.env.MOCK_API_BASE_URL || envConfig.MOCK_API_BASE_URL;
 
   return {
     base: './',
@@ -36,10 +36,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      proxy: apiBaseUrl
+      proxy: mockApiBaseUrl
         ? {
             '/api': {
-              target: apiBaseUrl,
+              target: mockApiBaseUrl,
               changeOrigin: true,
             },
           }

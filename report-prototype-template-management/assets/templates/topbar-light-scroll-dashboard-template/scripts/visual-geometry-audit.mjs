@@ -22,6 +22,11 @@ const waitMs = Number(getArg('--wait-ms', '12000'));
 const stabilizeMs = Number(getArg('--stabilize-ms', '800'));
 const failOn = getArg('--fail-on', 'major');
 const viewportSpec = getArg('--viewports', getArg('--viewport', '1365x768,1920x1080'));
+const runtimeApiChecks = getArg(
+  '--runtime-api-checks',
+  '/api/health,/api/filter-options/period,/api/component-props/overview.A.A',
+);
+const skipRuntimeApiCheck = hasFlag('--skip-runtime-api-check') || runtimeApiChecks.toLowerCase() === 'none';
 
 const severityRank = {
   none: Number.POSITIVE_INFINITY,
@@ -57,6 +62,8 @@ Options:
   --viewports           Comma-separated viewport list. Default: 1365x768,1920x1080.
   --out-dir             Output directory for screenshots and JSON. Default: visual-check.
   --fail-on             none | minor | major | blocker. Default: major.
+  --runtime-api-checks  Comma-separated API paths to smoke before visual audit. Use none to disable.
+  --skip-runtime-api-check  Disable API smoke checks.
   --wait-ms             Navigation/network wait budget. Default: 12000.
 	  --stabilize-ms        Extra wait after fonts/network. Default: 800.
 	  --row-overflow-tolerance  List row clipping tolerance in px. Default: 1.
@@ -109,6 +116,153 @@ const loadPlaywright = async () => {
     console.error(`[visual-geometry] import error: ${error.message}`);
     process.exit(1);
   }
+};
+
+const buildRuntimeFinding = ({ id, severity = 'blocker', category, observation, impact, suggestedFix, evidence }) => ({
+  id,
+  severity,
+  severityRank: severityRank[severity] ?? 0,
+  category,
+  selector: 'runtime',
+  observation,
+  impact,
+  suggestedFix,
+  evidence,
+});
+
+const truncate = (value, maxLength = 300) => {
+  const text = String(value ?? '');
+  return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+};
+
+const getByPath = (source, pathText) => {
+  if (!pathText) {
+    return source;
+  }
+
+  return pathText.split('.').reduce((current, segment) => {
+    if (current && typeof current === 'object' && segment in current) {
+      return current[segment];
+    }
+
+    return undefined;
+  }, source);
+};
+
+const evaluateRuntimeApiChecks = async () => {
+  if (skipRuntimeApiCheck) {
+    return [];
+  }
+
+  const findings = [];
+  const endpoints = runtimeApiChecks
+    .split(',')
+    .map((endpoint) => endpoint.trim())
+    .filter(Boolean);
+
+  for (const endpoint of endpoints) {
+    const endpointUrl = new URL(endpoint, url).toString();
+    let response;
+    let text = '';
+    let body;
+
+    try {
+      response = await fetch(endpointUrl, {
+        headers: {
+          accept: 'application/json',
+        },
+      });
+      text = await response.text();
+    } catch (error) {
+      findings.push(buildRuntimeFinding({
+        id: 'VIS-API-UNREACHABLE',
+        category: 'runtime data',
+        observation: `Runtime API check failed for ${endpoint}.`,
+        impact: 'Filter options and component slots cannot load data, so the page may render only shell placeholders.',
+        suggestedFix: 'Start the prototype with npm run dev:mock, or provide MOCK_API_BASE_URL for the Vite /api proxy.',
+        evidence: {
+          endpoint,
+          endpointUrl,
+          error: String(error),
+        },
+      }));
+      continue;
+    }
+
+    const contentType = response.headers.get('content-type') ?? '';
+
+    try {
+      body = JSON.parse(text);
+    } catch {
+      findings.push(buildRuntimeFinding({
+        id: 'VIS-API-NOT-JSON',
+        category: 'runtime data',
+        observation: `Runtime API ${endpoint} returned ${contentType || 'unknown content type'} instead of JSON.`,
+        impact: 'A Vite history fallback or reverse proxy miss can return index.html for /api, leaving components without data.',
+        suggestedFix: 'Run npm run dev:mock and verify the Vite /api proxy targets the mock API before visual QA.',
+        evidence: {
+          endpoint,
+          endpointUrl,
+          status: response.status,
+          contentType,
+          responseStart: truncate(text),
+        },
+      }));
+      continue;
+    }
+
+    if (!response.ok || body?.code !== 0) {
+      findings.push(buildRuntimeFinding({
+        id: 'VIS-API-BAD-ENVELOPE',
+        category: 'runtime data',
+        observation: `Runtime API ${endpoint} returned an unsuccessful envelope.`,
+        impact: 'The page can mount while filters or component data silently fail.',
+        suggestedFix: 'Fix the mock API route, response envelope, or proxy target before accepting the prototype.',
+        evidence: {
+          endpoint,
+          endpointUrl,
+          status: response.status,
+          body,
+        },
+      }));
+      continue;
+    }
+
+    const rows = getByPath(body, 'data.rows');
+    const items = getByPath(body, 'data.items');
+
+    if (endpoint.includes('/component-props/') && (!Array.isArray(rows) || rows.length === 0)) {
+      findings.push(buildRuntimeFinding({
+        id: 'VIS-COMPONENT-PROPS-EMPTY',
+        category: 'runtime data',
+        observation: `Component props API ${endpoint} returned no rows.`,
+        impact: 'Registered component examples can fall back to inline placeholders instead of rendering real component data.',
+        suggestedFix: 'Populate businessData.componentProps for the componentDataKey or fix the component data binding.',
+        evidence: {
+          endpoint,
+          endpointUrl,
+          body,
+        },
+      }));
+    }
+
+    if (endpoint.includes('/filter-options/') && (!Array.isArray(items) || items.length === 0)) {
+      findings.push(buildRuntimeFinding({
+        id: 'VIS-FILTER-OPTIONS-EMPTY',
+        category: 'runtime data',
+        observation: `Filter options API ${endpoint} returned no items.`,
+        impact: 'Filter controls can render as empty and hide that the prototype has no usable data scope.',
+        suggestedFix: 'Populate filterData option rows or fix filters[].source for the affected filter.',
+        evidence: {
+          endpoint,
+          endpointUrl,
+          body,
+        },
+      }));
+    }
+  }
+
+  return findings;
 };
 
 const evaluateGeometry = (auditThresholds) => {
@@ -232,6 +386,86 @@ const evaluateGeometry = (auditThresholds) => {
     });
     return findings;
   }
+
+  const allVisibleElements = Array.from(document.querySelectorAll('body *')).filter(isVisible);
+  const missingFilterOptions = allVisibleElements.filter((element) => elementText(element) === '暂无选项');
+
+  if (missingFilterOptions.length > 0) {
+    addFinding({
+      id: 'VIS-FILTER-OPTIONS-MISSING',
+      severity: 'blocker',
+      category: 'runtime data',
+      element: missingFilterOptions[0],
+      observation: `${missingFilterOptions.length} visible filter option group(s) rendered as empty.`,
+      impact: 'The page shell can look healthy while the API-backed filter data failed to load.',
+      suggestedFix: 'Start with npm run dev:mock and smoke /api/filter-options/* before accepting the page.',
+      evidence: {
+        emptyFilterGroupCount: missingFilterOptions.length,
+        sampleText: elementText(missingFilterOptions[0]),
+      },
+    });
+  }
+
+  const componentSlotCells = Array.from(document.querySelectorAll('.layout-zone-cell.has-slot-content')).filter(isVisible);
+  const mountedComponentSlots = componentSlotCells.filter((cell) => cell.querySelector('.layout-slot-content-widget'));
+  const fallbackComponentSlots = componentSlotCells.filter((cell) =>
+    cell.querySelector('.layout-slot-content') && !cell.querySelector('.layout-slot-content-widget'));
+
+  if (componentSlotCells.length > 0 && mountedComponentSlots.length === 0) {
+    addFinding({
+      id: 'VIS-COMPONENTS-NOT-MOUNTED',
+      severity: 'blocker',
+      category: 'runtime data',
+      element: componentSlotCells[0],
+      observation: 'No registered component examples mounted inside visible component slots.',
+      impact: 'Readers see shell slot labels or inline fallback content instead of the expected KPI, chart, table, or list components.',
+      suggestedFix: 'Verify /api/component-props/* returns rows and that each slot resolves to a registered componentExampleId.',
+      evidence: {
+        componentSlotCount: componentSlotCells.length,
+        mountedComponentSlotCount: mountedComponentSlots.length,
+      },
+    });
+  }
+
+  fallbackComponentSlots.slice(0, 12).forEach((cell) => {
+    addFinding({
+      id: 'VIS-COMPONENT-SLOT-FALLBACK',
+      severity: 'blocker',
+      category: 'runtime data',
+      element: cell,
+      observation: 'A visible component slot rendered inline fallback content instead of a registered component example.',
+      impact: 'The prototype may appear populated while the intended component and its API-bound props did not load.',
+      suggestedFix: 'Fix the slot componentDataKey, mock component-props route, or component example registry before visual signoff.',
+      evidence: {
+        text: elementText(cell).slice(0, 120),
+      },
+    });
+  });
+
+  const emptyComponentMarkers = allVisibleElements.filter((element) => {
+    const text = elementText(element);
+    if (!text || text.length > 160) {
+      return false;
+    }
+
+    const inComponentArea = element.closest('.layout-slot-content-widget, .widget-renderer, .placeholder-cell');
+    return Boolean(inComponentArea) && /(暂无.*数据|无数据|建设中|Data service|API endpoint not found|不可用|加载失败)/i.test(text);
+  });
+
+  emptyComponentMarkers.slice(0, 12).forEach((element) => {
+    addFinding({
+      id: 'VIS-COMPONENT-DATA-EMPTY',
+      severity: 'blocker',
+      category: 'runtime data',
+      element,
+      observation: `Visible component data marker indicates empty or failed data: "${elementText(element).slice(0, 80)}".`,
+      impact: 'The component is visible but not carrying usable report data.',
+      suggestedFix: 'Populate the mock dataset/API response, fix responsePath/dataBinding, or provide a declared empty-state reason.',
+      evidence: {
+        text: elementText(element).slice(0, 120),
+      },
+    });
+  });
 
   const criticalValueSelector = [
     '.kpi-example-card-value strong',
@@ -956,6 +1190,15 @@ const allFindings = [];
 const screenshots = [];
 
 try {
+  const runtimeFindings = await evaluateRuntimeApiChecks();
+  runtimeFindings.forEach((finding) => {
+    allFindings.push({
+      ...finding,
+      viewport: 'runtime',
+      screenshot: null,
+    });
+  });
+
   for (const viewport of viewports) {
     const context = await browser.newContext({
       viewport: {

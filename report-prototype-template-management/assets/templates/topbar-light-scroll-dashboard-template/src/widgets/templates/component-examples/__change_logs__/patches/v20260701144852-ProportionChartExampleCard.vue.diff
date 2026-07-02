@@ -1,0 +1,982 @@
+--- a/src/widgets/templates/component-examples/ProportionChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/ProportionChartExampleCard.vue
+@@ -383,494 +383,491 @@
+     return orientation;
+   }
+ 
+-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+-});
+-
+-const cardClasses = computed(() => ({
+-  [`is-${contentOrientation.value}`]: true,
+-  [`aux-${auxOrientation.value}`]: true,
+-  'has-aux': visibleAuxMetrics.value.length > 0,
+-  'has-title': resolvedTitle.value.visible,
+-  'has-title-underline': resolvedTitle.value.underline,
+-}));
+-
+-const palette = computed(() => [
+-  resolvedTones.value.primary,
+-  resolvedTones.value.secondary,
+-  resolvedTones.value.tertiary,
+-  resolvedTones.value.quaternary,
+-  '#d7dde7',
+-  '#9aaabd',
+-  '#5d82b8',
+-  '#eef2f6',
+-]);
+-
+-const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
+-
+-const hexToRgba = (color: string, opacity: number) => {
+-  const normalized = normalizeColor(color).replace('#', '');
+-  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
+-  const numeric = Number.parseInt(expanded, 16);
+-
+-  if (!Number.isFinite(numeric)) {
+-    return `rgba(0, 87, 217, ${opacity})`;
+-  }
+-
+-  const r = (numeric >> 16) & 255;
+-  const g = (numeric >> 8) & 255;
+-  const b = numeric & 255;
+-
+-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+-};
+-
+-const makeSliceGradient = (color: string) =>
+-  new echarts.graphic.RadialGradient(0.3, 0.3, 0.85, [
+-    { offset: 0, color: hexToRgba(color, 0.72) },
+-    { offset: 1, color },
+-  ]);
+-
+-const chartScale = computed(() => {
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
+-  const height = chartSize.value.height || fallbackHeight;
+-  const compact = Math.min(width / 280, height / 170);
+-  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
+-  const chartConfig = resolvedChart.value;
+-  const effectiveLegendPosition = chartConfig.legendPosition === 'auto'
+-    ? (contentOrientation.value === 'vertical' ? 'top' : 'right')
+-    : chartConfig.legendPosition;
+-  const legendVisible = chartConfig.legendVisible
+-    && effectiveLegendPosition !== 'hidden'
+-    && visibleItems.value.length > 1
+-    && width >= 160
+-    && height >= 100;
+-  const rightLegendVisible = legendVisible && effectiveLegendPosition === 'right';
+-  const horizontalLegendVisible = legendVisible && (effectiveLegendPosition === 'top' || effectiveLegendPosition === 'bottom');
+-  const legendWidth = rightLegendVisible ? Math.min(chartConfig.legendWidthPx, Math.max(42, width * 0.34)) : 0;
+-  const chartWidth = rightLegendVisible ? Math.max(width - legendWidth - 4, 80) : width;
+-  const centerXNumber = rightLegendVisible ? clampNumber((chartWidth * 0.5 / width) * 100, 34, 50, 40) : 50;
+-  const centerYNumber = effectiveLegendPosition === 'top' ? 58 : effectiveLegendPosition === 'bottom' ? 46 : 52;
+-  const labelVisible = chartConfig.labelVisible && width >= 170 && height >= 105;
+-  const centerVisible = resolvedChart.value.centerVisible && resolvedChart.value.donut && width >= 160 && height >= 112;
+-  const radiusLimit = rightLegendVisible ? (width < 230 ? 56 : 64) : horizontalLegendVisible ? 62 : 68;
+-  const outerRadius = Math.min(clampNumber(chartConfig.outerRadiusPercent, 32, 92, defaultChartConfig.outerRadiusPercent), radiusLimit);
+-  const innerRadius = resolvedChart.value.donut
+-    ? Math.min(clampNumber(resolvedChart.value.innerRadiusPercent, 0, 82, defaultChartConfig.innerRadiusPercent), outerRadius - 12)
+-    : 0;
+-
+-  return {
+-    fontSize,
+-    labelFontSize: Math.max(8, fontSize - 0.5),
+-    legendVisible,
+-    legendPosition: effectiveLegendPosition,
+-    rightLegendVisible,
+-    horizontalLegendVisible,
+-    legendWidth,
+-    legendTextWidth: rightLegendVisible ? Math.max(legendWidth - 18, 34) : Math.max(42, Math.min(72, width * 0.22)),
+-    labelVisible,
+-    centerVisible,
+-    centerX: `${Math.round(centerXNumber)}%`,
+-    centerY: `${centerYNumber}%`,
+-    centerLabelFontSize: Math.max(8, fontSize - 1),
+-    centerValueFontSize: Math.max(10, fontSize + 1),
+-    labelLineLength: width < 230 ? 8 : 12,
+-    labelLineLength2: width < 230 ? 5 : 10,
+-    labelWidth: width < 230 ? 46 : 62,
+-    radius: [`${Math.max(innerRadius, 0)}%`, `${outerRadius}%`] as [string, string],
+-  };
+-});
+-
+-const chartData = computed(() =>
+-  visibleItems.value.map((item, index) => {
+-    const color = item.color ?? palette.value[index % palette.value.length];
+-
+-    return {
+-      name: item.name,
+-      value: item.value,
+-      itemStyle: {
+-        color: resolvedChart.value.sliceGradient ? makeSliceGradient(color) : color,
+-      },
+-    };
+-  }),
+-);
+-
+-const centerValue = computed(() => formatNumber(totalValue.value, resolvedChart.value.centerValueUnit));
+-
+-const legendOption = computed(() => {
+-  const scale = chartScale.value;
+-  const tones = resolvedTones.value;
+-  const common = {
+-    show: scale.legendVisible,
+-    type: 'scroll' as const,
+-    itemWidth: 8,
+-    itemHeight: 8,
+-    itemGap: 6,
+-    pageIconSize: 7,
+-    pageTextStyle: {
+-      color: tones.axis,
+-    },
+-    textStyle: {
+-      color: tones.axis,
+-      fontSize: scale.labelFontSize,
+-      overflow: 'truncate' as const,
+-      width: scale.legendTextWidth,
+-    },
+-  };
+-
+-  if (scale.legendPosition === 'top') {
+-    return {
+-      ...common,
+-      top: 0,
+-      left: 'center',
+-      orient: 'horizontal' as const,
+-    };
+-  }
+-
+-  if (scale.legendPosition === 'bottom') {
+-    return {
+-      ...common,
+-      bottom: 0,
+-      left: 'center',
+-      orient: 'horizontal' as const,
+-    };
+-  }
+-
+-  return {
+-    ...common,
+-    right: 0,
+-    top: 'middle',
+-    orient: 'vertical' as const,
+-    width: scale.legendWidth,
+-  };
+-});
+-
+-const option = computed<EChartsOption>(() => {
+-  const scale = chartScale.value;
+-  const chartConfig = resolvedChart.value;
+-  const tones = resolvedTones.value;
+-
+-  return {
+-    animationDuration: 500,
+-    color: palette.value,
+-    title: { show: false },
+-    legend: legendOption.value,
+-    tooltip: {
+-      trigger: 'item',
+-      confine: true,
+-      appendToBody: true,
+-      formatter: (params: unknown) => {
+-        if (!params || typeof params !== 'object') {
+-          return '';
+-        }
+-
+-        const row = params as { marker?: string; name?: string; value?: number; percent?: number };
+-        const percent = Number.isFinite(row.percent) ? Number(row.percent) : itemPercent(Number(row.value));
+-
+-        return [
+-          `${row.marker ?? ''}${row.name ?? ''}: ${formatNumber(Number(row.value), chartConfig.valueUnit)}`,
+-          `占比: ${formatPercent(percent)}`,
+-        ].join('<br/>');
+-      },
+-    },
+-    series: [
+-      {
+-        name: title.value,
+-        type: 'pie',
+-        radius: scale.radius,
+-        center: [scale.centerX, scale.centerY],
+-        minAngle: chartConfig.minAngle,
+-        roseType: chartConfig.roseType || undefined,
+-        avoidLabelOverlap: true,
+-        stillShowZeroSum: false,
+-        itemStyle: {
+-          borderColor: 'rgba(255, 255, 255, 0.9)',
+-          borderWidth: chartConfig.borderWidthPx,
+-        },
+-        label: {
+-          show: scale.labelVisible,
+-          position: 'outside',
+-          alignTo: 'labelLine',
+-          distanceToLabelLine: 2,
+-          width: scale.labelWidth,
+-          overflow: 'break',
+-          color: tones.text,
+-          fontSize: scale.labelFontSize,
+-          lineHeight: scale.labelFontSize + 2,
+-          formatter: (params: { name?: string; percent?: number }) => `${params.name ?? ''}\n${formatPercent(Number(params.percent))}`,
+-        },
+-        labelLine: {
+-          show: scale.labelVisible && chartConfig.labelLineVisible,
+-          length: scale.labelLineLength,
+-          length2: scale.labelLineLength2,
+-          smooth: false,
+-          lineStyle: {
+-            color: hexToRgba(tones.axis, 0.38),
+-          },
+-        },
+-        emphasis: {
+-          scale: false,
+-          focus: 'self',
+-          itemStyle: {
+-            shadowBlur: 0,
+-          },
+-        },
+-        data: chartData.value,
+-      },
+-    ],
+-  };
+-});
+-
+-const cardStyle = computed(() => {
+-  const layout = resolvedLayout.value;
+-  const titleConfig = resolvedTitle.value;
+-  const auxConfig = resolvedAux.value;
+-  const tones = resolvedTones.value;
+-
+-  return {
+-    '--proportion-chart-card-padding': `${layout.paddingPx}px`,
+-    '--proportion-chart-card-gap': `${layout.gapPx}px`,
+-    '--proportion-chart-content-gap': `${layout.contentGapPx}px`,
+-    '--proportion-chart-title-row': `${layout.titleHeightPx}px`,
+-    '--proportion-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
+-    '--proportion-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
+-    '--proportion-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
+-    '--proportion-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
+-    '--proportion-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
+-    '--proportion-chart-aux-label-color': auxConfig.labelColor,
+-    '--proportion-chart-aux-value-color': auxConfig.valueColor,
+-    '--proportion-chart-title-font-size': `${titleConfig.fontSizePx}px`,
+-    '--proportion-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
+-    '--proportion-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
+-    '--proportion-chart-title-color': titleConfig.color || tones.text,
+-    '--proportion-chart-unit-color': titleConfig.unitColor || tones.unit,
+-    '--proportion-chart-primary': tones.primary,
+-    '--proportion-chart-primary-soft': hexToRgba(tones.primary, 0.2),
+-    '--proportion-chart-center-x': chartScale.value.centerX,
+-    '--proportion-chart-center-y': chartScale.value.centerY,
+-    '--proportion-chart-center-label-font-size': `${chartScale.value.centerLabelFontSize}px`,
+-    '--proportion-chart-center-value-font-size': `${chartScale.value.centerValueFontSize}px`,
+-    '--proportion-chart-center-label-color': tones.axis,
+-    '--proportion-chart-center-value-color': tones.text,
+-  };
+-});
+-
+-const updateContainerSize = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rect = rootRef.value.getBoundingClientRect();
+-  const nextSize = {
+-    width: Math.round(rect.width),
+-    height: Math.round(rect.height),
+-  };
+-
+-  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
+-    containerSize.value = nextSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateContainerSize();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(option.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRenderChart = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateContainerSize();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRenderChart();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRenderChart();
+-});
+-
+-watch(option, () => {
+-  void scheduleRenderChart();
+-}, { deep: true, flush: 'post' });
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-</script>
+-
+-<template>
+-  <section
+-    ref="rootRef"
+-    class="proportion-chart-example-card"
+-    :class="cardClasses"
+-    :style="cardStyle"
+-    aria-label="占比图卡片"
+-  >
+-    <header v-if="resolvedTitle.visible" class="proportion-chart-example-header">
+-      <div class="proportion-chart-example-title-wrap">
+-        <span class="proportion-chart-example-title">{{ title }}</span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="proportion-chart-example-unit">{{ unit }}</span>
+-    </header>
+-    <div class="proportion-chart-example-body">
+-      <div v-if="visibleAuxMetrics.length" class="proportion-chart-example-aux" aria-label="附加指标">
+-        <span
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}:${metric.value}`"
+-          class="proportion-chart-example-aux-item"
+-          :class="`tone-${metric.tone ?? 'neutral'}`"
+-        >
+-          <em>{{ metric.label }}</em>
+-          <b>{{ metric.value }}</b>
+-        </span>
+-      </div>
+-      <div class="proportion-chart-example-chart-pane">
+-        <div v-if="hasRenderableData" ref="chartRef" class="proportion-chart-example-canvas" />
+-        <div v-if="hasRenderableData && chartScale.centerVisible" class="proportion-chart-example-center">
+-          <em>{{ totalLabel }}</em>
+-          <b>{{ centerValue }}</b>
+-        </div>
+-        <div v-if="!hasRenderableData" class="proportion-chart-example-empty">暂无数据</div>
+-      </div>
+-    </div>
+-  </section>
+-</template>
+-
+-<style scoped>
+-.proportion-chart-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: grid;
+-  grid-template-rows: var(--proportion-chart-title-row) minmax(0, 1fr);
+-  row-gap: var(--proportion-chart-card-gap);
+-  padding: var(--proportion-chart-card-padding);
+-  overflow: hidden;
+-  background: transparent;
+-  color: var(--proportion-chart-title-color);
+-}
+-
+-.proportion-chart-example-card:not(.has-title) {
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.proportion-chart-example-header {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: start;
+-  column-gap: 8px;
+-}
+-
+-.proportion-chart-example-title-wrap {
+-  min-width: 0;
+-  display: flex;
+-  align-items: flex-start;
+-}
+-
+-.proportion-chart-example-title {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  max-width: 100%;
+-  min-width: 0;
+-  color: var(--proportion-chart-title-color);
+-  font-size: var(--proportion-chart-title-font-size);
+-  line-height: var(--proportion-chart-title-line-height);
+-  font-weight: 700;
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-}
+-
+-.proportion-chart-example-card.has-title-underline .proportion-chart-example-title::after {
+-  content: '';
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  border-radius: 999px;
+-  background: linear-gradient(
+-    90deg,
+-    var(--proportion-chart-primary) 0%,
+-    var(--proportion-chart-primary-soft) 72%,
+-    transparent 100%
+-  );
+-}
+-
+-.proportion-chart-example-unit {
+-  justify-self: stretch;
+-  min-width: 0;
+-  width: 100%;
+-  color: var(--proportion-chart-unit-color);
+-  font-size: var(--proportion-chart-unit-font-size);
+-  line-height: var(--proportion-chart-title-line-height);
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-  text-align: right;
+-}
+-
+-.proportion-chart-example-body {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--proportion-chart-content-gap);
+-  overflow: hidden;
+-}
+-
+-.proportion-chart-example-card.has-aux.is-horizontal .proportion-chart-example-body {
+-  grid-template-columns: var(--proportion-chart-horizontal-split);
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.proportion-chart-example-card.has-aux.is-vertical .proportion-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: var(--proportion-chart-vertical-split);
++  return contentOrientation.value;
++});
++
++const cardClasses = computed(() => ({
++  [`is-${contentOrientation.value}`]: true,
++  [`aux-${auxOrientation.value}`]: true,
++  'has-aux': visibleAuxMetrics.value.length > 0,
++  'has-title': resolvedTitle.value.visible,
++  'has-title-underline': resolvedTitle.value.underline,
++}));
++
++const palette = computed(() => [
++  resolvedTones.value.primary,
++  resolvedTones.value.secondary,
++  resolvedTones.value.tertiary,
++  resolvedTones.value.quaternary,
++  '#d7dde7',
++  '#9aaabd',
++  '#5d82b8',
++  '#eef2f6',
++]);
++
++const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
++
++const hexToRgba = (color: string, opacity: number) => {
++  const normalized = normalizeColor(color).replace('#', '');
++  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
++  const numeric = Number.parseInt(expanded, 16);
++
++  if (!Number.isFinite(numeric)) {
++    return `rgba(0, 87, 217, ${opacity})`;
++  }
++
++  const r = (numeric >> 16) & 255;
++  const g = (numeric >> 8) & 255;
++  const b = numeric & 255;
++
++  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
++};
++
++const makeSliceGradient = (color: string) =>
++  new echarts.graphic.RadialGradient(0.3, 0.3, 0.85, [
++    { offset: 0, color: hexToRgba(color, 0.72) },
++    { offset: 1, color },
++  ]);
++
++const chartScale = computed(() => {
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
++  const height = chartSize.value.height || fallbackHeight;
++  const compact = Math.min(width / 280, height / 170);
++  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
++  const chartConfig = resolvedChart.value;
++  const effectiveLegendPosition = chartConfig.legendPosition === 'auto'
++    ? (contentOrientation.value === 'vertical' ? 'top' : 'right')
++    : chartConfig.legendPosition;
++  const legendVisible = chartConfig.legendVisible
++    && effectiveLegendPosition !== 'hidden'
++    && visibleItems.value.length > 1
++    && width >= 160
++    && height >= 100;
++  const rightLegendVisible = legendVisible && effectiveLegendPosition === 'right';
++  const horizontalLegendVisible = legendVisible && (effectiveLegendPosition === 'top' || effectiveLegendPosition === 'bottom');
++  const legendWidth = rightLegendVisible ? Math.min(chartConfig.legendWidthPx, Math.max(42, width * 0.34)) : 0;
++  const chartWidth = rightLegendVisible ? Math.max(width - legendWidth - 4, 80) : width;
++  const centerXNumber = rightLegendVisible ? clampNumber((chartWidth * 0.5 / width) * 100, 34, 50, 40) : 50;
++  const centerYNumber = effectiveLegendPosition === 'top' ? 58 : effectiveLegendPosition === 'bottom' ? 46 : 52;
++  const labelVisible = chartConfig.labelVisible && width >= 170 && height >= 105;
++  const centerVisible = resolvedChart.value.centerVisible && resolvedChart.value.donut && width >= 160 && height >= 112;
++  const radiusLimit = rightLegendVisible ? (width < 230 ? 56 : 64) : horizontalLegendVisible ? 62 : 68;
++  const outerRadius = Math.min(clampNumber(chartConfig.outerRadiusPercent, 32, 92, defaultChartConfig.outerRadiusPercent), radiusLimit);
++  const innerRadius = resolvedChart.value.donut
++    ? Math.min(clampNumber(resolvedChart.value.innerRadiusPercent, 0, 82, defaultChartConfig.innerRadiusPercent), outerRadius - 12)
++    : 0;
++
++  return {
++    fontSize,
++    labelFontSize: Math.max(8, fontSize - 0.5),
++    legendVisible,
++    legendPosition: effectiveLegendPosition,
++    rightLegendVisible,
++    horizontalLegendVisible,
++    legendWidth,
++    legendTextWidth: rightLegendVisible ? Math.max(legendWidth - 18, 34) : Math.max(42, Math.min(72, width * 0.22)),
++    labelVisible,
++    centerVisible,
++    centerX: `${Math.round(centerXNumber)}%`,
++    centerY: `${centerYNumber}%`,
++    centerLabelFontSize: Math.max(8, fontSize - 1),
++    centerValueFontSize: Math.max(10, fontSize + 1),
++    labelLineLength: width < 230 ? 8 : 12,
++    labelLineLength2: width < 230 ? 5 : 10,
++    labelWidth: width < 230 ? 46 : 62,
++    radius: [`${Math.max(innerRadius, 0)}%`, `${outerRadius}%`] as [string, string],
++  };
++});
++
++const chartData = computed(() =>
++  visibleItems.value.map((item, index) => {
++    const color = item.color ?? palette.value[index % palette.value.length];
++
++    return {
++      name: item.name,
++      value: item.value,
++      itemStyle: {
++        color: resolvedChart.value.sliceGradient ? makeSliceGradient(color) : color,
++      },
++    };
++  }),
++);
++
++const centerValue = computed(() => formatNumber(totalValue.value, resolvedChart.value.centerValueUnit));
++
++const legendOption = computed(() => {
++  const scale = chartScale.value;
++  const tones = resolvedTones.value;
++  const common = {
++    show: scale.legendVisible,
++    type: 'scroll' as const,
++    itemWidth: 8,
++    itemHeight: 8,
++    itemGap: 6,
++    pageIconSize: 7,
++    pageTextStyle: {
++      color: tones.axis,
++    },
++    textStyle: {
++      color: tones.axis,
++      fontSize: scale.labelFontSize,
++      overflow: 'truncate' as const,
++      width: scale.legendTextWidth,
++    },
++  };
++
++  if (scale.legendPosition === 'top') {
++    return {
++      ...common,
++      top: 0,
++      left: 'center',
++      orient: 'horizontal' as const,
++    };
++  }
++
++  if (scale.legendPosition === 'bottom') {
++    return {
++      ...common,
++      bottom: 0,
++      left: 'center',
++      orient: 'horizontal' as const,
++    };
++  }
++
++  return {
++    ...common,
++    right: 0,
++    top: 'middle',
++    orient: 'vertical' as const,
++    width: scale.legendWidth,
++  };
++});
++
++const option = computed<EChartsOption>(() => {
++  const scale = chartScale.value;
++  const chartConfig = resolvedChart.value;
++  const tones = resolvedTones.value;
++
++  return {
++    animationDuration: 500,
++    color: palette.value,
++    title: { show: false },
++    legend: legendOption.value,
++    tooltip: {
++      trigger: 'item',
++      confine: true,
++      appendToBody: true,
++      formatter: (params: unknown) => {
++        if (!params || typeof params !== 'object') {
++          return '';
++        }
++
++        const row = params as { marker?: string; name?: string; value?: number; percent?: number };
++        const percent = Number.isFinite(row.percent) ? Number(row.percent) : itemPercent(Number(row.value));
++
++        return [
++          `${row.marker ?? ''}${row.name ?? ''}: ${formatNumber(Number(row.value), chartConfig.valueUnit)}`,
++          `占比: ${formatPercent(percent)}`,
++        ].join('<br/>');
++      },
++    },
++    series: [
++      {
++        name: title.value,
++        type: 'pie',
++        radius: scale.radius,
++        center: [scale.centerX, scale.centerY],
++        minAngle: chartConfig.minAngle,
++        roseType: chartConfig.roseType || undefined,
++        avoidLabelOverlap: true,
++        stillShowZeroSum: false,
++        itemStyle: {
++          borderColor: 'rgba(255, 255, 255, 0.9)',
++          borderWidth: chartConfig.borderWidthPx,
++        },
++        label: {
++          show: scale.labelVisible,
++          position: 'outside',
++          alignTo: 'labelLine',
++          distanceToLabelLine: 2,
++          width: scale.labelWidth,
++          overflow: 'break',
++          color: tones.text,
++          fontSize: scale.labelFontSize,
++          lineHeight: scale.labelFontSize + 2,
++          formatter: (params: { name?: string; percent?: number }) => `${params.name ?? ''}\n${formatPercent(Number(params.percent))}`,
++        },
++        labelLine: {
++          show: scale.labelVisible && chartConfig.labelLineVisible,
++          length: scale.labelLineLength,
++          length2: scale.labelLineLength2,
++          smooth: false,
++          lineStyle: {
++            color: hexToRgba(tones.axis, 0.38),
++          },
++        },
++        emphasis: {
++          scale: false,
++          focus: 'self',
++          itemStyle: {
++            shadowBlur: 0,
++          },
++        },
++        data: chartData.value,
++      },
++    ],
++  };
++});
++
++const cardStyle = computed(() => {
++  const layout = resolvedLayout.value;
++  const titleConfig = resolvedTitle.value;
++  const auxConfig = resolvedAux.value;
++  const tones = resolvedTones.value;
++
++  return {
++    '--proportion-chart-card-padding': `${layout.paddingPx}px`,
++    '--proportion-chart-card-gap': `${layout.gapPx}px`,
++    '--proportion-chart-content-gap': `${layout.contentGapPx}px`,
++    '--proportion-chart-title-row': `${layout.titleHeightPx}px`,
++    '--proportion-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
++    '--proportion-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
++    '--proportion-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
++    '--proportion-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
++    '--proportion-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
++    '--proportion-chart-aux-label-color': auxConfig.labelColor,
++    '--proportion-chart-aux-value-color': auxConfig.valueColor,
++    '--proportion-chart-title-font-size': `${titleConfig.fontSizePx}px`,
++    '--proportion-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
++    '--proportion-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
++    '--proportion-chart-title-color': titleConfig.color || tones.text,
++    '--proportion-chart-unit-color': titleConfig.unitColor || tones.unit,
++    '--proportion-chart-primary': tones.primary,
++    '--proportion-chart-primary-soft': hexToRgba(tones.primary, 0.2),
++    '--proportion-chart-center-x': chartScale.value.centerX,
++    '--proportion-chart-center-y': chartScale.value.centerY,
++    '--proportion-chart-center-label-font-size': `${chartScale.value.centerLabelFontSize}px`,
++    '--proportion-chart-center-value-font-size': `${chartScale.value.centerValueFontSize}px`,
++    '--proportion-chart-center-label-color': tones.axis,
++    '--proportion-chart-center-value-color': tones.text,
++  };
++});
++
++const updateContainerSize = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rect = rootRef.value.getBoundingClientRect();
++  const nextSize = {
++    width: Math.round(rect.width),
++    height: Math.round(rect.height),
++  };
++
++  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
++    containerSize.value = nextSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateContainerSize();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(option.value, true);
++  chart.resize();
++};
++
++const scheduleRenderChart = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateContainerSize();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRenderChart();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRenderChart();
++});
++
++watch(option, () => {
++  void scheduleRenderChart();
++}, { deep: true, flush: 'post' });
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++</script>
++
++<template>
++  <section
++    ref="rootRef"
++    class="proportion-chart-example-card"
++    :class="cardClasses"
++    :style="cardStyle"
++    aria-label="占比图卡片"
++  >
++    <header v-if="resolvedTitle.visible" class="proportion-chart-example-header">
++      <div class="proportion-chart-example-title-wrap">
++        <span class="proportion-chart-example-title">{{ title }}</span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="proportion-chart-example-unit">{{ unit }}</span>
++    </header>
++    <div class="proportion-chart-example-body">
++      <div v-if="visibleAuxMetrics.length" class="proportion-chart-example-aux" aria-label="附加指标">
++        <span
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}:${metric.value}`"
++          class="proportion-chart-example-aux-item"
++          :class="`tone-${metric.tone ?? 'neutral'}`"
++        >
++          <em>{{ metric.label }}</em>
++          <b>{{ metric.value }}</b>
++        </span>
++      </div>
++      <div class="proportion-chart-example-chart-pane">
++        <div v-if="hasRenderableData" ref="chartRef" class="proportion-chart-example-canvas" />
++        <div v-if="hasRenderableData && chartScale.centerVisible" class="proportion-chart-example-center">
++          <em>{{ totalLabel }}</em>
++          <b>{{ centerValue }}</b>
++        </div>
++        <div v-if="!hasRenderableData" class="proportion-chart-example-empty">暂无数据</div>
++      </div>
++    </div>
++  </section>
++</template>
++
++<style scoped>
++.proportion-chart-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: grid;
++  grid-template-rows: var(--proportion-chart-title-row) minmax(0, 1fr);
++  row-gap: var(--proportion-chart-card-gap);
++  padding: var(--proportion-chart-card-padding);
++  overflow: hidden;
++  background: transparent;
++  color: var(--proportion-chart-title-color);
++}
++
++.proportion-chart-example-card:not(.has-title) {
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.proportion-chart-example-header {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: start;
++  column-gap: 8px;
++}
++
++.proportion-chart-example-title-wrap {
++  min-width: 0;
++  display: flex;
++  align-items: flex-start;
++}
++
++.proportion-chart-example-title {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  min-width: 0;
++  color: var(--proportion-chart-title-color);
++  font-size: var(--proportion-chart-title-font-size);
++  line-height: var(--proportion-chart-title-line-height);
++  font-weight: 700;
++  white-space: normal;
++  overflow-wrap: anywhere;
++}
++
++.proportion-chart-example-card.has-title-underline .proportion-chart-example-title::after {
++  content: '';
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  border-radius: 999px;
++  background: linear-gradient(
++    90deg,
++    var(--proportion-chart-primary) 0%,
++    var(--proportion-chart-primary-soft) 72%,
++    transparent 100%
++  );
++}
++
++.proportion-chart-example-unit {
++  justify-self: stretch;
++  min-width: 0;
++  width: 100%;
++  color: var(--proportion-chart-unit-color);
++  font-size: var(--proportion-chart-unit-font-size);
++  line-height: var(--proportion-chart-title-line-height);
++  white-space: normal;
++  overflow-wrap: anywhere;
++  text-align: right;
++}
++
++.proportion-chart-example-body {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--proportion-chart-content-gap);
++  overflow: hidden;
++}
++
++.proportion-chart-example-card.has-aux.is-horizontal .proportion-chart-example-body,
++.proportion-chart-example-card.has-aux.is-vertical .proportion-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--proportion-chart-content-gap), 2px);
+ }
+ 
+ .proportion-chart-example-card:not(.has-aux) .proportion-chart-example-body {

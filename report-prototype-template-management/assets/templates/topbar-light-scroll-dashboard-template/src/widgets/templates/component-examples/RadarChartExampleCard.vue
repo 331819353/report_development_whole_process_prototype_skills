@@ -58,6 +58,7 @@ interface RadarChartExampleAuxConfig {
 
 interface RadarChartExampleChartConfig {
   legendVisible?: boolean;
+  legendPosition?: 'auto' | 'right' | 'top' | 'hidden';
   axisNameVisible?: boolean;
   splitNumber?: number;
   minDimensionCount?: number;
@@ -173,6 +174,7 @@ const defaultAuxConfig: Required<RadarChartExampleAuxConfig> = {
 
 const defaultChartConfig: Required<RadarChartExampleChartConfig> = {
   legendVisible: true,
+  legendPosition: 'right',
   axisNameVisible: true,
   splitNumber: 4,
   minDimensionCount: 3,
@@ -225,6 +227,14 @@ const normalizeAuxOrientation = (value: unknown): Required<RadarChartExampleAuxC
   return 'auto';
 };
 
+const normalizeLegendPosition = (value: unknown): Required<RadarChartExampleChartConfig>['legendPosition'] => {
+  if (value === 'auto' || value === 'right' || value === 'top' || value === 'hidden') {
+    return value;
+  }
+
+  return defaultChartConfig.legendPosition;
+};
+
 const resolvedTitle = computed<Required<RadarChartExampleTitleConfig>>(() => ({
   ...defaultTitleConfig,
   ...(props.config?.title ?? {}),
@@ -263,6 +273,7 @@ const resolvedAux = computed<Required<RadarChartExampleAuxConfig>>(() => ({
 const resolvedChart = computed<Required<RadarChartExampleChartConfig>>(() => ({
   ...defaultChartConfig,
   ...(props.config?.chart ?? {}),
+  legendPosition: normalizeLegendPosition(props.config?.chart?.legendPosition),
   splitNumber: Math.round(clampNumber(props.config?.chart?.splitNumber, 2, 6, defaultChartConfig.splitNumber)),
   minDimensionCount: Math.round(clampNumber(props.config?.chart?.minDimensionCount, 3, 8, defaultChartConfig.minDimensionCount)),
   maxDimensionCount: Math.round(clampNumber(props.config?.chart?.maxDimensionCount, 3, 8, defaultChartConfig.maxDimensionCount)),
@@ -435,7 +446,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -477,8 +488,10 @@ const chartScale = computed(() => {
   const height = chartSize.value.height || fallbackHeight;
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
-  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 1;
-  const legendPlacement: 'right' | 'top' = contentOrientation.value === 'horizontal' ? 'right' : 'top';
+  const chartConfig = resolvedChart.value;
+  const effectiveLegendPosition = chartConfig.legendPosition === 'auto' ? 'right' : chartConfig.legendPosition;
+  const legendVisible = chartConfig.legendVisible && effectiveLegendPosition !== 'hidden' && seriesRows.value.length > 0;
+  const legendPlacement: 'right' | 'top' = effectiveLegendPosition === 'top' ? 'top' : 'right';
   const legendTopVisible = legendVisible && legendPlacement === 'top';
   const legendRightVisible = legendVisible && legendPlacement === 'right';
   const maxLegendNameLength = Math.max(1, ...seriesRows.value.map((item) => item.name.length));
@@ -891,14 +904,11 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.radar-chart-example-card.has-aux.is-horizontal .radar-chart-example-body {
-  grid-template-columns: var(--radar-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.radar-chart-example-card.has-aux.is-horizontal .radar-chart-example-body,
 .radar-chart-example-card.has-aux.is-vertical .radar-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--radar-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--radar-chart-content-gap), 2px);
 }
 
 .radar-chart-example-card:not(.has-aux) .radar-chart-example-body {

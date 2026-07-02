@@ -1,0 +1,934 @@
+--- a/src/widgets/templates/component-examples/RadarChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/RadarChartExampleCard.vue
+@@ -435,470 +435,467 @@
+     return orientation;
+   }
+ 
+-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+-});
+-
+-const cardClasses = computed(() => ({
+-  [`is-${contentOrientation.value}`]: true,
+-  [`aux-${auxOrientation.value}`]: true,
+-  'has-aux': visibleAuxMetrics.value.length > 0,
+-  'has-title': resolvedTitle.value.visible,
+-  'has-title-underline': resolvedTitle.value.underline,
+-}));
+-
+-const palette = computed(() => [
+-  resolvedTones.value.primary,
+-  resolvedTones.value.secondary,
+-  resolvedTones.value.tertiary,
+-  resolvedTones.value.quaternary,
+-]);
+-
+-const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
+-
+-const hexToRgba = (color: string, opacity: number) => {
+-  const normalized = normalizeColor(color).replace('#', '');
+-  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
+-  const numeric = Number.parseInt(expanded, 16);
+-
+-  if (!Number.isFinite(numeric)) {
+-    return `rgba(0, 87, 217, ${opacity})`;
+-  }
+-
+-  const r = (numeric >> 16) & 255;
+-  const g = (numeric >> 8) & 255;
+-  const b = numeric & 255;
+-
+-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+-};
+-
+-const chartScale = computed(() => {
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 90);
+-  const height = chartSize.value.height || fallbackHeight;
+-  const compact = Math.min(width / 280, height / 170);
+-  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
+-  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 1;
+-  const legendPlacement: 'right' | 'top' = contentOrientation.value === 'horizontal' ? 'right' : 'top';
+-  const legendTopVisible = legendVisible && legendPlacement === 'top';
+-  const legendRightVisible = legendVisible && legendPlacement === 'right';
+-  const maxLegendNameLength = Math.max(1, ...seriesRows.value.map((item) => item.name.length));
+-  const legendTextWidth = Math.max(
+-    34,
+-    Math.min(
+-      74,
+-      maxLegendNameLength * fontSize * 0.7 + 10,
+-    ),
+-  );
+-  const legendWidth = legendRightVisible
+-    ? Math.min(Math.max(52, legendTextWidth + 18), Math.max(52, width * 0.32))
+-    : 0;
+-  const legendHeight = legendTopVisible ? Math.max(16, fontSize + 8) : 0;
+-  const labelVisible = resolvedChart.value.axisNameVisible && width >= 126 && height >= 92;
+-  const chartWidth = legendRightVisible ? Math.max(width - legendWidth - 6, 96) : width;
+-  const radiusLimit = chartWidth < 150 || height < 110 ? 46 : chartWidth < 220 ? 52 : resolvedChart.value.radiusPercent;
+-  const radius = Math.min(resolvedChart.value.radiusPercent, radiusLimit);
+-  const centerX = legendRightVisible
+-    ? `${Math.round(clampNumber(((chartWidth * 0.5) / width) * 100, 32, 48, 42))}%`
+-    : '50%';
+-  const centerY = legendTopVisible ? (height < 135 ? '60%' : '57%') : height < 110 ? '54%' : '53%';
+-
+-  return {
+-    fontSize,
+-    axisFontSize: Math.max(8, fontSize - 0.4),
+-    labelVisible,
+-    legendVisible,
+-    legendPlacement,
+-    legendTopVisible,
+-    legendRightVisible,
+-    legendWidth,
+-    legendTextWidth,
+-    legendHeight,
+-    radius: `${radius}%`,
+-    centerX,
+-    centerY,
+-    splitNumber: height < 120 ? Math.min(3, resolvedChart.value.splitNumber) : resolvedChart.value.splitNumber,
+-    symbolSize: resolvedChart.value.symbolVisible ? Math.round(clampNumber(Math.min(width, height) / 34, 3, 6, 4) * 10) / 10 : 0,
+-  };
+-});
+-
+-const radarIndicators = computed(() =>
+-  indicators.value.map((indicator) => ({
+-    name: indicator.name,
+-    min: indicator.min,
+-    max: indicator.max,
+-  })),
+-);
+-
+-const formatTooltip = (params: unknown) => {
+-  if (!isRecord(params)) {
+-    return '';
+-  }
+-
+-  const data = isRecord(params.data) ? params.data : {};
+-  const rawValues = Array.isArray(data.value) ? data.value : [];
+-  const marker = typeof params.marker === 'string' ? params.marker : '';
+-  const name = String(data.name ?? params.name ?? '');
+-  const lines = [`${marker}${name}`];
+-
+-  indicators.value.forEach((indicator, index) => {
+-    lines.push(`${indicator.name}: ${formatNumber(Number(rawValues[index]), indicator.unit)}`);
+-  });
+-
+-  return lines.join('<br/>');
+-};
+-
+-const option = computed<EChartsOption>(() => {
+-  const tones = resolvedTones.value;
+-  const scale = chartScale.value;
+-
+-  return {
+-    animationDuration: 520,
+-    color: palette.value,
+-    legend: {
+-      show: scale.legendVisible,
+-      top: scale.legendRightVisible ? 'middle' : 0,
+-      right: scale.legendRightVisible ? 0 : undefined,
+-      left: scale.legendTopVisible ? 'center' : undefined,
+-      orient: scale.legendRightVisible ? 'vertical' : 'horizontal',
+-      width: scale.legendRightVisible ? scale.legendWidth : undefined,
+-      itemWidth: 9,
+-      itemHeight: 6,
+-      itemGap: 8,
+-      selectedMode: false,
+-      data: seriesRows.value.map((item) => item.name),
+-      textStyle: {
+-        color: tones.axis,
+-        fontSize: scale.axisFontSize,
+-        fontWeight: 700,
+-        overflow: 'truncate',
+-        width: scale.legendRightVisible ? scale.legendTextWidth : undefined,
+-      },
+-    },
+-    tooltip: {
+-      trigger: 'item',
+-      confine: true,
+-      appendToBody: true,
+-      formatter: formatTooltip,
+-      backgroundColor: 'rgba(255, 255, 255, 0.96)',
+-      borderColor: 'rgba(0, 87, 217, 0.16)',
+-      textStyle: {
+-        color: tones.text,
+-        fontSize: 11,
+-      },
+-    },
+-    radar: {
+-      radius: scale.radius,
+-      center: [scale.centerX, scale.centerY],
+-      indicator: radarIndicators.value,
+-      splitNumber: scale.splitNumber,
+-      shape: 'polygon',
+-      axisNameGap: Math.max(3, Math.round(scale.fontSize * 0.56)),
+-      axisName: {
+-        show: scale.labelVisible,
+-        color: tones.text,
+-        fontSize: scale.axisFontSize,
+-        fontWeight: 760,
+-        lineHeight: scale.axisFontSize + 2,
+-        padding: [1, 3],
+-        backgroundColor: hexToRgba(tones.primary, 0.07),
+-        borderRadius: 4,
+-        formatter: (name?: string) => {
+-          const label = name ?? '';
+-          return label.length > 4 && chartSize.value.width < 180 ? `${label.slice(0, 4)}...` : label;
+-        },
+-      },
+-      splitArea: {
+-        areaStyle: {
+-          color: ['rgba(255, 255, 255, 0.34)', hexToRgba(tones.primary, 0.055)],
+-        },
+-      },
+-      axisLine: {
+-        lineStyle: {
+-          color: hexToRgba(tones.primary, 0.16),
+-          width: 1,
+-        },
+-      },
+-      splitLine: {
+-        lineStyle: {
+-          color: tones.splitLine,
+-          type: [4, 5],
+-        },
+-      },
+-    },
+-    series: [
+-      {
+-        name: title.value,
+-        type: 'radar',
+-        symbol: resolvedChart.value.symbolVisible ? 'circle' : 'none',
+-        symbolSize: scale.symbolSize,
+-        data: seriesRows.value.map((item, index) => {
+-          const color = item.color ?? palette.value[index % palette.value.length];
+-
+-          return {
+-            value: item.values,
+-            name: item.name,
+-            areaStyle: {
+-              color: hexToRgba(color, index === 0 ? resolvedChart.value.areaOpacity : resolvedChart.value.areaOpacity * 0.62),
+-            },
+-            lineStyle: {
+-              color,
+-              width: resolvedChart.value.lineWidthPx,
+-              shadowBlur: 6,
+-              shadowColor: hexToRgba(color, 0.14),
+-            },
+-            itemStyle: {
+-              color,
+-              borderColor: '#ffffff',
+-              borderWidth: 1,
+-            },
+-          };
+-        }),
+-      },
+-    ] as EChartsOption['series'],
+-  };
+-});
+-
+-const cardStyle = computed(() => {
+-  const layout = resolvedLayout.value;
+-  const titleConfig = resolvedTitle.value;
+-  const auxConfig = resolvedAux.value;
+-  const tones = resolvedTones.value;
+-
+-  return {
+-    '--radar-chart-card-padding': `${layout.paddingPx}px`,
+-    '--radar-chart-card-gap': `${layout.gapPx}px`,
+-    '--radar-chart-content-gap': `${layout.contentGapPx}px`,
+-    '--radar-chart-title-row': `${layout.titleHeightPx}px`,
+-    '--radar-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
+-    '--radar-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
+-    '--radar-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
+-    '--radar-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
+-    '--radar-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
+-    '--radar-chart-aux-label-color': auxConfig.labelColor,
+-    '--radar-chart-aux-value-color': auxConfig.valueColor,
+-    '--radar-chart-title-font-size': `${titleConfig.fontSizePx}px`,
+-    '--radar-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
+-    '--radar-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
+-    '--radar-chart-title-color': titleConfig.color || tones.text,
+-    '--radar-chart-unit-color': titleConfig.unitColor || tones.unit,
+-    '--radar-chart-primary': tones.primary,
+-    '--radar-chart-primary-soft': hexToRgba(tones.primary, 0.2),
+-  };
+-});
+-
+-const updateContainerSize = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rect = rootRef.value.getBoundingClientRect();
+-  const nextSize = {
+-    width: Math.round(rect.width),
+-    height: Math.round(rect.height),
+-  };
+-
+-  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
+-    containerSize.value = nextSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateContainerSize();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(option.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRenderChart = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateContainerSize();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRenderChart();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRenderChart();
+-});
+-
+-watch(option, () => {
+-  void scheduleRenderChart();
+-}, { deep: true, flush: 'post' });
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-</script>
+-
+-<template>
+-  <section
+-    ref="rootRef"
+-    class="radar-chart-example-card"
+-    :class="cardClasses"
+-    :style="cardStyle"
+-    aria-label="Radar chart card"
+-  >
+-    <header v-if="resolvedTitle.visible" class="radar-chart-example-header">
+-      <div class="radar-chart-example-title-wrap">
+-        <span class="radar-chart-example-title">{{ title }}</span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="radar-chart-example-unit">{{ unit }}</span>
+-    </header>
+-    <div class="radar-chart-example-body">
+-      <div v-if="visibleAuxMetrics.length" class="radar-chart-example-aux" aria-label="Radar chart metrics">
+-        <span
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}:${metric.value}`"
+-          class="radar-chart-example-aux-item"
+-          :class="`tone-${metric.tone ?? 'neutral'}`"
+-        >
+-          <em>{{ metric.label }}</em>
+-          <b>{{ metric.value }}</b>
+-        </span>
+-      </div>
+-      <div class="radar-chart-example-chart-pane">
+-        <div v-if="hasRenderableData" ref="chartRef" class="radar-chart-example-canvas" />
+-        <div v-else class="radar-chart-example-empty">{{ text.noData }}</div>
+-      </div>
+-    </div>
+-  </section>
+-</template>
+-
+-<style scoped>
+-.radar-chart-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: grid;
+-  grid-template-rows: var(--radar-chart-title-row) minmax(0, 1fr);
+-  row-gap: var(--radar-chart-card-gap);
+-  padding: var(--radar-chart-card-padding);
+-  overflow: hidden;
+-  background: transparent;
+-  color: var(--radar-chart-title-color);
+-}
+-
+-.radar-chart-example-card:not(.has-title) {
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.radar-chart-example-header {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: start;
+-  column-gap: 8px;
+-}
+-
+-.radar-chart-example-title-wrap {
+-  min-width: 0;
+-  display: flex;
+-  align-items: flex-start;
+-}
+-
+-.radar-chart-example-title {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  max-width: 100%;
+-  min-width: 0;
+-  color: var(--radar-chart-title-color);
+-  font-size: var(--radar-chart-title-font-size);
+-  line-height: var(--radar-chart-title-line-height);
+-  font-weight: 700;
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-}
+-
+-.radar-chart-example-card.has-title-underline .radar-chart-example-title::after {
+-  content: '';
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  border-radius: 999px;
+-  background: linear-gradient(
+-    90deg,
+-    var(--radar-chart-primary) 0%,
+-    var(--radar-chart-primary-soft) 72%,
+-    transparent 100%
+-  );
+-}
+-
+-.radar-chart-example-unit {
+-  justify-self: stretch;
+-  min-width: 0;
+-  width: 100%;
+-  color: var(--radar-chart-unit-color);
+-  font-size: var(--radar-chart-unit-font-size);
+-  line-height: var(--radar-chart-title-line-height);
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-  text-align: right;
+-}
+-
+-.radar-chart-example-body {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--radar-chart-content-gap);
+-  overflow: hidden;
+-}
+-
+-.radar-chart-example-card.has-aux.is-horizontal .radar-chart-example-body {
+-  grid-template-columns: var(--radar-chart-horizontal-split);
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.radar-chart-example-card.has-aux.is-vertical .radar-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: var(--radar-chart-vertical-split);
++  return contentOrientation.value;
++});
++
++const cardClasses = computed(() => ({
++  [`is-${contentOrientation.value}`]: true,
++  [`aux-${auxOrientation.value}`]: true,
++  'has-aux': visibleAuxMetrics.value.length > 0,
++  'has-title': resolvedTitle.value.visible,
++  'has-title-underline': resolvedTitle.value.underline,
++}));
++
++const palette = computed(() => [
++  resolvedTones.value.primary,
++  resolvedTones.value.secondary,
++  resolvedTones.value.tertiary,
++  resolvedTones.value.quaternary,
++]);
++
++const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
++
++const hexToRgba = (color: string, opacity: number) => {
++  const normalized = normalizeColor(color).replace('#', '');
++  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
++  const numeric = Number.parseInt(expanded, 16);
++
++  if (!Number.isFinite(numeric)) {
++    return `rgba(0, 87, 217, ${opacity})`;
++  }
++
++  const r = (numeric >> 16) & 255;
++  const g = (numeric >> 8) & 255;
++  const b = numeric & 255;
++
++  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
++};
++
++const chartScale = computed(() => {
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 90);
++  const height = chartSize.value.height || fallbackHeight;
++  const compact = Math.min(width / 280, height / 170);
++  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
++  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 1;
++  const legendPlacement: 'right' | 'top' = contentOrientation.value === 'horizontal' ? 'right' : 'top';
++  const legendTopVisible = legendVisible && legendPlacement === 'top';
++  const legendRightVisible = legendVisible && legendPlacement === 'right';
++  const maxLegendNameLength = Math.max(1, ...seriesRows.value.map((item) => item.name.length));
++  const legendTextWidth = Math.max(
++    34,
++    Math.min(
++      74,
++      maxLegendNameLength * fontSize * 0.7 + 10,
++    ),
++  );
++  const legendWidth = legendRightVisible
++    ? Math.min(Math.max(52, legendTextWidth + 18), Math.max(52, width * 0.32))
++    : 0;
++  const legendHeight = legendTopVisible ? Math.max(16, fontSize + 8) : 0;
++  const labelVisible = resolvedChart.value.axisNameVisible && width >= 126 && height >= 92;
++  const chartWidth = legendRightVisible ? Math.max(width - legendWidth - 6, 96) : width;
++  const radiusLimit = chartWidth < 150 || height < 110 ? 46 : chartWidth < 220 ? 52 : resolvedChart.value.radiusPercent;
++  const radius = Math.min(resolvedChart.value.radiusPercent, radiusLimit);
++  const centerX = legendRightVisible
++    ? `${Math.round(clampNumber(((chartWidth * 0.5) / width) * 100, 32, 48, 42))}%`
++    : '50%';
++  const centerY = legendTopVisible ? (height < 135 ? '60%' : '57%') : height < 110 ? '54%' : '53%';
++
++  return {
++    fontSize,
++    axisFontSize: Math.max(8, fontSize - 0.4),
++    labelVisible,
++    legendVisible,
++    legendPlacement,
++    legendTopVisible,
++    legendRightVisible,
++    legendWidth,
++    legendTextWidth,
++    legendHeight,
++    radius: `${radius}%`,
++    centerX,
++    centerY,
++    splitNumber: height < 120 ? Math.min(3, resolvedChart.value.splitNumber) : resolvedChart.value.splitNumber,
++    symbolSize: resolvedChart.value.symbolVisible ? Math.round(clampNumber(Math.min(width, height) / 34, 3, 6, 4) * 10) / 10 : 0,
++  };
++});
++
++const radarIndicators = computed(() =>
++  indicators.value.map((indicator) => ({
++    name: indicator.name,
++    min: indicator.min,
++    max: indicator.max,
++  })),
++);
++
++const formatTooltip = (params: unknown) => {
++  if (!isRecord(params)) {
++    return '';
++  }
++
++  const data = isRecord(params.data) ? params.data : {};
++  const rawValues = Array.isArray(data.value) ? data.value : [];
++  const marker = typeof params.marker === 'string' ? params.marker : '';
++  const name = String(data.name ?? params.name ?? '');
++  const lines = [`${marker}${name}`];
++
++  indicators.value.forEach((indicator, index) => {
++    lines.push(`${indicator.name}: ${formatNumber(Number(rawValues[index]), indicator.unit)}`);
++  });
++
++  return lines.join('<br/>');
++};
++
++const option = computed<EChartsOption>(() => {
++  const tones = resolvedTones.value;
++  const scale = chartScale.value;
++
++  return {
++    animationDuration: 520,
++    color: palette.value,
++    legend: {
++      show: scale.legendVisible,
++      top: scale.legendRightVisible ? 'middle' : 0,
++      right: scale.legendRightVisible ? 0 : undefined,
++      left: scale.legendTopVisible ? 'center' : undefined,
++      orient: scale.legendRightVisible ? 'vertical' : 'horizontal',
++      width: scale.legendRightVisible ? scale.legendWidth : undefined,
++      itemWidth: 9,
++      itemHeight: 6,
++      itemGap: 8,
++      selectedMode: false,
++      data: seriesRows.value.map((item) => item.name),
++      textStyle: {
++        color: tones.axis,
++        fontSize: scale.axisFontSize,
++        fontWeight: 700,
++        overflow: 'truncate',
++        width: scale.legendRightVisible ? scale.legendTextWidth : undefined,
++      },
++    },
++    tooltip: {
++      trigger: 'item',
++      confine: true,
++      appendToBody: true,
++      formatter: formatTooltip,
++      backgroundColor: 'rgba(255, 255, 255, 0.96)',
++      borderColor: 'rgba(0, 87, 217, 0.16)',
++      textStyle: {
++        color: tones.text,
++        fontSize: 11,
++      },
++    },
++    radar: {
++      radius: scale.radius,
++      center: [scale.centerX, scale.centerY],
++      indicator: radarIndicators.value,
++      splitNumber: scale.splitNumber,
++      shape: 'polygon',
++      axisNameGap: Math.max(3, Math.round(scale.fontSize * 0.56)),
++      axisName: {
++        show: scale.labelVisible,
++        color: tones.text,
++        fontSize: scale.axisFontSize,
++        fontWeight: 760,
++        lineHeight: scale.axisFontSize + 2,
++        padding: [1, 3],
++        backgroundColor: hexToRgba(tones.primary, 0.07),
++        borderRadius: 4,
++        formatter: (name?: string) => {
++          const label = name ?? '';
++          return label.length > 4 && chartSize.value.width < 180 ? `${label.slice(0, 4)}...` : label;
++        },
++      },
++      splitArea: {
++        areaStyle: {
++          color: ['rgba(255, 255, 255, 0.34)', hexToRgba(tones.primary, 0.055)],
++        },
++      },
++      axisLine: {
++        lineStyle: {
++          color: hexToRgba(tones.primary, 0.16),
++          width: 1,
++        },
++      },
++      splitLine: {
++        lineStyle: {
++          color: tones.splitLine,
++          type: [4, 5],
++        },
++      },
++    },
++    series: [
++      {
++        name: title.value,
++        type: 'radar',
++        symbol: resolvedChart.value.symbolVisible ? 'circle' : 'none',
++        symbolSize: scale.symbolSize,
++        data: seriesRows.value.map((item, index) => {
++          const color = item.color ?? palette.value[index % palette.value.length];
++
++          return {
++            value: item.values,
++            name: item.name,
++            areaStyle: {
++              color: hexToRgba(color, index === 0 ? resolvedChart.value.areaOpacity : resolvedChart.value.areaOpacity * 0.62),
++            },
++            lineStyle: {
++              color,
++              width: resolvedChart.value.lineWidthPx,
++              shadowBlur: 6,
++              shadowColor: hexToRgba(color, 0.14),
++            },
++            itemStyle: {
++              color,
++              borderColor: '#ffffff',
++              borderWidth: 1,
++            },
++          };
++        }),
++      },
++    ] as EChartsOption['series'],
++  };
++});
++
++const cardStyle = computed(() => {
++  const layout = resolvedLayout.value;
++  const titleConfig = resolvedTitle.value;
++  const auxConfig = resolvedAux.value;
++  const tones = resolvedTones.value;
++
++  return {
++    '--radar-chart-card-padding': `${layout.paddingPx}px`,
++    '--radar-chart-card-gap': `${layout.gapPx}px`,
++    '--radar-chart-content-gap': `${layout.contentGapPx}px`,
++    '--radar-chart-title-row': `${layout.titleHeightPx}px`,
++    '--radar-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
++    '--radar-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
++    '--radar-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
++    '--radar-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
++    '--radar-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
++    '--radar-chart-aux-label-color': auxConfig.labelColor,
++    '--radar-chart-aux-value-color': auxConfig.valueColor,
++    '--radar-chart-title-font-size': `${titleConfig.fontSizePx}px`,
++    '--radar-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
++    '--radar-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
++    '--radar-chart-title-color': titleConfig.color || tones.text,
++    '--radar-chart-unit-color': titleConfig.unitColor || tones.unit,
++    '--radar-chart-primary': tones.primary,
++    '--radar-chart-primary-soft': hexToRgba(tones.primary, 0.2),
++  };
++});
++
++const updateContainerSize = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rect = rootRef.value.getBoundingClientRect();
++  const nextSize = {
++    width: Math.round(rect.width),
++    height: Math.round(rect.height),
++  };
++
++  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
++    containerSize.value = nextSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateContainerSize();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(option.value, true);
++  chart.resize();
++};
++
++const scheduleRenderChart = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateContainerSize();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRenderChart();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRenderChart();
++});
++
++watch(option, () => {
++  void scheduleRenderChart();
++}, { deep: true, flush: 'post' });
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++</script>
++
++<template>
++  <section
++    ref="rootRef"
++    class="radar-chart-example-card"
++    :class="cardClasses"
++    :style="cardStyle"
++    aria-label="Radar chart card"
++  >
++    <header v-if="resolvedTitle.visible" class="radar-chart-example-header">
++      <div class="radar-chart-example-title-wrap">
++        <span class="radar-chart-example-title">{{ title }}</span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="radar-chart-example-unit">{{ unit }}</span>
++    </header>
++    <div class="radar-chart-example-body">
++      <div v-if="visibleAuxMetrics.length" class="radar-chart-example-aux" aria-label="Radar chart metrics">
++        <span
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}:${metric.value}`"
++          class="radar-chart-example-aux-item"
++          :class="`tone-${metric.tone ?? 'neutral'}`"
++        >
++          <em>{{ metric.label }}</em>
++          <b>{{ metric.value }}</b>
++        </span>
++      </div>
++      <div class="radar-chart-example-chart-pane">
++        <div v-if="hasRenderableData" ref="chartRef" class="radar-chart-example-canvas" />
++        <div v-else class="radar-chart-example-empty">{{ text.noData }}</div>
++      </div>
++    </div>
++  </section>
++</template>
++
++<style scoped>
++.radar-chart-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: grid;
++  grid-template-rows: var(--radar-chart-title-row) minmax(0, 1fr);
++  row-gap: var(--radar-chart-card-gap);
++  padding: var(--radar-chart-card-padding);
++  overflow: hidden;
++  background: transparent;
++  color: var(--radar-chart-title-color);
++}
++
++.radar-chart-example-card:not(.has-title) {
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.radar-chart-example-header {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: start;
++  column-gap: 8px;
++}
++
++.radar-chart-example-title-wrap {
++  min-width: 0;
++  display: flex;
++  align-items: flex-start;
++}
++
++.radar-chart-example-title {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  min-width: 0;
++  color: var(--radar-chart-title-color);
++  font-size: var(--radar-chart-title-font-size);
++  line-height: var(--radar-chart-title-line-height);
++  font-weight: 700;
++  white-space: normal;
++  overflow-wrap: anywhere;
++}
++
++.radar-chart-example-card.has-title-underline .radar-chart-example-title::after {
++  content: '';
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  border-radius: 999px;
++  background: linear-gradient(
++    90deg,
++    var(--radar-chart-primary) 0%,
++    var(--radar-chart-primary-soft) 72%,
++    transparent 100%
++  );
++}
++
++.radar-chart-example-unit {
++  justify-self: stretch;
++  min-width: 0;
++  width: 100%;
++  color: var(--radar-chart-unit-color);
++  font-size: var(--radar-chart-unit-font-size);
++  line-height: var(--radar-chart-title-line-height);
++  white-space: normal;
++  overflow-wrap: anywhere;
++  text-align: right;
++}
++
++.radar-chart-example-body {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--radar-chart-content-gap);
++  overflow: hidden;
++}
++
++.radar-chart-example-card.has-aux.is-horizontal .radar-chart-example-body,
++.radar-chart-example-card.has-aux.is-vertical .radar-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--radar-chart-content-gap), 2px);
+ }
+ 
+ .radar-chart-example-card:not(.has-aux) .radar-chart-example-body {

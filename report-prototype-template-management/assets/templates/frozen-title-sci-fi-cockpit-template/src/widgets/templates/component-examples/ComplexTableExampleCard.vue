@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import S2ReportTableWidget from '../../components/S2ReportTableWidget.vue';
 import type { WidgetContext } from '../../types';
 
@@ -53,6 +53,7 @@ interface ComplexTableExampleLayoutConfig {
 interface ComplexTableExampleAuxConfig {
   visible?: boolean;
   maxItems?: number;
+  orientation?: 'auto' | 'horizontal' | 'vertical';
   labelFontSizePx?: number;
   valueFontSizePx?: number;
   labelColor?: string;
@@ -107,6 +108,10 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+const rootRef = ref<HTMLElement | null>(null);
+const rootSize = ref({ width: 0, height: 0 });
+let resizeObserver: ResizeObserver | null = null;
 
 const text = {
   title: '复杂表卡片',
@@ -187,6 +192,7 @@ const defaultLayoutConfig: Required<ComplexTableExampleLayoutConfig> = {
 const defaultAuxConfig: Required<ComplexTableExampleAuxConfig> = {
   visible: true,
   maxItems: 4,
+  orientation: 'auto',
   labelFontSizePx: 9,
   valueFontSizePx: 12,
   labelColor: '#6b7c93',
@@ -228,6 +234,14 @@ const clampNumber = (value: unknown, min: number, max: number, fallback: number)
   return Number.isFinite(numberValue) ? Math.min(Math.max(numberValue, min), max) : fallback;
 };
 
+const normalizeAuxOrientation = (value: unknown): Required<ComplexTableExampleAuxConfig>['orientation'] => {
+  if (value === 'horizontal' || value === 'vertical') {
+    return value;
+  }
+
+  return 'auto';
+};
+
 const collectLeafColumns = (columns: ComplexTableExampleColumn[]): ComplexTableExampleColumn[] =>
   columns.flatMap((column) => column.children?.length ? collectLeafColumns(column.children) : [column]);
 
@@ -258,6 +272,7 @@ const resolvedLayout = computed<Required<ComplexTableExampleLayoutConfig>>(() =>
 const resolvedAux = computed<Required<ComplexTableExampleAuxConfig>>(() => ({
   ...defaultAuxConfig,
   ...(props.config?.aux ?? {}),
+  orientation: normalizeAuxOrientation(props.config?.aux?.orientation),
   maxItems: Math.round(clampNumber(props.config?.aux?.maxItems, 1, 6, defaultAuxConfig.maxItems)),
   labelFontSizePx: clampNumber(props.config?.aux?.labelFontSizePx, 8, 14, defaultAuxConfig.labelFontSizePx),
   valueFontSizePx: clampNumber(props.config?.aux?.valueFontSizePx, 9, 20, defaultAuxConfig.valueFontSizePx),
@@ -329,6 +344,20 @@ const visibleAuxMetrics = computed(() => {
     .slice(0, resolvedAux.value.maxItems);
 });
 
+const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
+  const orientation = resolvedAux.value.orientation;
+
+  if (orientation === 'horizontal' || orientation === 'vertical') {
+    return orientation;
+  }
+
+  if (!rootSize.value.width || !rootSize.value.height) {
+    return 'horizontal';
+  }
+
+  return rootSize.value.width >= rootSize.value.height ? 'horizontal' : 'vertical';
+});
+
 const displayBudget = computed(() => ({
   visibleRowCount: resolvedTable.value.pageSize,
   rowHeightPx: resolvedTable.value.rowHeightPx,
@@ -357,7 +386,22 @@ const cardClasses = computed(() => ({
   'has-title': resolvedTitle.value.visible,
   'has-title-underline': resolvedTitle.value.underline,
   'has-aux': visibleAuxMetrics.value.length > 0,
+  [`aux-${auxOrientation.value}`]: true,
 }));
+
+const auxRowHeightPx = computed(() => {
+  if (!visibleAuxMetrics.value.length) {
+    return 0;
+  }
+
+  const baseHeight = resolvedLayout.value.auxHeightPx;
+
+  if (auxOrientation.value === 'horizontal') {
+    return baseHeight;
+  }
+
+  return Math.max(baseHeight, visibleAuxMetrics.value.length * 20);
+});
 
 const cardStyle = computed(() => {
   const layout = resolvedLayout.value;
@@ -370,7 +414,7 @@ const cardStyle = computed(() => {
     '--complex-table-card-padding': `${layout.paddingPx}px`,
     '--complex-table-card-gap': `${layout.gapPx}px`,
     '--complex-table-title-row': `${layout.titleHeightPx}px`,
-    '--complex-table-aux-row': `${visibleAuxMetrics.value.length ? layout.auxHeightPx : 0}px`,
+    '--complex-table-aux-row': `${auxRowHeightPx.value}px`,
     '--complex-table-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
     '--complex-table-title-font-size': `${titleConfig.fontSizePx}px`,
     '--complex-table-title-line-height': `${titleConfig.lineHeightPx}px`,
@@ -401,10 +445,41 @@ const cardStyle = computed(() => {
     '--s2-data-border-vertical': tableConfig.dataBorderColor,
   };
 });
+
+const updateRootSize = () => {
+  if (!rootRef.value) {
+    return;
+  }
+
+  const rect = rootRef.value.getBoundingClientRect();
+  const nextSize = {
+    width: Math.round(rect.width),
+    height: Math.round(rect.height),
+  };
+
+  if (nextSize.width !== rootSize.value.width || nextSize.height !== rootSize.value.height) {
+    rootSize.value = nextSize;
+  }
+};
+
+onMounted(() => {
+  updateRootSize();
+
+  if (rootRef.value) {
+    resizeObserver = new ResizeObserver(updateRootSize);
+    resizeObserver.observe(rootRef.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+});
 </script>
 
 <template>
   <section
+    ref="rootRef"
     class="complex-table-example-card"
     :class="cardClasses"
     :style="cardStyle"
@@ -538,10 +613,19 @@ const cardStyle = computed(() => {
   min-width: 0;
   min-height: 0;
   display: grid;
+  overflow: hidden;
+}
+
+.complex-table-example-card.aux-horizontal .complex-table-example-aux {
   grid-template-columns: repeat(var(--complex-table-aux-count), minmax(0, 1fr));
   align-items: center;
   column-gap: 4px;
-  overflow: hidden;
+}
+
+.complex-table-example-card.aux-vertical .complex-table-example-aux {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(var(--complex-table-aux-count), minmax(0, 1fr));
+  row-gap: 2px;
 }
 
 .complex-table-example-aux-item {
@@ -549,9 +633,21 @@ const cardStyle = computed(() => {
   min-height: 0;
   display: grid;
   align-content: center;
+  color: var(--complex-table-aux-value-color);
+  overflow: hidden;
+}
+
+.complex-table-example-card.aux-horizontal .complex-table-example-aux-item {
   justify-items: center;
   text-align: center;
-  overflow: hidden;
+}
+
+.complex-table-example-card.aux-vertical .complex-table-example-aux-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: stretch;
+  column-gap: 6px;
+  text-align: left;
 }
 
 .complex-table-example-aux-item em,
@@ -575,6 +671,10 @@ const cardStyle = computed(() => {
   color: var(--complex-table-aux-value-color);
   font-size: var(--complex-table-aux-value-font-size);
   font-weight: 800;
+}
+
+.complex-table-example-card.aux-vertical .complex-table-example-aux-item b {
+  justify-self: end;
 }
 
 .complex-table-example-aux-item.tone-neutral b {

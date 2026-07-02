@@ -131,7 +131,7 @@ const defaultLayoutConfig: Required<LineChartExampleLayoutConfig> = {
 };
 
 const defaultChartConfig: Required<LineChartExampleChartConfig> = {
-  legendVisible: false,
+  legendVisible: true,
   smooth: true,
   areaVisible: true,
   showSymbol: true,
@@ -324,7 +324,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -334,6 +334,14 @@ const cardClasses = computed(() => ({
   'has-title': resolvedTitle.value.visible,
 }));
 
+const isCompactChart = computed(() => {
+  const height =
+    chartSize.value.height ||
+    Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 0);
+
+  return height > 0 && height < 200;
+});
+
 const chartScale = computed(() => {
   const width = chartSize.value.width || containerSize.value.width || 240;
   const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
@@ -341,7 +349,7 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
-  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 1 && width >= 240 && height >= 130;
+  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 0 && width >= 240 && height >= 130;
   const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
 
   return {
@@ -506,6 +514,9 @@ const cardStyle = computed(() => {
   const titleConfig = resolvedTitle.value;
   const auxConfig = resolvedAux.value;
   const tones = resolvedTones.value;
+  const titlelessAuxGapPx = Math.round(
+    clampNumber(containerSize.value.height > 0 ? containerSize.value.height * 0.035 : undefined, 6, 14, 8),
+  );
 
   return {
     '--line-chart-card-padding': `${layout.paddingPx}px`,
@@ -519,6 +530,7 @@ const cardStyle = computed(() => {
     '--line-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
     '--line-chart-aux-label-color': auxConfig.labelColor,
     '--line-chart-aux-value-color': auxConfig.valueColor,
+    '--line-chart-titleless-aux-gap': `${titlelessAuxGapPx}px`,
     '--line-chart-title-font-size': `${titleConfig.fontSizePx}px`,
     '--line-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
     '--line-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
@@ -635,7 +647,7 @@ onBeforeUnmount(() => {
           <b>{{ metric.value }}</b>
         </span>
       </div>
-      <div class="line-chart-example-chart-pane">
+      <div class="line-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
         <div v-if="hasRenderableData" ref="chartRef" class="line-chart-example-canvas" />
         <div v-else class="line-chart-example-empty">暂无数据</div>
       </div>
@@ -723,19 +735,20 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.line-chart-example-card.has-aux.is-horizontal .line-chart-example-body {
-  grid-template-columns: var(--line-chart-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
-}
-
+.line-chart-example-card.has-aux.is-horizontal .line-chart-example-body,
 .line-chart-example-card.has-aux.is-vertical .line-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--line-chart-vertical-split);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--line-chart-content-gap), 2px);
 }
 
 .line-chart-example-card:not(.has-aux) .line-chart-example-body {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
+}
+
+.line-chart-example-card:not(.has-title).has-aux .line-chart-example-aux {
+  margin-top: var(--line-chart-titleless-aux-gap);
 }
 
 .line-chart-example-aux {

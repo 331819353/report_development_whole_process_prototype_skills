@@ -90,8 +90,6 @@ const chartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
     orientation: 'auto',
   },
   chart: {
-    legendVisible: false,
-    legendPosition: 'hidden',
     axisVisible: true,
     axisNameVisible: true,
     splitLineVisible: true,
@@ -103,6 +101,24 @@ const chartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
     gridRightPx: 4,
     radiusPercent: 68,
     outerRadiusPercent: 74,
+  },
+};
+
+const topLegendChartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
+  ...chartSlotDisplayConfig,
+  chart: {
+    ...chartSlotDisplayConfig.chart,
+    legendVisible: true,
+    legendPosition: 'top',
+  },
+};
+
+const rightLegendChartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
+  ...chartSlotDisplayConfig,
+  chart: {
+    ...chartSlotDisplayConfig.chart,
+    legendVisible: true,
+    legendPosition: 'right',
   },
 };
 
@@ -177,15 +193,16 @@ const tableSlotDisplayConfig: ComponentExampleRuntimeConfig = {
 const defaultBusinessComponentConfigByType: Partial<Record<RegisteredWidgetConfig['type'], ComponentExampleRuntimeConfig>> = {
   KpiMetricExampleCard: metricSlotDisplayConfig,
   TargetProgressExampleCard: targetSlotDisplayConfig,
-  LineChartExampleCard: chartSlotDisplayConfig,
-  BarChartExampleCard: chartSlotDisplayConfig,
-  ComboChartExampleCard: chartSlotDisplayConfig,
+  LineChartExampleCard: topLegendChartSlotDisplayConfig,
+  BarChartExampleCard: topLegendChartSlotDisplayConfig,
+  ComboChartExampleCard: topLegendChartSlotDisplayConfig,
   HeatmapChartExampleCard: chartSlotDisplayConfig,
-  ProportionChartExampleCard: chartSlotDisplayConfig,
-  QuadrantChartExampleCard: chartSlotDisplayConfig,
-  RadarChartExampleCard: chartSlotDisplayConfig,
-  RoundedFunnelChartExampleCard: chartSlotDisplayConfig,
-  CustomEChartComponentTemplate: chartSlotDisplayConfig,
+  ProportionChartExampleCard: rightLegendChartSlotDisplayConfig,
+  QuadrantChartExampleCard: topLegendChartSlotDisplayConfig,
+  RadarChartExampleCard: rightLegendChartSlotDisplayConfig,
+  RoundedFunnelChartExampleCard: rightLegendChartSlotDisplayConfig,
+  SunburstChartExampleCard: rightLegendChartSlotDisplayConfig,
+  CustomEChartComponentTemplate: topLegendChartSlotDisplayConfig,
   DetailTableExampleCard: tableSlotDisplayConfig,
   ComplexTableExampleCard: tableSlotDisplayConfig,
 };
@@ -519,10 +536,26 @@ const projectBlock = createBlockAreaConfig;
 const projectLayoutRows = [
   'AAAABBBBCCCC',
   'AAAABBBBCCCC',
+  'AAAABBBBCCCC',
   'DDDDEEEEFFFF',
   'DDDDEEEEFFFF',
   'DDDDEEEEFFFF',
   'GGGGHHHHIIII',
+  'GGGGHHHHIIII',
+  'GGGGHHHHIIII',
+  'GGGGHHHHIIII',
+];
+
+const templateLaunchLayoutRows = [
+  'AAAAAABBBBBB',
+  'AAAAAABBBBBB',
+  'AAAAAABBBBBB',
+  'CCCCCCCCCCCC',
+  'CCCCCCCCCCCC',
+  'CCCCCCCCCCCC',
+  'DDDDEEEEFFFF',
+  'DDDDEEEEFFFF',
+  'DDDDEEEEFFFF',
   'GGGGHHHHIIII',
   'GGGGHHHHIIII',
   'GGGGHHHHIIII',
@@ -789,25 +822,32 @@ const operatingColumnTree = [
 
 const overviewWidgets: WidgetMap = {
   A: projectBlock({
-    title: '核心经营指标',
-    note: '收入、利润与现金流三项指标共同判断项目经营健康度。',
+    title: '6*3 三槽位经营指标',
+    note: '6*3 分块采用标题区、附加信息区和图表区三个组件槽位，展示同一经营主题的组合挂载方式。',
     componentRegionPattern: 'ABC',
     slots: [
       slot('A', '项目收入', 'kpi-metric-card', apiKpi('revenue', '项目收入', 12860, '万', 'primary', [{ label: '同比', value: '+12.6%', tone: 'success', icon: 'trend' }], [82, 96, 104, 116, 122, 129]), 1, 'primary'),
-      slot('B', '经营利润', 'kpi-metric-card', kpi('经营利润', 2460, '万', 'success', [{ label: '利润率', value: '19.1%', tone: 'primary', icon: 'target' }], [16, 18, 20, 21, 23, 25]), 1, 'secondary'),
-      slot('C', '经营现金流', 'kpi-metric-card', kpi('经营现金流', 3180, '万', 'warning', [{ label: '回款达成', value: '88.4%', tone: 'warning', icon: 'clock' }], [21, 26, 24, 28, 31, 32]), 1, 'supporting'),
+      slot('B', '区域贡献', 'ranking-list-card', ranking('区域贡献', [{ name: '华东', value: 3860, delta: '+14.8%' }, { name: '海外', value: 3120, delta: '+11.5%' }, { name: '华南', value: 2480, delta: '+6.2%' }], '万'), 1, 'secondary'),
+      slot('C', '图表区', 'proportion-chart-card', proportion('图表区', [{ name: '线上直营', value: 42 }, { name: '门店零售', value: 28 }, { name: '工程客户', value: 18 }, { name: '海外直营', value: 12 }]), 1, 'supporting'),
     ],
   }),
   B: projectBlock({
-    title: '年度目标达成',
-    note: '以收入目标为主线，识别当前差距与达成压力。',
-    componentRegionPattern: 'A',
-    slots: [slot('A', '收入达成率', 'target-progress-card', target('收入达成率', 92.4, 100, 92.4, 7.6, 'primary'), 1, 'primary')],
+    title: '6*3 三槽位目标追踪',
+    note: '第二个 6*3 分块继续使用三个槽位，验证目标卡、附加动作和图表示例能并列挂载。',
+    componentRegionPattern: 'ABC',
+    slots: [
+      slot('A', '达成率', 'target-progress-card', target('达成率', 92.4, 100, 92.4, 7.6, 'primary'), 1, 'primary'),
+      slot('B', '关键动作', 'action-list-card', actions('关键动作', [
+        { label: '华北工程客户回款专项会', owner: '赵岩', due: '今日', status: '待处理', tone: 'danger' },
+        { label: '华南门店样机结构复盘', owner: '陈卓', due: '明日', status: '推进中', tone: 'warning' },
+      ]), 1, 'secondary'),
+      slot('C', '健康度', 'radar-chart-card', radar('健康度', ['增长', '毛利', '履约', '回款', '库存'], [86, 78, 82, 72, 68]), 1, 'supporting'),
+    ],
   }),
   C: projectBlock({
-    title: '经营结论',
-    note: '把本期结论、证据和动作放在首屏可读位置。',
-    componentRegionPattern: 'A',
+    title: '12*3 三槽位结论展开',
+    note: '12*3 分块用三个组件槽位承载标题判断、附加证据和图表区示例，适合横向展开核心结论。',
+    componentRegionPattern: 'ABC',
     slots: [
       slot('A', '本期判断', 'conclusion-card', conclusion('本期判断', '项目收入保持增长，但华北工程客户拖累利润与现金流。', '增长质量分化', 'warning', [
         { label: '收入同比', value: '+12.6%', tone: 'success' },
@@ -815,6 +855,8 @@ const overviewWidgets: WidgetMap = {
       ], [
         { label: '优先动作', value: '锁定华北回款与交付节点', tone: 'warning' },
       ]), 1, 'primary'),
+      slot('B', '证据清单', 'ranking-list-card', ranking('证据清单', [{ name: '线上直营', value: 4620, delta: '+18.4%' }, { name: '海外直营', value: 3120, delta: '+11.5%' }, { name: '工程客户', value: 1510, delta: '-3.4%' }], '万'), 1, 'secondary'),
+      slot('C', '图表区', 'combo-chart-card', combo('图表区', ['华东', '华南', '华北', '海外'], [{ name: '收入', type: 'bar', values: [3860, 2480, 1960, 3120] }, { name: '毛利率', type: 'line', values: [29.6, 22.4, 18.8, 27.3] }], [{ label: '平均毛利率', value: '24.8%', tone: 'primary' }]), 1, 'supporting'),
     ],
   }),
   D: projectBlock({
@@ -936,7 +978,7 @@ export const blockAreaConfigMap = bindComponentSlotDataSources({
 
 export const projectReportPages: Record<(typeof projectReportPageIds)[number], DashboardPageConfig> = {
   overview: {
-    layoutRows: projectLayoutRows,
+    layoutRows: templateLaunchLayoutRows,
     widgets: blockAreaConfigMap.overview,
   },
   revenue: {

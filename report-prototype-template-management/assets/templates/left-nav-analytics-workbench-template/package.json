@@ -4,8 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode development --host 0.0.0.0",
-    "dev:auto": "node scripts/start-available-port.mjs --mode dev",
+    "dev": "node scripts/dev-with-mock-api.mjs",
+    "dev:auto": "node scripts/dev-with-mock-api.mjs",
+    "dev:vite": "vite --mode development --host 0.0.0.0",
     "dev:mock": "node scripts/dev-with-mock-api.mjs",
     "mock:api": "node scripts/mock-api-server.mjs",
     "validate:dashboard": "node scripts/validate-dashboard-contract.mjs",

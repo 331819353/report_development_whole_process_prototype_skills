@@ -30,7 +30,7 @@ export const layoutGridContract = {
   columns: 12,
   visibleRows: 8,
   minColumns: 2,
-  minRows: 2,
+  minRows: 3,
   rowHeight: 135,
   cellPadding: 3,
   requireColumnsGteRows: true,
@@ -40,7 +40,7 @@ const round = (value: number) => Math.round(value * 10) / 10;
 
 const assertLegalSpan = (cols: number, rows: number) => {
   if (cols < layoutGridContract.minColumns || rows < layoutGridContract.minRows) {
-    throw new Error('Layout span must be at least 2x2.');
+    throw new Error('Layout span must use at least 2 columns and 3 rows.');
   }
 
   if (cols < rows) {

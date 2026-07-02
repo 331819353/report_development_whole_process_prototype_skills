@@ -619,6 +619,7 @@ onBeforeUnmount(() => {
 }
 
 .conclusion-example-main {
+  align-self: center;
   display: -webkit-box;
   min-width: 0;
   min-height: 0;

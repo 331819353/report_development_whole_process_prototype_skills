@@ -5,12 +5,14 @@ This template serves prototype data only through the npm mock API. Do not keep s
 ## Commands
 
 ```bash
+npm run dev
 npm run mock:api
 npm run dev:mock
 ```
 
 - `mock:api` starts only the API, defaulting to `http://127.0.0.1:4179`.
-- `dev:mock` starts the API and Vite, and proxies Vite `/api` requests to the mock API.
+- `dev` and `dev:mock` start the API and Vite, and proxy Vite `/api` requests to the mock API.
+- `dev:vite` starts only Vite and is not runtime-ready for API-backed filters or component slots.
 - Useful flags: `--host`, `--port`, `--mock-host`, `--mock-port`, `--attempts`.
 
 ## Response Envelope

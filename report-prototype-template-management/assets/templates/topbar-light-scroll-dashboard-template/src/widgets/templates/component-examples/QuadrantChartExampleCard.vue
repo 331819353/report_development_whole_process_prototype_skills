@@ -441,7 +441,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -1109,12 +1109,14 @@ watch(chartOption, () => {
 
 .quadrant-chart-example-card.is-horizontal.has-aux .quadrant-chart-example-card__body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--quadrant-horizontal-aux-ratio) minmax(0, var(--quadrant-horizontal-chart-ratio));
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--quadrant-content-gap), 2px);
 }
 
 .quadrant-chart-example-card.is-vertical.has-aux .quadrant-chart-example-card__body {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: var(--quadrant-vertical-aux-ratio) minmax(0, var(--quadrant-vertical-chart-ratio));
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--quadrant-content-gap), 2px);
 }
 
 .quadrant-chart-example-card:not(.has-aux) .quadrant-chart-example-card__body {
@@ -1147,8 +1149,7 @@ watch(chartOption, () => {
 .quadrant-chart-example-card__aux-item {
   min-width: 0;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   justify-content: center;
   gap: 1px;
 }

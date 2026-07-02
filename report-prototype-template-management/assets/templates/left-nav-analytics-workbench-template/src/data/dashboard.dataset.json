@@ -326,65 +326,68 @@
       },
       "overview.A.B": {
         "key": "overview.A.B",
-        "componentType": "KpiMetricExampleCard",
-        "visualType": "metric-card",
+        "componentType": "RankingListExampleCard",
+        "visualType": "ranking-list",
         "props": {
-          "title": "经营利润",
-          "value": 2460,
+          "title": "区域贡献",
           "unit": "万",
-          "tone": "success",
-          "accessoryMetrics": [
+          "valueUnit": "万",
+          "items": [
             {
-              "label": "同比",
-              "value": "+9.4%",
-              "tone": "success"
+              "name": "华东",
+              "value": 3860,
+              "delta": "+14.8%"
+            },
+            {
+              "name": "海外",
+              "value": 3120,
+              "delta": "+11.5%"
+            },
+            {
+              "name": "华南",
+              "value": 2480,
+              "delta": "+6.2%"
             }
-          ],
-          "sparkValues": [
-            18,
-            19,
-            21,
-            22,
-            24,
-            25
           ]
         },
-        "legacyKey": "KpiMetricExampleCard:经营利润"
+        "legacyKey": "RankingListExampleCard:区域贡献"
       },
       "overview.A.C": {
         "key": "overview.A.C",
-        "componentType": "KpiMetricExampleCard",
-        "visualType": "metric-card",
+        "componentType": "ProportionChartExampleCard",
+        "visualType": "pie",
         "props": {
-          "title": "经营现金流",
-          "value": 3180,
-          "unit": "万",
-          "tone": "warning",
-          "accessoryMetrics": [
+          "title": "图表区",
+          "unit": "%",
+          "totalLabel": "收入结构",
+          "items": [
             {
-              "label": "回款达成",
-              "value": "88.4%",
-              "tone": "warning",
-              "icon": "clock"
+              "name": "线上直营",
+              "value": 42
+            },
+            {
+              "name": "门店零售",
+              "value": 28
+            },
+            {
+              "name": "工程客户",
+              "value": 18
+            },
+            {
+              "name": "海外直营",
+              "value": 12
             }
-          ],
-          "sparkValues": [
-            21,
-            26,
-            24,
-            28,
-            31,
-            32
           ]
         },
-        "legacyKey": "KpiMetricExampleCard:经营现金流"
+        "legacyKey": "ProportionChartExampleCard:图表区"
       },
       "overview.B.A": {
         "key": "overview.B.A",
         "componentType": "TargetProgressExampleCard",
         "visualType": "metric-card",
         "props": {
-          "title": "收入达成率",
+          "title": "达成率",
+          "unit": "%",
           "value": 92.4,
           "valueSuffix": "%",
           "targetValue": 100,
@@ -410,6 +413,56 @@
           ]
         },
         "legacyKey": "TargetProgressExampleCard:收入达成率"
+      },
+      "overview.B.B": {
+        "key": "overview.B.B",
+        "componentType": "ActionListExampleCard",
+        "visualType": "action-recommendation-card",
+        "props": {
+          "title": "关键动作",
+          "unit": "项",
+          "items": [
+            {
+              "label": "华北工程客户回款专项会",
+              "owner": "赵岩",
+              "due": "今日",
+              "status": "待处理",
+              "tone": "danger"
+            },
+            {
+              "label": "华南门店样机结构复盘",
+              "owner": "陈卓",
+              "due": "明日",
+              "status": "推进中",
+              "tone": "warning"
+            }
+          ]
+        },
+        "legacyKey": "ActionListExampleCard:关键动作"
+      },
+      "overview.B.C": {
+        "key": "overview.B.C",
+        "componentType": "RadarChartExampleCard",
+        "visualType": "radar",
+        "props": {
+          "title": "健康度",
+          "unit": "分",
+          "indicators": [
+            "增长",
+            "毛利",
+            "履约",
+            "回款",
+            "库存"
+          ],
+          "values": [
+            86,
+            78,
+            82,
+            72,
+            68
+          ]
+        },
+        "legacyKey": "RadarChartExampleCard:健康度"
       },
       "overview.C.A": {
         "key": "overview.C.A",
@@ -442,6 +495,79 @@
           ]
         },
         "legacyKey": "ConclusionExampleCard:本期判断"
+      },
+      "overview.C.B": {
+        "key": "overview.C.B",
+        "componentType": "RankingListExampleCard",
+        "visualType": "ranking-list",
+        "props": {
+          "title": "证据清单",
+          "unit": "万",
+          "valueUnit": "万",
+          "items": [
+            {
+              "name": "线上直营",
+              "value": 4620,
+              "delta": "+18.4%"
+            },
+            {
+              "name": "海外直营",
+              "value": 3120,
+              "delta": "+11.5%"
+            },
+            {
+              "name": "工程客户",
+              "value": 1510,
+              "delta": "-3.4%"
+            }
+          ]
+        },
+        "legacyKey": "RankingListExampleCard:证据清单"
+      },
+      "overview.C.C": {
+        "key": "overview.C.C",
+        "componentType": "ComboChartExampleCard",
+        "visualType": "combo",
+        "props": {
+          "title": "图表区",
+          "unit": "万/%",
+          "categories": [
+            "华东",
+            "华南",
+            "华北",
+            "海外"
+          ],
+          "series": [
+            {
+              "name": "收入",
+              "type": "bar",
+              "values": [
+                3860,
+                2480,
+                1960,
+                3120
+              ]
+            },
+            {
+              "name": "毛利率",
+              "type": "line",
+              "values": [
+                29.6,
+                22.4,
+                18.8,
+                27.3
+              ]
+            }
+          ],
+          "auxMetrics": [
+            {
+              "label": "平均毛利率",
+              "value": "24.8%",
+              "tone": "primary"
+            }
+          ]
+        },
+        "legacyKey": "ComboChartExampleCard:图表区"
       },
       "overview.D.A": {
         "key": "overview.D.A",

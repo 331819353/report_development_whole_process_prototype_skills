@@ -324,7 +324,7 @@ const auxOrientation = computed<'horizontal' | 'vertical'>(() => {
     return orientation;
   }
 
-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+  return contentOrientation.value;
 });
 
 const cardClasses = computed(() => ({
@@ -788,8 +788,9 @@ onBeforeUnmount(() => {
 
 .rounded-funnel-example-card.has-aux.is-horizontal .rounded-funnel-example-body,
 .rounded-funnel-example-card.has-aux.is-vertical .rounded-funnel-example-body {
-  grid-template-columns: var(--rounded-funnel-horizontal-split);
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: max-content minmax(0, 1fr);
+  gap: min(var(--rounded-funnel-content-gap), 2px);
 }
 
 .rounded-funnel-example-card:not(.has-aux) .rounded-funnel-example-body {

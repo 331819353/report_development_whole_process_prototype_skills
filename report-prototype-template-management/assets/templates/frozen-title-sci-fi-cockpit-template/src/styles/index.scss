@@ -1253,7 +1253,7 @@ button {
 
 
 .placeholder-cell-body.has-body-summary {
-  grid-template-rows: minmax(0, 7fr) minmax(0, 2fr);
+  grid-template-rows: minmax(0, var(--block-component-row-size, 3fr)) minmax(0, var(--block-summary-row-size, 1fr));
 }
 
 .placeholder-cell-body-section {
@@ -1325,7 +1325,7 @@ button {
 }
 
 .placeholder-cell-inner.is-auto-component-slots .placeholder-cell-body.has-body-summary {
-  grid-template-rows: minmax(0, var(--block-summary-row-size, 1fr)) minmax(0, var(--block-component-row-size, 2fr));
+  grid-template-rows: minmax(0, var(--block-summary-row-size, 1fr)) minmax(0, var(--block-component-row-size, 3fr));
 }
 
 .placeholder-cell-inner.is-auto-component-slots .placeholder-cell-body-section-3 {

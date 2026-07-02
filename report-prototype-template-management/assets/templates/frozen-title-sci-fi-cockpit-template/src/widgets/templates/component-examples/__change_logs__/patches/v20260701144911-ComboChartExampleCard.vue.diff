@@ -1,0 +1,992 @@
+--- a/src/widgets/templates/component-examples/ComboChartExampleCard.vue
++++ b/src/widgets/templates/component-examples/ComboChartExampleCard.vue
+@@ -375,495 +375,500 @@
+     return orientation;
+   }
+ 
+-  return contentOrientation.value === 'horizontal' ? 'vertical' : 'horizontal';
+-});
+-
+-const cardClasses = computed(() => ({
+-  [`is-${contentOrientation.value}`]: true,
+-  [`aux-${auxOrientation.value}`]: true,
+-  'has-aux': visibleAuxMetrics.value.length > 0,
+-  'has-title': resolvedTitle.value.visible,
+-}));
+-
+-const chartScale = computed(() => {
+-  const width = chartSize.value.width || containerSize.value.width || 240;
+-  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
+-  const height = chartSize.value.height || fallbackHeight;
+-  const compact = Math.min(width / 280, height / 170);
+-  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
+-  const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
+-  const legendVisible = resolvedChart.value.legendVisible && visibleSeriesRows.value.length > 1 && width >= 240 && height >= 130;
+-  const hasRightAxis = resolvedChart.value.rightAxisVisible && visibleSeriesRows.value.some((item) => (item.yAxisIndex ?? 0) === 1);
+-  const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
+-  const rightAxisGutter = axisVisible && hasRightAxis ? Math.max(resolvedChart.value.gridRightPx, width < 260 ? 26 : 34) : resolvedChart.value.gridRightPx;
+-  const visibleCategoryCount = Math.max(categories.value.length, 1);
+-  const visibleBarCount = Math.max(visibleSeriesRows.value.filter((item) => item.kind === 'bar').length, 1);
+-  const autoBarWidth = Math.floor(width / (visibleCategoryCount * visibleBarCount * 3.4));
+-  const barWidth = resolvedChart.value.barWidthPx || clampNumber(autoBarWidth, 4, resolvedChart.value.barMaxWidthPx, 8);
+-
+-  return {
+-    fontSize,
+-    axisFontSize: Math.max(8, fontSize - 1),
+-    symbolSize: Math.round(clampNumber(Math.min(width, height) / 24, 4, 8, 5) * 10) / 10,
+-    legendVisible,
+-    axisVisible,
+-    hasRightAxis,
+-    barWidth,
+-    gridTop: legendVisible ? Math.max(resolvedChart.value.gridTopPx, 24) : resolvedChart.value.gridTopPx,
+-    gridBottom: axisVisible ? resolvedChart.value.gridBottomPx : 6,
+-    gridLeft: yAxisLabelGutter,
+-    yAxisLabelMargin: yAxisLabelGutter,
+-    gridRight: width < 220 ? 6 : rightAxisGutter,
+-  };
+-});
+-
+-const palette = computed(() => [resolvedTones.value.primary, resolvedTones.value.secondary, resolvedTones.value.tertiary, '#ffb020']);
+-
+-const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
+-
+-const hexToRgba = (color: string, opacity: number) => {
+-  const normalized = normalizeColor(color).replace('#', '');
+-  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
+-  const numeric = Number.parseInt(expanded, 16);
+-
+-  if (!Number.isFinite(numeric)) {
+-    return `rgba(0, 87, 217, ${opacity})`;
+-  }
+-
+-  const r = (numeric >> 16) & 255;
+-  const g = (numeric >> 8) & 255;
+-  const b = numeric & 255;
+-
+-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+-};
+-
+-const makeBarGradient = (color: string) =>
+-  new echarts.graphic.LinearGradient(0, 1, 0, 0, [
+-    { offset: 0, color: hexToRgba(color, 0.14) },
+-    { offset: 0.62, color: hexToRgba(color, 0.74) },
+-    { offset: 1, color },
+-  ]);
+-
+-const option = computed<EChartsOption>(() => {
+-  const chartConfig = resolvedChart.value;
+-  const scale = chartScale.value;
+-  const tones = resolvedTones.value;
+-
+-  return {
+-    animationDuration: 500,
+-    color: palette.value,
+-    grid: {
+-      top: scale.gridTop,
+-      right: scale.gridRight,
+-      bottom: scale.gridBottom,
+-      left: scale.gridLeft,
+-      containLabel: false,
+-    },
+-    legend: {
+-      show: scale.legendVisible,
+-      top: 0,
+-      left: 'center',
+-      orient: 'horizontal',
+-      itemWidth: 10,
+-      itemHeight: 6,
+-      textStyle: {
+-        color: tones.axis,
+-        fontSize: scale.axisFontSize,
+-      },
+-    },
+-    tooltip: {
+-      trigger: 'axis',
+-      confine: true,
+-      appendToBody: true,
+-      formatter: (params: unknown) => {
+-        const rows = Array.isArray(params) ? params : [params];
+-        const axisLabel = rows.find((item) => item && typeof item === 'object' && 'axisValueLabel' in item) as
+-          | { axisValueLabel?: string }
+-          | undefined;
+-        const lines = rows
+-          .map((item) => {
+-            if (!item || typeof item !== 'object') {
+-              return '';
+-            }
+-
+-            const row = item as { marker?: string; seriesName?: string; value?: string | number | Array<string | number> };
+-            const series = visibleSeriesRows.value.find((seriesItem) => seriesItem.name === row.seriesName);
+-            const value = Array.isArray(row.value) ? row.value[row.value.length - 1] : row.value;
+-
+-            return `${row.marker ?? ''}${row.seriesName ?? ''}: ${value ?? '--'}${series?.unit ?? ''}`;
+-          })
+-          .filter(Boolean);
+-
+-        return [axisLabel?.axisValueLabel, ...lines].filter(Boolean).join('<br/>');
+-      },
+-      axisPointer: {
+-        type: 'cross',
+-        crossStyle: {
+-          color: hexToRgba(tones.primary, 0.28),
+-        },
+-      },
+-    },
+-    xAxis: {
+-      type: 'category',
+-      boundaryGap: true,
+-      data: categories.value,
+-      axisTick: { show: false },
+-      axisLine: {
+-        show: scale.axisVisible,
+-        lineStyle: { color: hexToRgba(tones.primary, 0.14) },
+-      },
+-      axisLabel: {
+-        show: scale.axisVisible,
+-        color: tones.axis,
+-        fontSize: scale.axisFontSize,
+-        interval: containerSize.value.width < 260 ? 'auto' : 0,
+-        hideOverlap: true,
+-      },
+-      splitLine: { show: false },
+-    },
+-    yAxis: [
+-      {
+-        type: 'value',
+-        min: valueRangeByAxis.value[0].min,
+-        max: valueRangeByAxis.value[0].max,
+-        axisLabel: {
+-          show: scale.axisVisible && containerSize.value.width >= 190,
+-          color: tones.axis,
+-          fontSize: scale.axisFontSize,
+-          align: 'left',
+-          margin: scale.yAxisLabelMargin,
+-          padding: [0, 0, 0, 0],
+-          formatter: (value: number) => `${value}`,
+-        },
+-        axisLine: { show: false },
+-        axisTick: { show: false },
+-        splitLine: {
+-          show: chartConfig.splitLineVisible,
+-          lineStyle: {
+-            color: tones.splitLine,
+-            type: 'dashed',
+-          },
+-        },
+-      },
+-      {
+-        type: 'value',
+-        show: scale.hasRightAxis,
+-        min: valueRangeByAxis.value[1].min,
+-        max: Math.max(valueRangeByAxis.value[1].max, 100),
+-        axisLabel: {
+-          show: scale.axisVisible && containerSize.value.width >= 240,
+-          color: tones.axis,
+-          fontSize: scale.axisFontSize,
+-          formatter: (value: number) => `${value}%`,
+-        },
+-        axisLine: { show: false },
+-        axisTick: { show: false },
+-        splitLine: { show: false },
+-      },
+-    ],
+-    series: visibleSeriesRows.value.map((item, index) => {
+-      const color = item.color ?? palette.value[index % palette.value.length];
+-      const isLine = item.kind === 'line';
+-
+-      if (isLine) {
+-        return {
+-          name: item.name,
+-          type: 'line',
+-          yAxisIndex: item.yAxisIndex ?? 1,
+-          data: item.values,
+-          smooth: item.smooth ?? chartConfig.smooth,
+-          symbol: chartConfig.showSymbol && containerSize.value.width >= 230 ? 'circle' : 'none',
+-          symbolSize: scale.symbolSize,
+-          lineStyle: {
+-            width: chartConfig.lineWidthPx,
+-            color,
+-            shadowBlur: 4,
+-            shadowColor: hexToRgba(color, 0.14),
+-          },
+-          itemStyle: {
+-            color,
+-            borderWidth: 1,
+-            borderColor: '#fff',
+-          },
+-          emphasis: {
+-            focus: 'series',
+-          },
+-        };
+-      }
+-
+-      return {
+-        name: item.name,
+-        type: 'bar',
+-        yAxisIndex: item.yAxisIndex ?? 0,
+-        data: item.values,
+-        barWidth: scale.barWidth,
+-        barMaxWidth: chartConfig.barMaxWidthPx,
+-        barGap: chartConfig.barGap,
+-        barCategoryGap: chartConfig.barCategoryGap,
+-        itemStyle: {
+-          color: makeBarGradient(color),
+-          borderRadius: [chartConfig.borderRadiusPx, chartConfig.borderRadiusPx, 1, 1],
+-          shadowBlur: 5,
+-          shadowColor: hexToRgba(color, 0.12),
+-        },
+-        markLine: chartConfig.targetLineVisible && Number.isFinite(item.targetValue)
+-          ? {
+-              silent: true,
+-              symbol: 'none',
+-              label: {
+-                formatter: '目标',
+-                color: '#8a5a00',
+-                fontSize: scale.axisFontSize,
+-              },
+-              lineStyle: {
+-                color: '#ffb020',
+-                type: 'dashed',
+-                width: 1,
+-              },
+-              data: [{ yAxis: item.targetValue }],
+-            }
+-          : undefined,
+-        emphasis: {
+-          focus: 'series',
+-          itemStyle: {
+-            color,
+-          },
+-        },
+-      };
+-    }),
+-  };
+-});
+-
+-const cardStyle = computed(() => {
+-  const layout = resolvedLayout.value;
+-  const titleConfig = resolvedTitle.value;
+-  const auxConfig = resolvedAux.value;
+-  const tones = resolvedTones.value;
+-
+-  return {
+-    '--combo-chart-card-padding': `${layout.paddingPx}px`,
+-    '--combo-chart-card-gap': `${layout.gapPx}px`,
+-    '--combo-chart-content-gap': `${layout.contentGapPx}px`,
+-    '--combo-chart-title-row': `${layout.titleHeightPx}px`,
+-    '--combo-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
+-    '--combo-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
+-    '--combo-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
+-    '--combo-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
+-    '--combo-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
+-    '--combo-chart-aux-label-color': auxConfig.labelColor,
+-    '--combo-chart-aux-value-color': auxConfig.valueColor,
+-    '--combo-chart-title-font-size': `${titleConfig.fontSizePx}px`,
+-    '--combo-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
+-    '--combo-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
+-    '--combo-chart-title-color': titleConfig.color || tones.text,
+-    '--combo-chart-unit-color': titleConfig.unitColor || tones.unit,
+-    '--combo-chart-primary': tones.primary,
+-    '--combo-chart-primary-soft': hexToRgba(tones.primary, 0.2),
+-  };
+-});
+-
+-const updateContainerSize = () => {
+-  if (!rootRef.value) {
+-    return;
+-  }
+-
+-  const rect = rootRef.value.getBoundingClientRect();
+-  const nextSize = {
+-    width: Math.round(rect.width),
+-    height: Math.round(rect.height),
+-  };
+-
+-  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
+-    containerSize.value = nextSize;
+-  }
+-
+-  const chartRect = chartRef.value?.getBoundingClientRect();
+-  const nextChartSize = {
+-    width: Math.round(chartRect?.width ?? 0),
+-    height: Math.round(chartRect?.height ?? 0),
+-  };
+-
+-  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
+-    chartSize.value = nextChartSize;
+-  }
+-};
+-
+-const hasRenderableSize = () => {
+-  if (!chartRef.value) {
+-    return false;
+-  }
+-
+-  const rect = chartRef.value.getBoundingClientRect();
+-
+-  return rect.width > 0 && rect.height > 0;
+-};
+-
+-const renderChart = () => {
+-  updateContainerSize();
+-
+-  if (!hasRenderableData.value) {
+-    chart?.dispose();
+-    chart = null;
+-    return;
+-  }
+-
+-  if (!chartRef.value || !hasRenderableSize()) {
+-    return;
+-  }
+-
+-  chart ??= echarts.init(chartRef.value);
+-  chart.setOption(option.value, true);
+-  chart.resize();
+-};
+-
+-const scheduleRenderChart = async () => {
+-  await nextTick();
+-  renderChart();
+-};
+-
+-onMounted(() => {
+-  if (rootRef.value) {
+-    resizeObserver = new ResizeObserver(() => {
+-      updateContainerSize();
+-      if (hasRenderableSize()) {
+-        chart?.resize();
+-        void scheduleRenderChart();
+-      }
+-    });
+-    resizeObserver.observe(rootRef.value);
+-  }
+-
+-  void scheduleRenderChart();
+-});
+-
+-watch(option, () => {
+-  void scheduleRenderChart();
+-}, { deep: true, flush: 'post' });
+-
+-onBeforeUnmount(() => {
+-  resizeObserver?.disconnect();
+-  resizeObserver = null;
+-  chart?.dispose();
+-  chart = null;
+-});
+-</script>
+-
+-<template>
+-  <section ref="rootRef" class="combo-chart-example-card" :class="cardClasses" :style="cardStyle" aria-label="组合图卡片">
+-    <header v-if="resolvedTitle.visible" class="combo-chart-example-header">
+-      <div class="combo-chart-example-title-wrap">
+-        <span class="combo-chart-example-title">{{ title }}</span>
+-      </div>
+-      <span v-if="resolvedTitle.unitVisible" class="combo-chart-example-unit">{{ unit }}</span>
+-    </header>
+-    <div class="combo-chart-example-body">
+-      <div v-if="visibleAuxMetrics.length" class="combo-chart-example-aux" aria-label="附加指标">
+-        <span
+-          v-for="metric in visibleAuxMetrics"
+-          :key="`${metric.label}:${metric.value}`"
+-          class="combo-chart-example-aux-item"
+-          :class="`tone-${metric.tone ?? 'neutral'}`"
+-        >
+-          <em>{{ metric.label }}</em>
+-          <b>{{ metric.value }}</b>
+-        </span>
+-      </div>
+-      <div class="combo-chart-example-chart-pane">
+-        <div v-if="hasRenderableData" ref="chartRef" class="combo-chart-example-canvas" />
+-        <div v-else class="combo-chart-example-empty">暂无数据</div>
+-      </div>
+-    </div>
+-  </section>
+-</template>
+-
+-<style scoped>
+-.combo-chart-example-card {
+-  width: 100%;
+-  height: 100%;
+-  min-width: 0;
+-  min-height: 0;
+-  box-sizing: border-box;
+-  display: grid;
+-  grid-template-rows: var(--combo-chart-title-row) minmax(0, 1fr);
+-  row-gap: var(--combo-chart-card-gap);
+-  padding: var(--combo-chart-card-padding);
+-  overflow: hidden;
+-  background: transparent;
+-  color: var(--combo-chart-title-color);
+-}
+-
+-.combo-chart-example-card:not(.has-title) {
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.combo-chart-example-header {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+-  align-items: start;
+-  column-gap: 8px;
+-}
+-
+-.combo-chart-example-title-wrap {
+-  min-width: 0;
+-  display: flex;
+-  align-items: flex-start;
+-}
+-
+-.combo-chart-example-title {
+-  position: relative;
+-  display: inline-flex;
+-  align-items: center;
+-  max-width: 100%;
+-  min-width: 0;
+-  color: var(--combo-chart-title-color);
+-  font-size: var(--combo-chart-title-font-size);
+-  line-height: var(--combo-chart-title-line-height);
+-  font-weight: 700;
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-}
+-
+-.combo-chart-example-title::after {
+-  content: '';
+-  position: absolute;
+-  left: 0;
+-  bottom: -2px;
+-  width: 100%;
+-  height: 1px;
+-  border-radius: 999px;
+-  background: linear-gradient(90deg, var(--combo-chart-primary) 0%, var(--combo-chart-primary-soft) 72%, transparent 100%);
+-}
+-
+-.combo-chart-example-unit {
+-  justify-self: stretch;
+-  min-width: 0;
+-  width: 100%;
+-  color: var(--combo-chart-unit-color);
+-  font-size: var(--combo-chart-unit-font-size);
+-  line-height: var(--combo-chart-title-line-height);
+-  white-space: normal;
+-  overflow-wrap: anywhere;
+-  text-align: right;
+-}
+-
+-.combo-chart-example-body {
+-  min-width: 0;
+-  min-height: 0;
+-  display: grid;
+-  gap: var(--combo-chart-content-gap);
+-  overflow: hidden;
+-}
+-
+-.combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body {
+-  grid-template-columns: var(--combo-chart-horizontal-split);
+-  grid-template-rows: minmax(0, 1fr);
+-}
+-
+-.combo-chart-example-card.has-aux.is-vertical .combo-chart-example-body {
+-  grid-template-columns: minmax(0, 1fr);
+-  grid-template-rows: var(--combo-chart-vertical-split);
++  return contentOrientation.value;
++});
++
++const cardClasses = computed(() => ({
++  [`is-${contentOrientation.value}`]: true,
++  [`aux-${auxOrientation.value}`]: true,
++  'has-aux': visibleAuxMetrics.value.length > 0,
++  'has-title': resolvedTitle.value.visible,
++}));
++
++const isCompactChart = computed(() => {
++  const height =
++    chartSize.value.height ||
++    Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 0);
++
++  return height > 0 && height < 200;
++});
++
++const chartScale = computed(() => {
++  const width = chartSize.value.width || containerSize.value.width || 240;
++  const fallbackHeight = Math.max(containerSize.value.height - resolvedLayout.value.titleHeightPx - resolvedLayout.value.gapPx, 80);
++  const height = chartSize.value.height || fallbackHeight;
++  const compact = Math.min(width / 280, height / 170);
++  const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
++  const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
++  const legendVisible = resolvedChart.value.legendVisible && visibleSeriesRows.value.length > 1 && width >= 240 && height >= 130;
++  const hasRightAxis = resolvedChart.value.rightAxisVisible && visibleSeriesRows.value.some((item) => (item.yAxisIndex ?? 0) === 1);
++  const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
++  const rightAxisGutter = axisVisible && hasRightAxis ? Math.max(resolvedChart.value.gridRightPx, width < 260 ? 26 : 34) : resolvedChart.value.gridRightPx;
++  const visibleCategoryCount = Math.max(categories.value.length, 1);
++  const visibleBarCount = Math.max(visibleSeriesRows.value.filter((item) => item.kind === 'bar').length, 1);
++  const autoBarWidth = Math.floor(width / (visibleCategoryCount * visibleBarCount * 3.4));
++  const barWidth = resolvedChart.value.barWidthPx || clampNumber(autoBarWidth, 4, resolvedChart.value.barMaxWidthPx, 8);
++
++  return {
++    fontSize,
++    axisFontSize: Math.max(8, fontSize - 1),
++    symbolSize: Math.round(clampNumber(Math.min(width, height) / 24, 4, 8, 5) * 10) / 10,
++    legendVisible,
++    axisVisible,
++    hasRightAxis,
++    barWidth,
++    gridTop: legendVisible ? Math.max(resolvedChart.value.gridTopPx, 24) : resolvedChart.value.gridTopPx,
++    gridBottom: axisVisible ? resolvedChart.value.gridBottomPx : 6,
++    gridLeft: yAxisLabelGutter,
++    yAxisLabelMargin: yAxisLabelGutter,
++    gridRight: width < 220 ? 6 : rightAxisGutter,
++  };
++});
++
++const palette = computed(() => [resolvedTones.value.primary, resolvedTones.value.secondary, resolvedTones.value.tertiary, '#ffb020']);
++
++const normalizeColor = (color: string) => (color.startsWith('#') ? color : resolvedTones.value.primary);
++
++const hexToRgba = (color: string, opacity: number) => {
++  const normalized = normalizeColor(color).replace('#', '');
++  const expanded = normalized.length === 3 ? normalized.split('').map((item) => item + item).join('') : normalized;
++  const numeric = Number.parseInt(expanded, 16);
++
++  if (!Number.isFinite(numeric)) {
++    return `rgba(0, 87, 217, ${opacity})`;
++  }
++
++  const r = (numeric >> 16) & 255;
++  const g = (numeric >> 8) & 255;
++  const b = numeric & 255;
++
++  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
++};
++
++const makeBarGradient = (color: string) =>
++  new echarts.graphic.LinearGradient(0, 1, 0, 0, [
++    { offset: 0, color: hexToRgba(color, 0.14) },
++    { offset: 0.62, color: hexToRgba(color, 0.74) },
++    { offset: 1, color },
++  ]);
++
++const option = computed<EChartsOption>(() => {
++  const chartConfig = resolvedChart.value;
++  const scale = chartScale.value;
++  const tones = resolvedTones.value;
++
++  return {
++    animationDuration: 500,
++    color: palette.value,
++    grid: {
++      top: scale.gridTop,
++      right: scale.gridRight,
++      bottom: scale.gridBottom,
++      left: scale.gridLeft,
++      containLabel: false,
++    },
++    legend: {
++      show: scale.legendVisible,
++      top: 0,
++      left: 'center',
++      orient: 'horizontal',
++      itemWidth: 10,
++      itemHeight: 6,
++      textStyle: {
++        color: tones.axis,
++        fontSize: scale.axisFontSize,
++      },
++    },
++    tooltip: {
++      trigger: 'axis',
++      confine: true,
++      appendToBody: true,
++      formatter: (params: unknown) => {
++        const rows = Array.isArray(params) ? params : [params];
++        const axisLabel = rows.find((item) => item && typeof item === 'object' && 'axisValueLabel' in item) as
++          | { axisValueLabel?: string }
++          | undefined;
++        const lines = rows
++          .map((item) => {
++            if (!item || typeof item !== 'object') {
++              return '';
++            }
++
++            const row = item as { marker?: string; seriesName?: string; value?: string | number | Array<string | number> };
++            const series = visibleSeriesRows.value.find((seriesItem) => seriesItem.name === row.seriesName);
++            const value = Array.isArray(row.value) ? row.value[row.value.length - 1] : row.value;
++
++            return `${row.marker ?? ''}${row.seriesName ?? ''}: ${value ?? '--'}${series?.unit ?? ''}`;
++          })
++          .filter(Boolean);
++
++        return [axisLabel?.axisValueLabel, ...lines].filter(Boolean).join('<br/>');
++      },
++      axisPointer: {
++        type: 'cross',
++        crossStyle: {
++          color: hexToRgba(tones.primary, 0.28),
++        },
++      },
++    },
++    xAxis: {
++      type: 'category',
++      boundaryGap: true,
++      data: categories.value,
++      axisTick: { show: false },
++      axisLine: {
++        show: scale.axisVisible,
++        lineStyle: { color: hexToRgba(tones.primary, 0.14) },
++      },
++      axisLabel: {
++        show: scale.axisVisible,
++        color: tones.axis,
++        fontSize: scale.axisFontSize,
++        interval: containerSize.value.width < 260 ? 'auto' : 0,
++        hideOverlap: true,
++      },
++      splitLine: { show: false },
++    },
++    yAxis: [
++      {
++        type: 'value',
++        min: valueRangeByAxis.value[0].min,
++        max: valueRangeByAxis.value[0].max,
++        axisLabel: {
++          show: scale.axisVisible && containerSize.value.width >= 190,
++          color: tones.axis,
++          fontSize: scale.axisFontSize,
++          align: 'left',
++          margin: scale.yAxisLabelMargin,
++          padding: [0, 0, 0, 0],
++          formatter: (value: number) => `${value}`,
++        },
++        axisLine: { show: false },
++        axisTick: { show: false },
++        splitLine: {
++          show: chartConfig.splitLineVisible,
++          lineStyle: {
++            color: tones.splitLine,
++            type: 'dashed',
++          },
++        },
++      },
++      {
++        type: 'value',
++        show: scale.hasRightAxis,
++        min: valueRangeByAxis.value[1].min,
++        max: Math.max(valueRangeByAxis.value[1].max, 100),
++        axisLabel: {
++          show: scale.axisVisible && containerSize.value.width >= 240,
++          color: tones.axis,
++          fontSize: scale.axisFontSize,
++          formatter: (value: number) => `${value}%`,
++        },
++        axisLine: { show: false },
++        axisTick: { show: false },
++        splitLine: { show: false },
++      },
++    ],
++    series: visibleSeriesRows.value.map((item, index) => {
++      const color = item.color ?? palette.value[index % palette.value.length];
++      const isLine = item.kind === 'line';
++
++      if (isLine) {
++        return {
++          name: item.name,
++          type: 'line',
++          yAxisIndex: item.yAxisIndex ?? 1,
++          data: item.values,
++          smooth: item.smooth ?? chartConfig.smooth,
++          symbol: chartConfig.showSymbol && containerSize.value.width >= 230 ? 'circle' : 'none',
++          symbolSize: scale.symbolSize,
++          lineStyle: {
++            width: chartConfig.lineWidthPx,
++            color,
++            shadowBlur: 4,
++            shadowColor: hexToRgba(color, 0.14),
++          },
++          itemStyle: {
++            color,
++            borderWidth: 1,
++            borderColor: '#fff',
++          },
++          emphasis: {
++            focus: 'series',
++          },
++        };
++      }
++
++      return {
++        name: item.name,
++        type: 'bar',
++        yAxisIndex: item.yAxisIndex ?? 0,
++        data: item.values,
++        barWidth: scale.barWidth,
++        barMaxWidth: chartConfig.barMaxWidthPx,
++        barGap: chartConfig.barGap,
++        barCategoryGap: chartConfig.barCategoryGap,
++        itemStyle: {
++          color: makeBarGradient(color),
++          borderRadius: [chartConfig.borderRadiusPx, chartConfig.borderRadiusPx, 1, 1],
++          shadowBlur: 5,
++          shadowColor: hexToRgba(color, 0.12),
++        },
++        markLine: chartConfig.targetLineVisible && Number.isFinite(item.targetValue)
++          ? {
++              silent: true,
++              symbol: 'none',
++              label: {
++                formatter: '目标',
++                color: '#8a5a00',
++                fontSize: scale.axisFontSize,
++              },
++              lineStyle: {
++                color: '#ffb020',
++                type: 'dashed',
++                width: 1,
++              },
++              data: [{ yAxis: item.targetValue }],
++            }
++          : undefined,
++        emphasis: {
++          focus: 'series',
++          itemStyle: {
++            color,
++          },
++        },
++      };
++    }),
++  };
++});
++
++const cardStyle = computed(() => {
++  const layout = resolvedLayout.value;
++  const titleConfig = resolvedTitle.value;
++  const auxConfig = resolvedAux.value;
++  const tones = resolvedTones.value;
++
++  return {
++    '--combo-chart-card-padding': `${layout.paddingPx}px`,
++    '--combo-chart-card-gap': `${layout.gapPx}px`,
++    '--combo-chart-content-gap': `${layout.contentGapPx}px`,
++    '--combo-chart-title-row': `${layout.titleHeightPx}px`,
++    '--combo-chart-horizontal-split': `minmax(0, ${layout.horizontalAuxRatio}fr) minmax(0, ${layout.horizontalChartRatio}fr)`,
++    '--combo-chart-vertical-split': `minmax(0, ${layout.verticalAuxRatio}fr) minmax(0, ${layout.verticalChartRatio}fr)`,
++    '--combo-chart-aux-count': `${Math.max(visibleAuxMetrics.value.length, 1)}`,
++    '--combo-chart-aux-label-font-size': `${auxConfig.labelFontSizePx}px`,
++    '--combo-chart-aux-value-font-size': `${auxConfig.valueFontSizePx}px`,
++    '--combo-chart-aux-label-color': auxConfig.labelColor,
++    '--combo-chart-aux-value-color': auxConfig.valueColor,
++    '--combo-chart-title-font-size': `${titleConfig.fontSizePx}px`,
++    '--combo-chart-title-line-height': `${titleConfig.lineHeightPx}px`,
++    '--combo-chart-unit-font-size': `${titleConfig.unitFontSizePx}px`,
++    '--combo-chart-title-color': titleConfig.color || tones.text,
++    '--combo-chart-unit-color': titleConfig.unitColor || tones.unit,
++    '--combo-chart-primary': tones.primary,
++    '--combo-chart-primary-soft': hexToRgba(tones.primary, 0.2),
++  };
++});
++
++const updateContainerSize = () => {
++  if (!rootRef.value) {
++    return;
++  }
++
++  const rect = rootRef.value.getBoundingClientRect();
++  const nextSize = {
++    width: Math.round(rect.width),
++    height: Math.round(rect.height),
++  };
++
++  if (nextSize.width !== containerSize.value.width || nextSize.height !== containerSize.value.height) {
++    containerSize.value = nextSize;
++  }
++
++  const chartRect = chartRef.value?.getBoundingClientRect();
++  const nextChartSize = {
++    width: Math.round(chartRect?.width ?? 0),
++    height: Math.round(chartRect?.height ?? 0),
++  };
++
++  if (nextChartSize.width !== chartSize.value.width || nextChartSize.height !== chartSize.value.height) {
++    chartSize.value = nextChartSize;
++  }
++};
++
++const hasRenderableSize = () => {
++  if (!chartRef.value) {
++    return false;
++  }
++
++  const rect = chartRef.value.getBoundingClientRect();
++
++  return rect.width > 0 && rect.height > 0;
++};
++
++const renderChart = () => {
++  updateContainerSize();
++
++  if (!hasRenderableData.value) {
++    chart?.dispose();
++    chart = null;
++    return;
++  }
++
++  if (!chartRef.value || !hasRenderableSize()) {
++    return;
++  }
++
++  chart ??= echarts.init(chartRef.value);
++  chart.setOption(option.value, true);
++  chart.resize();
++};
++
++const scheduleRenderChart = async () => {
++  await nextTick();
++  renderChart();
++};
++
++onMounted(() => {
++  if (rootRef.value) {
++    resizeObserver = new ResizeObserver(() => {
++      updateContainerSize();
++      if (hasRenderableSize()) {
++        chart?.resize();
++        void scheduleRenderChart();
++      }
++    });
++    resizeObserver.observe(rootRef.value);
++  }
++
++  void scheduleRenderChart();
++});
++
++watch(option, () => {
++  void scheduleRenderChart();
++}, { deep: true, flush: 'post' });
++
++onBeforeUnmount(() => {
++  resizeObserver?.disconnect();
++  resizeObserver = null;
++  chart?.dispose();
++  chart = null;
++});
++</script>
++
++<template>
++  <section ref="rootRef" class="combo-chart-example-card" :class="cardClasses" :style="cardStyle" aria-label="组合图卡片">
++    <header v-if="resolvedTitle.visible" class="combo-chart-example-header">
++      <div class="combo-chart-example-title-wrap">
++        <span class="combo-chart-example-title">{{ title }}</span>
++      </div>
++      <span v-if="resolvedTitle.unitVisible" class="combo-chart-example-unit">{{ unit }}</span>
++    </header>
++    <div class="combo-chart-example-body">
++      <div v-if="visibleAuxMetrics.length" class="combo-chart-example-aux" aria-label="附加指标">
++        <span
++          v-for="metric in visibleAuxMetrics"
++          :key="`${metric.label}:${metric.value}`"
++          class="combo-chart-example-aux-item"
++          :class="`tone-${metric.tone ?? 'neutral'}`"
++        >
++          <em>{{ metric.label }}</em>
++          <b>{{ metric.value }}</b>
++        </span>
++      </div>
++      <div class="combo-chart-example-chart-pane" :class="{ 'is-compact-chart': isCompactChart }">
++        <div v-if="hasRenderableData" ref="chartRef" class="combo-chart-example-canvas" />
++        <div v-else class="combo-chart-example-empty">暂无数据</div>
++      </div>
++    </div>
++  </section>
++</template>
++
++<style scoped>
++.combo-chart-example-card {
++  width: 100%;
++  height: 100%;
++  min-width: 0;
++  min-height: 0;
++  box-sizing: border-box;
++  display: grid;
++  grid-template-rows: var(--combo-chart-title-row) minmax(0, 1fr);
++  row-gap: var(--combo-chart-card-gap);
++  padding: var(--combo-chart-card-padding);
++  overflow: hidden;
++  background: transparent;
++  color: var(--combo-chart-title-color);
++}
++
++.combo-chart-example-card:not(.has-title) {
++  grid-template-rows: minmax(0, 1fr);
++}
++
++.combo-chart-example-header {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
++  align-items: start;
++  column-gap: 8px;
++}
++
++.combo-chart-example-title-wrap {
++  min-width: 0;
++  display: flex;
++  align-items: flex-start;
++}
++
++.combo-chart-example-title {
++  position: relative;
++  display: inline-flex;
++  align-items: center;
++  max-width: 100%;
++  min-width: 0;
++  color: var(--combo-chart-title-color);
++  font-size: var(--combo-chart-title-font-size);
++  line-height: var(--combo-chart-title-line-height);
++  font-weight: 700;
++  white-space: normal;
++  overflow-wrap: anywhere;
++}
++
++.combo-chart-example-title::after {
++  content: '';
++  position: absolute;
++  left: 0;
++  bottom: -2px;
++  width: 100%;
++  height: 1px;
++  border-radius: 999px;
++  background: linear-gradient(90deg, var(--combo-chart-primary) 0%, var(--combo-chart-primary-soft) 72%, transparent 100%);
++}
++
++.combo-chart-example-unit {
++  justify-self: stretch;
++  min-width: 0;
++  width: 100%;
++  color: var(--combo-chart-unit-color);
++  font-size: var(--combo-chart-unit-font-size);
++  line-height: var(--combo-chart-title-line-height);
++  white-space: normal;
++  overflow-wrap: anywhere;
++  text-align: right;
++}
++
++.combo-chart-example-body {
++  min-width: 0;
++  min-height: 0;
++  display: grid;
++  gap: var(--combo-chart-content-gap);
++  overflow: hidden;
++}
++
++.combo-chart-example-card.has-aux.is-horizontal .combo-chart-example-body,
++.combo-chart-example-card.has-aux.is-vertical .combo-chart-example-body {
++  grid-template-columns: minmax(0, 1fr);
++  grid-template-rows: max-content minmax(0, 1fr);
++  gap: min(var(--combo-chart-content-gap), 2px);
+ }
+ 
+ .combo-chart-example-card:not(.has-aux) .combo-chart-example-body {

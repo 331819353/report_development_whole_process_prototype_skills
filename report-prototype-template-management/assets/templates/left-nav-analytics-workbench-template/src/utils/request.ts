@@ -4,7 +4,6 @@ import { useStore } from '@/stores';
 import { login } from './login';
 
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || undefined,
   timeout: 15000,
 });
 
@@ -48,7 +47,7 @@ const buildErrorMessage = (error: AxiosError) => {
   if (!status && isApiRequest) {
     return {
       key: 'api-unavailable',
-      message: 'Data service is unavailable. Start with npm run dev:mock or check VITE_API_BASE_URL.',
+      message: 'Data service is unavailable. Start with npm run dev:mock or check the /api proxy.',
     };
   }
 
