@@ -429,7 +429,7 @@ slot(
 
 ### 轻量 API 数据怎么配置
 
-模板内置 `npm run mock:api` 和 `npm run dev:mock`，用于把 `src/data/dashboard.dataset.json` 以接口形式提供给筛选项和组件槽位。mock API 模式下，筛选项选项、组件 rows、图表序列、KPI 值、组件示例 props 都必须来自接口，不保留静态运行时保底数据。真实 API 替换时，优先保持 `id: 'apiData'` 或 `id: 'httpData'`，只调整 `api.url`、`api.responsePath` 和必要的 `adapter`。
+模板内置 `npm run mock:api` 和 `npm run dev:mock`，用于把 `src/data/dashboard.dataset.json` 以接口形式提供给筛选项和组件槽位。mock API 模式下，筛选项选项、组件 rows、图表序列、KPI 值、组件示例 props 都必须来自接口，不保留静态运行时保底数据。真实 API 替换时，优先保持 `id: 'apiData'` 或 `id: 'httpData'`，只调整 `api.url`、`api.responsePath` 和必要的 `adapter`。`docs/prototype-data-summary.md` 必须用 Metric To Interface And Source Mapping 说明指标名称/接口字段/来源表字段的匹配关系，并用 Mock API To HTTP API Replacement Matrix 说明每个筛选、说明区变量、图表/组件、交互和导出从 mock endpoint 替换到真实 HTTP API 的方式。
 
 筛选项使用 `data.items`：
 
@@ -720,7 +720,7 @@ npm run build:test
 Required delivery artifacts:
 
 - `DELIVERY_INDEX.md`: project version memory ledger for copied/configured user projects. Read or initialize it before modifications; append the current change after modifications with changed files, impacted pages/blocks/slots/components, data/API/filter/conclusion impact, validation, data-summary status, and next-change notes. For reusable bundled templates, keep this file at `template-initialized` baseline so users start with a clean project history.
-- `docs/prototype-data-summary.md`: backend-facing data structure handoff. Keep it current with `dashboard.config.ts`, `business-report-pages.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, component bindings, filters, and interactions.
+- `docs/prototype-data-summary.md`: backend-facing data structure handoff. Keep it current with `dashboard.config.ts`, `business-report-pages.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, component bindings, filters, interactions, Metric To Interface And Source Mapping, and the Mock API To HTTP API Replacement Matrix.
 
 检查项：
 

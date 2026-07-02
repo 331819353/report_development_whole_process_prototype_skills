@@ -28,7 +28,7 @@ All bundled template assets share these extension points:
 - `scripts/mock-api-server.mjs`: lightweight npm mock API that reads `src/data/dashboard.dataset.json` and serves filter/component data through `/api/*`.
 - `scripts/dev-with-mock-api.mjs`: combined local startup for Vite plus mock API; sets the Vite `/api` proxy target through non-client `MOCK_API_BASE_URL`.
 - `docs/template-build-packet.md`: recommended weak-model construction plan generated from `template-build-packet-contract.md` before PRD-driven implementation.
-- `docs/prototype-data-summary.md`: required backend-facing handoff artifact created or updated after data, filters, widgets, generated conclusions, and interactions are configured. It must include a backend interface method contract, not only dataset notes.
+- `docs/prototype-data-summary.md`: required backend-facing handoff artifact created or updated after data, filters, widgets, generated conclusions, and interactions are configured. It must include Metric To Interface And Source Mapping, a Mock API To HTTP API Replacement Matrix, and backend interface method contract, not only dataset notes.
 - `docs/mock-api-contract.md`: lightweight API response and replacement contract for prototype-to-real-API handoff.
 
 ## Basic Create Loop
@@ -45,7 +45,7 @@ All bundled template assets share these extension points:
 7. Add widgets through `components/`, `types.ts`, and `registry.ts`.
 8. Build standard chart widgets with an actual ECharts wrapper/instance and data-driven `option`/`series`; build ordinary row tables with Element Plus/project table patterns; use Element Plus controls for standard UI controls.
 9. After each source-file edit, append the sidecar ledger entry: `npm run ledger:code -- --file <source-file> --stage after --summary "<change>" --ranges "L10-L42"`.
-10. Create or update `docs/prototype-data-summary.md` from `references/prototype-data-summary-contract.md`. The summary must name actual data files, datasets, fields, metrics, conclusion rules, component bindings, filters, interactions, backend interface methods, backend API/model suggestions, gaps, and verification.
+10. Create or update `docs/prototype-data-summary.md` from `references/prototype-data-summary-contract.md`. The summary must name actual data files, datasets, fields, metrics, conclusion rules, Metric To Interface And Source Mapping, component bindings, filters, interactions, Mock API To HTTP API Replacement Matrix, backend interface methods, backend API/model suggestions, gaps, and verification.
 11. Run `npm run ledger:check` to prove all scoped source files still have `__change_logs__` sidecars.
 12. Run `npm run validate:dashboard`. This validates both dashboard contracts and the Vue 3 + Element Plus + ECharts stack contract.
 13. Run `npm run build`.
@@ -90,7 +90,7 @@ Prefer config/data/widget layers:
 - Static/mock data -> `dashboard.dataset.json`.
 - Standard API endpoint/query binding -> `widget.data.api` or `filters[].source.api` in `dashboard.config.ts`.
 - Response adapters and custom API/provider resolvers -> `dataSources/registry.ts`.
-- Backend-facing data handoff -> `docs/prototype-data-summary.md`. Generate this after each meaningful data/config/widget/filter/interaction change and before technical solution, backend, frontend integration, testing, or final handoff. It is not visible report content. Backend owners should be able to derive controller/service methods, request DTOs, response DTOs, permission/cache/error behavior, and adapter boundaries from this document.
+- Backend-facing data handoff -> `docs/prototype-data-summary.md`. Generate this after each meaningful data/config/widget/filter/interaction change and before technical solution, backend, frontend integration, testing, or final handoff. It is not visible report content. Backend owners should be able to derive metric-to-table/source-field matching rows, mock-to-real HTTP replacement rows, controller/service methods, request DTOs, response DTOs, permission/cache/error behavior, and adapter boundaries from this document.
 - Business visuals -> `src/widgets/components/*.vue`.
 - Parent block title/body chrome -> widget config plus the owning business/composite component. Prefer `widget.chrome.blockChromePattern` or an equivalent prop with `titleStageHeightPx`, `bodyBackgroundRelation`, `selectionReason`, and `overflowStrategy`; render the selected style in `src/widgets/components/*.vue` or scoped component CSS, not in the template shell.
 - KPI/metric card visuals -> `src/widgets/components/*.vue` with explicit title ownership. Use `widget.title` or `props.displayTitle` for the reader-facing block/card title, `props.metricName` for tooltip/export/口径/detail payloads, and `props.showBodyMetricLabel` only when a body label is truly needed. When a block-owned title exists, `showBodyMetricLabel` defaults to `false` if the body metric label is the same or near-same text as the block title. Do not render both `title` and `metric.label` visibly for a single-metric KPI card.

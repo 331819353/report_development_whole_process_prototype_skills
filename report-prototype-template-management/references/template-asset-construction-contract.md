@@ -131,7 +131,7 @@ Do not create a custom shell, page layout, block runtime, fixed block wrapper, d
 9. Bind registered component examples.
 10. Register custom ECharts examples only when needed.
 11. Bind data/API/filter/interactions/conclusion rules.
-12. Generate or update `docs/prototype-data-summary.md`.
+12. Generate or update `docs/prototype-data-summary.md`, including Metric To Interface And Source Mapping and the Mock API To HTTP API Replacement Matrix.
 13. Run `npm run ledger:check`, `npm run validate:dashboard`, `npm run build:test`, and runtime checks when a URL exists.
 
 ## Hard Stops

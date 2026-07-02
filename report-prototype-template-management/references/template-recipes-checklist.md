@@ -101,7 +101,7 @@ Use this only when preparing reusable bundled templates for users. Copied/config
 11. For line, area, and category-axis charts, sort row tuples first and derive labels, values, tooltip payloads, and click payloads from the same sorted rows.
 12. Render from the `data` prop inside ordinary widgets, or from `slotData` plus `dataBinding` inside component examples.
 13. Append sidecar ledger entries for every changed source file with feature list, code ranges, affected data/filter/API contracts, and verification.
-14. Update `docs/prototype-data-summary.md` with the dataset id, fields, metric/conclusion inputs, component binding row, filters, interaction payloads, backend API/model implications, gaps, and verification.
+14. Update `docs/prototype-data-summary.md` with the dataset id, fields, metric/conclusion inputs, Metric To Interface And Source Mapping, component binding row, filters, interaction payloads, Mock API To HTTP API Replacement Matrix, backend API/model implications, gaps, and verification.
 
 ### Add Lightweight NPM Mock API Data
 
@@ -111,7 +111,7 @@ Use this only when preparing reusable bundled templates for users. Copied/config
 4. Configure global/page filters with `filters[].source.id: 'apiData'`, `api.url: '/api/filter-options/<filterId>'`, `api.responsePath: 'data.items'`, `labelField`, `valueField`, and `emptyFilterValues`.
 5. Configure component slots or owning widgets with `data.id: 'apiData'`, `api.url: '/api/component-props/<componentKey>'` by default, `api.query` expressions from `$filters` and `$context.activeTitlePill` when needed, `api.responsePath: 'data.rows'`, and `dataBinding.propsObjectField: 'props'` so `rows[0].props` becomes the registered component props.
 6. Do not preserve static `filters[].options`, static widget rows, chart series, KPI values, or component demo props as runtime fallback data in mock API mode.
-7. Document endpoints, response envelope, replacement steps, and field mapping in `docs/mock-api-contract.md` and `docs/prototype-data-summary.md`.
+7. Document endpoints, response envelope, replacement steps, and field mapping in `docs/mock-api-contract.md`; document the full mock-to-real HTTP replacement matrix in `docs/prototype-data-summary.md`.
 8. Verify `/api/health`, one `/api/filter-options/*` endpoint, and one `/api/component-props/:componentDataKey` endpoint before browser review.
 9. Use `npm run dev:mock` for the normal local preview path. Plain `npm run dev` is only acceptable when no runtime `/api/*` data source is configured, or when `/api` is already handled by a verified server/proxy. Mock API proxy targeting uses non-client `MOCK_API_BASE_URL`, not `VITE_API_BASE_URL`.
 10. The shared request client should rate-limit identical user-facing failures and show actionable API-unavailable/404/429/business-error messages; repeated generic `Request failed` toasts block readiness.
@@ -122,10 +122,13 @@ Use this only when preparing reusable bundled templates for users. Copied/config
 1. Read `prototype-data-summary-contract.md` before final handoff, backend handoff, or any meaningful data/API/filter/widget/interaction change.
 2. Create `docs/prototype-data-summary.md` when it does not exist.
 3. Summarize actual project evidence from `src/data/dashboard.dataset.json`, `src/config/dashboard.config.ts`, `src/dataSources/registry.ts`, widget components, and action hooks.
-4. Include dataset catalog, field dictionary, metric and generated-conclusion inputs, component data binding matrix, filter/parameter semantics, interaction payloads, backend interface method contract, backend API/model suggestions, `GAP-*` rows, and verification.
-5. In `## Backend Interface Method Contract`, include what the prototype already provides for backend design, then list method rows with service method name, HTTP method/path, owning domain/service, frontend consumers, request DTO, response DTO/envelope, `responsePath`, adapter/props mapping, pagination/export behavior when relevant, cache/freshness, permission injection, empty/error/no-permission handling, and mock-to-real replacement note.
-6. Keep full fixture rows out of the document; include representative shape and backend design implications.
-7. Record the code-ledger sidecar path for every changed scoped source file that produced or changed the data contract.
+4. Include dataset catalog, field dictionary, metric and generated-conclusion inputs, Metric To Interface And Source Mapping, component data binding matrix, filter/parameter semantics, interaction payloads, Mock API To HTTP API Replacement Matrix, backend interface method contract, backend API/model suggestions, `GAP-*` rows, and verification.
+5. In `## Metric To Interface And Source Mapping`, list one row for every displayed metric, KPI, chart/table measure, ranking value, generated conclusion variable, target/reference value, and derived status. Each row must include metric id/name, business definition, formula, frontend consumer, current mock API, target HTTP API, service method, request params, response field/path, source table/view/model, source columns, grain, dimensions, filter field mapping, permission predicate, related `GAP-*`, and readiness.
+6. In `## Mock API To HTTP API Replacement Matrix`, list one row for every global/scoped filter, summary or conclusion variable, chart/table/KPI/list/component slot, detail interaction, export action, and custom resolver. Each row must include current mock method/path, mock params, mock `responsePath`, component-required shape, target HTTP method/path, request DTO, response DTO, direct-vs-adapter decision, config/code change, permission/cache/error handling, and related `GAP-*`.
+7. In `## Backend Interface Method Contract`, include what the prototype already provides for backend design, then list method rows with service method name, HTTP method/path, owning domain/service, frontend consumers, request DTO, response DTO/envelope, `responsePath`, adapter/props mapping, pagination/export behavior when relevant, cache/freshness, permission injection, empty/error/no-permission handling, and mock-to-real replacement note.
+8. Mark replacement as direct only when the real HTTP response preserves the configured `responsePath`, `dataBinding`, and component-required props/rows. Otherwise record the adapter boundary in `src/dataSources/registry.ts` or equivalent, not inside registered component examples.
+9. Keep full fixture rows out of the document; include representative shape and backend design implications.
+10. Record the code-ledger sidecar path for every changed scoped source file that produced or changed the data contract.
 
 ### Add Or Change First-Level Perspective
 
@@ -184,8 +187,8 @@ Use this only when preparing reusable bundled templates for users. Copied/config
 - Every widget has `visualType`.
 - Widgets without data have `dataPolicy`.
 - Data completeness is verified before filter binding: filter option rows, business/API rows, required fields, default/non-default states, and resolver/API branches exist or are documented as gaps.
-- `docs/prototype-data-summary.md` exists, names actual project data files and data modes, and is current with `dashboard.config.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, widget data contracts, generated conclusion rules, filters, and interactions.
-- The data summary includes backend API/model suggestions plus explicit `GAP-*` rows for missing source/model/API/permission/freshness facts.
+- `docs/prototype-data-summary.md` exists, names actual project data files and data modes, and is current with `dashboard.config.ts`, `dashboard.dataset.json`, `dataSources/registry.ts`, widget data contracts, generated conclusion rules, filters, interactions, Metric To Interface And Source Mapping, and the Mock API To HTTP API Replacement Matrix.
+- The data summary includes backend API/model suggestions, direct-vs-adapter replacement decisions, plus explicit `GAP-*` rows for missing source/model/API/permission/freshness facts.
 - First-level perspective switches are not hidden in `filters[]`; domain/theme/management-object controls use nav/page/route/tab/segment/perspective state unless explicitly row-scope-only.
 - Binding matrix includes `controlSemantics` and `componentSchemaImpact` for controls that affect widgets.
 - Navigation percentages, rankings, and status lights have lineage and are not stored in `filterData.meta` unless explicitly static display copy.

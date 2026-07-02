@@ -32,7 +32,7 @@ When artifacts span more than one iteration, maintain a delivery version chain t
 
 When frontend, backend, or runnable prototype source code is created, repaired, refactored, or modified, maintain file-level code change ledgers through `$code-change-ledger-management`. Configured template projects must run `npm run ledger:init` before the first source edit and `npm run ledger:check` before handoff. Every changed scoped code file must have a sidecar ledger under `__change_logs__`, must be read before editing, and must receive a post-change version entry with feature list, changed code ranges/stable anchors, affected contracts, verification, and rollback notes.
 
-When a runnable prototype is completed or handed off to technical solution, backend/data-service design, frontend integration, or testing, include `docs/prototype-data-summary.md` from the configured template project. This Markdown file must summarize actual data files, datasets, fields, metric/conclusion inputs, component bindings, filters, interaction payloads, backend API/model suggestions, gaps, verification, and relevant code-ledger sidecar paths.
+When a runnable prototype is completed or handed off to technical solution, backend/data-service design, frontend integration, or testing, include `docs/prototype-data-summary.md` from the configured template project. This Markdown file must summarize actual data files, datasets, fields, metric/conclusion inputs, Metric To Interface And Source Mapping, component bindings, filters, interaction payloads, Mock API To HTTP API Replacement Matrix, backend API/model suggestions, gaps, verification, and relevant code-ledger sidecar paths.
 
 ## Stage Routing Matrix
 
@@ -112,7 +112,7 @@ Do not mark a production-bound artifact `ready` when required source authority, 
 
 Do not mark implementation, repair, or runnable prototype handoff `ready` when a configured template project skipped `npm run ledger:init`/`npm run ledger:check`, or when any changed scoped code file lacks a sidecar code ledger, pre-change read evidence, or a post-change version entry with changed code ranges, modified content, affected contracts, and verification/blocker.
 
-Do not mark runnable prototype handoff `ready` for technical solution, backend/data-service design, frontend integration, or testing when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks dataset/field/component/filter/interaction/API-model/gap/verification content.
+Do not mark runnable prototype handoff `ready` for technical solution, backend/data-service design, frontend integration, or testing when `docs/prototype-data-summary.md` is missing, generic, stale, or lacks dataset/field/Metric To Interface And Source Mapping/component/filter/interaction/Mock API To HTTP API Replacement Matrix/API-model/gap/verification content.
 
 ## Cross-Stage Artifact Contract
 
@@ -121,9 +121,9 @@ Do not mark runnable prototype handoff `ready` for technical solution, backend/d
 Required handoff bundle when a prototype feeds technical solution:
 
 - Prototype theme, user scenario, report type, and core business questions.
-- `docs/prototype-data-summary.md`: backend-facing data summary with dataset catalog, field dictionary, metric/conclusion inputs, component binding matrix, filter/parameter semantics, interaction payloads, backend API/model suggestions, assumptions/gaps, and verification.
+- `docs/prototype-data-summary.md`: backend-facing data summary with dataset catalog, field dictionary, metric/conclusion inputs, Metric To Interface And Source Mapping, component binding matrix, filter/parameter semantics, interaction payloads, Mock API To HTTP API Replacement Matrix, backend API/model suggestions, assumptions/gaps, and verification.
 - Component binding matrix: component ID, business question, data source, row grain, required fields, controls, filters, `controlSemantics`, `componentSchemaImpact`, navigation metric lineage, interactions, and empty state.
-- Mock/data-source contract: dataset IDs, field names, sample rows, formulas, units, enums, and derived values.
+- Mock/data-source contract: dataset IDs, field names, sample rows, formulas, units, enums, derived values, metric-to-interface/source mapping rows, and mock-to-real HTTP API replacement rows.
 - Control/filter contract: perspective switches, global filters, local filters, drilldown params, filter IDs, defaults, option source, field/query mapping, global SQL/source execution stage, component-internal local filter scope, affected components, permission behavior, schema impact, navigation indicator lineage, and bounded-local exception if any.
 - Interaction contract: event names, payload fields, target drawer/modal/route/export/action, stale-selection behavior.
 - Visual/layout constraints that affect data shape or export behavior.

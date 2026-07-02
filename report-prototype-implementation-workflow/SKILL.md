@@ -63,7 +63,7 @@ Return `templateReferenceConsumption` with read status, applicable rules, except
    Only handle exceptions already declared by the PRD, such as missing registered component examples, `customEChartExampleMap`, template field incompatibility, or blocked template capability. Register standalone Vue/ECharts/table examples before binding them. Do not redesign the component plan inside this workflow.
 
 5. Validate and release.
-   Run template validation/build commands, preview URL when requested, runtime smoke checks, visual/runtime QA when in scope, update `docs/prototype-data-summary.md`, and append the current change to `DELIVERY_INDEX.md` for runnable projects.
+   Run template validation/build commands, preview URL when requested, runtime smoke checks, visual/runtime QA when in scope, update `docs/prototype-data-summary.md` with Metric To Interface And Source Mapping, the Mock API To HTTP API Replacement Matrix, and backend method contract, and append the current change to `DELIVERY_INDEX.md` for runnable projects.
 
 ## Required Output
 
@@ -77,7 +77,7 @@ Return `templateReferenceConsumption` with read status, applicable rules, except
 - Data/API, filter/action, interaction, permission, state, and `conclusionRuleMap` consumption evidence.
 - `templateReferenceConsumption`.
 - Version index evidence: `DELIVERY_INDEX.md` read/initialized before edits and appended after edits.
-- `docs/prototype-data-summary.md` status.
+- `docs/prototype-data-summary.md` status, including Metric To Interface And Source Mapping coverage for displayed metrics/conclusion variables and Mock API To HTTP API Replacement Matrix coverage for filters, summary/conclusion variables, component slots, interactions, and export/detail paths.
 - Changed files, validation commands, runtime URL or blocker, and release readiness.
 
 ## Quality Gate
@@ -89,4 +89,4 @@ Return `templateReferenceConsumption` with read status, applicable rules, except
 - Do not mark release readiness when any visible slot lacks a registered `componentExampleId` or a declared registered custom example.
 - Do not mark release readiness when generated visible conclusions lack `RULE-*` rows and data/API inputs.
 - Do not mark release readiness when `DELIVERY_INDEX.md` was not read before editing or lacks a post-change entry for the current work.
-- Do not mark release readiness when `docs/prototype-data-summary.md` is missing, generic, stale, or not current with the implemented data, filters, widgets, interactions, and conclusion rules.
+- Do not mark release readiness when `docs/prototype-data-summary.md` is missing, generic, stale, lacks Metric To Interface And Source Mapping coverage, lacks Mock API To HTTP API Replacement Matrix coverage, or is not current with the implemented data, filters, widgets, interactions, and conclusion rules.
