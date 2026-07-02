@@ -62,7 +62,7 @@ const revenueQualityBlock = createBlockAreaConfig({
         config: {
           title: { visible: false },
           layout: { paddingPx: 8 },
-          chart: { legendVisible: true, smooth: true },
+          chart: { legendVisible: 'auto', smooth: true },
         },
       }),
       1,
@@ -304,7 +304,7 @@ componentWidget('LineChartExampleCard', 'line', '收入趋势', {
   ],
   config: {
     title: { visible: false },
-    chart: { legendVisible: true },
+    chart: { legendVisible: 'auto' },
   },
 });
 ```
@@ -560,6 +560,12 @@ actions: {
 
 For chart-like examples that expose component-owned `auxMetrics`, the registered component example owns both the configuration and fit behavior. `config.layout.orientation` controls how the aux strip and chart body sit together. `config.aux.orientation` controls the metric-item layout inside the aux strip: `horizontal`, `vertical`, or `auto`. Explicit `config.aux.orientation` wins; only `auto` may adapt to available space. Do not hide `auxMetrics`, remove the component title, or tune parent block height/summary height to fix this; update the registered component example's auto-fit contract instead.
 
+Default auxiliary layout:
+- Component-owned `auxMetrics` sits between the component title strip and the chart/table/list body.
+- Horizontal component layout uses a horizontal auxiliary strip; each metric shows key/value stacked vertically.
+- Vertical component layout uses a vertical auxiliary strip; each metric shows key/value on one line.
+- Parent block config must not create separate `auxMetricArea` or `unitArea` fields to simulate this behavior.
+
 常用数据结构：
 
 ```ts
@@ -601,10 +607,17 @@ For chart-like examples that expose component-owned `auxMetrics`, the registered
 | `developer` | 自开发组件信息，如 `componentId`、`componentName`、`renderMode`。 |
 | `tones` | 控制主题色、状态色和暗/明主题适配色。 |
 
+Chart legend defaults:
+- Line, bar, scatter, quadrant, combo, and other Cartesian/axis chart examples default `legendVisible` to `'auto'`: multi-series legends are top-centered when data exists and space permits; single-series or single-metric legends are hidden by default.
+- Proportion, pie/donut/rose, and sunburst chart examples default to a visible right-side category/hierarchy legend.
+- Radar chart examples default to right-side legends for multi-series comparison and hide single-series legends by default.
+- Use explicit `legendVisible: true` only when a single-series legend is a documented interaction or multi-encoding exception; use `legendVisible: false` / `legendPosition: 'hidden'` for compact or hidden-legend fallbacks.
+
 KPI/core-value fit rule:
 
 - `title.visible` is owned by the slot runtime strategy, not by per-page manual config. Single-slot blocks hide component short titles; multi-slot blocks show them.
 - Component-internal `auxMetrics` is owned by the registered example. It remains valid as component props/config and must not be moved to the parent block. For chart-like examples, set `config.aux.orientation` when the metric items must be forced horizontal or vertical.
+- `ConclusionExampleCard` core conclusion content is vertically centered inside its core area. The title/eyebrow row and supplemental/evidence/action rows keep their own top/bottom alignment and are not included in the core-centering calculation.
 - When the component title is hidden in a single-slot block, the selected component example must release the internal title-row height through its auto-fit implementation.
 - For compact KPI/target-progress slots, the registered component example must auto-fit value size, accessory rows, spark/reflection, and overflow behavior based on actual slot width/height. Do not solve clipping by hand-tuning per-page `value.maxFontSizePx`, `value.heightScale`, `layout.valueRatio`, `layout.accessoryRatio`, padding, or overflow.
 - A `VIS-TEXT-CLIPPED` or `VIS-CONTENT-OVERFLOW` finding inside `.layout-slot-content-widget`, `.kpi-example-card`, `.target-progress-example-card`, `.metric`, `.score`, `.value`, or `.card-value` is a configuration failure even if the generic visual audit marks it as `minor`.

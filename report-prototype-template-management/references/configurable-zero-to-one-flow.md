@@ -76,9 +76,10 @@ Rules:
 - Page layout uses 12 columns.
 - Every `layoutRows` row has exactly 12 cells.
 - Page row count is `N >= 8`.
+- Every visible top-level block uses row span `N >= 3`; source or sample areas shorter than 3 rows must become internal component/sub-block sizing, merge into a related legal block, or remain a blocker.
 - Every block letter is rectangular.
 - Each visible block maps to one widget in `blockAreaConfigMap`.
-- `layoutSectionMap` is required for readable planning. Use sections such as `12*2 + 12*3 + 12*3`.
+- `layoutSectionMap` is required for readable planning. Use sections such as `12*3 + 12*3 + 12*3`.
 
 Output:
 

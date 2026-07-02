@@ -162,8 +162,8 @@ Keep this section understandable. Do not write the full machine layout here.
 
 Rules:
 
-- Show `12*K` section split such as `12*2 + 12*3 + 12*3`.
-- State that total page rows must be at least 8 and every row is exactly 12 columns.
+- Show `12*K` section split such as `12*3 + 12*3 + 12*3`.
+- State that total page rows must be at least 8, every row is exactly 12 columns, and every visible top-level block has row span `N >= 3`.
 - Use readable block coordinates only as examples: `R-B` for block, `R-B-S` for component slot.
 - Mention block area configs and slot patterns such as `AB`, `AAB`, or `AABBCC`.
 - Move full `templateAssetUnderstandingMap`, `layoutRows`, block map, standard area config, component slot map, registered component example map, and validation rows to `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, and `children/prd-child-prototype.md`.
@@ -197,7 +197,7 @@ The execution files are mandatory when the PRD feeds implementation, but they ar
 
 | File | Purpose | Main consumers |
 | --- | --- | --- |
-| `execution/prd-template-execution-contract.md` | `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config availability, block map, standard area config, component slot map, registered component example map, visual-type size compatibility. | 原型 |
+| `execution/prd-template-execution-contract.md` | `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config availability, block map with row-span `N >= 3` proof, standard area config including summary-area `1/(N+1)` inheritance, component slot map, registered component example map, visual-type size compatibility. | 原型 |
 | `execution/prd-metric-dictionary-and-mounting.md` | Full metric口径, formula, unit, direction, source, refresh, denominator/sample, null rule, page/block/slot/API mounting. | 原型、前端、后端、测试 |
 | `execution/prd-data-api-contract.md` | Data grain, dimensions, fields, request/response, permissions, pagination/sort, cache/freshness, empty/error, lineage. | 前端、后端、技术方案、测试 |
 | `execution/prd-interaction-contract.md` | `filterSurfaceMap`, `pillAreaConfig`, `toolbarActionMap`, `interactionBehaviorMap`, drilldown/jump/drawer/popup/modal/export behavior. | 原型、前端、测试 |
@@ -269,6 +269,7 @@ Rules:
 - The PRD bundle is invalid if `prd-main.md`, execution files, and child PRD files disagree on child PRD IDs, purposes, sync status, or blocking gaps.
 - The PRD bundle is invalid if a retained navigation page lacks a Markdown/mermaid preview with filters, toolbar actions, major blocks, block business content, and interaction entries.
 - A template-backed PRD is not ready when `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, or `children/prd-child-prototype.md` lacks a current `templateAssetUnderstandingMap`, exact-12 and minimum-8 `layoutRows` proof, block area configs, component slot size, visual-type size compatibility, component slot config, or registered component example evidence.
+- A template-backed PRD is not ready when any visible top-level block has `rowSpan < 3`, any ready `M*N` block uses `N < 3`, or any visible `summaryAreaConfig` contradicts the template `1/(N+1)` summary-area ratio.
 - A template-backed PRD is not ready when `templateAssetUnderstandingMap` is missing, stale, incomplete, inconsistent with the selected template asset root, or not written back to `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, and `children/prd-child-prototype.md`.
 - A template-backed PRD is not ready when a prose block grid, ratio split, or preview diagram replaces machine-checkable `layoutRows`. Such material may supplement `layoutRows` only.
 - A template-backed PRD is not ready when any `3 componentArea` slot is filled by prose, text copy, visual type alone, an inline widget object, or an unregistered fallback. Every slot must use a registered component example or a registered standalone custom registered component example with ID, file, copy/registration path, props/state, data/API, and visual-size evidence.

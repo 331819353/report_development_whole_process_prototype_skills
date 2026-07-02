@@ -38,7 +38,7 @@ export const datasetTemplate = {
           unit: '万元',
           categories: ['2026-04', '2026-05', '2026-06'],
           series: [{ name: '收入', values: [1212.9, 1280.5, 1366.8], smooth: true }],
-          config: { title: { visible: false }, chart: { legendVisible: true } },
+          config: { title: { visible: false }, chart: { legendVisible: 'auto' } },
         },
       },
       'DetailTableExampleCard:收入明细': {
@@ -444,7 +444,7 @@ export const componentSlotBindingTemplates = {
     props: {
       config: {
         title: { visible: false },
-        chart: { legendVisible: true, smooth: true },
+        chart: { legendVisible: 'auto', smooth: true },
       },
     },
     data: {

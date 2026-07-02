@@ -48,6 +48,7 @@ frameworkTemplateId
 ```
 
 - Do not expose retired block-template catalogs as PRD deliverables. Page block size comes from `pageLayoutConfig.layoutRows`; block content and standard areas live in `blockAreaConfigMap`; slot ownership lives in `componentSlotConfigMap`; visual content is mounted through `componentExampleConfigMap`.
+- Page block notation uses `M*N`, where `M` is the page-grid column span and `N` is the page-grid row span. Every visible top-level block must use `N >= 3`; do not pass through source or design wording that asks implementation to create `N < 3` blocks. Normalize to a legal block, merge the content into an adjacent legal block, express the smaller need as internal component/sub-block sizing, or mark a blocker.
 - Framework shell, page layout, block areas, title/pill/aux/unit/summary areas, navigation, filters, toolbar, export, permission, and shell state must use the bundled templates. Only interaction behavior and registered component examples may be self-developed.
 - If no existing component example fits a slot, define a `customEChartExampleMap` row and require a registered standalone Vue/ECharts component example before the slot is considered filled.
 
@@ -143,6 +144,7 @@ Conditional child PRDs:
 
 - Do not hand off to `report-prototype-implementation-workflow` until `CHILD-PRD-PROTOTYPE` and the execution matrix are ready or explicitly `draft` with non-blocking gaps.
 - Do not let `prd-main.md` become the execution manual. Move dense layout rows, metric dictionaries, API fields, interaction maps, slot maps, and validation rows into execution files or child PRDs.
+- Do not hand off a template-backed PRD when any visible top-level block has `rowSpan < 3`, any ready `M*N` block uses `N < 3`, or any PRD example asks downstream implementation to create an `N < 3` block.
 - Do not output a single Markdown PRD when the result must feed implementation.
 - Do not mark the PRD ready when the target workflow is not `report-prototype-implementation-workflow`.
 - Do not mention retired generic report-design paths as active downstream routes.

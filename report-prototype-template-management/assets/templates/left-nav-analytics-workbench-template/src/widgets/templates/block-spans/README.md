@@ -22,7 +22,7 @@ Every block area keeps the same structural areas:
 - `3 componentArea`
 - `4 summaryArea`
 
-Only title and component area are required. Summary, pills, and auxiliary metrics belong to the block template, not to the component slot.
+Only title and component area are required. Summary and pills belong to the block template. Component-owned unit and auxiliary metrics stay inside registered component examples when those examples declare `unit` / `auxMetrics`.
 
 ## Removed Legacy Shape
 

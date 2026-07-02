@@ -14,19 +14,19 @@ All report content display areas must start from the fixed `1920x1080` prototype
 - Every top-level content block occupies one or more complete page-grid cells and acts as a parent block.
 - Every top-level content block's occupied area must be rectangular.
 - When a PRD exists, derive the grid from the PRD section 4C reader-facing page preview first. The preview names filters, toolbar actions, major blocks, business content, and interaction entries; `layoutRows` is the machine-checkable execution form of that preview, not a separate layout invention.
-- Implementation handoff must include a machine-checkable row audit: every `layoutRows` string is exactly 12 cells wide, no `layoutRows` string exceeds 12 cells, total row count `N >= 8`, every block letter is rectangular, every block has `colStart`, `colSpan`, `rowStart`, `rowSpan`, and every block id maps to one downstream block layout template.
+- Implementation handoff must include a machine-checkable row audit: every `layoutRows` string is exactly 12 cells wide, no `layoutRows` string exceeds 12 cells, total row count `N >= 8`, every block letter is rectangular, every block has `colStart`, `colSpan`, `rowStart`, `rowSpan`, every visible top-level block has `rowSpan >= 3`, and every block id maps to one downstream block layout template.
 - A top-level parent block may contain multiple internal sub-blocks, and each sub-block may contain one component or a tightly related micro-group. Internal sub-blocks do not count as page-grid blocks. See `block-composition.md`.
 - Internal sub-block layouts always reserve `5px` from the parent block body edge and `5px` between sibling sub-blocks.
 - Major sections may occupy full-width 12-column rows.
-- The minimum top-level block is `2 * 1`.
-- The default analytical block is `3 * 2`. Use it before trying larger or custom spans.
+- The minimum top-level block row span is `N = 3`; examples such as `2*1`, `3*2`, `4*2`, or `12*2` are internal component/sub-block sizing hints only and must not be emitted as page-grid parent blocks.
+- The default analytical block is `3 * 3`. Use it before trying larger or custom spans.
 - Dense work surfaces may use 2-column, 3-column, 4-column, 6-column, 8-column, or 12-column spans, but all spans must align to the 12-column grid and the 8-row first-viewport sizing rhythm.
 - Drawers and modals are overlays and do not count as content-grid blocks.
 
 Do not use masonry, staggered, diagonal, floating, or irregular component shapes.
 Do not use prose-only layout such as "8+4", "three columns", or "upper/middle/lower" as the final handoff. Convert the reader-facing preview into 12-character `layoutRows` before template implementation. Reject any row with more than 12 characters, any page with fewer than 8 rows, and any grid that contradicts the PRD section 4C page preview.
 
-After choosing a default span, calculate its actual pixel size with `block-size-constraints.md` at `1920x1080`. Keep `3 * 2` when the content fits; enrich sparse content, split, or move detail content only when the size check fails.
+After choosing a default span, calculate its actual pixel size with `block-size-constraints.md` at `1920x1080`. Keep `3 * 3` when the content fits; enrich sparse content, split, or move detail content only when the size check fails.
 
 ## 2. Scroll And Row Height
 
@@ -46,14 +46,14 @@ Fixed sci-fi/big-screen cockpit layouts use the same content-area formula unless
 
 Use these common spans before detailed size checks:
 
-- Hero summary or main conclusion block: 12 columns only when it carries enough decision content; otherwise use `6*2`, `8*2`, or split.
-- Default chart or analysis block: `3*2`.
-- KPI strip: six cards at `2*1` or four richer cards at `3*2`; more KPIs should use two rows, tabs, or pagination.
+- Hero summary or main conclusion block: 12 columns only when it carries enough decision content; otherwise use `6*3`, `8*3`, or split.
+- Default chart or analysis block: `3*3`.
+- KPI strip: keep the peer cards as internal component/sub-blocks inside a legal `6*3`, `8*3`, or `12*3` parent block; more KPIs should use internal rows, tabs, or pagination.
 - Primary chart + side insight: `8+4`, `6+3+3`, or `4+4+4` columns when visual weight remains balanced.
 - Four balanced panels: `3+3+3+3` columns.
 - Three panels: `4+4+4` columns.
-- Table or task list: usually `6-12` columns and at least `2-4` rows depending on density.
-- Secondary cards: `2*1`, `3*2`, or `4*2`.
+- Table or task list: usually `6-12` columns and at least `3-4` page-grid rows depending on density.
+- Secondary cards: use `3*3`, `4*3`, or internal card sizing inside a larger legal parent block.
 
 Use `block-size-constraints.md` before finalizing dense parent blocks, composite widgets, tables, or any block containing repeated visible sub-blocks/components.
 
@@ -68,7 +68,7 @@ For peer component groups or repeated sub-blocks inside one large parent block, 
 7. Use this pair as the internal sub-block matrix inside the large parent block, reserve `5px` inset/gaps, then check whether the parent block needs more page-grid rows with `heightExpansionRows = ceil(N * 2 / 3)`.
 8. Do not add arbitrary empty placeholders to force a prettier matrix. The only allowed spare cell is the single prime-balancing cell created by `layoutTotal = total + 1`; it must not create fake metrics or mock data. If the pair creates an unreadable strip, split the group by business meaning, tabs, pagination, drawer, or another parent block.
 
-Example: when a parent block such as `12 * 2` contains 8 peer sub-blocks, the internal matrix is `4 * 2`; then verify whether the `12 * 2` parent block has enough body height under `heightExpansionRows = ceil(2 * 2 / 3) = 2`. If not, expand the parent block row span instead of compressing the 8 child components.
+Example: when a parent block such as `12 * 3` contains 8 peer sub-blocks, the internal matrix is `4 * 2`; then verify whether the `12 * 3` parent block has enough body height under `heightExpansionRows = ceil(2 * 2 / 3) = 2`. If not, expand the parent block row span instead of compressing the 8 child components.
 
 Examples: 1-4 peers -> small-group layout, not this algorithm; 5 peers -> calculate as 6 -> `3 * 2`; 6 peers -> `3 * 2`; 7 peers -> calculate as 8 -> `4 * 2`; 8 peers -> `4 * 2`; 9 peers -> `3 * 3`; 10 peers -> `5 * 2`; 11 peers -> calculate as 12 -> `4 * 3`; 12 peers -> `4 * 3`.
 - Avoid one long strip or one narrow column unless the component is explicitly a timeline, KPI strip, or navigation.
@@ -79,21 +79,21 @@ Start with the default span distribution below. When one parent block contains m
 
 | Component type | Default candidate spans |
 | --- | --- |
-| 折线图 / 柱状图 / K 线图 / 热力图 | default `3*2`; allowed `4*2`, `3*3`, `4*3` |
-| 饼图 / 雷达图 / 旭日图 / 仪表盘 | default `3*2`; allowed `3*3`, `4*3` |
-| 散点图 / 盒须图 | default `3*2`; allowed `4*2`, `3*3`, `4*3` |
-| 平行坐标系 | default `3*2`; allowed `4*2`, `3*3`, `4*3` |
-| 地图 / 路径图 / 关系图 / 树图 / 矩形树图 / 漏斗图 | default `3*2`; allowed `3*3`, `4*3` |
-| 桑基图 | default `3*2`; allowed `3*3`, `4*3` |
-| 指标卡 | `2*1`, `3*2` |
-| 表格 | `3*2`, `4*2`, `6*2`, `8*2`, `4*3`, `6*3`, `8*3`, `12*3`, `6*4`, `8*4`, `12*4` |
-| 结论卡 / 行动卡 / 说明卡 | `3*2`, `4*2`, `6*2`, `8*2`, `12*1`, `12*2` |
-| 其他组件 | default `3*2`; allowed `2*1`, `4*2`, `3*3`, `4*3` |
+| 折线图 / 柱状图 / K 线图 / 热力图 | default `3*3`; allowed `4*3`, `6*3`, `8*3`, `12*3` |
+| 饼图 / 雷达图 / 旭日图 / 仪表盘 | default `3*3`; allowed `4*3`, `6*3`, `8*3`, `12*3` |
+| 散点图 / 盒须图 | default `3*3`; allowed `4*3`, `6*3`, `8*3`, `12*3` |
+| 平行坐标系 | default `4*3`; allowed `6*3`, `8*3`, `12*3`, `12*4` |
+| 地图 / 路径图 / 关系图 / 树图 / 矩形树图 / 漏斗图 | default `4*3`; allowed `6*3`, `8*3`, `12*3`, `12*4` |
+| 桑基图 | default `4*3`; allowed `6*3`, `8*3`, `12*3`, `12*4` |
+| 指标卡 | top-level parent `6*3`, `8*3`, or `12*3`; individual KPI cards use internal sizing |
+| 表格 | `4*3`, `6*3`, `8*3`, `12*3`, `6*4`, `8*4`, `12*4` |
+| 结论卡 / 行动卡 / 说明卡 | `4*3`, `6*3`, `8*3`, `12*3` |
+| 其他组件 | default `3*3`; allowed `4*3`, `6*3`, `8*3`, `12*3` |
 
 Rules:
 
 - Pick the smallest span that matches the component's importance and expected density.
-- For ordinary chart blocks, start at `3*2` and never exceed `4*3`; conclusion cards are the exception when they need a wider reading strip.
+- For ordinary chart blocks, start at `3*3`; use wider spans such as `6*3`, `8*3`, or `12*3` when labels, legends, or density require them.
 - Validate the selected span with `block-size-constraints.md`.
 - If the selected span fits, keep it.
 - If it does not fit, try the next larger candidate span in the same row.

@@ -43,7 +43,7 @@ Rules:
 - Block size comes from `pageLayoutConfig.layoutRows`, not from fixed historical wrappers.
 - Each block records `blockCoordinate`, `slotCount`, `componentSlotPattern`, `slotCoordinateList`, and optional area configs.
 - `1-1 titleArea` and `3 componentArea` are required unless the block is explicitly non-component by design.
-- `1-2 pillArea`, `2-1 auxMetricArea`, `2-2 unitArea`, and `4 summaryArea` are optional but must be configured or marked unnecessary with a reason.
+- `1-2 pillArea` and `4 summaryArea` are optional but must be configured or marked unnecessary with a reason. Unit and auxiliary information are component-owned `unit` / `auxMetrics` fields when the registered component example supports them, not page/block-level areas.
 - `componentRegionPattern` may appear only as derived slot-geometry metadata. It is not a selectable implementation target.
 - Every `3 componentArea` slot must bind to a registered component example or a newly registered self-developed ECharts component example with size compatibility evidence.
 

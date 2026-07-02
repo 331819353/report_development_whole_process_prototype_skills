@@ -51,7 +51,7 @@ interface QuadrantChartExampleChartConfig {
   yUnit?: string;
   sizeUnit?: string;
   quadrantLabels?: [string, string, string, string];
-  legendVisible?: boolean;
+  legendVisible?: boolean | 'auto';
   legendTopPx?: number;
   legendItemGapPx?: number;
   legendFontSizePx?: number;
@@ -175,7 +175,7 @@ const defaultChartConfig: Required<QuadrantChartExampleChartConfig> = {
   yUnit: text.pointUnit,
   sizeUnit: '',
   quadrantLabels: [text.strength, text.potentialArea, text.watchArea, text.riskArea],
-  legendVisible: true,
+  legendVisible: 'auto',
   legendTopPx: 0,
   legendItemGapPx: 8,
   legendFontSizePx: 9,
@@ -507,7 +507,10 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const axisVisible = chartConfig.axisVisible && width >= 150 && height >= 92;
-  const legendVisible = chartConfig.legendVisible && width >= 150 && height >= 80;
+  const legendSetting = chartConfig.legendVisible;
+  const legendEnabled =
+    legendSetting === true ? true : legendSetting === false ? false : points.value.length > 1;
+  const legendVisible = legendEnabled && width >= 150 && height >= 80;
   const legendRowHeight = Math.max(16, chartConfig.legendFontSizePx + 9);
   const estimatedLegendWidth = points.value.reduce((total, point) => (
     total + Math.max(30, point.name.length * chartConfig.legendFontSizePx * 0.74 + 16) + chartConfig.legendItemGapPx

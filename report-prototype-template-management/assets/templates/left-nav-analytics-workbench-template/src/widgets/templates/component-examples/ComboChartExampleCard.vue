@@ -47,7 +47,7 @@ interface ComboChartExampleLayoutConfig {
 }
 
 interface ComboChartExampleChartConfig {
-  legendVisible?: boolean;
+  legendVisible?: boolean | 'auto';
   showSymbol?: boolean;
   smooth?: boolean;
   lineWidthPx?: number;
@@ -144,7 +144,7 @@ const defaultLayoutConfig: Required<ComboChartExampleLayoutConfig> = {
 };
 
 const defaultChartConfig: Required<ComboChartExampleChartConfig> = {
-  legendVisible: true,
+  legendVisible: 'auto',
   showSymbol: true,
   smooth: true,
   lineWidthPx: 2,
@@ -400,7 +400,10 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
-  const legendVisible = resolvedChart.value.legendVisible && visibleSeriesRows.value.length > 0 && width >= 240 && height >= 130;
+  const legendSetting = resolvedChart.value.legendVisible;
+  const legendEnabled =
+    legendSetting === true ? true : legendSetting === false ? false : visibleSeriesRows.value.length > 1;
+  const legendVisible = legendEnabled && visibleSeriesRows.value.length > 0 && width >= 240 && height >= 130;
   const hasRightAxis = resolvedChart.value.rightAxisVisible && visibleSeriesRows.value.some((item) => (item.yAxisIndex ?? 0) === 1);
   const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
   const rightAxisGutter = axisVisible && hasRightAxis ? Math.max(resolvedChart.value.gridRightPx, width < 260 ? 26 : 34) : resolvedChart.value.gridRightPx;

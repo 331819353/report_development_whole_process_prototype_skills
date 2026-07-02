@@ -26,7 +26,7 @@ The prototype child PRD must include:
 - Page preview references from `prd-main.md`.
 - `frameworkTemplateId`.
 - `pageLayoutConfig` with `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, and block coordinates.
-- `blockAreaConfigMap` for title, pill, auxiliary metrics, unit, component area, and summary/description decisions.
+- `blockAreaConfigMap` for title, pill, component area, and summary/description decisions; component-owned unit and auxiliary metrics belong in `componentExampleConfigMap`.
 - Answer atom map and result-content boundary: visible business result, interaction-only contract, supplemental handoff, removed process artifacts, and source `RTP-*` / `PATH-*` rows.
 - `componentSlotConfigMap` with slot count, slot pattern, slot coordinates, slot role, size, and ownership.
 - `componentExampleConfigMap` with registered `componentExampleId`, standalone Vue file/component, visual type, props/config, data binding, state, and visual-size compatibility evidence.

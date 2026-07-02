@@ -139,6 +139,6 @@ Do not create a custom shell, page layout, block runtime, fixed block wrapper, d
 - Do not write PRD layout tables without `templateAssetUnderstandingMap`.
 - Do not select retired fixed-size wrappers as report blocks.
 - Do not use legacy slot-fill maps as active slot fill contracts.
-- Do not put title, pills, filters, auxiliary metrics, unit, summary, or explanation copy inside component slots.
+- Do not put parent-block title, pills, filters, summary, or explanation copy inside component slots. Component-owned `unit` and `auxMetrics` are valid only when the registered component example declares and renders them.
 - Do not treat `componentRegionPattern` as a component example.
 - Do not mark a slot filled before its `componentExampleId` resolves through schema, export, and registry.

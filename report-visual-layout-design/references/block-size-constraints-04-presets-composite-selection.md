@@ -144,7 +144,7 @@ If the current parent body height is smaller, expand the parent block's row span
 - Do not use a generic `chart`, `table`, `map`, or `other` label when a precise component type exists.
 - Do not use more than one internal scroll area in one block.
 - If a title, legend, axis label, table column, toolbar, or status tag does not fit, increase the span or simplify the component.
-- Do not expand a sparse component just to fill space. If the allocated `3*2` or larger block lacks enough content, enrich it with labels, target/average lines, exact-value paths, lists, or actions, or reduce/split the block.
+- Do not expand a sparse component just to fill space. If the allocated `3*3` or larger block lacks enough content, enrich it with labels, target/average lines, exact-value paths, lists, or actions, or reduce/split the block.
 - If a block needs long explanations, detailed table review, or multiple independent actions, use a drawer/detail page instead of expanding the card forever.
 
 

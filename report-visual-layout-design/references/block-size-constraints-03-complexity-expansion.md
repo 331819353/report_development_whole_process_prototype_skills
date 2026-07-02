@@ -157,7 +157,7 @@ if stages_count > 5:
   use drilldown, pagination, path chart, or table fallback
 
 if assigned_span is 2x2:
-  reject; Sankey requires at least 3x2 because horizontal layer spacing is decision-critical
+  reject; Sankey requires at least 4x3 because horizontal layer spacing is decision-critical
 
 if actual_flow_width_px < 180:
   use simplified mode: title, compact local filter, Top5 flows, key nodes only, no metric strip, no legend row, no permanent link labels

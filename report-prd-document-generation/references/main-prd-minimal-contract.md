@@ -27,7 +27,7 @@ The reader-facing main PRD may contain only these sections:
 | 3. 一期范围 | Do, do not do, defer, sensitive data boundary. | Three short lists or one table. |
 | 4. 报表实现思路 | Selected report type, reading path, whether user-supplied thought is accepted/optimized. | Natural language plus one small table. |
 | 5. 页面预览 | Navigation, filters, toolbar, main blocks, reading path, interaction entries. | Markdown/mermaid preview per page. |
-| 6. 模板布局摘要 | Framework template, page section split such as `12*2 + 12*3 + 12*3`, block names, block area configs, slot pattern summary. | Summary only; no raw `layoutRows`. |
+| 6. 模板布局摘要 | Framework template, page section split such as `12*3 + 12*3 + 12*3`, block names, block area configs, slot pattern summary, and top-level block row-span `N >= 3` statement. | Summary only; no raw `layoutRows`. |
 | 7. 指标/数据/交互摘要 | Core metrics, API groups, major interactions, dynamic conclusion rule intent. | Summary only; no formulas or API fields. |
 | 8. 验收与缺口 | Ready conditions and blockers. | Short checklist and gap list. |
 

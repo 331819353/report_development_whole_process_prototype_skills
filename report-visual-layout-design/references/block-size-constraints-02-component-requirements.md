@@ -4,7 +4,7 @@ This file was split from `block-size-constraints.md`. Load it only for this focu
 
 ## 5. Extended Component Size Requirements
 
-Classify every component into one of the following component types. `min_outer_width_px` and `min_outer_height_px` are base size checks used after selecting a default candidate span. `size_check_hint` helps judge whether the default span is likely to pass; it does not replace the default span distribution in `grid-containers.md`.
+Classify every component into one of the following component types. `min_outer_width_px` and `min_outer_height_px` are base size checks used after selecting a default candidate span. `size_check_hint` helps judge whether the default span is likely to pass; it does not replace the default span distribution in `grid-containers.md`. Any hint with fewer than 3 rows is an internal component/sub-block size hint only and must not be emitted as a top-level page-grid block span.
 
 | component_type | min_outer_width_px | min_outer_height_px | size_check_hint | notes |
 | --- | ---: | ---: | --- | --- |
@@ -34,26 +34,26 @@ Classify every component into one of the following component types. `min_outer_w
 | `composite_panel` | 640 | 360 | `6x3_or_8x3` | Multi-component analysis card with one shared topic and one primary child |
 | `micro_dashboard_card` | 680 | 620 | `8x7_or_larger` | Large single-topic mini dashboard card with KPI strip, multiple child charts, status/detail evidence, and shared filters |
 | `state_feedback` | 220 | 160 | `component_body_or_block` | Empty/loading/error/no-permission/building state; inline states may use 180x120 if geometry is preserved |
-| `line_chart` | 420 | 280 | `3x2_default_4x3_max` | Line chart |
-| `area_chart` | 420 | 300 | `3x2_default_4x3_max` | Area or stacked area chart |
-| `bar_chart` | 420 | 300 | `3x2_default_4x3_max` | Vertical bar chart |
-| `horizontal_bar_chart` | 460 | 300 | `3x2_default_4x3_max` | Horizontal bar chart; left labels need room |
-| `stacked_bar_chart` | 480 | 320 | `3x2_default_4x3_max` | Stacked or percentage bar chart |
-| `combo_chart` | 520 | 340 | `3x2_default_4x3_max` | Bar-line combo or dual-axis chart |
-| `scatter_chart` | 460 | 320 | `3x2_default_4x3_max` | Scatter plot |
-| `bubble_chart` | 480 | 340 | `3x2_default_4x3_max` | Bubble chart |
-| `parallel_coordinates` | 560 | 360 | `3x2_default_4x3_max` | Parallel coordinates need multi-axis width |
-| `pie_chart` | 320 | 320 | `3x2_default_4x3_max` | Pie chart needs near-square plot |
-| `donut_chart` | 360 | 320 | `3x2_default_4x3_max` | Donut chart, often with center metric |
-| `funnel_chart` | 420 | 300 | `3x2_default_4x3_max` | Ordered conversion funnel; horizontal bar default |
-| `waterfall_chart` | 520 | 320 | `3x2_default_4x3_max` | Waterfall or attribution chart |
-| `radar_chart` | 360 | 340 | `3x2_default_4x3_max` | Radar chart |
-| `treemap_chart` | 420 | 320 | `3x2_default_4x3_max` | Treemap chart |
-| `sunburst_chart` | 420 | 360 | `3x2_default_4x3_max` | Multi-level sunburst hierarchy |
-| `heatmap_chart` | 480 | 340 | `3x2_default_4x3_max` | Matrix heatmap |
+| `line_chart` | 420 | 280 | `3x3_default_wider_legal` | Line chart |
+| `area_chart` | 420 | 300 | `3x3_default_wider_legal` | Area or stacked area chart |
+| `bar_chart` | 420 | 300 | `3x3_default_wider_legal` | Vertical bar chart |
+| `horizontal_bar_chart` | 460 | 300 | `3x3_default_wider_legal` | Horizontal bar chart; left labels need room |
+| `stacked_bar_chart` | 480 | 320 | `3x3_default_wider_legal` | Stacked or percentage bar chart |
+| `combo_chart` | 520 | 340 | `4x3_default_wider_legal` | Bar-line combo or dual-axis chart |
+| `scatter_chart` | 460 | 320 | `3x3_default_wider_legal` | Scatter plot |
+| `bubble_chart` | 480 | 340 | `3x3_default_wider_legal` | Bubble chart |
+| `parallel_coordinates` | 560 | 360 | `4x3_default_wider_legal` | Parallel coordinates need multi-axis width |
+| `pie_chart` | 320 | 320 | `3x3_default_wider_legal` | Pie chart needs near-square plot |
+| `donut_chart` | 360 | 320 | `3x3_default_wider_legal` | Donut chart, often with center metric |
+| `funnel_chart` | 420 | 300 | `4x3_default_wider_legal` | Ordered conversion funnel; horizontal bar default |
+| `waterfall_chart` | 520 | 320 | `4x3_default_wider_legal` | Waterfall or attribution chart |
+| `radar_chart` | 360 | 340 | `3x3_default_wider_legal` | Radar chart |
+| `treemap_chart` | 420 | 320 | `4x3_default_wider_legal` | Treemap chart |
+| `sunburst_chart` | 420 | 360 | `4x3_default_wider_legal` | Multi-level sunburst hierarchy |
+| `heatmap_chart` | 480 | 340 | `4x3_default_wider_legal` | Matrix heatmap |
 | `calendar_heatmap` | 640 | 280 | `4x3_max` | Calendar heatmap |
-| `boxplot_chart` | 480 | 320 | `3x2_default_4x3_max` | Boxplot |
-| `histogram_chart` | 420 | 280 | `3x2_default_4x3_max` | Histogram or distribution chart |
+| `boxplot_chart` | 480 | 320 | `3x3_default_wider_legal` | Boxplot |
+| `histogram_chart` | 420 | 280 | `3x3_default_wider_legal` | Histogram or distribution chart |
 | `distribution_card` | 480 | 320 | `5x3_or_5x4` | Distribution or interval card with histogram, donut, CDF, statistic strip, and exact-value path |
 | `distribution_density_card` | 520 | 340 | `5x4_or_6x4` | Density/KDE card with estimator policy, sample count, and statistics |
 | `distribution_heatmap_card` | 560 | 340 | `6x4_or_8x4` | Distribution heatmap, calendar heatmap, or density heatmap with cell legend and missing-vs-zero policy |
@@ -80,13 +80,13 @@ Classify every component into one of the following component types. `min_outer_w
 | `contribution_heatmap_card` | 560 | 340 | `6x4_or_8x4` | Contribution heatmap or dense contribution table card |
 | `matrix_table` | 520 | 360 | `5x4_or_6x4` | Matrix, score, or 2D metric table |
 | `detail_list` | 360 | 240 | `4x3` | Detail, event, or log summary list |
-| `text_block` | 360 | 180 | `4x2` | Analysis text |
-| `insight_block` | 420 | 200 | `4x2` | Insight card |
-| `conclusion_block` | 600 | 180 | `6x2_or_12x1` | Conclusion section; exception to ordinary chart max when a wider reading strip is required |
-| `recommendation_block` | 600 | 220 | `6x2_or_12x2` | Recommendations, actions, next steps |
-| `analysis_summary_bar` | 280 | 56 | `6x1_or_12x1` | One-line analysis summary or conclusion strip |
-| `analysis_insight_card` | 320 | 128 | `3x2_or_4x2` | One conclusion with evidence/action |
-| `analysis_diagnosis_card` | 480 | 180 | `4x2_or_5x2` | Anomaly, attribution, risk, target diagnosis |
+| `text_block` | 360 | 180 | `4x3_or_internal` | Analysis text |
+| `insight_block` | 420 | 200 | `4x3_or_internal` | Insight card |
+| `conclusion_block` | 600 | 180 | `6x3_or_12x3` | Conclusion section; wider legal span when reading strip is required |
+| `recommendation_block` | 600 | 220 | `6x3_or_12x3` | Recommendations, actions, next steps |
+| `analysis_summary_bar` | 280 | 56 | `internal_summary_strip` | One-line analysis summary or conclusion strip inside a legal parent block |
+| `analysis_insight_card` | 320 | 128 | `4x3_or_internal` | One conclusion with evidence/action |
+| `analysis_diagnosis_card` | 480 | 180 | `4x3_or_5x3` | Anomaly, attribution, risk, target diagnosis |
 | `analysis_side_panel` | 220 | 240 | `2x3_or_3x3` | Chart-side insight list, max 25% of parent area |
 | `analysis_annotation_bubble` | 120 | 40 | `chart_overlay` | Chart annotation, max 240x96 and max 3 visible |
 | `path_chart` | 560 | 320 | `6x4_or_8x4` | User/business/process path chart |
@@ -271,7 +271,7 @@ Classify every component into one of the following component types. `min_outer_w
 - Recommended outer size is `560-960px` wide and `360-480px` high; minimum is `320x240px` only when subtitle, metric strip, ordinary labels, footer, and secondary legend items are collapsed.
 - The inner plot remains dominant: `plotH >= CH * 0.48`. Collapse footer, secondary metric strip, legend detail, component-local filters, ordinary data labels, and line points before shrinking the plot.
 - Combo blocks are valid only when bar and line/target metrics share one ordered category/time axis. If the relationship is weak or exact audit is the task, allocate separate bar/line/table blocks instead of forcing a dual-axis chart.
-- Use the default `3x2` for ordinary Combo charts and grow only to `4x3`. When dual axes, target labels, grouped/stacked bars, or `N > 12` categories cannot fit within `4x3`, split into separate bar/line/table blocks, reduce visible density, or move detail to drawer/fullscreen instead of enlarging the chart canvas.
+- Use at least `4x3` for ordinary Combo charts. When dual axes, target labels, grouped/stacked bars, or `N > 12` categories cannot fit within a legal wider span, split into separate bar/line/table blocks, reduce visible density, or move detail to drawer/fullscreen instead of squeezing the chart canvas.
 
 ### Gauge Rules
 

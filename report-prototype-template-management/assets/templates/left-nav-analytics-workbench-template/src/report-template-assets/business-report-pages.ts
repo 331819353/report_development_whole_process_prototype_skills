@@ -108,7 +108,7 @@ const topLegendChartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
   ...chartSlotDisplayConfig,
   chart: {
     ...chartSlotDisplayConfig.chart,
-    legendVisible: true,
+    legendVisible: 'auto',
     legendPosition: 'top',
   },
 };
@@ -117,7 +117,6 @@ const rightLegendChartSlotDisplayConfig: ComponentExampleRuntimeConfig = {
   ...chartSlotDisplayConfig,
   chart: {
     ...chartSlotDisplayConfig.chart,
-    legendVisible: true,
     legendPosition: 'right',
   },
 };

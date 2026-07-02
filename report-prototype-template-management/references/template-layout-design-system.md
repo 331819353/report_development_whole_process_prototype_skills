@@ -190,7 +190,7 @@ Rules:
 
 - The selected template family is named and its shell contract is preserved.
 - `layoutRows` remains rectangular; every row has exactly 12 characters; row count is `N` and is not capped by the grid rule.
-- Top-level blocks are at least `2*1`; ordinary analytical/chart widgets default to `3*2` and chart widgets do not exceed `4*3` unless they are replaced by a conclusion/detail/fullscreen pattern.
+- Top-level visible blocks use row span `N >= 3`; ordinary analytical/chart widgets default to `3*3`, and any `2*1`, `3*2`, `4*2`, `6*2`, `8*2`, `12*1`, or `12*2` source/sample size is internal component/sub-block sizing only unless it is merged into a legal parent block.
 - `contentGap`, `rowHeight`, `cellPadding`, card padding, and radius are not changed ad hoc. `rowHeight` must match the 8-row visible content split.
 - Non-slot component-owned title/control/local filter/link areas and body content have stable geometry inside the widget. 组件示例 slot fills expose an optional removable title strip plus body, and may include internal `auxMetrics` strips owned by the registered component example.
 - Styled parent widgets declare `blockChromePattern` or an inherited default before body content is filled; selected title/body chrome remains component-owned and keeps a measurable body viewport.

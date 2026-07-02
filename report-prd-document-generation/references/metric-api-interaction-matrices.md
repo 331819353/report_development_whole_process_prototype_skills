@@ -39,13 +39,12 @@ This is the developer handoff section. Every visible metric must appear here.
 
 Rules:
 
-- Use `Standard area = 2-1 auxMetricArea` for supporting metrics shown in the block support area.
-- Use `Standard area = 2-2 unitArea` only for unit text, not business metrics.
-- Use `Standard area = 3 componentArea` when the metric is rendered by a registered component example.
+- Use `Standard area = 3 componentArea` when the metric, unit, or auxiliary information is rendered by a registered component example.
 - Use `Standard area = 4 summaryArea` only for a `RULE-*` driven narrative conclusion when no conclusion component already owns the conclusion, or for static text/caveat/source/action note.
 - Use `none` in `Component slot` when the metric is not in `3 componentArea`.
 - Use `Block coordinate = R-B` for every mounted metric, and use `Slot coordinate = R-B-S` whenever `Standard area = 3 componentArea`.
-- Use `Area coordinate = blockCoordinate + areaName`, such as `1-2:auxMetricArea` or `1-2:summaryArea`, when the metric lives outside `3 componentArea`.
+- Use `Area coordinate = blockCoordinate + areaName`, such as `1-2:summaryArea`, only when the metric lives outside `3 componentArea`.
+- Component-owned `unit` and `auxMetrics` must be listed on the component example row with their data/API fields and display rules; do not create block-level `auxMetricArea` or `unitArea` mounting rows.
 - Every `Metric ID` must exist in the metric list.
 - Every slot metric must be traceable to a registered component example and API/data object.
 

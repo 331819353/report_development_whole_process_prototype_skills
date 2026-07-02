@@ -124,8 +124,8 @@ For each page, keep the reader-facing layout short. This section tells people wh
 
 - Framework template: name and reason.
 - Page preview: already shown in section 5.
-- Layout section decomposition: show how the page is split into `12*K` parts, such as `12*2 + 12*3 + 12*3`, and what each part is for.
-- 12-column grid summary: total rows and whether the audit is ready/draft/blocked.
+- Layout section decomposition: show how the page is split into `12*K` parts, such as `12*3 + 12*3 + 12*3`, and what each part is for.
+- 12-column grid summary: total rows, every visible top-level block row span `N >= 3`, and whether the audit is ready/draft/blocked.
 - Layout coordinate explanation: mention `R-B` for a block and `R-B-S` for a component slot, with one example only.
 - Block area choice: readable block name, span, `createBlockAreaConfig` config, slot count, slot pattern such as `AB` / `AAB` / `AABBCC`, and reason. Retired fixed-wrapper evidence may be noted only as migration context or a gap, not as the ready implementation.
 - Standard block areas: title, pill, auxiliary info, unit, component area, summary.

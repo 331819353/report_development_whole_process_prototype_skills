@@ -57,7 +57,7 @@ interface RadarChartExampleAuxConfig {
 }
 
 interface RadarChartExampleChartConfig {
-  legendVisible?: boolean;
+  legendVisible?: boolean | 'auto';
   legendPosition?: 'auto' | 'right' | 'top' | 'hidden';
   axisNameVisible?: boolean;
   splitNumber?: number;
@@ -173,7 +173,7 @@ const defaultAuxConfig: Required<RadarChartExampleAuxConfig> = {
 };
 
 const defaultChartConfig: Required<RadarChartExampleChartConfig> = {
-  legendVisible: true,
+  legendVisible: 'auto',
   legendPosition: 'right',
   axisNameVisible: true,
   splitNumber: 4,
@@ -490,7 +490,10 @@ const chartScale = computed(() => {
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const chartConfig = resolvedChart.value;
   const effectiveLegendPosition = chartConfig.legendPosition === 'auto' ? 'right' : chartConfig.legendPosition;
-  const legendVisible = chartConfig.legendVisible && effectiveLegendPosition !== 'hidden' && seriesRows.value.length > 0;
+  const legendSetting = chartConfig.legendVisible;
+  const legendEnabled =
+    legendSetting === true ? true : legendSetting === false ? false : seriesRows.value.length > 1;
+  const legendVisible = legendEnabled && effectiveLegendPosition !== 'hidden' && seriesRows.value.length > 0;
   const legendPlacement: 'right' | 'top' = effectiveLegendPosition === 'top' ? 'top' : 'right';
   const legendTopVisible = legendVisible && legendPlacement === 'top';
   const legendRightVisible = legendVisible && legendPlacement === 'right';

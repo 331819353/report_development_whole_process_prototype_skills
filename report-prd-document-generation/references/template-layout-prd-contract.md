@@ -69,7 +69,7 @@ Before `pageLayoutConfig`, write `templateAssetUnderstandingMap` to `prd/executi
 | `assetRoot` | `report-prototype-template-management/assets/templates/<template-id>/`. |
 | `shellConfigSource` | `src/config/dashboard.config.ts`. |
 | `pageConfigSource` | `src/report-template-assets/business-report-pages.ts`. |
-| `gridContract` | 12 columns, page rows `N >= 8`, exact row strings. |
+| `gridContract` | 12 columns, page rows `N >= 8`, exact row strings, and visible top-level block row span `N >= 3`. |
 | `dynamicBlockRuntimeSource` | `src/widgets/templates/block-spans/BaseLayoutSpan.vue`. |
 | `dynamicBlockCreationApi` | `createBlockAreaConfig`. |
 | `dynamicBlockCollectionExport` | `blockAreaConfigMap`. |
@@ -104,6 +104,7 @@ Rules:
 - The page total row count is the sum of section row counts and must be `N >= 8`.
 - Local previews may reuse letters for readability, but final machine `layoutRows` must use globally unique block ids or a section-scoped mapping.
 - `Section No` is the `R` in block coordinate `R-B` and slot coordinate `R-B-S`.
+- Section examples must not imply an implementable top-level block with row span `N < 3`. If a source asks for a shorter strip, fold it into a legal `N >= 3` block or treat it as internal component/sub-block sizing.
 
 ## Page Layout Rows
 
@@ -125,6 +126,8 @@ Rules:
 - A row with fewer or more than 12 cells is invalid.
 - A page with fewer than 8 rows is invalid.
 - Each block must form one rectangle.
+- Every visible block's `rowSpan` is the block `N` in `M*N` and must be `N >= 3`.
+- A source/requested `N < 3` top-level block is invalid for handoff until normalized to a legal block, merged into adjacent content, represented as internal component/sub-block sizing, or recorded as a blocker.
 - Every visible block has one `blockMap` row and one `blockAreaConfigMap` row.
 - Proportional prose such as `8+4`, screenshots, or preview diagrams can explain intent but cannot replace `layoutRows`.
 
@@ -141,6 +144,7 @@ Rules:
 
 - The implementation target is `createBlockAreaConfig(...)`.
 - `layoutRows` decides the block span; do not select fixed retired fixed-size wrappers report blocks.
+- `Row span` is the block `N` in `M*N` and must be `N >= 3` for every visible top-level block.
 - `componentRegionPattern` only describes internal slot geometry.
 - `Slot count` equals distinct slot groups in the pattern.
 - `Slot coordinate list` enumerates all declared slots, such as `2-2-1`, `2-2-2`, `2-2-3`.
@@ -150,15 +154,18 @@ Rules:
 
 For every block, write `blockAreaConfigMap`.
 
-| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `auxMetricAreaConfig` | `unitAreaConfig` | `summaryAreaConfig` | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Block ID | Block coordinate | `titleAreaConfig` | `pillAreaConfig` | `summaryAreaConfig` | Component-owned unit/aux evidence | Status |
+| --- | --- | --- | --- | --- | --- | --- |
 
 Rules:
 
 - `titleAreaConfig` is required.
 - Optional areas are configured or set to `null` with `notNeededReason`.
 - Business conclusions in `summaryAreaConfig` must reference `conclusionRuleId`.
-- Do not put title, pills, filters, aux metrics, units, descriptions, or summary/explanation copy into component slots.
+- When `summaryAreaConfig` is visible, its height/ratio follows the template runtime default of `1/(N+1)` for the block row span `N`; PRD text must not specify a stale fixed row or fixed-pixel summary ratio.
+- Do not put parent-block title, pills, filters, descriptions, or summary/explanation copy into component slots.
+- Units and auxiliary information are component-owned only when the registered component example declares `unit` / `auxMetrics`; record those fields in `componentExampleConfigMap`, not as block-level `auxMetricAreaConfig` or `unitAreaConfig`.
+- Component examples with `auxMetrics` must default the auxiliary information area between the component title strip and the chart/table/list body: horizontal component layout uses a horizontal strip with each key/value stacked vertically; vertical component layout uses a vertical strip with each key/value on one line.
 
 ## Component Slot Config Map
 
@@ -238,6 +245,8 @@ Do not hardcode final normal-state business conclusions in mock data, static pro
 - `templateAssetUnderstandingMap` is current and written back to all required PRD artifacts.
 - Every page has `layoutSectionMap`, exact `layoutRows`, `blockMap`, and `layoutCoordinateMap`.
 - Every visible block has one `blockAreaConfigMap` row created for `createBlockAreaConfig`.
+- Every visible top-level block has `rowSpan >= 3`; no ready PRD artifact contains an implementable `M*N` block where `N < 3`.
+- Visible `summaryAreaConfig` rows inherit the template `1/(N+1)` ratio and do not carry stale fixed-height summary sizing.
 - Every block has `blockAreaConfigMap`.
 - Every component slot has one `componentSlotConfigMap` row.
 - Every filled slot has one `componentExampleConfigMap` row with schema/export/registry proof.

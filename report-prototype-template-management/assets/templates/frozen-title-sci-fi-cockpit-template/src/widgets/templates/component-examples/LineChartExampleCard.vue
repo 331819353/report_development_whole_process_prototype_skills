@@ -42,7 +42,7 @@ interface LineChartExampleLayoutConfig {
 }
 
 interface LineChartExampleChartConfig {
-  legendVisible?: boolean;
+  legendVisible?: boolean | 'auto';
   smooth?: boolean;
   areaVisible?: boolean;
   showSymbol?: boolean;
@@ -131,7 +131,7 @@ const defaultLayoutConfig: Required<LineChartExampleLayoutConfig> = {
 };
 
 const defaultChartConfig: Required<LineChartExampleChartConfig> = {
-  legendVisible: true,
+  legendVisible: 'auto',
   smooth: true,
   areaVisible: true,
   showSymbol: true,
@@ -349,7 +349,10 @@ const chartScale = computed(() => {
   const compact = Math.min(width / 280, height / 170);
   const fontSize = Math.round(clampNumber(8 + compact * 2, 8, 11, 9) * 10) / 10;
   const axisVisible = resolvedChart.value.axisVisible && width >= 150 && height >= 86;
-  const legendVisible = resolvedChart.value.legendVisible && seriesRows.value.length > 0 && width >= 240 && height >= 130;
+  const legendSetting = resolvedChart.value.legendVisible;
+  const legendEnabled =
+    legendSetting === true ? true : legendSetting === false ? false : seriesRows.value.length > 1;
+  const legendVisible = legendEnabled && seriesRows.value.length > 0 && width >= 240 && height >= 130;
   const yAxisLabelGutter = axisVisible ? Math.max(resolvedChart.value.gridLeftPx, width < 220 ? 24 : 30) : 0;
 
   return {
