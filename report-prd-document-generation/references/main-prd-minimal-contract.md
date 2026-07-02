@@ -10,6 +10,7 @@ The main PRD is a decision brief, not the execution manual. It must let a human 
 - What report type/path is selected.
 - What each navigation page looks like at business level.
 - Which child PRD each downstream stage must use.
+- Which targeted source-material reading file explains source authority, evidence-to-decision trace, and stage-specific reading plan.
 - What blocks readiness.
 
 All dense implementation detail must move to independent files under `prd/execution/` or `prd/children/`.
@@ -21,7 +22,7 @@ The reader-facing main PRD may contain only these sections:
 | Section | Purpose | Detail level |
 | --- | --- | --- |
 | 0. 文档摘要 | Name, version, status, source, key assumptions, top blockers. | Compact table only. |
-| 0A. 文件索引 | Tell 原型、前端、后端、技术方案、测试 which execution and child PRD files to use and when to sync. | One short table. |
+| 0A. 文件索引 | Tell 原型、前端、后端、技术方案、测试 which execution and child PRD files to use, including `prd-targeted-reading-analysis.md`, and when to sync. | One short table. |
 | 1. 背景与目标 | Why build it, for whom, what management problem it solves, what success means. | 3-6 bullets or one compact table. |
 | 2. 用户与场景 | Core roles, what they look at, what they do, permission boundary. | One role table plus optional scenario bullets. |
 | 3. 一期范围 | Do, do not do, defer, sensitive data boundary. | Three short lists or one table. |
@@ -49,6 +50,7 @@ Route detail to the target artifact that will execute it:
 
 | Detail type | Write in |
 | --- | --- |
+| Source material inventory, authority order, targeted reading plan, evidence-to-decision trace, non-authority items | `execution/prd-targeted-reading-analysis.md`, affected child PRDs |
 | Template asset map, `layoutRows`, block template map, slot map, component example map | `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, `children/prd-child-prototype.md` |
 | Metric dictionary and metric mounting matrix | `execution/prd-metric-dictionary-and-mounting.md`, `children/prd-child-backend.md`, `children/prd-child-frontend.md`, `children/prd-child-prototype.md` |
 | API objects, request/response fields, cache, export, permissions | `execution/prd-data-api-contract.md`, `children/prd-child-backend.md`, `children/prd-child-frontend.md` |
@@ -75,3 +77,5 @@ Child PRDs are allowed to be detailed and AI-oriented. They must carry the execu
 - `CHILD-PRD-TESTING`: test matrix, expected results, evidence, regression, retest triggers.
 
 The final PRD bundle is valid only when `prd-main.md`, all execution files, and all child PRDs agree on scope, page names, metric names, APIs, interactions, readiness status, and blocking gaps.
+
+The final PRD bundle is not valid for downstream implementation when `execution/prd-targeted-reading-analysis.md` is missing or when child PRDs do not state which targeted reading rows they consume.

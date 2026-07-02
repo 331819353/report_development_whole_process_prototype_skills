@@ -52,6 +52,7 @@ Before starting affected work, produce or internally maintain this matrix. Inclu
 | Workflow mode | Which workflow owns the top-level stage and whether code/source changes are allowed. |
 | Evidence inventory | Requirements, screenshots, source files, APIs, mock data, runtime URL, logs, prior ledgers, and versions. |
 | Authority order | Which artifact wins when requirement, screenshot, code, API, data, or runtime evidence disagree. |
+| Targeted reading analysis | For PRD-derived or mixed-source work, whether `prd/execution/prd-targeted-reading-analysis.md` exists and names source materials, stage reading plan, evidence-to-decision trace, non-authority items, and `ENTRY-*` / `GAP-*`. |
 | Baseline inheritance | Whether the surface is Haier-branded/enterprise, report/dashboard, common app, or mixed; which company-level UI baseline and report-specific baseline both apply. |
 | Affected surfaces | Page shell, block sizing, chart, table, filter, component placement, data/API, auth/env, runtime QA, handoff. |
 | Owning skills | The smallest required skill set for each affected surface. |
@@ -100,6 +101,7 @@ For Haier or enterprise report/dashboard/BI/data-screen work, do not treat `$hai
 - Do not mark the baseline decision complete for Haier/enterprise report pages unless both the Haier application UI baseline and report-specific baseline are accounted for, or an explicit non-Haier exception is recorded.
 - Do not rely on screenshots alone when source/runtime/API evidence exists or can be inspected.
 - Do not rely on code alone when business meaning, metric口径, permission, or visual acceptance is disputed.
+- Do not mark PRD-derived implementation or QA ready when targeted source-material reading is missing or only says to read all files without stage-specific extraction and evidence-to-decision trace.
 - Do not mark readiness `ready` when the preflight matrix is absent for non-trivial implementation, repair, QA, or acceptance work.
 - Do not mark readiness `ready` when the proof plan is absent or blocking `LAZY-*` findings from `anti-laziness-execution-gate.md` remain.
 - Do not ask the user broad clarification questions before inspecting local evidence that can answer the question.

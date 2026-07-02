@@ -51,6 +51,7 @@ Primary shared gates:
 | Artifact readability | Outputs must be human-readable and downstream-agent-readable. |
 | Environment profile | Runtime profiles, URLs, proxy/CORS, auth, deployment, and rollback must be separated. |
 | Delivery pipeline | Handoffs must stay aligned across requirement, prototype, model, API, backend, frontend, test, release, and retest artifacts. |
+| Targeted reading analysis | Executable PRD and downstream work consume `prd/execution/prd-targeted-reading-analysis.md`, including source material rows, stage reading plan, evidence-to-decision trace, non-authority items, and `ENTRY-*` / `GAP-*`. |
 | Code change ledger | Changed code needs file-level traceability, pre-change read evidence, code ranges, verification, and rollback/blocker notes. |
 | Backend logging | Backend/data-service readiness depends on diagnosable structured logs. |
 | Numeric precision/display | Metric-bearing artifacts need consistent value type, units, scale, precision, rounding, null/zero behavior, and formatter ownership. |
@@ -80,6 +81,7 @@ Primary shared gates:
 - Proof obligations and pass/fail evidence when visual/layout/component contracts are part of the readiness claim.
 - Rule strength audit when a standard/spec contains advisory wording that may affect correctness, runtime fit, renderer ownership, data trust, filters, permissions, accessibility, or readiness.
 - Good-report decision-path findings when report/prototype design is in scope: primary question, first judgment, What/Why/So what, comparison baseline, metric relationship network, drilldown/action route, and any `RPT-*` gaps.
+- Targeted reading analysis findings when PRD, implementation, QA, or handoff is in scope: source material inventory, stage reading plan, evidence-to-decision trace, non-authority items, consumed `SRC-*` / `READ-*` rows, and open `ENTRY-*` / `GAP-*`.
 - Findings table with ID, severity, expected, actual, impact, owner, required action, and readiness impact.
 - Readiness result: `ready`, `partial`, or `blocked`.
 - Confirmation questions only for decisions that block affected work.
@@ -95,5 +97,6 @@ Primary shared gates:
 - Do not mark Haier/enterprise report or dashboard UI `ready` when report-specific checks pass but inherited Haier application UI baseline checks are missing or treated as optional.
 - Do not mark a requested modern SaaS / BI Dashboard / UI Kit page `ready` when the positive style contract is missing, the layout is a generic SaaS shell, components are piled up, charts are overweight, or hierarchy is flat.
 - Do not mark `ready` when governed report metrics lack numeric display contracts or show inconsistent units, decimals, percent scale, rounding, tooltip/export precision, null/zero/denominator-zero behavior, or formatter ownership across design/API/frontend/backend/export.
+- Do not mark executable PRD, prototype implementation, downstream implementation, QA, or handoff `ready` when `prd/execution/prd-targeted-reading-analysis.md` is missing, generic, or not consumed by the affected stage.
 - Do not use this skill to restate full domain rules; cite the loaded references and summarize the blocking evidence.
 - Load `shared-quality-gate-blockers.md` before final readiness decisions or when a finding can block delivery.

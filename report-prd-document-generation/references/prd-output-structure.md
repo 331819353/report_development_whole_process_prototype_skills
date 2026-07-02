@@ -18,6 +18,7 @@ Every complete PRD delivery must create or output this file tree. File names are
 prd/
   prd-main.md
   execution/
+    prd-targeted-reading-analysis.md
     prd-template-execution-contract.md
     prd-metric-dictionary-and-mounting.md
     prd-data-api-contract.md
@@ -74,11 +75,11 @@ Use one short table. This is an index, not the child PRD body.
 
 | 阶段 | 必读文件 | 文件作用 | 主 PRD 变更后的同步规则 |
 | --- | --- | --- | --- |
-| 原型 | `children/prd-child-prototype.md`, `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md` | 配置模板、页面、分块、槽位、组件、交互、动态结论和数据摘要。 | 页面、布局、指标、API、交互、结论或模板规则变化时同步。 |
-| 前端 | `children/prd-child-frontend.md`, `execution/prd-data-api-contract.md`, `execution/prd-interaction-contract.md`, `execution/prd-conclusion-rules.md` | 指导路由、组件、接口适配、状态、权限、格式化和运行 QA。 | 页面、组件、API、权限、状态或格式化变化时同步。 |
-| 后端 | `children/prd-child-backend.md`, `execution/prd-metric-dictionary-and-mounting.md`, `execution/prd-data-api-contract.md` | 指导数据对象、指标计算、API、权限、缓存、导出和错误处理。 | 指标、数据源、字段、筛选、权限、导出或接口变化时同步。 |
-| 技术方案 | `children/prd-child-technical-solution.md` plus all execution files when relevant | 指导系统边界、架构、环境、NFR、风险和实施计划。 | 范围、架构、环境、NFR 或风险变化时同步。 |
-| 测试 | `children/prd-child-testing.md`, all execution files, stage outputs | 指导测试矩阵、联调、权限、导出、异常、证据和回归。 | 验收、交互、API、权限、数据规则或异常状态变化时同步。 |
+| 原型 | `execution/prd-targeted-reading-analysis.md`, `children/prd-child-prototype.md`, `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md` | 先读源材料分析，理解哪些事实/假设/缺口驱动页面、模板、分块、槽位、组件、交互、动态结论和数据摘要。 | 源材料、页面、布局、指标、API、交互、结论或模板规则变化时同步。 |
+| 前端 | `execution/prd-targeted-reading-analysis.md`, `children/prd-child-frontend.md`, `execution/prd-data-api-contract.md`, `execution/prd-interaction-contract.md`, `execution/prd-conclusion-rules.md` | 指导路由、组件、接口适配、状态、权限、格式化和运行 QA，并说明哪些源材料不能被前端重新解释。 | 源材料、页面、组件、API、权限、状态或格式化变化时同步。 |
+| 后端 | `execution/prd-targeted-reading-analysis.md`, `children/prd-child-backend.md`, `execution/prd-metric-dictionary-and-mounting.md`, `execution/prd-data-api-contract.md` | 指导数据对象、指标计算、API、权限、缓存、导出和错误处理，并追踪指标/API判断来源。 | 源材料、指标、数据源、字段、筛选、权限、导出或接口变化时同步。 |
+| 技术方案 | `execution/prd-targeted-reading-analysis.md`, `children/prd-child-technical-solution.md` plus all execution files when relevant | 指导系统边界、架构、环境、NFR、风险和实施计划，并区分事实、假设、样例和冲突。 | 源材料、范围、架构、环境、NFR 或风险变化时同步。 |
+| 测试 | `execution/prd-targeted-reading-analysis.md`, `children/prd-child-testing.md`, all execution files, stage outputs | 指导测试矩阵、联调、权限、导出、异常、证据和回归，并给出验收证据来源与不可猜测项。 | 源材料、验收、交互、API、权限、数据规则或异常状态变化时同步。 |
 
 ### 1. 背景与目标
 
@@ -197,6 +198,7 @@ The execution files are mandatory when the PRD feeds implementation, but they ar
 
 | File | Purpose | Main consumers |
 | --- | --- | --- |
+| `execution/prd-targeted-reading-analysis.md` | Source material inventory, targeted reading plan by stage, evidence-to-decision trace, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows. | 原型、技术方案、前端、后端、测试、QA |
 | `execution/prd-template-execution-contract.md` | `templateAssetUnderstandingMap`, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config availability, block map with row-span `N >= 3` proof, standard area config including summary-area `1/(N+1)` inheritance, component slot map, registered component example map, visual-type size compatibility. | 原型 |
 | `execution/prd-metric-dictionary-and-mounting.md` | Full metric口径, formula, unit, direction, source, refresh, denominator/sample, null rule, page/block/slot/API mounting. | 原型、前端、后端、测试 |
 | `execution/prd-data-api-contract.md` | Data grain, dimensions, fields, request/response, permissions, pagination/sort, cache/freshness, empty/error, lineage. | 前端、后端、技术方案、测试 |
@@ -221,11 +223,12 @@ Every child PRD file must include:
 
 1. Common child header.
 2. Parent sections consumed.
-3. Stage execution input table.
-4. Stage-specific contract.
-5. Relevant data/API/interaction/conclusion/permission inputs.
-6. Blocking gaps and sync status.
-7. Downstream start gate.
+3. Targeted reading rows consumed from `execution/prd-targeted-reading-analysis.md`.
+4. Stage execution input table.
+5. Stage-specific contract.
+6. Relevant data/API/interaction/conclusion/permission inputs.
+7. Blocking gaps and sync status.
+8. Downstream start gate.
 
 Do not copy the full main PRD into every child PRD. Child PRDs refine execution only; they must not override the main PRD's business goal, scope, roles, or acceptance.
 
@@ -252,6 +255,9 @@ Use stable IDs in execution files and child PRDs so downstream agents can refere
 | Meeting/export item | `MEET-` | `MEET-MONTHLY-REVIEW-EXPORT` |
 | Child PRD | `CHILD-PRD-` | `CHILD-PRD-PROTOTYPE` |
 | Gap | `GAP-` | `GAP-METRIC-SOURCE-NPS` |
+| Source material | `SRC-` | `SRC-REQ-001` |
+| Reading decision | `READ-` | `READ-DECISION-001` |
+| Entry conflict | `ENTRY-` | `ENTRY-METRIC-SOURCE-CONFLICT` |
 
 Rules:
 
@@ -266,6 +272,7 @@ Rules:
 - The PRD bundle is invalid if a channel/package/export format changes the logical file tree, merges required files, renames fixed paths, or moves required file bodies into appendices.
 - `prd-main.md` is invalid if it is dominated by raw IDs or dense execution tables.
 - The PRD bundle is invalid if any required execution file or child PRD file is missing, reduced to a filename, or replaced by a section inside `prd-main.md`.
+- The PRD bundle is invalid if `execution/prd-targeted-reading-analysis.md` is missing, generic, or not linked to source materials, PRD decisions, downstream consumers, and `ENTRY-*` / `GAP-*` rows.
 - The PRD bundle is invalid if `prd-main.md`, execution files, and child PRD files disagree on child PRD IDs, purposes, sync status, or blocking gaps.
 - The PRD bundle is invalid if a retained navigation page lacks a Markdown/mermaid preview with filters, toolbar actions, major blocks, block business content, and interaction entries.
 - A template-backed PRD is not ready when `execution/prd-template-execution-contract.md`, `execution/prd-template-build-packet-seed.md`, or `children/prd-child-prototype.md` lacks a current `templateAssetUnderstandingMap`, exact-12 and minimum-8 `layoutRows` proof, block area configs, component slot size, visual-type size compatibility, component slot config, or registered component example evidence.

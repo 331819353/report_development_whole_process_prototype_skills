@@ -23,6 +23,7 @@ The prototype child PRD must include:
 
 - Target workflow `report-prototype-implementation-workflow`, primary `RTP-*` path, and why that report classification was selected.
 - Thinking output: page content, report story, first-viewport priority, reading path, conclusion/evidence/action sequence, visible versus non-visible content decisions.
+- Targeted source-material reading and analysis rows consumed: `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows from `prd/execution/prd-targeted-reading-analysis.md` that justify report type, page story, layout, component, metric, data/API, interaction, permission, and QA decisions.
 - Page preview references from `prd-main.md`.
 - `frameworkTemplateId`.
 - `pageLayoutConfig` with `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, page/nav wiring, and block coordinates.
@@ -66,6 +67,7 @@ Every generated child PRD must start with:
 | Stage | Report development, frontend, backend, technical solution, or testing. |
 | Parent PRD | Main PRD name and version. |
 | Parent sections consumed | Exact parent sections/IDs consumed. |
+| Targeted reading rows consumed | `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows from `prd/execution/prd-targeted-reading-analysis.md` that the child PRD relies on. |
 | Generated from parent version | Version or timestamp. |
 | Sync status | `synced`, `draft`, `stale`, `blocked`, or `not-in-current-scope`. |
 | Owner workflow | Downstream workflow/capability that consumes it. |
@@ -75,6 +77,7 @@ Every generated child PRD must start with:
 ## Quality Gates
 
 - Do not mark a report-development PRD ready when `prd/children/prd-child-prototype.md` is missing.
+- Do not mark a child PRD ready when it does not state which targeted reading rows it consumes, or when it repeats source evidence without linking back to `prd/execution/prd-targeted-reading-analysis.md`.
 - Do not mark `CHILD-PRD-PROTOTYPE` ready when it lacks target workflow, thinking output, page content map, answer atom map, result-content boundary, layout config, block area config, slot config, component example map, metric mounting, data/API, filter/action map, interactions, conclusion rules, validation map, or release validation.
 - Do not force downstream child PRDs into every report-development PRD. Generate conditional children only when they are in the current scope.
 - Do not use a child PRD registry as a substitute for the required `CHILD-PRD-PROTOTYPE` body.

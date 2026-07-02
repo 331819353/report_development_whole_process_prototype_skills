@@ -8,7 +8,7 @@ The goal is to make the architecture/technology decision/implementation roadmap 
 
 Production delivery is closed only when these links are traceable:
 
-1. Requirement/prototype contract -> technical architecture.
+1. Requirement/prototype PRD execution contract, targeted reading analysis, and prototype data summary -> technical architecture.
 2. Technical architecture -> technology selection/ADR, implementation roadmap, API inventory, data model, source strategy, runtime/security decisions, and risk/gap ledger.
 3. API inventory + data model -> data-service design, API documentation, and backend implementation.
 4. Backend implementation -> contract validation, runtime URL, health/smoke evidence, and consumer examples.
@@ -34,7 +34,7 @@ Check these dimensions before marking a technical solution, data service, or tes
 - Report data-visualization frontend readiness: apply `report-prototype-template-management`, `$frontend-runtime-qa-validation`, and `report-delivery-pipeline-governance` for report/BI/dashboard frontends; user purpose, first-screen conclusion, chart/table choice, metric formatting/口径, filters/linkage/drill-through, provider mapping, state coverage, freshness/quality display, frontend performance controls, theme/accessibility, and runtime QA evidence are documented or implemented.
 - Report integration testing readiness: apply `quality-gate-validation` for report/BI/dashboard integration, UAT, release acceptance, or retest closure; metric口径, golden/baseline data, model reconciliation, API/backend behavior, frontend binding, filters, permissions, cache isolation, export parity, performance/stability, exception states, UAT/smoke, monitoring, rollback, regression, automation scope, and defect retest evidence are documented or executed for the stated scope.
 - Reliability and observability: logging, request IDs, metrics, traces, health checks, timeout/retry, upstream failure handling, alert owner, and SLA/SLO where needed.
-- Prototype data handoff: when a runnable prototype feeds technical solution, backend/data-service design, frontend integration, or testing, `docs/prototype-data-summary.md` exists and is current with the prototype datasets, fields, metric/conclusion inputs, component bindings, filters, interactions, API/model suggestions, gaps, and verification.
+- Prototype/PRD data handoff: when a PRD or runnable prototype feeds technical solution, backend/data-service design, frontend integration, or testing, `prd/execution/prd-targeted-reading-analysis.md`, the PRD execution bundle, and `docs/prototype-data-summary.md` exist and are current with source-material inventory, stage reading plan, evidence-to-decision trace, prototype datasets, fields, metric/conclusion inputs, component bindings, filters, interactions, Mock API To HTTP API Replacement Matrix, Metric To Interface / Source Mapping, API/model suggestions, gaps, verification, and downstream consumption matrix.
 - Code change traceability: configured template projects run `npm run ledger:init` before the first source edit and `npm run ledger:check` before handoff; every changed frontend/backend/prototype source file has a sidecar `__change_logs__/<file>.changes.md` ledger, pre-change read evidence, post-change version entry, changed code ranges/stable anchors, affected API/props/events/env/data/filter/logging contracts, verification, and rollback notes. A legacy `change_logs` folder is not the expected proof path.
 - Backend logging depth: structured backend logs include requestId/traceId, service/env/version, route/method/status/latency, safe user/tenant/role hash where allowed, report/widget/query/dataVersion context when relevant, cache/source/pool/export/job indicators, sanitized error code/summary, redaction rules, slow-query/report thresholds, and log level/config controls.
 - Performance and capacity: apply `quality-gate-validation`; expected volume, latency target, concurrency/thread/worker model, Redis/cache/precompute rule with key/TTL/invalidation/fallback/observability details when used, pagination/export limits, max page size, total-count strategy, source-side filter/sort/page execution, component-local filter boundary, database/upstream/cache connection-pool behavior including `ApiError`/timeout/exception release/close evidence, full-materialize-then-filter absence for global scope, slow-query risk, async/offline job strategy for long-running work, timeout/retry/circuit-breaker/fallback behavior, rate/concurrency limits, overload handling, and batch/async behavior.
@@ -61,14 +61,15 @@ Do not add child skills mechanically. Add the skill when its trigger condition e
 - `partial`: the stage can proceed for limited scope or non-prod/demo use, with named assumptions, accepted risks, or missing production controls.
 - `blocked`: a missing or failed production readiness item prevents reliable downstream use.
 
-Do not mark production readiness `ready` when any of these are unknown for a production-bound scope: authoritative source, P0 metric口径, auth/permission, API version/contract, runtime URL/health, `.env.production` profile/config evidence, report data-visualization frontend evidence when report UI is in scope, report integration testing evidence when report acceptance is in scope, performance/resilience decisions, rollback path, or retest criteria for open blocker/major defects.
+Do not mark production readiness `ready` when any of these are unknown for a production-bound scope: authoritative source, targeted source-material reading, P0 metric口径, prototype PRD/data-summary consumption, mock-to-real replacement coverage, auth/permission, API version/contract, runtime URL/health, `.env.production` profile/config evidence, report data-visualization frontend evidence when report UI is in scope, report integration testing evidence when report acceptance is in scope, performance/resilience decisions, rollback path, or retest criteria for open blocker/major defects.
 
-Do not mark implementation readiness `ready` when a configured template project skipped `npm run ledger:init`/`npm run ledger:check`, or when changed frontend/backend/prototype code files lack sidecar code ledgers with pre-change read evidence and post-change version entries. Do not mark prototype-to-backend handoff `ready` when `docs/prototype-data-summary.md` is missing, generic, or stale. Do not mark backend/data-service production readiness `ready` when request/query/cache/pool/export/error logs cannot be correlated by requestId/traceId or are missing redaction and slow-query/report thresholds.
+Do not mark implementation readiness `ready` when a configured template project skipped `npm run ledger:init`/`npm run ledger:check`, or when changed frontend/backend/prototype code files lack sidecar code ledgers with pre-change read evidence and post-change version entries. Do not mark prototype-to-downstream handoff `ready` when `prd/execution/prd-targeted-reading-analysis.md`, the PRD execution bundle, or `docs/prototype-data-summary.md` is missing, generic, stale, lacks replacement/mapping coverage, or is not traced into downstream versions. Do not mark backend/data-service production readiness `ready` when request/query/cache/pool/export/error logs cannot be correlated by requestId/traceId or are missing redaction and slow-query/report thresholds.
 
 ## Required Production Handoff
 
 For technical architecture / technical solution:
 
+- Prototype/PRD consumption summary when applicable: targeted reading analysis, PRD execution bundle, `docs/prototype-data-summary.md`, component data keys, replacement rows, metric/source/interface mapping, filters/actions/exports/details/conclusions, and open `ENTRY-*` / `GAP-*`.
 - Architecture overview: business capability, system context, logical architecture, service boundary, runtime topology, data flow, dependencies, environments, operations boundary, and key decisions.
 - Technology selection/ADR: selected stacks, default/override reasons, tradeoffs, compatibility/test/release impact, and unresolved decisions.
 - Implementation roadmap: phase order, owner actions, dependencies, release gate, rollback, migration/backfill when relevant, and acceptance evidence.
@@ -81,6 +82,7 @@ For technical architecture / technical solution:
 
 For data service / backend:
 
+- Prototype-to-backend replacement proof when applicable: targeted reading rows consumed, original mock endpoint/local dataset, replacement API/source model, component data key, response compatibility, metric/source/interface mapping, filters/actions/exports/details/conclusions served, and `ENTRY-*` / `GAP-*`.
 - Data-service design: service boundary, layered architecture, query-service chain, QueryContext, source-adapter mapping, cache/precompute, async/export, permission/security, observability, deployment/rollback, and handoff readiness.
 - API document and implementation status.
 - Runtime backend URL or startup blocker.
@@ -93,6 +95,7 @@ For data service / backend:
 
 For frontend integration:
 
+- Prototype handoff consumption when applicable: targeted reading rows consumed, PRD execution version, `docs/prototype-data-summary.md`, replacement-row coverage, component data-key mapping, retained mock/offline scope, and open `ENTRY-*` / `GAP-*`.
 - Frontend URL/build and loaded environment profile.
 - Backend/API/provider base URL, source mode, auth/SSO behavior, and retained mock/offline status.
 - Report data-visualization frontend evidence when applicable: user purpose, first-screen answer, component/chart choice, metric formatting/口径/freshness, filter/linkage/drill-through behavior, provider mapping, state coverage, performance controls, theme/accessibility, screenshots, and `VIS-*` findings or no-issue result.
@@ -102,6 +105,7 @@ For frontend integration:
 
 For testing integration:
 
+- Prototype-derived coverage when applicable: targeted reading row coverage, PRD execution version, `docs/prototype-data-summary.md`, replacement-row tests, metric/source/interface tests, component data-key tests, retained mock/offline exceptions, and unresolved `ENTRY-*` / `GAP-*`.
 - Test case matrix, execution result, environment profile (`test` or `production`), config file loaded (`.env.test` or `.env.production`), version/account, frontend/backend URLs, golden/baseline dataset, metric/model/API/frontend/export reconciliation evidence, permission/cache/export/performance/exception/UAT/smoke/regression coverage, evidence, and defect list.
 - Retest loop status: open/fixed/retest/closed/blocked for every blocker/major defect.
 - Final readiness: pass, partial pass, fail, or blocked with exact production risk.

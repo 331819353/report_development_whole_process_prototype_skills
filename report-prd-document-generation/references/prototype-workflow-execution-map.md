@@ -26,6 +26,7 @@ Before `report-prototype-implementation-workflow` starts implementation, the PRD
 
 - `prd/prd-main.md` with a readable business summary, target workflow, page previews, layout summary, metric/data/interaction summary, and gaps.
 - `prd/children/prd-child-prototype.md` with the executable report-development contract.
+- `prd/execution/prd-targeted-reading-analysis.md`.
 - `prd/execution/prd-template-execution-contract.md`.
 - `prd/execution/prd-template-build-packet-seed.md`.
 - `prd/execution/prd-metric-dictionary-and-mounting.md`.
@@ -39,6 +40,7 @@ Before `report-prototype-implementation-workflow` starts implementation, the PRD
 `CHILD-PRD-PROTOTYPE` and execution files must include:
 
 - Target workflow `report-prototype-implementation-workflow` and report type path.
+- Targeted source-material reading and analysis: source material inventory, stage reading plan, evidence-to-decision trace, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows.
 - Thinking output from `report-prototype-design-thinking`: page content, first-viewport priority, reading path, visible/non-visible content decisions, conclusion/evidence/action sequence.
 - Page preview references.
 - Selected `frameworkTemplateId`.
@@ -61,6 +63,7 @@ Before `report-prototype-implementation-workflow` starts implementation, the PRD
 
 - Target workflow is `report-prototype-implementation-workflow`.
 - `CHILD-PRD-PROTOTYPE` is present and `synced` or `draft` with non-blocking gaps.
+- `prd/execution/prd-targeted-reading-analysis.md` is present and links source materials to PRD decisions, implementation-critical notes, downstream consumers, and open `ENTRY-*` / `GAP-*` rows.
 - Page content and reading path are decided by the thinking output or an explicitly accepted user design idea.
 - The configurable template route is complete enough to implement: `frameworkTemplateId`, `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` are present for every retained page.
 - PRD-owned component mapping rows are complete enough to implement: answer atom map, block-to-component map, component data map, filter/action map, conclusion rule map, and validation map are present or explicitly `draft` with non-blocking gaps.
@@ -77,6 +80,7 @@ If the start gate fails, return to `report-prd-document-generation` to complete 
 | PRD area | Required execution | Primary owner |
 | --- | --- | --- |
 | Main summary and scope | Business goal, users, phase scope, target workflow, readiness gaps. | `report-prd-document-generation` |
+| Targeted reading and analysis | Source material inventory, source authority, stage-specific reading plan, evidence-to-decision trace, non-authority items, `ENTRY-*` / `GAP-*`. | `report-prd-document-generation`, `quality-gate-validation` |
 | Thinking output | Page content, reading path, first viewport, conclusion/evidence/action sequence. | `report-prototype-design-thinking` through PRD generation |
 | Target workflow | `report-prototype-implementation-workflow`. | `report-prd-document-generation` |
 | Page layout | `pageLayoutConfig` with section map, layout rows, coordinates, nav/page wiring. | `report-prd-document-generation`, target workflow, `report-prototype-template-management` |
@@ -94,6 +98,7 @@ If the start gate fails, return to `report-prd-document-generation` to complete 
 `report-prototype-implementation-workflow` may mark report development ready only when:
 
 - Every required PRD execution row is consumed or explicitly `deferred-out-of-scope`.
+- Targeted reading rows that affect implementation are consumed or explicitly deferred with `GAP-*`.
 - `pageLayoutConfig`, `blockAreaConfigMap`, `componentSlotConfigMap`, and `componentExampleConfigMap` match the implemented template files.
 - Every declared slot has a registered component example or newly registered custom ECharts example.
 - Data, filters, widgets, generated conclusion rules, interactions, and permission states are reflected in `docs/prototype-data-summary.md` when a runnable project is produced.

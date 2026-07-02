@@ -17,7 +17,7 @@ Do not mix both layers into one long table-heavy document.
 - Put long matrices, machine IDs, slot maps, metric formulas, API field tables, and PRD-to-workflow execution rows in the required files under `prd/execution/`.
 - Put all machine-checkable execution detail in execution files or child PRDs. The main body should not contain full `layoutRows`, full metric dictionaries, API field tables, interaction maps, conclusion rule maps, or Template Build Packet sections.
 - Every page and navigation tab must have a Markdown preview before the technical layout table.
-- The main document must include a child PRD registry that explains which child PRD is used by 原型、前端、后端、技术方案、测试, what each child PRD does, which main PRD sections it consumes, and when it must be updated.
+- The main document must include a file/child PRD registry that explains which targeted reading file and child PRD are used by 原型、前端、后端、技术方案、测试, what each child PRD does, which main PRD sections and source-reading rows it consumes, and when it must be updated.
 - Child PRDs may be ID-heavy and AI-oriented, but they must declare parent PRD version and sync status.
 - Do not confuse the child PRD registry with the child PRDs themselves. The registry belongs in the main document; the child PRD bodies belong only in the five required files under `prd/children/`.
 
@@ -35,11 +35,11 @@ This section is required when the PRD will feed more than one downstream stage. 
 
 | 阶段 | 使用子 PRD | 子 PRD 作用 | 读取内容 | 阶段输出 | 同步规则 |
 | --- | --- | --- | --- | --- | --- |
-| 原型 | `CHILD-PRD-PROTOTYPE` | 配置原型页面、模板、分块、槽位、交互、动态结论和数据摘要 | 主 PRD 0-8 + `prd/execution/prd-template-execution-contract.md` and `prd/execution/prd-template-build-packet-seed.md` | 原型、Template Build Packet、prototype-data-summary | 主 PRD 页面/布局/指标/API/交互/结论变化时同步 |
-| 前端 | `CHILD-PRD-FRONTEND` | 指导前端路由、组件、接口适配、状态、权限和运行 QA | 主 PRD 0-8 + `prd/execution/prd-metric-dictionary-and-mounting.md`, `prd/execution/prd-data-api-contract.md`, `prd/execution/prd-interaction-contract.md`, and `prd/execution/prd-conclusion-rules.md` + 原型输出 | 前端功能实现和 QA | 页面/组件/API/权限/状态变化时同步 |
-| 后端 | `CHILD-PRD-BACKEND` | 指导 API、数据模型、指标计算、权限、导出和缓存 | 主 PRD 0/1/3/7/8 + `prd/execution/prd-metric-dictionary-and-mounting.md` and `prd/execution/prd-data-api-contract.md` | API/数据服务实现输入 | 指标/数据源/API/筛选/权限变化时同步 |
-| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | 指导架构、技术选型、边界、环境、NFR、风险和实施计划 | 主 PRD 0-8 + 子 PRD 状态 | 技术方案和实施路线 | 范围/架构/环境/NFR/风险变化时同步 |
-| 测试 | `CHILD-PRD-TESTING` | 指导测试用例、联调、数据一致性、权限、导出和证据 | 主 PRD 0-8 + `prd/execution/prd-metric-dictionary-and-mounting.md`, `prd/execution/prd-data-api-contract.md`, `prd/execution/prd-interaction-contract.md`, and `prd/execution/prd-conclusion-rules.md` + 前后端/API/原型产物 | 测试矩阵和验收报告 | 验收/API/交互/权限/异常变化时同步 |
+| 原型 | `CHILD-PRD-PROTOTYPE` | 配置原型页面、模板、分块、槽位、交互、动态结论和数据摘要 | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-template-execution-contract.md` and `prd/execution/prd-template-build-packet-seed.md` | 原型、Template Build Packet、prototype-data-summary | 源材料、页面、布局、指标/API/交互/结论变化时同步 |
+| 前端 | `CHILD-PRD-FRONTEND` | 指导前端路由、组件、接口适配、状态、权限和运行 QA | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-metric-dictionary-and-mounting.md`, `prd/execution/prd-data-api-contract.md`, `prd/execution/prd-interaction-contract.md`, and `prd/execution/prd-conclusion-rules.md` + 原型输出 | 前端功能实现和 QA | 源材料、页面/组件/API/权限/状态变化时同步 |
+| 后端 | `CHILD-PRD-BACKEND` | 指导 API、数据模型、指标计算、权限、导出和缓存 | 主 PRD 0/1/3/7/8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-metric-dictionary-and-mounting.md` and `prd/execution/prd-data-api-contract.md` | API/数据服务实现输入 | 源材料、指标/数据源/API/筛选/权限变化时同步 |
+| 技术方案 | `CHILD-PRD-TECHNICAL-SOLUTION` | 指导架构、技术选型、边界、环境、NFR、风险和实施计划 | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + 子 PRD 状态 | 技术方案和实施路线 | 源材料、范围/架构/环境/NFR/风险变化时同步 |
+| 测试 | `CHILD-PRD-TESTING` | 指导测试用例、联调、数据一致性、权限、导出和证据 | 主 PRD 0-8 + `prd/execution/prd-targeted-reading-analysis.md` + `prd/execution/prd-metric-dictionary-and-mounting.md`, `prd/execution/prd-data-api-contract.md`, `prd/execution/prd-interaction-contract.md`, and `prd/execution/prd-conclusion-rules.md` + 前后端/API/原型产物 | 测试矩阵和验收报告 | 源材料、验收/API/交互/权限/异常变化时同步 |
 
 Do not place full child PRD details here. Put them in the required child PRD files under `prd/children/`.
 
@@ -164,6 +164,7 @@ The execution files are required but must not be merged into the main document.
 
 Use these files:
 
+- `prd/execution/prd-targeted-reading-analysis.md`: Source material inventory, targeted reading plan by stage, evidence-to-decision trace, implementation-critical reading notes, non-authority items, and `ENTRY-*` / `GAP-*` rows.
 - `prd/execution/prd-template-execution-contract.md`: Template execution contract, including `templateAssetUnderstandingMap`, IDs, `layoutSectionMap`, `layoutRows`, `layoutCoordinateMap`, block area config map with direct template availability and slot count/pattern, component slot map with visual-type size compatibility, and registered component example map.
 - `prd/execution/prd-metric-dictionary-and-mounting.md`: Metric dictionary and metric mounting matrix.
 - `prd/execution/prd-data-api-contract.md`: Data object and API field contracts.
